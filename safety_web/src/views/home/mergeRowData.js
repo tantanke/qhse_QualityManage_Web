@@ -1,0 +1,55 @@
+export default [{
+  id: 1,
+  checkItem1: 2,
+  checkItem2: 3,
+  checkItem3: 4,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '作业计划书',
+  checkItem3Label: '计划书编制',
+  content: '小队长接到射孔任务后，收集作业井信息。'
+}, {
+  id: 2,
+  checkItem1: 2,
+  checkItem2: 3,
+  checkItem3: 4,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '作业计划书',
+  checkItem3Label: '计划书编制',
+  content: '根据单段作业簇数、作业井温度、压力、地层流体等信息，优选射孔器材，进行入井管串和泵送的设计。'
+}, {
+  id: 3,
+  checkItem1: 2,
+  checkItem2: 3,
+  checkItem3: 4,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '作业计划书',
+  checkItem3Label: '计划书编制',
+  content: '制定施工方案，甲类井由基层单位组织施工策划。'
+}, {
+  id: 3,
+  checkItem1: 2,
+  checkItem2: 3,
+  checkItem3: 5,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '作业计划书',
+  checkItem3Label: '审核审批',
+  content: '  按流程进行审批（乙类井由基层单位审定；甲类井由基层单位领导、分公司生产安全部门逐级审核，报分公司领导审批。'
+}, {
+  id: 3,
+  checkItem1: 2,
+  checkItem2: 3,
+  checkItem3: 6,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '作业计划书',
+  checkItem3Label: '施工变更',
+  content: '现场施工方案发生变更应执行变更流程。'
+}, {
+  id: 3,
+  checkItem1: 2,
+  checkItem2: 7,
+  checkItem3: 8,
+  checkItem1Label: '基地准备',
+  checkItem2Label: '承重类设备设施',
+  checkItem3Label: '检查检测',
+  content: '承重类设备设施及其附件在规定年限内使用，定期检测合格。'
+}]
