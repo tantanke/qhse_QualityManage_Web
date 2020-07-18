@@ -73,8 +73,6 @@
                 <el-button type="primary" @click="goHidden">确定</el-button>
             </div>
             </el-dialog>
-
-        </el-dialog>
         <el-dialog title="编辑检查记录" :visible.sync="editformVisible" :close-on-click-modal="false" >
             <el-form :model='editform'>
         <el-form-item label="公司单位:" :label-width="labelWidth">
@@ -183,7 +181,7 @@
 import {GetCheckRecordTree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {getChecklistTree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
-import {editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
+/* import {editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable' */
 import {addCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {deleteCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 
