@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {UpdateReportCodeRule,GetReportCodeRuleDetail,GetReportType} from '../../../services/reportCodeRule'
+import {UpdateReportCodeRule/* ,GetReportCodeRuleDetail */,GetReportType} from '../../../services/reportCodeRule'
 import {GetCompany} from '../../../services/gettreedata'
 
 export default {
@@ -106,12 +106,13 @@ export default {
         })
       },
     getReportCodeRule () {
+     /*  console.log(this.$route)
       const id = this.$route.params.id
       GetReportCodeRuleDetail(id).then((res) => {
         this.ReportCodeRule = res.data
       }).catch((err) => {
         this.$message.error(err.message)
-      })
+      }) */
     },
 
   }

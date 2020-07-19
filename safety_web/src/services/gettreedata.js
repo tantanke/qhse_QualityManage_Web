@@ -10,7 +10,7 @@ export const GetProblemCategory = () => {
     return request('/api/problem_factor/tree ')
   }
 export const GetCompany = () => {
-    return request('/api/company/tree ')
+    return request('/api/qhse_company/tree')
   }
 export const Getdata_dict = () => {
     return request('/api/dictionary/tree')

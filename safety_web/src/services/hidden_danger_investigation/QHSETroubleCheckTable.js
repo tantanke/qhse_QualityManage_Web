@@ -22,7 +22,7 @@ export const addCheckRecord = (data) => {
   })
 }
 export const editCheckRecord = (data) => {
-  return request('/api/check_list_tree/'+ data.id, {
+  return request('/api/check_record/'+ data.id, {
       method: 'put',
       data
   })

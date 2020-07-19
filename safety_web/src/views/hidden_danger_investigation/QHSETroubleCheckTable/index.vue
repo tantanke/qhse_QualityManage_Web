@@ -2,15 +2,45 @@
   <div class="troublecheck">
       <el-row class="chooseItem">
           <div class="page-title" style="width:100%">QHSE隐患排查</div>
-          <span>请选择检查表类别:</span>
+          <!-- <span>请选择检查表类别:</span>
           <el-radio v-model="addform.checkType" label="日常检查">日常检查</el-radio>
-          <el-radio v-model="addform.checkType" label="专项检查">专项检查</el-radio>        
+          <el-radio v-model="addform.checkType" label="专项检查">专项检查</el-radio>   -->      
       </el-row>
-      <el-row style="padding:15px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
-      <span style="margin-right:15px">{{addform.checkType}}</span>
+      <el-row style="padding:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
+      <!-- <span style="margin-right:15px">{{addform.checkType}}</span> -->
       <el-button type="primary" round @click="addformVisible = true">添加检查表</el-button>   
-     <el-row style="margin:15px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
-      <el-row v-if="addform.checkType === '专项检查'">
+     <el-row style="margin:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
+        <el-table
+        :data="treeData"
+        style="width: 100%;"
+        row-key="checkListCode"
+        highlight-current-row
+        border
+        max-height="700"
+        v-loading="loading"
+        :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+        <el-table-column
+        prop="checkListName"
+        label="检查名称"
+        
+        >
+        </el-table-column>
+        <el-table-column label="检查类别" width="200" align="center">
+            <template slot-scope="scope" >
+                <span v-if="scope.row.childNode.length === 0 && scope.row.checkType ">{{scope.row.checkType}}</span>
+            </template>
+          </el-table-column>
+        <el-table-column label="操作" width="200" align="center">
+            <template slot-scope="scope" >
+                <div v-if="scope.row.childNode.length === 0 && scope.row.checkRecordID !== null">
+                   <el-button type='danger' size="mini" style='margin-right:20px'    @click="deleteCheckTable(scope.row)">删除</el-button>      
+                   <el-button type="primary" size="mini" @click="editCheckTable(scope.row)">修改</el-button>
+                </div>
+                <span v-else-if="scope.row.childNode.length === 0 && scope.row.checkRecordID === null ">请点击上方添加检查表进行新增</span>
+            </template>
+          </el-table-column>
+    </el-table>
+      <!-- <el-row v-if="addform.checkType === '专项检查'">
          <el-table
           :data="specialTable"
           style="width: 100%"
@@ -32,8 +62,8 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-row>
-      <el-row v-else>
+      </el-row> -->
+      <!-- <el-row v-else>
          <el-table
           :data="dateTable"
           style="width: 100%"
@@ -54,7 +84,7 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-row>
+      </el-row> -->
       <!-- 编辑表单-->
         <el-dialog
             width="30%"
@@ -131,7 +161,6 @@
               placeholder="请选择公司单位"
               v-model="ScompanyCode"
               @select="getCompanyCode"
-              style="width:250px"
             />
         </el-form-item>
         <el-form-item label="检查名称:" :label-width="labelWidth">
@@ -142,8 +171,14 @@
               :normalizer="normalizer"
               v-model="Scode"
               @select="getQueryCode"
-              style="width:700px"
+              
             />
+        </el-form-item>
+        <el-form-item label="检查类型:" :label-width="labelWidth">
+            <el-select v-model="addform.checkType" placeholder="请选择检查类别">
+                <el-option label="日常检查" value="日常检查"></el-option>
+                <el-option label="专项检查" value="专项检查"></el-option>
+            </el-select>
         </el-form-item>
         <el-form-item label="检查内容:" :label-width="labelWidth">
             <el-select v-model="addform.checkContent" placeholder="请选择具体检查内容">
@@ -181,9 +216,11 @@
 import {GetCheckRecordTree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {getChecklistTree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
-/* import {editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable' */
+import {editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {addCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import {deleteCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
+
+
 
 export default {
     data() {
@@ -209,7 +246,7 @@ export default {
               code: '', //
               name: '', //
               content: '',
-              checkType: '日常检查', //
+              checkType: '', //
               checkCategory: '', //
               companyName: '', //
               companyCode: '', //
@@ -218,11 +255,11 @@ export default {
             },
             searchdate: '',
             searchSpe: '',
-            checkcate: '日常检查', // 默认为日常检查
             tableData: [],
-            loading: '',
+            loading: true,
             rowdata: '',
             addData: [],
+            mapAddData: [],
             treeData: [],
             dateTable: [],
             specialTable: [],
@@ -246,18 +283,18 @@ export default {
         }
     },
     methods: {
-        async deepTree (treedata) {
+         deepTree (treedata) {
             let _this = this
             treedata.forEach(item => {
-                if (item.childNode.length === 0) {
-                    if(item.checkDate !== null )
-                    _this.tableData.push(item)
+                if (item.children.length === 0) {
+                     /* let it = {isDisabled: false}
+                     item.childNode.push(it) */
+                     delete item.children
                     return
                 } else {
-                    _this.deepTree(item.childNode)
+                    _this.deepTree(item.children)
                 }
             })
-            return _this.tableData
         },
         getTableData() {
             let _this = this
@@ -267,7 +304,8 @@ export default {
             _this.dateTable = []
             GetCheckRecordTree().then(res => {
             _this.treeData = res.data
-            return _this.deepTree(_this.treeData)
+            _this.loading = false
+           /*  return _this.deepTree(_this.treeData)
                     }).then((res) => {
                         _this.loading = false
                         // 再次过滤数组
@@ -277,13 +315,12 @@ export default {
                             } else if(item.checkType === '日常检查') {
                                 _this.dateTable.push(item)
                             }
-                        })
+                        }) */
                     }).catch(err => {
                         _this.$message.error(err)
                     })
         },
         editCheckTable (data) {
-            console.log(data)
             let _this = this
             _this.editformVisible = true
             _this.fillForm(data)
@@ -321,13 +358,13 @@ export default {
             _this.editformVisible = false
             let editform = _this.editform
             editform.content = '通过'
-           /*  editCheckRecord(editform).then(res => {
+            editCheckRecord(editform).then(res => {
                 console.log(res)
                 _this.$message.success('编辑成功')
-                this.getTableData()
+                _this.getTableData()
             }).catch(err => {
                 _this.$message.error(err)
-            }) */
+            })
 
         },
         submitEditNo () {
@@ -335,15 +372,15 @@ export default {
             _this.editformVisible = false
             let editform = _this.editform
             editform.content = '不通过'
-           /*  editCheckRecord(editform).then(res => {
+            editCheckRecord(editform).then(res => {
                 console.log(res)
                 _this.$message.success('编辑成功')
-                this.getTableData()
+                _this.getTableData()
+                _this.addHiddenVisible = true
             }).catch(err => {
                 _this.$message.error(err)
             })
-            _this.getTableData()*/
-            _this.addHiddenVisible = true
+            
 },
         submitAdd () {
             let _this = this
@@ -402,6 +439,7 @@ export default {
            _this.addform.companyName = ''
            _this.addform.companyCode = ''
            _this.addform.checkDate = ''
+           _this.addform.checkType = ''
            _this.addform.checkContent = ''
            _this.addform.checkCategory = ''
            _this.Scode = null
@@ -437,16 +475,17 @@ export default {
         getCompanytree () {
             GetqhseCompanytree().then(res => {
                 this.companyList = res.data
+                console.log(this.companyList)
             })
         },
         getCheckTree () {
           getChecklistTree().then(res => {
               this.addData = res.data
-              console.log(this.addData)
+              this.deepTree(this.addData)
           })
         },
         getQueryCode (node) {
-          if(node.children.length !== 0) {
+          if(node.children !== undefined) {
               this.$message('请选择最后一级叶子节点检查,')
           } else{
               this.addform.name = node.checkListName;
@@ -466,7 +505,7 @@ export default {
         submitRisk () {
             this.addRiskFormVisible = false
             this.addHiddenVisible = false
-        }
+        }    
     },
     mounted() {
         this.getTableData()
