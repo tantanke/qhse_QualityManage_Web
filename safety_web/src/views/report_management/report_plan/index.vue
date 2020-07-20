@@ -126,6 +126,7 @@
                 clearable
                 filterable
                 style="width:100%"
+                @change="selectPeople1"
                 :loading="employeesLoading"
                 loading-text="查询中..."
               >

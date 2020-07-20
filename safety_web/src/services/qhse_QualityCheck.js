@@ -10,8 +10,20 @@ export const element_evidence = (data) => {
         data
     })
 }
+export const evidence = (data) => {
+    return request(`/api/element_evidence`,{
+        method: 'post',
+        data
+    })
+}
+export const element_evidence_attach = (data) => {
+    return request(`/api/element_evidence_attach`,{
+        method: 'post',
+        data
+    })
+}
 export const employees = () => {
-    return request(`/api/emplopyees`)
+    return request(`/api/employees`)
 }
 // export const UpdateComSysEleStatus = (data) => {
 //     return request(`/api/updateComSysEleStatus`, {
