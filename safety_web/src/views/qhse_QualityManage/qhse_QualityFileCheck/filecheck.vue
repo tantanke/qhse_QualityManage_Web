@@ -104,8 +104,7 @@
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
             <el-col :span="12">
-              <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>  
-              <el-form-item label="状态：" style="margin-bottom:1px">{{detailData.status}}</el-form-item>            
+              <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>            
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
