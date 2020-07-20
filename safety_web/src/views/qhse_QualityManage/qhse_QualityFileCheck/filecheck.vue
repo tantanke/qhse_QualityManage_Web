@@ -200,7 +200,7 @@ export default {
       querryQhseElement().then(res => {
         this.treeData = res.data;
         this.loading = false;
-        console.log(res)
+        console.log(this.treeData)
       })
       .catch(err => {
           this.message.error(err.message);

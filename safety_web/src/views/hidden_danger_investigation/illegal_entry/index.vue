@@ -4,7 +4,6 @@
         <el-row>
             <el-col :span='4'>
             <el-breadcrumb separator="/" style="padding-top:10px">
-            <el-breadcrumb-item><a @click="$router.go(-1)">QHSE文件审核</a></el-breadcrumb-item>
             <el-breadcrumb-item>违章基本信息录入</el-breadcrumb-item>    
         </el-breadcrumb>
             </el-col>
