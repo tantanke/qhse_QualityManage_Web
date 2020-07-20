@@ -23,12 +23,12 @@
             <el-button type="danger" @click="$router.go(-1)">返回前一页</el-button>
           </el-form-item>
           <!--模态框，弹出审核内容-->
-          <el-dialog title="是否确认审核通过？" :visible.sync="dialogFormVisible">
+         <!--  <el-dialog title="是否确认审核通过？" :visible.sync="dialogFormVisible">
             <div slot="footer">
               <el-button type="primary" @click="updateStatus">确认</el-button>
               <el-button type="danger" @click="dialogFormVisible = false">返回</el-button>
             </div>
-          </el-dialog>
+          </el-dialog> -->
           <!--</el-col>-->
         </el-form>
       </el-row>
@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import { UpdateComSysEleStatus } from "../../../services/qhse_QualityCheck";
+/* import { UpdateComSysEleStatus } from "../../../services/filecheck"; */
 import { querryQhseElement } from "../../../services/filecheck";
 import { updateScore } from "../../../services/filecheck";
 export default {
@@ -209,13 +209,13 @@ export default {
         this.dialogFormVisible = true
     },
     updateStatus() {
-        let that=this;
+        /* let that=this;
         let info = {
             year:this.filterQuery.year,
             companyCode:this.filterQuery.companyCode,
             status:"通过"
-        }
-        UpdateComSysEleStatus(info).then(()=>{
+        } */
+       /*  UpdateComSysEleStatus(info).then(()=>{
             that.dialogFormVisible = false;
             that.$message.success("审核成功");
             this.filterQuery.status = info.status
@@ -226,7 +226,7 @@ export default {
         }).catch(() => {
             that.$message.error("审核失败");
             that.dialogFormVisible = false;
-        })
+        }) */
     },
     getStatus() {
       this.status = this.$route.params.data.status

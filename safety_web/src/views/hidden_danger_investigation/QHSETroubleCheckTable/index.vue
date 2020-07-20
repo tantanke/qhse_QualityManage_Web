@@ -27,16 +27,16 @@
         </el-table-column>
         <el-table-column label="检查类别" width="200" align="center">
             <template slot-scope="scope" >
-                <span v-if="scope.row.childNode.length === 0 && scope.row.checkType ">{{scope.row.checkType}}</span>
+                <span v-if="!scope.row.childNode && scope.row.checkType ">{{scope.row.checkType}}</span>
             </template>
           </el-table-column>
         <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope" >
-                <div v-if="scope.row.childNode.length === 0 && scope.row.checkRecordID !== null">
+                <div v-if="!scope.row.childNode && scope.row.checkRecordID">
                    <el-button type='danger' size="mini" style='margin-right:20px'    @click="deleteCheckTable(scope.row)">删除</el-button>      
                    <el-button type="primary" size="mini" @click="editCheckTable(scope.row)">修改</el-button>
                 </div>
-                <span v-else-if="scope.row.childNode.length === 0 && scope.row.checkRecordID === null ">请点击上方添加检查表进行新增</span>
+                <span v-else-if="!scope.row.childNode && !scope.row.checkRecordID ">请点击上方添加检查表进行新增</span>
             </template>
           </el-table-column>
     </el-table>
@@ -283,19 +283,17 @@ export default {
         }
     },
     methods: {
-         deepTree (treedata) {
+         /* deepTree (treedata) {
             let _this = this
             treedata.forEach(item => {
                 if (item.children.length === 0) {
-                     /* let it = {isDisabled: false}
-                     item.childNode.push(it) */
                      delete item.children
                     return
                 } else {
                     _this.deepTree(item.children)
                 }
             })
-        },
+        }, */
         getTableData() {
             let _this = this
             _this.loading = true
@@ -321,6 +319,7 @@ export default {
                     })
         },
         editCheckTable (data) {
+            console.log(data)
             let _this = this
             _this.editformVisible = true
             _this.fillForm(data)
@@ -481,7 +480,7 @@ export default {
         getCheckTree () {
           getChecklistTree().then(res => {
               this.addData = res.data
-              this.deepTree(this.addData)
+              /* this.deepTree(this.addData) */
           })
         },
         getQueryCode (node) {
