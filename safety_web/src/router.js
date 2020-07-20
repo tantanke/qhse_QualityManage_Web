@@ -70,7 +70,6 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityStandard/index', name:'QHSEQualityStandardIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityStandard/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityFill/index', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/index', name:'QHSEQualityCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityCheck/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/check', name:'QHSEQualityCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityCheck/check.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QHSEStatisticAnalysis/check', name:'QHSEStatisticAnalysis', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheck', name:'FileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
