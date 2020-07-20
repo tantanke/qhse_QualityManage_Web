@@ -8,7 +8,6 @@
             <treeselect
               :multiple="false"
               :options="companyList"
-              :normalizer="normalizer"
               placeholder="请选择公司单位"
               @select="selectDepart"
               style="width:200px"
@@ -22,7 +21,6 @@
               style="width:200px">
               </el-date-picker>
           </el-form-item>
-          
           &nbsp;&nbsp;&nbsp;
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
@@ -44,20 +42,19 @@
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
           <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
-          <!-- <el-table-column prop="code" label="未通过数" width="80" align="center"></el-table-column> -->
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button
                 type="primary"
                 size="mini"
                 @click="updateScore(scope.row)"
-                v-if="scope.row.code.length === 8 && scope.row.status==='未审核' "
+                v-if="scope.row.childNode.length === 0 && scope.row.status==='未审核' "
               >进入审核</el-button>
               <el-button
                 type="primary"
                 size="mini"
                 @click="updateScore(scope.row)"
-                v-if="scope.row.code.length === 8 && scope.row.status==='未批准' "
+                v-if="scope.row.childNode.length === 0 && scope.row.status==='未批准' "
               >进入批准</el-button>
             </template>
           </el-table-column>
@@ -68,7 +65,6 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
-              <el-form-item label="要素编码：" style="margin-bottom:1px">{{detailData.code}}</el-form-item>
               <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
               <el-form-item label="依据：" style="margin-bottom:1px">{{detailData.basis}}</el-form-item>
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
@@ -207,7 +203,7 @@ export default {
         
     },
     handleCellClick(row, cell, column) {//展开列表的子节点
-      if (row.code.length < 10) {
+      if (row.childNode.length > 0) {
         let els = column.getElementsByClassName("el-icon-arrow-right");
         if (els.length != 0) {
           els[0].click();
@@ -228,8 +224,7 @@ export default {
     //  this.nodeData.attach='https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2747364614,2411895227&fm=26&gp=0.jpg'
     
     // });
-    
-    console.log(data.qHSE_CompanyYearManagerSysElement_ID);
+      console.log(data.qHSE_CompanyYearManagerSysElement_ID);//打印传递的id
       this.node=data;
       this.detailData = {}
       this.detailData.name = data.name
@@ -256,7 +251,7 @@ export default {
     this.handleGetInitialData();//获取到表单信息
     this.loading = false;
   }
-};
+}
 </script>
 
 <style lang="scss">
