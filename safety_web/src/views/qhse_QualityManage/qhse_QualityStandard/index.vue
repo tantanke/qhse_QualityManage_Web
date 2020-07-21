@@ -1,7 +1,7 @@
 
 <template>
   <div>
-    <div class="page-title" style="width:100%">量化标准</div>
+    <div class="page-title" style="width:100%">审核要素管理</div>
     <div class="page-content">
       &nbsp;&nbsp;
       <el-row>
