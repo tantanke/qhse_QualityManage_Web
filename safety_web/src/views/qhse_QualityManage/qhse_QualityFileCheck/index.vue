@@ -93,7 +93,7 @@
 <script>
 import CurrentUser from '../../../store/CurrentUser'
 import { addFileaduit } from "../../../services/filecheck"
-import { queryFileaduit } from "../../../services/filecheck"
+import { queryFileaduit,queryFileaduit2 } from "../../../services/filecheck"
 import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
 const DefaultQuery = {
@@ -167,15 +167,32 @@ export default {
       return String(nowdata.getFullYear());
     },
     handleGetInitialData() {
+      let serchform = {};
       this.loading = true;
-      this.searchForm.year = this.filterQuery.year
-      queryFileaduit(this.searchForm).then(res => {
+      if(!this.searchForm.companyName){
+        serchform = {year: this.filterQuery.year}
+        queryFileaduit(serchform).then(res => {
         this.tableData = res.data.list;
+        this.loading = false;
         console.log(res)
       }).catch(err => {
           this.message.error(err.message);
+          this.loading = false;
         });
-      this.loading = false;
+      
+      } else{
+        serchform = {year: this.filterQuery.year,companyName:this.searchForm.companyName}
+        queryFileaduit2(serchform).then(res => {
+        this.tableData = res.data.list;
+        this.loading = false;
+        console.log(res)
+      }).catch(err => {
+          this.message.error(err.message);
+          this.loading = false;
+        });
+      }
+
+      
     },
     deleteFile(data) {
       let _this = this
@@ -256,7 +273,7 @@ export default {
     },
     getQueryCode(node){
       console.log(node)
-      this.searchForm.companyCode = 	node.id
+      this.searchForm.companyName = 	node.label
     }
   },
   mounted() {

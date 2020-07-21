@@ -52,7 +52,7 @@
              <template slot-scope="scope">
               <span
                 v-if="scope.row.childNode.length === 0 "
-              >5</span>
+              >点击右侧打分</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="150" align="center">
@@ -76,7 +76,7 @@
           append-to-body>
           <el-form>
             <el-form-item label="输入分数：" style="margin-bottom:1px">
-               <el-input v-model="score" autocomplete="off"></el-input>
+               <el-input v-model.number="score" autocomplete="off"></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -138,7 +138,7 @@
 <script>
 /* import { UpdateComSysEleStatus } from "../../../services/filecheck"; */
 import { querryQhseElement } from "../../../services/filecheck";
-import { updateScore } from "../../../services/filecheck";
+import { updateScore,getScore } from "../../../services/filecheck";
 export default {
   data() {
     return {
@@ -147,6 +147,7 @@ export default {
         companyCode: null,
         status:''
       },
+      nowcode: '',
       noinnerVisible: false,
       innerVisible: false,
       status:'',
@@ -189,7 +190,10 @@ export default {
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
       _this.detailData.problemDescription = data.problemDescription
-      _this.dialogVisible = true            
+      _this.dialogVisible = true
+      getScore({code:data.code}).then(res => {
+        console.log(res)
+      })            
     },
     deepForeach(){
       

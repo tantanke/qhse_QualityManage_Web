@@ -343,7 +343,13 @@ export default {
             // 获取待删除数据的id
             let deldata = data.checkRecordID
             let delId = {id: deldata}
-            deleteCheckRecord(delId).then(res => {
+            this.$confirm('确认删除该条检查记录吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+         }).then(() => {
+            return deleteCheckRecord(delId)
+         }).then(res => {
                 if (res.code === 1000) {
                         this.$message.success(res.message)                        
                         this.getTableData()
