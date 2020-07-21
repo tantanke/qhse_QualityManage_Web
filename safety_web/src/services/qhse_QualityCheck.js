@@ -1,8 +1,10 @@
 import request from '../utils/request'
 
 //获取公司树
-export const querryYearElement = () => {
-    return request(`/api/querryYearElement`)
+export const querryYearElement = (data) => {
+    return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`,{
+        data
+    })
 }
 
 export const element_evidence = (data) => {

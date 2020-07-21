@@ -6,11 +6,11 @@ export const qhse_company_tree =() =>{
 
   //获取审核要素
 export const query_elementReviewer =(data)=>{
-    return request('/api/query_elementReviewer',{
+    return request(`/api/query_elementReviewer?companyCode=${data.companyCode}&year=${data.year}`,{
       data
     })
 }
-//审核人通过
+//审核人通过?
 export const pass_elementReviewer =(data)=>{
   return request('/api/pass_elementReviewer',{
     method:'put',
@@ -32,6 +32,6 @@ export const no_elementReviewer =(data)=>{
 }
 //显示信息
 export const show_elementReviewer =(data)=>{
-  return request(`/api/show_elementReviewer`),
+  return request(`/api/show_elementReviewer?qHSE_CompanyYearManagerSysElement_ID=${data.qHSE_CompanyYearManagerSysElement_ID}`),
   data
 }
