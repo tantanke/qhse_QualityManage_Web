@@ -254,17 +254,17 @@ export default {
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.evidence.uploadTime=year+'-'+month+'-'+date;
       element_evidence_attach(this.evidence).then(res => {
-        console.log(this.evidence);
+        console.log(res.msg);
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
     addEvidence(){
-      consoel.log(this.text);
-      // evidence(this.text).then(res => {
-      //   }).catch(err => {
-      //     this.$message.error(err.message);
-      //   });
+      evidence(this.text).then(res => {
+        console.log(res.msg);
+        }).catch(err => {
+          this.$message.error(err.message);
+        });
     },
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
@@ -278,10 +278,10 @@ export default {
                     this.form.fileID = '';
                 }
             },
-    handleExceed(files, fileList) {
+    handleExceed() {
         this.$message.warning('当前限制选择 2 个文件');
       },
-    handleRemove(file, fileList) {
+    handleRemove() {
         this.$refs.upload.clearFiles();
     },
     handlePictureCardPreview(file) {//放大显示
