@@ -138,7 +138,7 @@ export default {
   methods: {
     selectDepart(val) {
       console.log('selectDepart', val);
-      this.filterQuery.companyName = val.label;
+      this.filterQuery.companyCode = val.nodeCode;
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
@@ -214,7 +214,14 @@ export default {
       this.loading = true;
     },
     updateScore(data){//显示出证据项的内容
-     this.nodeData=show_elementReviewer(data);
+     show_elementReviewer(data).then(res => {
+       this.nodeData=res.data
+        console.log('获取到的要素节点内容：',this.nodeData);
+      })
+      .catch(err => {
+        console.log(err);
+        this.message.error(err.message);
+      })
      //测试显示数据
     //  this.nodeData.evidenceDsecription="证据项描述"
     //  this.nodeData.checkStaffName="黎锋"

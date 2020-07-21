@@ -56,16 +56,20 @@
         </el-table>
       </el-row>
 
-       <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px">
-        <el-form label-width="140px" :model="detailData" style="width:100%;" >
+       <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="600px">
+        <el-form label-width="120px" :model="detailData" style="width:100%;" >
           <el-row>
-            <el-col :span="12">
+            <el-col >
               <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
-                <el-input type="textarea"  label="证据描述  ："  class="resizeNone" v-model="text.evidenceDescription" placeholder="请输入内容"></el-input>
+                <el-input type="textarea"  v-if="textuse" label="证据描述  ："  class="resizeNone" v-model="text.evidenceDescription" placeholder="请输入内容"></el-input>
+                <el-input type="textarea"  v-if="!textuse" readonly="true" label="证据描述  ："  class="resizeNone" v-model="text.evidenceDescription" placeholder="请输入内容"></el-input>
               </el-form-item>
-              <el-form-item label="证据审核人："  prop="employeeID">
-                <el-select
+              <el-form-item 
+              label="证据审核人：" 
+              v-if="people1use"
+               prop="employeeID">
+                <el-select  
                 v-model="text.checkStaffID"
                 placeholder="输入姓名搜索员工"
                 clearable
@@ -81,8 +85,13 @@
                 </el-option>
               </el-select>
             </el-form-item>
-             <el-form-item label="证据批准人："  prop="employeeID">
-                     <el-select
+           <el-form-item label="证据审核人：">
+             <el-form-column  v-if="!people2use" style="margin-bottom:1px">{{form.people1name}}</el-form-column>
+            </el-form-item>
+             <el-form-item label="证据批准人："
+             v-if="people2use"
+               prop="employeeID">
+              <el-select
                 v-model="text.approverStaffID"
                 placeholder="输入姓名搜索员工"
                 clearable
@@ -97,10 +106,25 @@
                   :value="item.employeeID">
                 </el-option>
               </el-select>
-              <el-button type="primary" style="margin-top:10px" @click="addEvidence">新增证据</el-button>
             </el-form-item>
+            <el-form-item label="证据批准人：">
+             <el-form-column  v-if="!people2use" style="margin-bottom:1px">{{form.people2name}}</el-form-column>
+            </el-form-item>
+            <el-form-item >
+            <el-button type="primary" v-if="buttonVisible" style="margin-top:10px" @click="addEvidence">新增证据</el-button>
+              <el-button type="info" v-if="buttonVisible" style="margin-top:10px" >请新增证据后再录入</el-button>
+              <el-button type="info" v-if="!buttonVisible" style="margin-top:10px">已新增证据</el-button>
+              <el-button type="primary" v-if="!buttonVisible" style="margin-top:10px" @click="gotoEvidence">录入证据附件</el-button>
+              </el-form-item >
               </el-col>
-            <el-col :span="12">
+          </el-row>
+        </el-form>
+      </el-dialog>
+
+      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="600px">
+         <el-form label-width="120px" style="width:100%;" >
+           <el-row>
+            <el-col >
 
               <el-form-item label="上传文件">
                 <el-upload
@@ -153,9 +177,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-        </el-form>
+          </el-form>
       </el-dialog>
 
+      
     </div>
   </div>
 </template>
@@ -190,6 +215,11 @@ export default {
       dialogVisible2: false,
       uploadDisabled: false,
       disabled: false,
+      textuse:true,
+      people1use:true,
+      people2use:true,
+      buttonVisible:true,
+      dialogVisible3: false,//证据录入按钮
       fileList:[],//文件列表
       hideUpload: false,//隐藏上传按钮
       text:{//获取到左边的描述框
@@ -202,6 +232,8 @@ export default {
         address: '',
         emergencyHandler: '',
         briefDescription: '',
+        people1name:'1111',
+        pelple2name:'1111',
         fileID:''},
       evidence:{
         uploadTime:'',
@@ -212,20 +244,24 @@ export default {
     };
   },
   methods: {
+    gotoEvidence(){
+      this.dialogVisible3=true;
+    },
     addEvidenceFile(){
       var datetime = new Date();
       var year = datetime.getFullYear();
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.evidence.uploadTime=year+'-'+month+'-'+date;
-      console.log(this.evidence);
       element_evidence_attach(this.evidence).then(res => {
+        console.log(res.msg);
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
     addEvidence(){
       evidence(this.text).then(res => {
+        console.log(res.msg);
         }).catch(err => {
           this.$message.error(err.message);
         });
@@ -242,10 +278,10 @@ export default {
                     this.form.fileID = '';
                 }
             },
-    handleExceed(files, fileList) {
+    handleExceed() {
         this.$message.warning('当前限制选择 2 个文件');
       },
-    handleRemove(file, fileList) {
+    handleRemove() {
         this.$refs.upload.clearFiles();
     },
     handlePictureCardPreview(file) {//放大显示
@@ -253,7 +289,7 @@ export default {
         this.dialogVisible2 = true;
     },
     selectDepart(val) {
-      this.filterQuery.companyName = val.label;
+      this.filterQuery.companyCode = val.nodeCode;
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
@@ -313,13 +349,34 @@ export default {
       this.loading = true;
     },
     updateScore(data){
-    this.dialogVisible = true;  
-    this.nodeData=element_evidence(data);//证据表数据
+      this.dialogVisible = true;  
+      element_evidence(data)
+      .then(res => {
+        this.nodeData= res.data;
+        console .log(res.data)
+        this.text.code=data.code;
+        this.text.qhseCompanyYearManagerSysElementID=this.nodeData.qhseCompanyYearManagerSysElementID;
+        this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
+        this.text.evidenceDescription=this.nodeData.evidenceDescription;
+        this.form.people1name=this.nodeData.approverStaffName;
+        this.form.people2name=this.nodeData.checkStaffName;
+        if(this.nodeData.evidenceDescription!=null)
+        {
+          this.buttonVisible=false;
+          this.textuse=false
+          this.people1use=false;
+          this.people2use=false
+        }
+        console.log('获取到的要素节点内容：',this.nodeData);
+        console.log('获取到要素表后的text:',this.text)
+      })
+      .catch(err => {
+        console.log(err);
+        this.message.error(err.message);
+      });//证据表数据
 
-    this.text.code=data.code;
-    this.text.qhseCompanyYearManagerSysElementID=this.nodeData.qhseCompanyYearManagerSysElementID;
-    this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
-    this.text.evidenceDescription=this.nodeData.evidenceDescription;
+    
+    
     this.node=data;
     this.detailData = {}
     this.detailData.name = data.name

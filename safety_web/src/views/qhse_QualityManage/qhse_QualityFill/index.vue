@@ -1,578 +1,480 @@
 <template>
-    <div>
-        <div class="page-title" style="width:100%">QHSE量化填写</div>
-        <div class="page-content">
-            <el-row>
-                <el-form label-width="130px"  :inline="true" :model="filterQuery">
-                    <el-form-item label="选择公司：">
-                        <treeselect
-                        :multiple="false"
-                        :options="companyList"
-                        placeholder="请选择公司单位"
-                        v-model="filterQuery.companyCode"
-                        style="width:200px"/>
-                    </el-form-item>
-                    <el-form-item label="选择年份：">
-                        <el-date-picker v-model="filterQuery.year" type="year" placeholder="选择年份" style="width:200px"></el-date-picker>
-                    </el-form-item>
-                     &nbsp;&nbsp;&nbsp;
-                    <el-form-item>
-                        <el-button type="primary" @click="handleSearchQualityManage()" icon='el-icon-search'>查询</el-button>
-                        &nbsp;
-                        <el-button type="primary" @click="newCompanyQualityManage()" icon='el-icon-plus'>生成量化表</el-button>
-                        &nbsp;
-                        <el-button type="primary" @click="handleDownloadExcel()" icon="el-icon-download">导出量化表Excel</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-row>
-            <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-                <el-table
-                    :data="treeData"
-                    style="width: 100%"
-                    ref="treeTable"
-                    show-summary
-                    row-key="id"
-                    :indent=30
-                    max-height="560"
-                    highlight-current-row
-                    border
-                    @cell-click="handleCellClick"
-                    v-loading="loading"
-                    :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
-                    <el-table-column prop="name" label="内容"></el-table-column>
-                    <el-table-column prop="actualScore" label="得分" width="70" align="center"></el-table-column>
-                    <el-table-column prop="initialScore" label="总分" width="70" align="center"></el-table-column>
-                    <el-table-column prop="completedCount" label="完成数" width="80" align="center"></el-table-column>
-                    <el-table-column prop="totalCount" label="总数" width="70" align="center"></el-table-column>
-                    <el-table-column label="操作" width="150" align="center">
-                        <template slot-scope="scope">
-                            <el-button type="primary" size="mini" 
-                                @click="selectContent(scope.row)" 
-                                v-if="scope.row.code.length === 4">
-                                项目内容
-                            </el-button>
-                            <el-button type="primary" size="mini"
-                                @click="fillRecordManagement(scope.row.id,scope.row.name,scope.row.basis)"
-                                v-if="scope.row.code.length === 6">
-                                记录详情
-                            </el-button>
-                            <el-button type="primary" size="mini"
-                                @click="updateScore(scope.row)"
-                                v-else-if="scope.row.code.length === 10">
-                                内容详情
-                            </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-row>
-            <!-- 弹出第二层详细内容 -->
-            <el-dialog title="项目内容" :visible.sync="dialogVisibleContent" center width="800px">
-                <el-form label-width="140px" :model="dialogContent" style="width:80%">
-                    <el-form-item label="项目：">
-                        <el-input type="textarea" v-model="dialogContent.label" :autosize="{ minRows: 2}" readonly ></el-input>
-                    </el-form-item>
-                    <el-form-item label="内容：">
-                        <el-input type="textarea" v-model="dialogContent.content" :autosize="{ minRows: 2}" readonly ></el-input>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer" style="text-align:right">
-                    <el-button type="danger" @click="dialogVisibleContent = false">返 回</el-button>
-                </div>
-            </el-dialog>
-            <!-- 弹出第三层填写记录 -->
-            <el-dialog title="管理及运行要求依据（备注）等" :visible.sync="dialogVisibleRecordManagement" center width="800px">
-                <el-form label-width="140px" :model="dialogRecordManagement" style="width:80%">
-                    <el-form-item label="管理及运行要求：">
-                        <el-input type="textarea" v-model="dialogRecordManagement.label" :autosize="{ minRows: 2}" readonly ></el-input>
-                    </el-form-item>
-                    <el-form-item label="依据或备注：">
-                        <el-input type="textarea" v-model="dialogRecordManagement.basis" placeholder="无" :autosize="{ minRows: 2}" readonly ></el-input>
-                    </el-form-item>
-                    <el-form-item label="应形成的记录：">
-                        <el-input v-if="status==='通过'" type="textarea" v-model="dialogRecordManagement.recordFile" readonly></el-input>
-                        <el-input v-else v-model="dialogRecordManagement.recordFile"></el-input>
-                    </el-form-item>
-                    <el-form-item label="记录管理：">
-                        <el-input v-if="status==='通过'" type="textarea" v-model="dialogRecordManagement.recordManagement" readonly></el-input>
-                        <el-input v-else v-model="dialogRecordManagement.recordManagement"></el-input>
-                    </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer" style="text-align:right">
-                    <el-button v-if="status==='未通过'" type="primary" @click="handleAddRecordManagement()">确 定</el-button>
-                    <el-button type="danger" @click="dialogVisibleRecordManagement = false">返 回</el-button>
-                </div>
-            </el-dialog>
-            <!-- 弹出第五层修改分数等内容 -->
-            <el-dialog title="填写详细内容" :visible.sync="dialogVisibleUpdateScore" center width="1200px">
-                <el-form label-width="140px" :model="dialogUpdateScore" style="width:100%">
-                    <el-row>
-                        <el-col :span="10">
-                            <el-form-item label="量化项：" style="margin-bottom:5px">
-                                <el-input type="textarea" v-model="dialogUpdateScore.name" :autosize="{ minRows: 1}" readonly ></el-input>
-                            </el-form-item>
-                            <el-form-item label="审核方式：" style="margin-bottom:5px">
-                                <el-input v-model="dialogUpdateScore.auditMode" readonly ></el-input>
-                            </el-form-item>
-                            <el-form-item label="初始分数：" style="margin-bottom:5px">
-                                <el-input v-model="dialogUpdateScore.initialScore" readonly ></el-input>
-                            </el-form-item>
-                            <el-form-item label="计算公式：" style="margin-bottom:5px">
-                                <el-input type="textarea" v-model="dialogUpdateScore.formula" :autosize="{ minRows: 1}" readonly ></el-input>
-                            </el-form-item>
-                            <el-form-item label="可能问题：" style="margin-bottom:5px">
-                                <el-input type="textarea" v-model="dialogUpdateScore.problemDescription" :autosize="{ minRows: 4}" readonly ></el-input>
-                            </el-form-item>
-                            <el-form-item label="实际问题：" style="margin-bottom:5px">
-                                <el-input v-if="status==='通过'" type="textarea" v-model="dialogUpdateScore.existProblems" :autosize="{ minRows: 2}" readonly></el-input>
-                                <el-input v-else type="textarea" v-model="dialogUpdateScore.existProblems" :autosize="{ minRows: 2}"></el-input>
-                            </el-form-item>
-                            <el-form-item label="实际得分：" style="margin-bottom:5px">
-                                <el-input v-if="status==='通过'" v-model="dialogUpdateScore.actualScore" readonly></el-input>
-                                <el-input v-else v-model="dialogUpdateScore.actualScore"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="14">
-                            <el-form-item label="违章隐患级别：" style="margin-bottom:5px">
-                                <el-input v-if="status==='通过'" v-model="dialogUpdateScore.rank" readonly></el-input>
-                                <el-select v-else v-model="dialogUpdateScore.rank" placeholder="请选择违章隐患级别">
-                                    <el-option
-                                        v-for="item in ranks"
-                                        :key="item.label"
-                                        :label="item.label"
-                                        :value="item.label">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="问题图片：" style="margin-bottom:5px">
-                                <el-card v-if="status==='通过'" :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center">
-                                    <span v-if="!dialogUpdateScore.pictureFile">无图片文件记录！</span>
-                                    <el-popover placement="right" title="" trigger="click" v-else>
-                                        <div style="max-width:600px;height:auto"><img :src="dialogUpdateScore.pictureFile" style="max-width:600px;height:auto"/></div>
-                                        <img slot="reference" :src="dialogUpdateScore.pictureFile" :alt="dialogUpdateScore.pictureFile" style="max-height: 180px">
-                                    </el-popover><br/>
-                                </el-card>
-                                <el-row v-else>
-                                    <el-col :span="8">
-                                        <el-upload
-                                            v-model="dialogUpdateScore.pictureFile"
-                                            :action="`/api/uploadQHSEFill`"
-                                            :auto-upload='true'
-                                            :limit="1"
-                                            :headers="{Authorization:currentUser.token}"
-                                            :before-upload="beforePictureUpload"
-                                            :on-remove="handlePictureRemove"
-                                            :on-success="handlePictureSuccess"
-                                            list-type="text"
-                                            :file-list="filePictureList">
-                                            <el-button size="small" type="primary" :disabled="disabledPicture">点击上传</el-button>
-                                            <div slot="tip" style="padding-right:20px">只能一张上传jpg、png、bmp格式，且不大于12M的图片。</div>
-                                        </el-upload>
-                                        </el-col>
-                                    <el-col :span="16">
-                                        <el-card :body-style="{ padding: '10px' }" style="width:90%;height:200px;text-align:center">
-                                            <span v-if="!dialogUpdateScore.pictureFile && !pictureURL">无图片文件记录！</span>
-                                            <el-popover placement="right" title="" trigger="click" v-if="pictureURL">
-                                                <div style="max-width:600px;height:auto"><img :src="pictureURL" style="max-width:600px;height:auto"/></div>
-                                                <img slot="reference" :src="pictureURL" :alt="pictureURL" style="max-height: 180px">
-                                            </el-popover><br/>
-                                            <el-popover placement="right" title="" trigger="click" v-if="dialogUpdateScore.pictureFile && !pictureURL">
-                                                <div style="max-width:600px;height:auto"><img :src="dialogUpdateScore.pictureFile" style="max-width:600px;height:auto"/></div>
-                                                <img slot="reference" :src="dialogUpdateScore.pictureFile" :alt="dialogUpdateScore.pictureFile" style="max-height: 180px">
-                                            </el-popover><br/>
-                                        </el-card>
-                                    </el-col>
-                                </el-row>
-                            </el-form-item>
-                            <el-form-item label="视频记录：">
-                                <el-card v-if="status==='通过'" :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                                    <span v-if="!dialogUpdateScore.videoFile">无视频文件记录！</span>
-                                    <video v-else width="100%" height="180" controls preload="none" :src="dialogUpdateScore.videoFile"></video>
-                                </el-card>
-                                <el-row v-else>
-                                    <el-col :span="8">
-                                        <el-upload
-                                            v-model="dialogUpdateScore.videoFile"
-                                            :action="`/api/uploadQHSEFill`"
-                                            :auto-upload='true'
-                                            :limit="1"
-                                            :headers="{Authorization:currentUser.token}"
-                                            :before-upload="beforeVideoUpload"
-                                            :on-remove="handleVideoRemove"
-                                            :on-success="handleVideoSuccess"
-                                            list-type="text"
-                                            :file-list="fileVideoList">
-                                            <el-button size="small" type="primary" :disabled="disabledVideo">点击上传</el-button>
-                                            <div slot="tip" style="padding-right:20px">只能上传mp4、avi、flash、rmvb、rm格式，且不大于50M的视频。</div>
-                                        </el-upload>
-                                    </el-col>
-                                    <el-col :span="16">
-                                        <el-card :body-style="{ padding: '10px' }" style="width:90%;height:200px;text-align:center" >
-                                            <span v-if="!dialogUpdateScore.videoFile && !videoURL">无视频文件记录！</span>
-                                            <video v-if="videoURL" width="100%" height="180" controls preload="none" :src="videoURL"></video>
-                                            <video v-if="dialogUpdateScore.videoFile && !videoURL" width="100%" height="180" controls preload="none" :src="dialogUpdateScore.videoFile"></video>
-                                        </el-card>
-                                    </el-col>
-                                </el-row>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-                <div slot="footer" class="dialog-footer" style="text-align:right">
-                    <el-button v-if="status==='未通过'" type="primary" @click="handleUpdateScore()">确 定</el-button>
-                    <el-button type="danger" @click="dialogVisibleUpdateScore = false">返 回</el-button>
-                </div>
-            </el-dialog>
-        </div>
-    </div>
+	<div>
+		<div class="page-title" style="width: 100%">年度检查表管理</div>
+		<div class="page-content" v-loading="loading">
+			<el-form label-width="130px" :inline="true" :model="filterQuery">
+				<el-form-item lable="选择公司:">
+					<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 200px" :options="companyList" v-model="filterQuery.companyId"></treeselect>
+				</el-form-item>
+				<el-form-item label="选择年份：">
+					<el-date-picker type="year" placeholder="选择年份" style="width:200px" v-model="filterQuery.year">
+					</el-date-picker>
+				</el-form-item>
+				&nbsp;&nbsp;&nbsp;
+				<el-form-item>
+					<el-button type="primary" icon='el-icon-search' @click="handleSelect">查询</el-button>
+					<el-button type="primary" icon='el-icon-plus' @click="insertCheckListDialog=true">新增</el-button>
+				</el-form-item>
+			</el-form>
+			<!--highlight-current-row @current-change="dialogVisible =true"-->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="filterQuery.selected" style="width: 100%" max-height="560" @cell-click="handlChosen" border v-loading="loading">
+					<el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
+					<el-table-column prop="companyName" label="单位名称" width="220" align="center"></el-table-column>
+					<el-table-column prop="year" label="年度" width="120" align="center"></el-table-column>
+					<el-table-column prop="elementTableName" label="检查表名称" width="300" align="center"></el-table-column>
+					<el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+					<el-table-column label="操作" width="270" align="center">
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" @click="publishTable(scope.row)">发布</el-button>
+							<!--
+							<el-button type="primary" size="mini" @click="archived(scope.row)">归档</el-button>
+							-->
+							
+							<el-button type="danger" size="mini" @click="deleteTable(scope.row)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+				<el-dialog title="新增年度检查表" :visible.sync="insertCheckListDialog" align="left" width="30%"
+				 max-height="">
+					<div class="page-content">
+						<el-form :inline="true">
+							<el-form-item label="选择公司:">
+								<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 200px" :options="companyList" v-model="filterQuery.insertCompanyCode"></treeselect>
+							</el-form-item>
+							<el-form-item label="选择年份:">
+								<el-date-picker type="year" placeholder="选择年份" style="width:200px" v-model="filterQuery.insertYear">
+								</el-date-picker>
+							</el-form-item>
+							<el-form-item label="检查表名称:">
+								<el-input placeholder="请输入检查表名称" style="width:200px;" v-model="filterQuery.insertelementTableName"></el-input>
+							</el-form-item>
+							<br />
+							<el-form-item>
+								<el-button type="primary" icon="el-icon-plus" @click="insertCheckList()">新增</el-button>
+							</el-form-item>
+						</el-form>
+					</div>
+				</el-dialog>
+				<el-dialog title="年度检查表明细" :visible.sync="annCheckListDialog" width="70%" align="left" v-loading="checklistLoading">
+					<div class="page-content" width="70%" align="left">
+						<el-row>
+							<el-form :inline="true">
+								<el-form-item label="单位:"></el-form-item>
+								<el-form-item>
+									<el-input v-model="filterQuery.chosenCompany" readonly="true"></el-input>
+								</el-form-item>
+								&nbsp;
+								<el-form-item label="年度:"></el-form-item>
+								<el-form-item>
+									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
+								</el-form-item>
+								&nbsp;
+								<el-button type="primary" icon="el-icon-folder" @click="addQHSEYearElement">保存</el-button>
+							</el-form>
+						</el-row>
+						<el-row style="padding:10px; border-top: 2px dashed #dddddd;">
+							<el-tree ref="elementTree" props="annCheckList" show-checkbox="true" @check-change="handleGetTreeNode" :data="filterQuery.elementTree"
+							 style="width: 70%;">
+							</el-tree>
+						</el-row>
+					</div>
+				</el-dialog>
+			</el-row>
+		</div>
+	</div>
 </template>
 
 <script>
-import {GetCompany} from '../../../services/gettreedata'
-import {AddQHSEReport,QuerryQHSEReportElements,UpdateQHSEReportElements} from '../../../services/qhse_QualityFill'
-import {GetCurrentUser} from '../../../store/CurrentUser'
+	import {
+		GetCompany,
+		GetQhseChildElement,
+		GetQhseTable,
+		insertQhseTable,
+		deleteQhseTable,
+		addQHSEYearElement,
+		publishTableElement
+	} from "../../../services/gettreedata"
+	const DefaultQuery = {
+		companyId: null,
+		companyName:'',
+		year: '',
+		chosenCompany: null,
+		chosenYear: '',
+		insertCompanyCode: null,
+		insertCompanyName: '',
+		insertCompanyId: '',
+		insertYear: '',
+		insertelementTableName: '',
+		insertStatus: '未发布',
+		elementTree: [],
+		selected: [],
+		tableData: []
+	}
+	export default {
+		data() {
+			return {
+				filterQuery: {},
+				companyList: [],
+				loading:false,
+				addData: {
+					companyName: '',
+					companyCode: '',
+					year: '',
+					elementTableName: ''
+				},
+				addQhseElementData:{
+					codes:'',
+					companyCode:'',
+					companyName:'',
+					year:'',
+					qhseCompanyYearManagerSysElementTableID:''
+				},
+				treeNodeList: [],
+				//从后端得到的列表数据应当存入tableData，再经过筛选后在前端呈现出筛选后的selected
+				
+				insertCheckListDialog: false,
+				annCheckListDialog: false,
+				isPublish: '',
+				chosenConlumn: {
+					qhse_CompanyYearManagerSysElementTable_ID: '',
+					companyCode: '',
+					conpanyName: '',
+					year: ''
+				}
+			}
+		},
+		methods: {
+			//加载初始数据
+			loadParams() {
+				this.loading=true
+				this.filterQuery = { ...DefaultQuery,
+					...this.$route.query
+				};
+				this.filterQuery = {
+					...this.filterQuery
+				};
+				this.selected
+				GetQhseTable().then(res => {
+					console.log(res)
+					this.filterQuery.tableData = res.data
+				})
+				this.loading=false
+			},
+			//加载选择公司的树形列表
+			handleGetCompany() {
+				GetCompany().then(res => {
+					this.companyList=res.data
+					console.log(this.companyList)
+					//this.companyList = JSON.parse(JSON.stringify(res.data))
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
+			},
+			
+			//实现查询按钮，根据公司名和年度查询对应记录
+			handleSelect() {
+				console.log(this.filterQuery.tableData)
+				//获取到年度的yyyy格式数据
+				if (this.filterQuery.year) {
+					var data = new Date(this.filterQuery.year).getFullYear()
+				}
+				//当两个选择框为空，返回所有数据
+				if (!data && !this.filterQuery.companyId) {
+					this.filterQuery.selected = this.filterQuery.tableData
+				} else {
+					//当只有年度信息时所做查询
+					if (data && !this.filterQuery.companyId) {
+						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
+							return item.year == data
+						})
+						//当只有公司信息时所做查询
+					} else if (!data && this.filterQuery.companyId) {
+						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
+						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
+							return item.companyName == this.filterQuery.companyName
+						})
+						//当有年度信息和公司信息时所做查询
+					} else if (data && this.filterQuery.companyId) {
+						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
+						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
+							return (item.year == data && item.companyName == this.filterQuery.companyName)
+						})
+					}
+				}
+			},
+			//将从filterQuery.companyCode获取的公司id转换为公司名称，递归实现
+			changeCompanyIdTocompanyName(val,companyId) {
+				for (var j = 0; j < val.length; j++) {
+					if (val[j]) {
+						if (val[j].id==companyId) {
+							this.filterQuery.companyName = val[j].label
+							break
+						} else if (val[j].children) {
+							this.changeCompanyIdTocompanyName(val[j].children, companyId)
+						}
+					}
+				}
+			},
+			//点击列表中的某一列加载勾选要素表一二级节点
+			handlChosen(val, column) {
+				//如果鼠标点击到的是操作框，则不打开要素节点框，因为操作里有三个按钮，会影响到使用
+				if (column.label != "操作"&&val.status=="未发布") {
+					this.checklistLoading=true
+					this.handleGetQhseChildElement()
+					console.log(val)
+					this.chosenConlumn.companyCode = val.companyCode
+					this.chosenConlumn.conpanyName = val.companyName
+					this.chosenConlumn.year = val.year
+					this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID =parseInt(val.qhse_CompanyYearManagerSysElementTable_ID)
+					
+					//将选中行数据的公司名和年度显示
+					this.filterQuery.chosenCompany = String(val.companyName);
+					this.filterQuery.chosenYear = String(val.year)
+					//初始化要素表子节点选择数组，并将所选记录的id装入该数组
+					this.treeNodeList = []
+					var ss = []
+					ss.treeNodeId = val.id
+					ss.checked = true
+					/*
+					 *spice(val1,val2,data[])方法为向数组添加或删除某一个元素，val1为操作位置，必需；val2为操作元素个数，如果为0则不删除元素，必需；
+					 * data[]为添加的元素，非必需。当第三个参数为空时表示从val1位置开始删除val2个元素；当第三个元素不为空时，如果val2为0，则表示
+					 * 向val1位置添加data[]，若val2不为0，则表示从val1位置开始将val2个元素替换为data[]
+					 */
+					this.checklistLoading=false
+					this.annCheckListDialog = true
+				}
+			},
+			//加载要素表的一二级节点
+			handleGetQhseChildElement() {
+				//从后端接口中获取对应的要素表的树，并构建出符合el-tree的数据组
 
-const DefaultQuery = {
-    year:'',
-    companyCode:'',
-    status:''
-}
+				GetQhseChildElement().then(res => {
+					this.creatTree(res.data, this.filterQuery.elementTree)
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
+				
+			},
+			//构建要素表一二级节点树，由于el-tree所能显示的数据类型为{label:'',children:[]}，
+			//而从接口中返回的数据类型为data，所以需要对数据进行转换，使得能够呈现
+			creatTree(val, elementData) {
+				for (var i = 0; i < val.length; i++) {
+					if (val[i].name) {
+						elementData[i] = {
+							code: val[i].code,
+							label: val[i].name,
+							children: [],
+							disabled: false
+						}
+					}
+					if (val[i].childNode.length > 0) {
+						this.creatTree(val[i].childNode, elementData[i].children)
+					}
+				}
+			},
 
-export default {
-    data(){
-        return{
-            filterQuery: {},
-            companyList:[],
-            loading:true,
-            dialogVisibleContent:false,
-            dialogContent:{},
-            dialogVisibleBasis:false,
-            dialogBasis:{},
-            dialogVisibleRecordManagement:false,
-            dialogRecordManagement:{},
-            dialogVisibleFillScore:false,
-            dialogFillScore:{},
-            dialogVisibleUpdateScore:false,
-            dialogUpdateScore:{},
-            treeData:[],
-            companyName:'',
-            status:'',
-            disabledPicture:false,
-            pictureURL:'',
-            filePictureList:[],
-            disabledVideo:false,
-            videoURL:'',
-            fileVideoList:[],
-            ranks:[
-                {value: '无',label: '无'},
-                {value: '轻微',label: '轻微'},
-                {value: '一般',label: '一般'},
-                {value: '较大',label: '较大'},
-                {value: '严重',label: '严重'},
-            ]
-        }
-    },
-computed:{
-    currentUser(){
-        return GetCurrentUser()
-    },
-  },
-    mounted(){
-        this.loadFilterParams()
-        this.handleGetCompany()
-        this.handleGetInitialData()
-    },
-    methods:{
-        handleGetCompany(){
-            GetCompany().then((res) => {
-                this.companyList = JSON.parse(JSON.stringify(res.data))
-                this.filterQuery.companyCode = res.data[0].nodeCode
-            }).catch((err) => {
-                this.$message.error(err.message)
-            })
-        },
-        loadFilterParams () {
-            this.filterQuery = {...DefaultQuery, ...this.$route.query}
-            this.filterQuery = {
-                ...this.filterQuery
-            }
-            this.filterQuery.year = new Date()
-            this.handleGetDate(this.filterQuery.year)
-        },
-        handleGetDate(date){
-            let nowdata = new Date(date)
-            this.filterQuery.year = String(nowdata.getFullYear())
-        },
-        handleGetInitialData(){
-            this.loading = true
-            QuerryQHSEReportElements(this.filterQuery).then((res) =>{
-                this.treeData = res.data.list
-                this.companyName = res.data.companyName
-                this.status = res.data.status
-            }).catch((err) => {
-                this.message.error(err.message)
-            })
-            this.loading = false
-        },
-        newCompanyQualityManage(){
-            this.handleGetDate(this.filterQuery.year)
-            AddQHSEReport(this.filterQuery).then(() =>{
-                this.$message.success('创建成功')
-                this.handleGetInitialData()
-            }).catch((err) => {
-                this.message.error(err.message)
-            })
-        },
-        handleSearchQualityManage(){
-            if(!this.filterQuery.year){
-                let year = new Date()
-                this.filterQuery.year = String(year.getFullYear())
-            }
-            this.treeData = []
-            this.handleGetDate(this.filterQuery.year)
-            this.filterQuery.code = ""
-            this.handleGetInitialData()
-        },
-        selectContent(data){
-            this.dialogVisibleContent = true
-            this.dialogContent.label = data.name
-            this.dialogContent.content = data.content
-        },
-        fillRecordManagement(id,label,basis){
-            this.dialogVisibleRecordManagement = true
-            this.dialogRecordManagement.id = id
-            this.dialogRecordManagement.label = label
-            this.dialogRecordManagement.basis = basis
-        },
-        handleAddRecordManagement(){
-            this.dialogVisibleRecordManagement = false
-        },
-        updateScore(data){
-            this.dialogVisibleUpdateScore = true
-            this.dialogUpdateScore = JSON.parse(JSON.stringify(data))
-        },
-        beforePictureUpload(file){
-            let size = file.size / 1024 / 1024 / 12
-            if(size <= 12 && (file.type==='image/jpeg' || file.type==='image/png' || file.type === 'image/bmp')) {
-                return true
-            } else {
-                this.$notify.warning({
-                    title: '警告',
-                    message: '图片大小或者格式不满足要求，请检查！'
-                })
-                return false
-            }
-        },
-        handlePictureRemove(){
-            this.dialogUpdateScore.pictureFile = ""
-            this.pictureURL = ""
-            this.disabledPicture = false
-        },
-        handlePictureSuccess(response,file){
-            this.pictureURL = URL.createObjectURL(file.raw)
-            if(response) {
-                this.$notify.success({
-                    body:{
-                        style:{width:'300px',height:'500px'}
-                    },
-                    title:'提示',
-                    message: '图片上传成功!'
-                })
-                this.dialogUpdateScore.pictureFile = response.data
-                this.disabledPicture = true
-            }
-        },
-        beforeVideoUpload(file){
-            let size = file.size / 1024 / 1024 / 50
-            if(size <= 50 && (file.type==='video/mp4' || file.type==='video/avi' || file.type === 'video/flash' || file.type === 'video/rmvb' || file.type === 'video/rm')) {
-                return true
-            } else {
-                this.$notify.warning({
-                    title: '警告',
-                    message: '视频大小或者格式不满足要求，请检查！'
-                })
-                return false
-            }
-        },
-        handleVideoRemove(){
-            this.dialogUpdateScore.videoFile = ""
-            this.videoURL = ""
-            this.disabledVideo = false
-        },
-        handleVideoSuccess(response,file){
-            this.videoURL = URL.createObjectURL(file.raw)
-            if(response) {
-                this.$notify.success({
-                    body:{
-                        style:{width:'300px',height:'500px'}
-                    },
-                    title:'提示',
-                    message: '视频上传成功!'
-                })
-                this.dialogUpdateScore.videoFile = response.data
-                this.disabledVideo = true
-            }
-        },
-        handleUpdateScore(){
-            let actualScore = parseInt(this.dialogUpdateScore.actualScore)
-            let initialScore = this.dialogUpdateScore.initialScore
-            
-            if(actualScore<0 | actualScore>initialScore){
-                this.$notify.warning({
-                    title: '温馨提示',
-                    message: '实际得分不能小于0或大于初始分数！',
-                    type: 'warning'
-                })
-            }else{
-                if(this.dialogUpdateScore.pictureFile && this.dialogUpdateScore.pictureFile.length >50){
-                    this.dialogUpdateScore.pictureFile = ''
-                }
-                if(this.dialogUpdateScore.videoFile && this.dialogUpdateScore.videoFile.length >50){
-                    this.dialogUpdateScore.videoFile = ''
-                }
-                this.dialogVisibleUpdateScore = false
-                this.dialogUpdateScore.actualScore = parseInt(this.dialogUpdateScore.actualScore)
-                UpdateQHSEReportElements(this.dialogUpdateScore).then(() => {
-                    this.$message.success('更新成功')
-                    this.handleGetInitialData()
-                }).catch((err) => {
-                    this.$message.error(err.message)
-                })
-                this.disabledPicture = false
-                this.pictureURL = ""
-                this.filePictureList = []
-                this.disabledVideo = false
-                this.videoURL = ""
-                this.fileVideoList = []
-            }
-        },
-        handleCellClick(row,cell,column){
-            if(row.code.length < 10){
-                let els = column.getElementsByClassName('el-icon-arrow-right') 
-                if(els.length !=0){
-                    els[0].click()
-                }
-            }
-        },
-        handleDownloadExcel() {
-            if (this.treeData!= []) {
-                require.ensure([], () => {
-                    const { export_json_to_excel } = require('../../../vendor/Export2ExcelTree')
-                    const { export_get_title_time } = require('../../../vendor/Export2ExcelTree')
-                    const { format_json } = require('../../../vendor/Export2ExcelTree')
-                    const tHeader = ['主题', '项目', '内容', '管理及运行要求','依据或备注','应形成的记录','记录管理',
-                                    '量化说明','量化项','审核方式','分数','计算公式','可能存在的问题描述','实际存在问题',
-                                    '违章、隐患分级','得分','问题图示','视频记录编号']
-                    const filterVal = [ 'theme', 'project', 'content',  'requirements','basis', 'recordFile','recordManagement',
-                                        'qExplanation','qTerm','auditMode','initialScore','formula','problemDescription','existProblems',
-                                        'rank','actualScore','pictureFile','videoFile']
-                    const list = this.treeData
-                    var theme_c = filterVal.indexOf("theme")
-                    var project_c = filterVal.indexOf("project")
-                    var content_c = filterVal.indexOf("content")
-                    var requirements_c = filterVal.indexOf("requirements")
-                    var basis_c = filterVal.indexOf("basis")
-                    var recordFile_c = filterVal.indexOf("recordFile")
-                    var recordManagement_c = filterVal.indexOf("recordManagement")
-                    var qExplanation_c = filterVal.indexOf("qExplanation")
-                    var current_r = 1;
-                    // var current_s_r = 1
-                    var theme_s_r = 1;
-                    var project_s_r = 1;
-                    var content_s_r = 1;
-                    var requirements_s_r = 1;
-                    var basis_s_r = 1;
-                    var recordFile_s_r = 1;
-                    var recordManagement_s_r = 1;
-                    var qExplanation_s_r = 1;
-                    //要合并集合
-                    var merges = [];
-                    var nowList = [];
-                    for (let i = 0; i < list.length; i++) {
-                        const level1 = list[i];
-                        for (let j = 0; j < level1.childNode.length; j++) {
-                            const level2 = level1.childNode[j];
-                            for (let k = 0; k < level2.childNode.length; k++) {
-                                const level3 = level2.childNode[k];
-                                for (let l = 0; l < level3.childNode.length; l++) {
-                                    const level4 = level3.childNode[l];
-                                    for (let m = 0; m < level4.childNode.length; m++) {
-                                        const level5 = level4.childNode[m];
-                                        current_r++
-                                        nowList.push(
-                                            {
-                                                theme:level1.name, 
-                                                project:level2.name, content:level2.content,
-                                                requirements:level3.name, basis:level3.basis, recordFile:level3.recordFile,recordManagement:level3.recordManagement,
-                                                qExplanation:level4.name, 
-                                                qTerm:level5.name, auditMode:level5.auditMode, 
-                                                initialScore:String(level5.initialScore), 
-                                                formula:level5.formula, problemDescription:level5.problemDescription, 
-                                                existProblems:level5.existProblems, rank:level5.rank, 
-                                                actualScore:String(level5.actualScore), 
-                                                pictureFile:level5.pictureFile, videoFile:level5.videoFile
-                                            }
-                                        )
-                                    }
-                                    if(qExplanation_s_r != (current_r-1)){
-                                        var qExplanationMerges = {
-                                            s: {c: qExplanation_c,r: qExplanation_s_r},
-                                            e: {c: qExplanation_c,r: current_r-1}
-                                        };
-                                        merges.push(qExplanationMerges)
-                                    }
-                                    qExplanation_s_r = current_r
-                                }
-                                if(requirements_s_r != (current_r-1)){
-                                    var requirementsMerges = [
-                                        { s: {c: requirements_c,r: requirements_s_r}, e: {c: requirements_c,r: current_r-1} },
-                                        { s: {c: basis_c,r: basis_s_r}, e: {c: basis_c,r: current_r-1} },
-                                        { s: {c: recordFile_c,r: recordFile_s_r}, e: {c: recordFile_c,r: current_r-1} },
-                                        { s: {c: recordManagement_c,r: recordManagement_s_r}, e: {c: recordManagement_c,r: current_r-1} }
-                                    ];
-                                    merges.push(requirementsMerges[0],requirementsMerges[1],requirementsMerges[2],requirementsMerges[3],)
-                                }
-                                requirements_s_r = current_r
-                                basis_s_r = current_r
-                                recordFile_s_r = current_r
-                                recordManagement_s_r = current_r
-                            }
-                            if(project_s_r != (current_r-1)){
-                                var projectMerges = [
-                                    { s: {c: project_c,r: project_s_r}, e: {c: project_c,r: current_r-1} },
-                                    { s: {c: content_c,r: content_s_r}, e: {c: content_c,r: current_r-1} }
-                                ];
-                                merges.push(projectMerges[0],projectMerges[1])
-                            }
-                            project_s_r = current_r
-                            content_s_r = current_r
-                        }
-                        if(theme_s_r != (current_r-1)){
-                            var nodeMerges = {
-                                s: {c: theme_c,r: theme_s_r},
-                                e: {c: theme_c,r: current_r-1}
-                            };
-                            merges.push(nodeMerges)
-                        }
-                        theme_s_r = current_r
-                    }
-                    const data = format_json(filterVal, nowList)
-                    const currentdate = export_get_title_time()
-                    export_json_to_excel(tHeader, data, '（'+ this.companyName +'）QHSE管理体系要素一体化、标准化_'+currentdate,merges)
-                })
-            }
-            this.loading = false;
-        }
-    }
-}
+			//根据新增框中选择的公司名称得到公司id，名称，递归实现
+			bindIdToName(val, companyId) {
+				//根据传入的公司列表和公司id将id装换为对应的公司名称，并同时获得公司编号
+				for (var j = 0; j < val.length; j++) {
+					if (val[j]) {
+						if (val[j].id == companyId) {
+							this.filterQuery.insertCompanyName = val[j].label;
+							this.filterQuery.insertCompanyId = val[j].nodeCode;
+							break;
+						} else if (val[j].children) {
+							this.bindIdToName(val[j].children, companyId);
+						}
+					}
+				}
+			},
+			//实现新增框的新增一列数据
+			insertCheckList() {
+				//关闭新增记录框
+				this.insertCheckListDialog = false
+				//调用转换方法，将选中的公司id转换为公司名称
+				this.bindIdToName(this.companyList, this.filterQuery.insertCompanyCode)
+				//将新增记录框中的数据添加到准备好的数组中，组装出一条tabledate的数据，并将该数据添加到tabledate中
+				this.addData.companyName = this.filterQuery.insertCompanyName
+				this.addData.companyCode = this.filterQuery.insertCompanyId
+				this.addData.year = this.filterQuery.insertYear.getFullYear().toString()
+				this.addData.elementTableName = this.filterQuery.insertelementTableName
+				console.log(this.addData)
+				//this.tableData.push(this.addData)
+				//调用接口将新增的记录返回后端，并重新渲染tabledata
+				insertQhseTable(this.addData).then(res => {
+					if (res.code == '1000') {
+						this.$message({
+							message: "添加成功",
+							type: "success"
+						})
+						
+					} else {
+						this.$message.error('添加失败')
+					}
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
+				this.loading=true
+				GetQhseTable().then(res => {
+					console.log(res)
+					this.filterQuery.tableData = res.data
+					this.handleSelect()
+				})
+				this.loading=false
+			},
+			//获取点击checkbox时得到的节点，data为数组，checked(true:选中状态,false:撤销选中)
+			handleGetTreeNode(data, checked) {
+				//构建一个空数组，并将获得的数据组装到数组中
+				var ss = []
+				ss.code = data.code
+				ss.checked = checked
+				//将组装好的数据加入到准备好的一个选中与撤销的数组中
+				this.treeNodeList.push(ss)
+			},
+			//年度检查表要素表一二级节点选中保存后并返回数据给后端
+			addQHSEYearElement() {
+				//将选中的该行记录一并放入数组中
+				//关闭年度检查表明细框
+				this.annCheckListDialog = false
+				//从后往前删除选中与撤销数组中的多余元素
+				for (var i = this.treeNodeList.length - 1; i >= 0; i--) {
+					//找到第一个撤销了的元素，记录下该记录id，删除该元素，然后往前寻找对应该id的第一个元素，并将其删除
+					if (!(this.treeNodeList[i].checked)) {
+						let id = this.treeNodeList[i].code
+						//删除false
+						this.treeNodeList.splice(i, 1)
+						for (var j = i - 1; j >= 0; j--) {
+							if (this.treeNodeList[j].code == id) {
+								this.treeNodeList.splice(j, 1)
+								break
+							}
+						}
+					}
+				}
+				console.log(this.treeNodeList)
+				for (j = 0; j < this.treeNodeList.length; j++) {
+					for (var k = 0; k < this.filterQuery.elementTree.length; k++) {
+						if (this.filterQuery.elementTree[k].code == this.treeNodeList[j].code) {
+							this.treeNodeList.splice(j, 1);
+							break;
+						}
+					}
+				}
+				console.log(this.treeNodeList)
+				for (i = 0; i < this.treeNodeList.length; i++) {
+					if (!this.addQhseElementData.codes)
+						this.addQhseElementData.codes = this.treeNodeList[i].code+";"
+					else {
+						this.addQhseElementData.codes = this.addQhseElementData.codes + this.treeNodeList[i].code+";"
+					}
+				}
+				this.addQhseElementData.companyCode = this.chosenConlumn.companyCode
+				this.addQhseElementData.companyName = this.chosenConlumn.conpanyName
+				this.addQhseElementData.year = this.chosenConlumn.year
+				this.addQhseElementData.qhseCompanyYearManagerSysElementTableID = this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID
+				console.log(this.addQhseElementData)
+				//调用接口向后端返回更新了的年度检查表要素表
+				addQHSEYearElement(this.addQhseElementData).then(res => {
+					if (res.code == '1000') {
+						this.$message({
+							message: '保存成功',
+							type: 'success'
+						})
+					} else {
+						this.$message.error('保存失败')
+					}
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
+			},
+			//发布一列数据
+			publishTable(val) {
+				this.$confirm('确认发布本条记录吗', '提示', {
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					publishTableElement(val.qhse_CompanyYearManagerSysElementTable_ID).then(res => {
+						if (res.code == '1000') {
+							this.$message({
+								message: '发布成功',
+								type: 'success'
+							})
+							this.filterQuery.tableData.filter(item => {
+								if (item == val) {
+									item.status = '已发布'
+									this.isPublish = 0
+									//还有逻辑操作
+								}
+							})
+						} else {
+							this.$message.error('发布失败')
+						}
+					}).catch(err => {
+						this.$message.error(err.message)
+					})
+				})
+			},
+			//归档一条数据
+			archived(val) {
+				this.$confirm('确认归档本条记录吗', '提示', {
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.filterQuery.tableData.filter(item => {
+						if (item == val) {
+							item.status = '已归档'
+							this.isPublish = 0
+							//还有逻辑操作
+						}
+					})
+				})
+			},
+			//删除一列数据，通过slot获取到一行的数据，从而可以得到id删除该行数据
+			deleteTable(val) {
+				this.$confirm('确认删除本条记录吗', '提示', {
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: "warning"
+				}).then(() => {
+					deleteQhseTable(val.qhse_CompanyYearManagerSysElementTable_ID.toString()).then(res => {
+						if (res.code == '1000') {
+							GetQhseTable().then(res => {
+								console.log(res)
+								this.filterQuery.tableData = res.data
+								this.handleSelect()
+							})
+							this.$message({
+								message: '删除成功',
+								type: 'success'
+							})
+						} else {
+							this.$message.error('删除失败')
+						}
+					}).catch(err => {
+						this.$message.error(err.message)
+					})
+				})
+				
+			}
+		},
+		mounted() {
+				this.loadParams()
+				this.handleGetCompany()
+				this.handleGetQhseChildElement()
+			}
+	}
 </script>
-
 <style>
-.custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 15px;
-    padding-right: 8px;
-}
+	.custom-tree-node {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 15px;
+		padding-right: 8px;
+	}
 </style>
