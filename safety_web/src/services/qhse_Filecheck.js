@@ -14,33 +14,15 @@ export const queryFileaduit = (data) => {
     })
 }
 export const queryFileaduit2 = (data) => {
-  return request('/api/query_fileaduit?year='+data.year+'&companyName='+data.companyName, {
+  return request(`/api/query_fileaduit?companyName=${data.companyName}&year=${data.year}`, {
       method: 'get',
       data
     })
 }
-export const updateStatus = (data) => {
-  return request('/api/v3/update_status', {
-      method: 'put',
-      data
-    })
-}
-export const querryQhseElement = () => {
-  return request('/api/querryQhseElement', {
-      method: 'get'
-    })
-}
 
-export const updateScore = (data) => {
-  return request('/api/update_score',{
-      method: 'PUT',
-      data
-    })
-}
-
-export const getScore = (data) => {
-  return request('/api/get_score',{
-      method: 'get',
+export const querryQhseElement = (data) => {
+  return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
+      method: 'GET',
       data
     })
 }
@@ -53,8 +35,15 @@ export const addFileaduitrecord = (data) => {
 }
 
 export const getStatus = (data) => {
-  return request('/api/get_status',{
-      method: 'get',
+  return request(`/api/get_status?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
+      method: 'GET',
+      data
+    })
+}
+
+export const updateCheckstatus = (data) => {
+  return request('/api/update_checkstatus',{
+      method: 'put',
       data
     })
 }
