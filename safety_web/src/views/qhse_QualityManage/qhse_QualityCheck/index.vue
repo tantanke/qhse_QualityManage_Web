@@ -85,11 +85,11 @@
                 </el-option>
               </el-select>
             </el-form-item>
-           <el-form-item label="证据审核人：">
-             <el-form-column  v-if="!people2use" style="margin-bottom:1px">{{form.people1name}}</el-form-column>
+           <el-form-item label="证据审核人：" v-if="!people1use">
+             <el-form-column   style="margin-bottom:1px">{{form.people1name}}</el-form-column>
             </el-form-item>
              <el-form-item label="证据批准人："
-             v-if="people2use"
+               v-if="people2use"
                prop="employeeID">
               <el-select
                 v-model="text.approverStaffID"
@@ -107,8 +107,8 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="证据批准人：">
-             <el-form-column  v-if="!people2use" style="margin-bottom:1px">{{form.people2name}}</el-form-column>
+            <el-form-item label="证据批准人：" v-if="!people2use">
+             <el-form-column   style="margin-bottom:1px">{{form.people2name}}</el-form-column>
             </el-form-item>
             <el-form-item >
             <el-button type="primary" v-if="buttonVisible" style="margin-top:10px" @click="addEvidence">新增证据</el-button>
@@ -232,8 +232,8 @@ export default {
         address: '',
         emergencyHandler: '',
         briefDescription: '',
-        people1name:'1111',
-        pelple2name:'1111',
+        people1name:'',
+        pelple2name:'',
         fileID:''},
       evidence:{
         uploadTime:'',
@@ -253,18 +253,28 @@ export default {
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.evidence.uploadTime=year+'-'+month+'-'+date;
+      console.log(this.evidence)
       element_evidence_attach(this.evidence).then(res => {
-        console.log(res.msg);
+        console.log(res);
+         console.log(1);
+         this.dialogVisible3=false
+         this.$message.success('添加成功');
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
     addEvidence(){
+      //新增信息
       evidence(this.text).then(res => {
-        console.log(res.msg);
+        console.log(res);
+         console.log(2);
+         this.buttonVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
         });
+      //重新显示信息
+      element_evidence(this.text)
+      this.dialogVisible=false;
     },
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
@@ -330,7 +340,7 @@ export default {
       this.filterQuery.year = String(nowdata.getFullYear());
       
       this.handleGetInitialData();//更改loading状态
-      
+      this.filterQuery.companyCode='';
       querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -349,13 +359,21 @@ export default {
       this.loading = true;
     },
     updateScore(data){
-      this.dialogVisible = true;  
+      this.form.people1name='';
+      this.form.people2name='';
+      this.text.evidenceDescription='';
+      this.textuse=true;
+      this.people1use=true;
+      this.people2use=true;
+      this.dialogVisible =true;  
+      this.buttonVisible=true;
+      
+      this.text.code=data.code;
+      this.text.qhseCompanyYearManagerSysElementID=data.id;
       element_evidence(data)
       .then(res => {
         this.nodeData= res.data;
         console .log(res.data)
-        this.text.code=data.code;
-        this.text.qhseCompanyYearManagerSysElementID=this.nodeData.qhseCompanyYearManagerSysElementID;
         this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
         this.text.evidenceDescription=this.nodeData.evidenceDescription;
         this.form.people1name=this.nodeData.approverStaffName;
