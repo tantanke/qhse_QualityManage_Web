@@ -226,7 +226,18 @@ export default {
     addNewFile() {
        this.dialogFormVisible = true
        this.initForm()
-    },  
+    },
+    serchStatus(deeptree) {
+      let _this = this
+       deeptree.forEach(item => {
+         if(item.childNode.length === 0 && item.status === '未批准') {
+           this.isStatus = true
+           return
+         } else {
+           _this.serchStatus(item)
+         }
+       })
+    }, 
     submitAdd () {
        let _this = this
        _this.initForm()
@@ -237,7 +248,7 @@ export default {
            _this.addForm.tableId = res.data[0].tableID
            return addFileaduit(_this.addForm)
          } else {
-           _this.$message.warning('请选择已经通过要素审核的公司信息！')
+           _this.$message.warning('请选择已经通过要素证据审批的公司信息！')
            _this.ScompanyCode = null
          }
        }).then((res) => {

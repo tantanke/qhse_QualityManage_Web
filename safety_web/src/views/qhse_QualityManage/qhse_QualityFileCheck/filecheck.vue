@@ -267,7 +267,7 @@ export default {
     hasdata(){
       if(this.treeData === [])
         {
-          this.$message('请确认该审核要素证据是否已审批')
+          this.$message('请检查要素证据审批是否完成！')
           this.$router.go(-1)
         }
     },
@@ -279,7 +279,7 @@ export default {
         console.log(res.data)
         this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
-          this.$message.warning('请检查要素是否审核完毕！')
+          this.$message.warning('请检查要素证据审批是否完成！')
           this.$router.go(-1)
         }
         this.loading = false;
