@@ -22,16 +22,7 @@
               style="width:200px">
               </el-date-picker>
           </el-form-item>
-          <!-- <el-form-item label="审核状态："  prop="category">
-            <el-select v-model="filterQuery.status" placeholder="请选择员工类别" style="width:200px">
-              <el-option
-                v-for="item in statuss"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item> -->
+
           &nbsp;&nbsp;&nbsp;
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
@@ -92,8 +83,8 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import { addFileaduit } from "../../../services/filecheck"
-import { queryFileaduit,queryFileaduit2 } from "../../../services/filecheck"
+import { addFileaduit } from "../../../services/qhse_Filecheck"
+import { querryQhseElement,queryFileaduit,queryFileaduit2 } from "../../../services/qhse_Filecheck"
 import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
 const DefaultQuery = {
@@ -111,12 +102,15 @@ export default {
         auditName: ''
       },
       addForm: {
-        fileAuditId: '',
-        tableId: '',
         auditName: '',
         auditType: '',
         auditTime: '',
         additor: '',
+        companyCode: '',
+        year: '',
+        tableId: ''
+      },
+      querryQhseElement: {
         companyCode: '',
         year: ''
       },
@@ -232,30 +226,50 @@ export default {
     addNewFile() {
        this.dialogFormVisible = true
        this.initForm()
-    },  
+    },
+    serchStatus(deeptree) {
+      let _this = this
+       deeptree.forEach(item => {
+         if(item.childNode.length === 0 && item.status === '未批准') {
+           this.isStatus = true
+           return
+         } else {
+           _this.serchStatus(item)
+         }
+       })
+    }, 
     submitAdd () {
        let _this = this
        _this.initForm()
-       console.log(_this.addForm)
-      _this.$confirm('确认提交吗？','提示',{
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        return addFileaduit(_this.addForm)     
-      }).then((res) => {
-        if(res.code === 1000) {
-        this.handleGetInitialData();
-        this.dialogFormVisible = false
-        _this.$message({
-          message: '添加成功！',
-          type: 'success'
-        })
-        } else {
-          this.$message.error('新增失败!')
-        }
-        _this.reloadForm()
-      })    
+       _this.querryQhseElement.companyCode = _this.addForm.companyCode
+       _this.querryQhseElement.year = _this.addForm.year
+       querryQhseElement(_this.querryQhseElement).then(res => {
+         if(res.data.length > 0){
+           _this.addForm.tableId = res.data[0].tableID
+           return addFileaduit(_this.addForm)
+         } else {
+           _this.$message.warning('请选择已经通过要素证据审批的公司信息！')
+           _this.ScompanyCode = null
+         }
+       }).then((res) => {
+            if(res.code === 1000) {
+            this.handleGetInitialData();
+            this.dialogFormVisible = false
+            _this.reloadForm() 
+            _this.$message({
+              message: '添加成功！',
+              type: 'success'
+            })
+            } 
+        
+      })
+       .catch(err => {
+          this.$message.error(err)
+          _this.reloadForm()
+         this.dialogFormVisible = false
+       })
+      
+      
     },
     getCompanyCode(node) {
         this.addForm.auditName = node.label
@@ -270,7 +284,7 @@ export default {
       _this.addForm.auditName = ''
       _this.addForm.auditType = ''
       _this.addForm.auditTime = ''
-      _this.companyCode = null
+      _this.ScompanyCode = null
 
     },
     getQueryCode(node){
@@ -280,9 +294,7 @@ export default {
     
   },
   mounted() {
-    /* test({companyName:'安全环保检查院',year:'2019'}).then(res => {
-      console.log(res)
-    }) */
+    
     
     this.getUserName();
     this.handleGetCompany();

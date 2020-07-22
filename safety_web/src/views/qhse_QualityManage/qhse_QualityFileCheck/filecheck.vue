@@ -44,9 +44,16 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 "
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核'"
               >开始审核</el-button>
-
+              <el-button
+              type="success"
+              size="mini"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
+              @click="detaileFile(scope.row)"
+              >
+              审核完成  
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -99,6 +106,38 @@
             <el-button @click="dialogVisible = false">取 消</el-button>
           </div>
       </el-dialog>
+      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center width="1200px">
+        
+        <el-form label-width="140px" :model="detailData" style="width:100%;" >
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>            
+              <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
+              <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
+              <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
+              <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
+              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>
+              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
+              <el-form-item label="证据图片：" style="margin-bottom:10px">
+                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
+                  <span v-if="!detailData.pictureFile">无图片文件记录！</span>
+                  <el-popover placement="right" title trigger="click" v-else>
+                    <div style="max-width:600px;height:auto">
+                      <img :src="detailData.pictureFile" style="max-width:600px;height:auto" />
+                    </div>
+                    <img slot="reference" :src="detailData.pictureFile" :alt="detailData.pictureFile" style="max-height: 180px" />
+                  </el-popover>
+                </el-card>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <!-- <el-button type="primary" @click="updataFileAudit">确定</el-button> -->
+            <el-button @click="detaildialogVisible = false">确 定</el-button>
+          </div>
+      </el-dialog>
       <el-dialog title="新增检查记录" :visible.sync="addformVisible" :close-on-click-modal="false">
         </el-dialog>
       <el-dialog
@@ -123,9 +162,7 @@
 </template>
 
 <script>
-/* import { UpdateComSysEleStatus } from "../../../services/filecheck"; */
-import { querryQhseElement } from "../../../services/filecheck";
-import { /* updateScore,getScore, */addFileaduitrecord/* ,getStatus */ } from "../../../services/filecheck";
+import {querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
 export default {
   data() {
     return {
@@ -133,6 +170,15 @@ export default {
         year: "",
         companyCode: null,
         status:''
+      },
+      querryTree: {
+        companyCode: '',
+        year: ''
+      },
+      updateCheckForm: {
+        qhseCompanyYearManagerSysElementTableID: '',
+        code: '',
+        fileCheckStatus:'已审核'
       },
       addformVisible: false,
       fileRecord: {
@@ -146,6 +192,7 @@ export default {
         code: ''
       },
       nowcode: null,
+      detaildialogVisible: false,
       noinnerVisible: false,
       innerVisible: false,
       status:'',
@@ -163,11 +210,16 @@ export default {
   },
   methods: {
     loadFilterParams() {
-      this.$route.params.data && localStorage.setItem('data',JSON.stringify(this.$route.params.data));
+      let _this = this
+      _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
       const initData = JSON.parse(localStorage.getItem('data'));
-      this.filterQuery.year = initData.year
-      this.filterQuery.companyCode = initData.companyCode
-      this.filterQuery.companyName = initData.companyName
+      _this.filterQuery.year = initData.year
+      _this.filterQuery.companyCode = initData.companyCode
+      _this.filterQuery.companyName = initData.companyName
+      _this.querryTree.year = initData.year
+      _this.querryTree.companyCode = initData.companyCode
+      _this.fileRecord.fileAuditId = initData.fileAuditId
+      _this.statusForm.fileAuditId = initData.fileAuditId
     },
     handleCellClick(row, cell, column) {
       if (row.code.length < 10) {
@@ -177,11 +229,29 @@ export default {
         }
       }
     },
-    serchScore (data) {
-        console.log(data)
+    detaileFile(data) {
+      let _this = this
+      _this.detailData.status = data.status 
+      _this.detailData.auditMode = data.auditMode
+      _this.detailData.initialScore = data.initialScore
+      _this.detailData.formula = data.formula
+      _this.detailData.name = data.name
+      _this.detailData.problemDescription = data.problemDescription
+      // 获取信息表单
+      _this.statusForm.code = data.code
+      
+      getStatus(_this.statusForm).then(res => {
+        if(res.data.length > 0){
+        _this.detailData.codeScore = res.data[0].codeScore
+        _this.detailData.pass = res.data[0].pass
+        _this.detaildialogVisible = true}
+      }).catch(err => {
+        _this.$message.error(err)
+      })
+      //  获取分数与状态填充
+      
     },
     goUpdateFile(data){
-      console.log(data)
       let _this = this
       _this.editdata = data
       _this.detailData.status = data.status 
@@ -191,28 +261,27 @@ export default {
       _this.detailData.name = data.name
       _this.detailData.problemDescription = data.problemDescription      
       _this.fileRecord.code = data.code
+      _this.updateCheckForm.code = data.code
       _this.dialogVisible = true
-      
-      /* getScore({code:data.code}).then(res => {
-        let score = Number(res.data[0].codeScore)
-        console.log(score)
-        if( score < 0) {
-          _this.dialogVisible = true
-          _this.detailData.nowscore = score
-        } else {
-          _this.nodialogVisible = true
-        }
-      }).catch(err => {
-        _this.$message.error(err)
-      })       */     
     },
-    deepForeach(){
-      
+    hasdata(){
+      if(this.treeData === [])
+        {
+          this.$message('请检查要素证据审批是否完成！')
+          this.$router.go(-1)
+        }
     },
     handleGetInitialData() {
       this.loading = true;
-      querryQhseElement().then(res => {
+      console.log(this.querryTree)
+      querryQhseElement(this.querryTree).then(res => {
         this.treeData = res.data;
+        console.log(res.data)
+        this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
+        if(res.data.length === 0){
+          this.$message.warning('请检查要素证据审批是否完成！')
+          this.$router.go(-1)
+        }
         this.loading = false;
       })
       .catch(err => {
@@ -230,17 +299,21 @@ export default {
       }
       _this.status = _this.fileRecord.pass
       console.log(_this.fileRecord)
-      addFileaduitrecord(_this.fileRecord).then(res => {
+      updateCheckstatus(_this.updateCheckForm).then(() => {
+        return addFileaduitrecord(_this.fileRecord)
+      }).then(res => {
         if(res.code === 1000){
         _this.$message.success('添加成功！')
         _this.dialogVisible = false
         _this.fileRecord.pass = ''
         _this.fileRecord.codeScore = ''
+        _this.handleGetInitialData()
         if(_this.status === '不通过') {
          _this.noinnerVisible = true
         }
         }
-      }).catch(err => {
+      })
+      .catch(err => {
         _this.$message.error(err)
       })
 
@@ -269,17 +342,9 @@ export default {
           })
       }
       _this.dialogVisible = false
-    },
-    getfileAuditId() {
-      if(this.$route.params.data){
-      localStorage.setItem("fileAuditId",this.$route.params.data.fileAuditId)
-      }
-      this.fileRecord.fileAuditId =  Number(localStorage.getItem("fileAuditId"))
-      this.statusForm.fileAuditId =  Number(localStorage.getItem("fileAuditId"))
-      }
+    }
   },
   mounted() {
-    this.getfileAuditId();
     this.loadFilterParams();
     this.handleGetInitialData();
   }
