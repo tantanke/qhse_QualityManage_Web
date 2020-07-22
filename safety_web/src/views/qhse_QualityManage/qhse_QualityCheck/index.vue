@@ -139,6 +139,7 @@
               <el-upload
                 :action="accidentOrEventUploadAddress"
                 list-type="picture-card"
+                clearable
                 ref="upload"
                 :limit="2"
                 :on-exceed="handleExceed"
@@ -245,6 +246,9 @@ export default {
   },
   methods: {
     gotoEvidence(){
+      this.evidence.attach='';
+      this.evidence.attachDescrption='';
+      this.form.fileID='';
       this.dialogVisible3=true;
     },
     addEvidenceFile(){
@@ -255,10 +259,10 @@ export default {
       this.evidence.uploadTime=year+'-'+month+'-'+date;
       console.log(this.evidence)
       element_evidence_attach(this.evidence).then(res => {
-        console.log(res);
+         console.log(res);
          console.log(1);
          this.dialogVisible3=false
-         this.$message.success('添加成功');
+        this.$message.success('添加成功');
         }).catch(err => {
           this.$message.error(err.message);
         });
@@ -266,15 +270,39 @@ export default {
     addEvidence(){
       //新增信息
       evidence(this.text).then(res => {
-        console.log(res);
-         console.log(2);
+         console.log(res);
+         console.log(this.text)
          this.buttonVisible=false;
+         this.people1use=false;
+         this.people2use=false;
+         this.textuse=false;
         }).catch(err => {
           this.$message.error(err.message);
         });
       //重新显示信息
-      element_evidence(this.text)
-      this.dialogVisible=false;
+       element_evidence(this.text)
+      .then(res => {
+        this.nodeData= res.data;
+        console .log(res.data)
+        this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
+        this.text.evidenceDescription=this.nodeData.evidenceDescription;
+        this.form.people1name=this.nodeData.checkStaffName;
+        this.form.people2name=this.nodeData.approverStaffName;
+        if(this.nodeData.evidenceDescription!=null)
+        {
+          this.buttonVisible=false;
+          this.textuse=false
+          this.people1use=false;
+          this.people2use=false
+        }
+        console.log('获取到的要素节点内容：',this.nodeData);
+        console.log('获取到要素表后的text:',this.text)
+      })
+      .catch(err => {
+        console.log(err);
+        this.message.error(err.message);
+      });//证据表数据
+
     },
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
@@ -376,8 +404,8 @@ export default {
         console .log(res.data)
         this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
         this.text.evidenceDescription=this.nodeData.evidenceDescription;
-        this.form.people1name=this.nodeData.approverStaffName;
-        this.form.people2name=this.nodeData.checkStaffName;
+        this.form.people1name=this.nodeData.checkStaffName;
+        this.form.people2name=this.nodeData.approverStaffName;
         if(this.nodeData.evidenceDescription!=null)
         {
           this.buttonVisible=false;

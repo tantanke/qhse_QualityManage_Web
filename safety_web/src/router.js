@@ -155,6 +155,7 @@ export default new Router({
         { path: '/hidden_danger/illegal_entry', name: 'illegal_entry', component: resolve => require(['./views/hidden_danger_investigation/illegal_entry/index.vue'],resolve)},
         { path: '/hidden_danger/input', name: 'input', component: resolve => require(['./views/hidden_danger_investigation/hidden_danger_input/index.vue'],resolve)},
         { path: '/hidden_danger/QHSETroubleCheckTable', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/index.vue'],resolve)},
+        { path: 'hidden_danger_investigation', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/index.vue'],resolve)},
         //检查表配置
         { path: '/hidden_danger/check_list_item', name: 'QHSEChecklistConfig', component: resolve => require(['./views/hidden_danger_investigation/check_list_item/index.vue'],resolve)},
       ]
