@@ -10,6 +10,12 @@ export const query_elementReviewer =(data)=>{
       data
     })
 }
+//获取批准要素
+  export const query_elementReviewers =(data)=>{
+    return request(`/api/query_elementReviewers?companyCode=${data.companyCode}&year=${data.year}`,{
+      data
+    })
+}
 //审核人通过?
 export const pass_elementReviewer =(data)=>{
   return request('/api/pass_elementReviewer',{
@@ -32,6 +38,7 @@ export const no_elementReviewer =(data)=>{
 }
 //显示信息
 export const show_elementReviewer =(data)=>{
-  return request(`/api/show_elementReviewer?qHSE_CompanyYearManagerSysElement_ID=${data.qHSE_CompanyYearManagerSysElement_ID}`),
-  data
+  return request(`/api/show_elementReviewer?qHSE_CompanyYearManagerSysElement_ID=${data.qHSE_CompanyYearManagerSysElement_ID}`,{
+    data
+  })
 }

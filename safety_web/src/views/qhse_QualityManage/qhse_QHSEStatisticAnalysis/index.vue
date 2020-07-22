@@ -21,6 +21,23 @@
               style="width:200px">
               </el-date-picker>
           </el-form-item>
+           <el-form-item label="选择状态：">
+            <el-select 
+              v-model="filterQuery.status"
+                placeholder="选择状态"
+                clearable
+                filterable
+              style="width: 100%;" 
+              loading-text="查询中...">
+              <el-option
+                v-for="item in status"
+                :key="item.index"
+                :label="item.label"
+                :value="item.status"
+                >
+              </el-option>
+            </el-select>
+          </el-form-item>
           &nbsp;&nbsp;&nbsp;
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
@@ -78,20 +95,24 @@
             <el-col :span="12">
               <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attacjDescription}}</el-form-item>
               <el-form-item label="上传时间：" style="margin-bottom:1px">{{detailData.uploadTime}}</el-form-item>
-              <el-form-item label="证据图片：" style="margin-bottom:10px">
+              <div  v-for="(item,index) in attachs" :key="index">
+              <el-form-item label="证据图片：" 
+              style="margin-bottom:10px"
+              >
                 <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                  <span v-if="!detailData.attach">无图片文件记录！</span>
+                  <span v-if="!item">无图片文件记录！</span>
                   <el-popover placement="right" title trigger="click" v-else>
                     <div style="max-width:600px;height:auto">
-                      <img :src="detailData.attach" style="max-width:600px;height:auto" />
+                      <img :src="item" style="max-width:600px;height:auto" />
                     </div>
-                    <img slot="reference" :src="detailData.attach" :alt="detailData.pictureFile" style="max-height: 180px" />
+                    <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
                   </el-popover>
                 </el-card>
               </el-form-item>
+              </div >
               <el-form-item style="text-align:right">
                 <el-button v-if="this.node.status==='未审核'" type="danger" @click="pass_click">审核通过</el-button>
-                <el-button v-if="this.node.status==='未通过'" type="danger" @click="appr_click">批准通过</el-button>
+                <el-button v-if="this.node.status==='未批准'" type="danger" @click="appr_click">批准通过</el-button>
                 <el-button type="danger" @click="no_passclick">不通过</el-button>
                 <el-button type="danger" @click="dialogVisible = false">返回</el-button>
               </el-form-item>
@@ -107,6 +128,7 @@
 
 import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司及诶单数
 import { query_elementReviewer } from"../../../services/qhse_EvidenceCheck"//证据项
+import { query_elementReviewers } from"../../../services/qhse_EvidenceCheck"//证据项
 import { pass_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过审核
 import { approval_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过批准
 import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通过审核
@@ -131,14 +153,35 @@ export default {
       treeData: [],
       initData:[],
       node:[],
-      nodeData:[]
-      
+      nodeData:[],
+      attachs:[],
+      status:[{
+        id:1,
+        label:"未审核",
+        status:"未审核"
+      },
+      {
+        id:2,
+        label:"未批准",
+        status:"未批准"
+      }]
     };
   },
   methods: {
     selectDepart(val) {
       console.log('selectDepart', val);
       this.filterQuery.companyCode = val.nodeCode;
+    },
+    selectDepart2(res) {
+      console.log('selectDepart2', res);
+      this.filterQuery.status = res;
+      // let obj = {}
+      //   //遍历下拉数组中的item
+      //   obj = this.status.find((item)=>{
+      //     return item.status === data
+      //   })
+      //   console.log(JSON.stringify(obj.status))
+      //   this.filterQuery.status = obj.status    
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
@@ -157,6 +200,8 @@ export default {
     pass_click(){
       pass_elementReviewer(this.node).then(res => {
           console.log(res.message);
+          this.message.success(res.message);
+          this.dialogVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
         })
@@ -164,6 +209,8 @@ export default {
     appr_click(){
       approval_elementReviewer(this.node).then(res => {
           console.log(res.message);
+          this.message.success(res.message);
+          this.dialogVisible=false
         }).catch(err => {
           this.$message.error(err.message);
         })
@@ -180,6 +227,8 @@ export default {
      
     },
     handleClick() {//点击查询获取到公司的证据项  改为check页面的显示节点
+      this.treeData=''
+      this.filterQuery.companyCode='';
       if(!this.filterQuery.year){//显示年份
         this.filterQuery.year = new Date()
       }
@@ -187,8 +236,8 @@ export default {
       this.filterQuery.year = String(nowdata.getFullYear());
       
       this.handleGetInitialData();//更改loading状态
-      
-      query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+      if(this.filterQuery.status==='未审核'){
+         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
           // this.companyName = res.data.name;
@@ -199,6 +248,21 @@ export default {
           console.log(err);
           this.message.error(err.message);
         });
+      }
+      else {
+        query_elementReviewers(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+          // this.companyName = res.data.name;
+          // this.year = res.data.year;
+          // this.status = res.data.status;
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+      }
+      
       this.loading = false;
         
     },
@@ -214,24 +278,34 @@ export default {
       this.loading = true;
     },
     updateScore(data){//显示出证据项的内容
-     show_elementReviewer(data).then(res => {
-       this.nodeData=res.data
+    
+      show_elementReviewer(data)
+      .then(res => {
+        this.dialogVisible = true; 
+        this.nodeData=res.data
+        this.detailData.evidenceDsecription = this.nodeData.evidenceDescription
+        this.detailData.checkStaffName = this.nodeData.checkStaffName
+        this.detailData.approverStaffName = this.nodeData.approverStaffName
+        this.detailData.attacjDescription = this.nodeData.attachDescrption
+        this.detailData.uploadTime = this.nodeData.uploadTime
+        var attach = this.nodeData.attach;//获取地址字符串
+        if(attach!=null){
+          var arr=attach.split(";");
+          this
+          for(var i=0;i<arr.length-1;i++)
+          {
+            this.attachs[i]=arr[i];
+          }
+          console.log('attach数量：',arr.length,this.attachs);
+        }
+        
         console.log('获取到的要素节点内容：',this.nodeData);
+            
       })
       .catch(err => {
         console.log(err);
         this.message.error(err.message);
       })
-     //测试显示数据
-    //  this.nodeData.evidenceDsecription="证据项描述"
-    //  this.nodeData.checkStaffName="黎锋"
-    //  this.nodeData.approverStaffName="黎锋"
-    //  this.nodeData.attacjDescription="这里是附件描述"
-    //  this.nodeData.uploadTime="这里是上传时间"
-    //  this.nodeData.attach='https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2747364614,2411895227&fm=26&gp=0.jpg'
-    
-    // });
-      console.log(data.qHSE_CompanyYearManagerSysElement_ID);//打印传递的id
       this.node=data;
       this.detailData = {}
       this.detailData.name = data.name
@@ -242,14 +316,8 @@ export default {
       this.detailData.initialScore = data.initialScore
       this.detailData.formula = data.formula
       this.detailData.problemDescription = data.problemDescription
-      this.detailData.evidenceDsecription = this.nodeData.evidenceDsecription
-      this.detailData.checkStaffName = this.nodeData.checkStaffName
-      this.detailData.approverStaffName = this.nodeData.approverStaffName
-      this.detailData.attacjDescription = this.nodeData.attacjDescription
-      this.detailData.uploadTime = this.nodeData.uploadTime
-      this.detailData.attach = this.nodeData.attach
-      
-      this.dialogVisible = true;            
+     
+            
     }
   },
   mounted() {

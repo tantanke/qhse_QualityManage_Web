@@ -116,7 +116,7 @@
 import {GetCurrentUser } from '../../../store/CurrentUser';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import {GetCheckListTree} from '../../../services/hidden_danger_investigation/checkListTree'
-import {delete_tree,getcontent,Createcontent} from '../../../services/hidden_danger_investigation/checkListItem'
+import {Createcheck_item,delete_tree,getcontent,Createcontent} from '../../../services/hidden_danger_investigation/checkListItem'
 export default {
     watch: {
     filterText(val) {
@@ -210,15 +210,15 @@ export default {
       }).catch(() => {
       })
     },
-      addEventFormSubmitBtn1(/* formData */){
-        /* let newChild = { "checkListName": formData.categoryName,"checkListCode": this.addNodeCode}; */
-        /* Createcheck_item(newChild).then( () => {
+      addEventFormSubmitBtn1(formData){
+        let newChild = { "checkListName": formData.categoryName,"checkListCode": this.addNodeCode};
+        Createcheck_item(newChild).then( () => {
           this.$message.success('创建成功')
           this.addEventdialogVisible1 = false;
           this.getDate()
         },(err) => {
           this.$message.error(err.message)
-        }) */
+        })
       },
       addEventFormSubmitBtn2(formData){
         let newContent = { "content": formData.categoryName,"checkListCode": this.addNodeCode};
