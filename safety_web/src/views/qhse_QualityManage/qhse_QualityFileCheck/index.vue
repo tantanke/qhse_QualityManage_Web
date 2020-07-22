@@ -71,7 +71,7 @@
               :options="companyList"
               @select="getCompanyCode"
               placeholder="请选择公司单位"
-              v-model="addForm.companyCode"
+              v-model="ScompanyCode"
             />
           </el-form-item>
             <el-form-item label="审核类别:" :label-width="formLabelWidth">
@@ -98,12 +98,12 @@ import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
 const DefaultQuery = {
   year: "",
-  companyCode: null,
   status:""
 };
 export default {
   data() {
     return {
+      ScompanyCode: null,
       addFileForm: {
         year: '',
         companyCode: null,
@@ -117,7 +117,7 @@ export default {
         auditType: '',
         auditTime: '',
         additor: '',
-        companyCode: null,
+        companyCode: '',
         year: ''
       },
       formLabelWidth: '120px',
@@ -173,6 +173,7 @@ export default {
         serchform = {year: this.filterQuery.year}
         queryFileaduit(serchform).then(res => {
         this.tableData = res.data.list;
+        console.log(res.data.list)
         this.loading = false;
         console.log(res)
       }).catch(err => {
@@ -227,7 +228,6 @@ export default {
        _this.addForm.auditTime = nowTime.toLocaleDateString()
        _this.addForm.year = nowTime.getFullYear().toString()
        _this.addForm.auditName = _this.addForm.auditName + _this.addForm.auditTime + _this.addForm.auditType
-       console.log(this.addForm)
     },
     addNewFile() {
        this.dialogFormVisible = true
@@ -236,6 +236,7 @@ export default {
     submitAdd () {
        let _this = this
        _this.initForm()
+       console.log(_this.addForm)
       _this.$confirm('确认提交吗？','提示',{
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -258,6 +259,7 @@ export default {
     },
     getCompanyCode(node) {
         this.addForm.auditName = node.label
+        this.addForm.companyCode = node.nodeCode
     },
     getUserName() {
         let user = CurrentUser.get()
@@ -268,18 +270,20 @@ export default {
       _this.addForm.auditName = ''
       _this.addForm.auditType = ''
       _this.addForm.auditTime = ''
-      _this.addForm.companyCode = null
+      _this.companyCode = null
 
     },
     getQueryCode(node){
       console.log(node)
       this.searchForm.companyName = 	node.label
     }
+    
   },
   mounted() {
     /* test({companyName:'安全环保检查院',year:'2019'}).then(res => {
       console.log(res)
     }) */
+    
     this.getUserName();
     this.handleGetCompany();
     this.loadFilterParams();

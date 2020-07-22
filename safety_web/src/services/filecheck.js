@@ -44,3 +44,17 @@ export const getScore = (data) => {
       data
     })
 }
+
+export const addFileaduitrecord = (data) => {
+  return request('/api/add_fileaduitrecord',{
+      method: 'post',
+      data
+    })
+}
+
+export const getStatus = (data) => {
+  return request('/api/get_status',{
+      method: 'get',
+      data
+    })
+}

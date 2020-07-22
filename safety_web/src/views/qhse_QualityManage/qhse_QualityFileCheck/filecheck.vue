@@ -6,6 +6,7 @@
             <el-breadcrumb-item>详情查看</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
+    <el-row style="padding:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
     <div class="page-content">
       <el-row>
         <el-form label-width="100px"  :inline="true" :model="filterQuery">
@@ -16,20 +17,9 @@
             <el-input v-model="filterQuery.year" readonly></el-input>
           </el-form-item>
           &nbsp;&nbsp;&nbsp;
-         <!--  <el-form-item>
-            <el-button :disabled="disabled1" type="primary" @click="updateCompanyStatus">是否审核通过</el-button>
-          </el-form-item> -->
           <el-form-item>
             <el-button type="danger" @click="$router.go(-1)">返回前一页</el-button>
           </el-form-item>
-          <!--模态框，弹出审核内容-->
-         <!--  <el-dialog title="是否确认审核通过？" :visible.sync="dialogFormVisible">
-            <div slot="footer">
-              <el-button type="primary" @click="updateStatus">确认</el-button>
-              <el-button type="danger" @click="dialogFormVisible = false">返回</el-button>
-            </div>
-          </el-dialog> -->
-          <!--</el-col>-->
         </el-form>
       </el-row>
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
@@ -48,59 +38,21 @@
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
           <el-table-column prop="totalCount" label="内容数" width="80" align="center"></el-table-column>
-          <el-table-column  label="分数" width="80" align="center">
-             <template slot-scope="scope">
-              <span
-                v-if="scope.row.childNode.length === 0 "
-              >点击右侧打分</span>
-            </template>
-          </el-table-column>
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button
                 type="primary"
                 size="mini"
-                @click="updateScore(scope.row)"
+                @click="goUpdateFile(scope.row)"
                 v-if="scope.row.childNode.length === 0 "
               >开始审核</el-button>
+
             </template>
           </el-table-column>
         </el-table>
       </el-row>
       <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="1200px">
-        <el-dialog
-        :close-on-click-modal='false'
-          width="30%"
-          title="输入分数："
-          :visible.sync="innerVisible"
-          append-to-body>
-          <el-form>
-            <el-form-item label="输入分数：" style="margin-bottom:1px">
-               <el-input v-model.number="score" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="putScore">确定</el-button>
-            <el-button @click="innerVisible = false">取 消</el-button>
-          </div>
-        </el-dialog>
-        <el-dialog
-        :close-on-click-modal='false'
-          width="30%"
-          title="选择原因："
-          :visible.sync="noinnerVisible"
-          append-to-body>
-          <el-form>
-            <el-form-item label="选择原因：" style="margin-bottom:1px">
-               <el-radio v-model="reason" label="违章">录入违章</el-radio>
-               <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="noScore">确定</el-button>
-            <el-button @click="noinnerVisible = false">取 消</el-button>
-          </div>
-        </el-dialog>
+        
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
             <el-col :span="12">
@@ -109,8 +61,6 @@
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
-            </el-col>
-            <el-col :span="12">
               <el-form-item label="证据图片：" style="margin-bottom:10px">
                 <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
                   <span v-if="!detailData.pictureFile">无图片文件记录！</span>
@@ -122,15 +72,52 @@
                   </el-popover>
                 </el-card>
               </el-form-item>
-              <el-form-item style="text-align:right">
-                <el-button type="primary" @click="innerVisible = true">通过</el-button>
-                <el-button type="primary" @click="noinnerVisible = true">不通过</el-button>
-                <el-button type="danger" @click="dialogVisible = false">返回</el-button>
+            </el-col>
+            <el-col :span="12">
+              <h3 style="margin-left:80px">
+                    填写审核内容                
+              </h3>
+              <el-form :v-model="fileRecord">
+              <el-form-item label='分数:' labelWidth='80px' style="width:280px">
+                <el-input type="text" v-model="fileRecord.codeScore"></el-input>
               </el-form-item>
+              <el-form-item label='通过状态:' labelWidth='80px' >
+                <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:200px">
+                <el-option label="通过" value="通过"></el-option>
+                <el-option label="不通过" value="不通过"></el-option>
+              </el-select>
+              </el-form-item>
+              <el-form-item >
+              </el-form-item>
+              </el-form>
             </el-col>
           </el-row>
+          
         </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="updataFileAudit">确定</el-button>
+            <el-button @click="dialogVisible = false">取 消</el-button>
+          </div>
       </el-dialog>
+      <el-dialog title="新增检查记录" :visible.sync="addformVisible" :close-on-click-modal="false">
+        </el-dialog>
+      <el-dialog
+        :close-on-click-modal='false'
+          width="30%"
+          title="选择原因："
+          :visible.sync="noinnerVisible"
+          >
+          <el-form>
+            <el-form-item label="选择原因：" style="margin-bottom:1px">
+               <el-radio v-model="reason" label="违章">录入违章</el-radio>
+               <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="checkNopass">确定</el-button>
+            <el-button @click="noinnerVisible = false">取 消</el-button>
+          </div>
+        </el-dialog>
     </div>
   </div>
 </template>
@@ -138,7 +125,7 @@
 <script>
 /* import { UpdateComSysEleStatus } from "../../../services/filecheck"; */
 import { querryQhseElement } from "../../../services/filecheck";
-import { updateScore,getScore } from "../../../services/filecheck";
+import { /* updateScore,getScore, */addFileaduitrecord/* ,getStatus */ } from "../../../services/filecheck";
 export default {
   data() {
     return {
@@ -147,7 +134,18 @@ export default {
         companyCode: null,
         status:''
       },
-      nowcode: '',
+      addformVisible: false,
+      fileRecord: {
+        fileAuditId: '',
+        code: '',
+        codeScore: '',
+        pass: ''
+      },
+      statusForm: {
+        fileAuditId: '',
+        code: ''
+      },
+      nowcode: null,
       noinnerVisible: false,
       innerVisible: false,
       status:'',
@@ -158,16 +156,15 @@ export default {
       detailData: {},
       treeData: [],
       initData:[],
-      score: '',
       reason:'',
-      editdata: ''
+      editdata: '',
+      nodialogVisible: false
     };
   },
   methods: {
     loadFilterParams() {
       this.$route.params.data && localStorage.setItem('data',JSON.stringify(this.$route.params.data));
       const initData = JSON.parse(localStorage.getItem('data'));
-      console.log(initData)
       this.filterQuery.year = initData.year
       this.filterQuery.companyCode = initData.companyCode
       this.filterQuery.companyName = initData.companyName
@@ -180,7 +177,10 @@ export default {
         }
       }
     },
-    updateScore(data){
+    serchScore (data) {
+        console.log(data)
+    },
+    goUpdateFile(data){
       console.log(data)
       let _this = this
       _this.editdata = data
@@ -189,11 +189,22 @@ export default {
       _this.detailData.initialScore = data.initialScore
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
-      _this.detailData.problemDescription = data.problemDescription
+      _this.detailData.problemDescription = data.problemDescription      
+      _this.fileRecord.code = data.code
       _this.dialogVisible = true
-      getScore({code:data.code}).then(res => {
-        console.log(res)
-      })            
+      
+      /* getScore({code:data.code}).then(res => {
+        let score = Number(res.data[0].codeScore)
+        console.log(score)
+        if( score < 0) {
+          _this.dialogVisible = true
+          _this.detailData.nowscore = score
+        } else {
+          _this.nodialogVisible = true
+        }
+      }).catch(err => {
+        _this.$message.error(err)
+      })       */     
     },
     deepForeach(){
       
@@ -203,7 +214,6 @@ export default {
       querryQhseElement().then(res => {
         this.treeData = res.data;
         this.loading = false;
-        console.log(this.treeData)
       })
       .catch(err => {
           this.message.error(err.message);
@@ -212,51 +222,36 @@ export default {
     updateCompanyStatus(){
         this.dialogFormVisible = true
     },
-    updateStatus() {
-        /* let that=this;
-        let info = {
-            year:this.filterQuery.year,
-            companyCode:this.filterQuery.companyCode,
-            status:"通过"
-        } */
-       /*  UpdateComSysEleStatus(info).then(()=>{
-            that.dialogFormVisible = false;
-            that.$message.success("审核成功");
-            this.filterQuery.status = info.status
-            this.$route.params.data.status = info.status
-            this.loadFilterParams()
-            this.handleGetInitialData()
-            this.disabled1 = true
-        }).catch(() => {
-            that.$message.error("审核失败");
-            that.dialogFormVisible = false;
-        }) */
-    },
-    getStatus() {
-      this.status = this.$route.params.data.status
-      console.log(this.status)
-    },
-    lookScore(data) {
-      console.log(data)
-      this.dialogVisible = true 
-    },
-    putScore() {
+    updataFileAudit() {
       let _this = this
-      _this.innerVisible = false
-      let data = {}
-      data.code = _this.editdata.code
-      data.codeScore = _this.score
-      console.log(data)
-      updateScore(data).then(res => {
-        console.log(res)
+      if(_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '') {
+        _this.$message.error('请填写审核内容')
+        return
+      }
+      _this.status = _this.fileRecord.pass
+      console.log(_this.fileRecord)
+      addFileaduitrecord(_this.fileRecord).then(res => {
+        if(res.code === 1000){
+        _this.$message.success('添加成功！')
+        _this.dialogVisible = false
+        _this.fileRecord.pass = ''
+        _this.fileRecord.codeScore = ''
+        if(_this.status === '不通过') {
+         _this.noinnerVisible = true
+        }
+        }
       }).catch(err => {
-        this.$message.error(err)
+        _this.$message.error(err)
       })
-      this.dialogVisible = false
+
+    },
+    checkNopass () {
+      this.noScore()
     },
     noScore() {
       let rowdata = this.editdata
       let _this = this
+      // 新增不成功
       _this.noinnerVisible = false
       if (_this.reason === '隐患'){
            _this.$router.push({
@@ -274,10 +269,17 @@ export default {
           })
       }
       _this.dialogVisible = false
-    }
+    },
+    getfileAuditId() {
+      if(this.$route.params.data){
+      localStorage.setItem("fileAuditId",this.$route.params.data.fileAuditId)
+      }
+      this.fileRecord.fileAuditId =  Number(localStorage.getItem("fileAuditId"))
+      this.statusForm.fileAuditId =  Number(localStorage.getItem("fileAuditId"))
+      }
   },
   mounted() {
-    console.log(this.$route.params.data)
+    this.getfileAuditId();
     this.loadFilterParams();
     this.handleGetInitialData();
   }

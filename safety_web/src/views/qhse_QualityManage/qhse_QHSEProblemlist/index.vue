@@ -9,6 +9,7 @@
          <el-table
           type="expand"
           :data='regulationrecord'
+          border
           style="width: 100%"
           max-height="735">
           <el-table-column type="expand">
@@ -109,6 +110,7 @@
           <p  style="width:100%">QHSE隐患清单</p>
           <el-row style="height:350px">
           <el-table
+          border
           :data='regulationrecord'
           style="width: 100%"
           max-height="735">
