@@ -70,12 +70,34 @@
 									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
 								</el-form-item>
 								&nbsp;
-								<el-button type="primary" icon="el-icon-folder" @click="addQHSEYearElement">保存</el-button>
+								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement">保存</el-button>
 							</el-form>
 						</el-row>
 						<el-row style="padding:10px; border-top: 2px dashed #dddddd;">
 							<el-tree :data="filterQuery.elementTree" ref="tree" node-key="id" props="annCheckList" show-checkbox="true"
-							 @check-change="handleGetTreeNode" style="width: 70%;">
+							  style="width: 70%;">
+							</el-tree>
+						</el-row>
+					</div>
+				</el-dialog>
+				<el-dialog title="年度检查表明细" :visible.sync="annCheckListShow" width="70%" align="left" v-loading="checklistLoading">
+					<div class="page-content" width="70%" align="left">
+						<el-row>
+							<el-form :inline="true">
+								<el-form-item label="单位:"></el-form-item>
+								<el-form-item>
+									<el-input v-model="filterQuery.chosenCompany" readonly="true"></el-input>
+								</el-form-item>
+								&nbsp;
+								<el-form-item label="年度:"></el-form-item>
+								<el-form-item>
+									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
+								</el-form-item>
+							</el-form>
+						</el-row>
+						<el-row style="padding:10px; border-top: 2px dashed #dddddd;">
+							<el-tree :data="filterQuery.elementTree" ref="treeShow" node-key="id" props="annCheckList" show-checkbox="true"
+							 style="width: 70%;">
 							</el-tree>
 						</el-row>
 					</div>
@@ -93,6 +115,7 @@
 		insertQhseTable,
 		deleteQhseTable,
 		addQHSEYearElement,
+		querryQhseElement,
 		publishTableElement
 	} from "../../../services/gettreedata"
 	const DefaultQuery = {
@@ -120,7 +143,12 @@
 				loading: false,
 				treeNodeList: [],
 				insertCheckListDialog: false,
+				annCheckListShow:false,
 				annCheckListDialog: false,
+				querryQhseElement:{
+					companyCode:'',
+					year:''
+				},
 				addData: {
 					companyName: '',
 					companyCode: '',
@@ -154,7 +182,6 @@
 				};
 				this.selected
 				GetQhseTable().then(res => {
-					console.log(res)
 					this.filterQuery.tableData = res.data
 				})
 				this.loading = false
@@ -213,21 +240,40 @@
 			//点击列表中的某一列加载勾选要素表一二级节点
 			handlChosen(val, column) {
 				//如果鼠标点击到的是操作框，则不打开要素节点框，因为操作里有三个按钮，会影响到使用
-				//如果记录状态不是“未发布”，表示该记录不能再进行操作，将无法点击打开要素框
-				if (column.label != "操作" && val.status == "未发布") {
-					this.checklistLoading = true
-					this.handleGetQhseChildElement()
+				//如果记录状态不是“未发布”，表示该记录不能再进行操作 
+				if (column.label != "操作") {
+					//将选中行数据的公司名和年度显示
+					this.filterQuery.chosenCompany = String(val.companyName);
+					this.filterQuery.chosenYear = String(val.year)
+					if(val.status=="未发布"){
+						this.handleGetQhseChildElement()
 					//记录选中的该行数据
 					this.chosenConlumn.companyCode = val.companyCode
 					this.chosenConlumn.conpanyName = val.companyName
 					this.chosenConlumn.year = val.year
 					this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID = parseInt(val.qhse_CompanyYearManagerSysElementTable_ID)
-					//将选中行数据的公司名和年度显示
-					this.filterQuery.chosenCompany = String(val.companyName);
-					this.filterQuery.chosenYear = String(val.year)
-					this.checklistLoading = false
 					this.annCheckListDialog = true
+					console.log(this.filterQuery.elementTree)
+					}
+					else{
+						this.handleGetQhseChildElement()
+						this.querryQhseElement.companyCode=val.companyCode
+						this.querryQhseElement.year=val.year
+						querryQhseElement(this.querryQhseElement).then(res=>{
+							console.log(res.data)
+							console.log(this.filterQuery.elementTree)
+							var code=[]
+							for(var i=0;i<res.data.length;i++){
+								code.push(res.data[i].code)
+							}
+							this.$refs.treeShow.setCheckedKeys(code,true)
+						})
+						this.annCheckListShow=true
+						
+					}
+					
 				}
+				
 			},
 			//加载要素表的一二级节点
 			handleGetQhseChildElement() {
