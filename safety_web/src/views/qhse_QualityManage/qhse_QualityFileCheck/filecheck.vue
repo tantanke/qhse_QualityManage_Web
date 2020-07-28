@@ -6,6 +6,12 @@
             <el-breadcrumb-item>详情查看</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
+    <div style="margin:15px 0px">
+      <span style="margin-right:15px">请选择文件审核方式:</span>
+          <el-radio v-model="checkType" label="树形审核">树形审核</el-radio> 
+          <el-radio v-model="checkType" label="列表审核">列表审核</el-radio>
+       
+    </div>
     <el-row style="padding:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
     <div class="page-content">
       <el-row>
@@ -22,12 +28,12 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center" v-if="checkType === '树形审核'">
         <el-table
-          :data="treeData"
+          :data="treeList"
           style="width: 100%"
-          ref="treeTable"
           show-summary
+          ref="treeTable"
           row-key="id"
           :indent="30"
           max-height="560"
@@ -37,8 +43,39 @@
           v-loading="loading"
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column prop="totalCount" label="内容数" width="80" align="center"></el-table-column>
           <el-table-column label="操作" width="150" align="center">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                size="mini"
+                @click="goUpdateFile(scope.row)"
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核'"
+              >开始审核</el-button>
+              <el-button
+              type="success"
+              size="mini"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
+              @click="detaileFile(scope.row)"
+              >
+              审核完成  
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row >
+      <el-row v-else style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+         <el-table
+          :data="fileList"
+          ref="listTable"
+          style="width: 100%"
+          show-summary
+          :indent="30"
+          max-height="560"
+          highlight-current-row
+          border
+          >
+          <el-table-column prop="name" label="内容"></el-table-column>
+          <el-table-column  width="150" align="center">
             <template slot-scope="scope">
               <el-button
                 type="primary"
@@ -85,16 +122,28 @@
                     填写审核内容                
               </h3>
               <el-form :v-model="fileRecord">
-              <el-form-item label='分数:' labelWidth='80px' style="width:280px">
+              <el-form-item label='分数:' labelWidth='100px' style="width:280px">
                 <el-input type="text" v-model="fileRecord.codeScore"></el-input>
               </el-form-item>
-              <el-form-item label='通过状态:' labelWidth='80px' >
+              <el-form-item label='通过状态:' labelWidth='100px' >
                 <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:200px">
                 <el-option label="通过" value="通过"></el-option>
                 <el-option label="不通过" value="不通过"></el-option>
               </el-select>
               </el-form-item>
-              <el-form-item >
+              <el-form-item label='问题选择:' labelWidth='100px' v-if="fileRecord.pass === '不通过'">
+                <el-checkbox-group v-model="problemList" >
+                  <el-checkbox v-for="(item,index) in problem" :key="index" :label="item">                   
+                  </el-checkbox>
+                  </el-checkbox-group>
+                  <el-checkbox  v-model="elsePro">其他</el-checkbox>
+                  <el-input
+                    type="textarea"
+                    v-if="elsePro"
+                    :rows="2"
+                    placeholder="请输入具体问题"
+                    v-model="proTextarea">
+                  </el-input>
               </el-form-item>
               </el-form>
             </el-col>
@@ -138,24 +187,24 @@
             <el-button @click="detaildialogVisible = false">确 定</el-button>
           </div>
       </el-dialog>
-      <el-dialog title="新增检查记录" :visible.sync="addformVisible" :close-on-click-modal="false">
-        </el-dialog>
       <el-dialog
         :close-on-click-modal='false'
           width="30%"
-          title="选择原因："
+           title="违章隐患录入"
           :visible.sync="noinnerVisible"
           >
           <el-form>
-            <el-form-item label="选择原因：" style="margin-bottom:1px">
-               <el-radio v-model="reason" label="违章">录入违章</el-radio>
+            <el-form-item  style="margin-bottom:30px;">
+               <el-radio v-model="reason" label="不录入">不录入</el-radio> 
+               <el-radio v-model="reason" label="违章">录入违章</el-radio>            
                <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
             </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
+             <el-form-item>
             <el-button type="primary" @click="checkNopass">确定</el-button>
-            <el-button @click="noinnerVisible = false">取 消</el-button>
-          </div>
+            <el-button @click="cancelInput">取 消</el-button>
+           </el-form-item>
+          </el-form>
+         
         </el-dialog>
     </div>
   </div>
@@ -166,6 +215,7 @@ import {querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "
 export default {
   data() {
     return {
+      checkType: '树形审核',
       filterQuery: {
         year: "",
         companyCode: null,
@@ -192,6 +242,7 @@ export default {
         code: ''
       },
       nowcode: null,
+      // 控制弹出页面
       detaildialogVisible: false,
       noinnerVisible: false,
       innerVisible: false,
@@ -200,15 +251,42 @@ export default {
       dialogFormVisible: false,
       loading: true,
       dialogVisible: false,
+      // 控制表格数据
       detailData: {},
       treeData: [],
       initData:[],
-      reason:'',
+      reason:'违章',
       editdata: '',
-      nodialogVisible: false
+      nodialogVisible: false,
+      nopass: {},
+      fileList: [],
+      treeList: [],
+      // 问题列表
+      problemForm: {},
+      problemList:[],
+      problem: [],
+      elsePro: false,
+      proTextarea: ''
     };
   },
   methods: {
+    getlist() {
+      console.log(this.treeData)
+      
+    },
+    // 筛选树形图叶子结点信息
+    async deepTree (treedata) {
+            let _this = this
+            treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                    _this.fileList.push(item)
+                    return
+                } else {
+                    _this.deepTree(item.childNode)
+                }
+            })
+            return _this.fileList
+      },
     loadFilterParams() {
       let _this = this
       _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
@@ -217,9 +295,16 @@ export default {
       _this.filterQuery.companyCode = initData.companyCode
       _this.filterQuery.companyName = initData.companyName
       _this.querryTree.year = initData.year
+      // 隐患违章表单
+      _this.nopass.fileAuditId = initData.fileAuditId
+      _this.nopass.companyCode = initData.companyCode
+      // 查询单位年度审核表表表单
       _this.querryTree.companyCode = initData.companyCode
+      // 新增审核记录表单
       _this.fileRecord.fileAuditId = initData.fileAuditId
+      // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
+      console.log(initData)
     },
     handleCellClick(row, cell, column) {
       if (row.code.length < 10) {
@@ -229,8 +314,21 @@ export default {
         }
       }
     },
+    cancelInput() {
+      this.$confirm('确认不录入隐患违章吗？','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      .then(()=>{
+        this.noinnerVisible = false
+       })
+       
+    },
     detaileFile(data) {
       let _this = this
+      // 获取问题清单
+      
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
       _this.detailData.initialScore = data.initialScore
@@ -253,7 +351,9 @@ export default {
     },
     goUpdateFile(data){
       let _this = this
+      let promblem = []
       _this.editdata = data
+      // 填充文件审核详情页面
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
       _this.detailData.initialScore = data.initialScore
@@ -262,6 +362,12 @@ export default {
       _this.detailData.problemDescription = data.problemDescription      
       _this.fileRecord.code = data.code
       _this.updateCheckForm.code = data.code
+      _this.nopass.code = data.code
+      promblem = data.problemDescription.split(/[0-9.]+/)
+      promblem.pop()
+      promblem.shift()
+      _this.problem =  promblem
+      console.log(_this.problem )
       _this.dialogVisible = true
     },
     hasdata(){
@@ -272,36 +378,46 @@ export default {
         }
     },
     handleGetInitialData() {
-      this.loading = true;
-      console.log(this.querryTree)
-      querryQhseElement(this.querryTree).then(res => {
-        this.treeData = res.data;
+      let _this = this
+      _this.loading = true;
+      // 获取单位年度审核表
+      querryQhseElement(_this.querryTree).then(res => {
+        _this.treeData = res.data;
+        _this.treeList = res.data;
         console.log(res.data)
-        this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
+        _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
-          this.$message.warning('请检查要素证据审批是否完成！')
-          this.$router.go(-1)
+          _this.$message.warning('请检查要素证据审批是否完成！')
+          _this.$router.go(-1)
         }
-        this.loading = false;
-      })
+        return _this.deepTree(_this.treeData)
+      })  
+      .then(() => {
+        _this.loading = false
+        })
       .catch(err => {
-          this.message.error(err.message);
+          _this.message.error(err.message);
         });   
     },
     updateCompanyStatus(){
         this.dialogFormVisible = true
     },
+    setlocalStorage () {
+     
+    },
     updataFileAudit() {
+      // 上传文件审核记录
       let _this = this
+      console.log(_this.nopass)
       if(_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '') {
         _this.$message.error('请填写审核内容')
         return
       }
       _this.status = _this.fileRecord.pass
-      console.log(_this.fileRecord)
       updateCheckstatus(_this.updateCheckForm).then(() => {
         return addFileaduitrecord(_this.fileRecord)
       }).then(res => {
+        // 这里应该返回文件审核记录的recordID
         if(res.code === 1000){
         _this.$message.success('添加成功！')
         _this.dialogVisible = false
@@ -322,11 +438,13 @@ export default {
       this.noScore()
     },
     noScore() {
+      // 不通过时开始录入隐患违章
       let rowdata = this.editdata
       let _this = this
       // 新增不成功
-      _this.noinnerVisible = false
-      if (_this.reason === '隐患'){
+      
+      if (_this.reason === '不录入') _this.noinnerVisible = false
+      else if (_this.reason === '隐患'){
            _this.$router.push({
             path: '/hidden_danger/input',
             params: {

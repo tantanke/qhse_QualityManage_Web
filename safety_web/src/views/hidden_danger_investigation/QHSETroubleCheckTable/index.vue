@@ -283,7 +283,7 @@ export default {
         }
     },
     methods: {
-         /* deepTree (treedata) {
+         /*async deepTree (treedata) {
             let _this = this
             treedata.forEach(item => {
                 if (item.children.length === 0) {

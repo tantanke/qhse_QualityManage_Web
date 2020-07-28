@@ -3,8 +3,43 @@
           <div class="page-title" style="width:100%">QHSE问题清单</div>
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE隐患清单">QHSE隐患清单</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单">QHSE问题清单</el-radio>
       <el-row v-if="listcate === 'QHSE违章清单'">
           <p style="width:100%">QHSE违章清单</p>
+          <el-row>
+          <el-form>
+              <el-col :span='5'>
+                  <el-form-item label='组件机构：'>
+                      <el-cascader
+                        v-model="checkForm.companyCode"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"             
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='7'>
+                  <el-form-item label='时间范围：'>
+                      <el-date-picker
+                        v-model="checkForm.date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions">
+                        </el-date-picker>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='6'>
+                <el-button type="primary">开始查询</el-button>
+              </el-col>           
+          </el-form>
+          </el-row>
           <el-row style="height:370px" >
          <el-table
           type="expand"
@@ -107,8 +142,42 @@
           </el-table>
           </el-row>
       </el-row>
-      <el-row v-else> 
+      <el-row v-else-if="listcate === 'QHSE隐患清单'"> 
           <p  style="width:100%">QHSE隐患清单</p>
+          <el-row>
+          <el-form>
+              <el-col :span='5'>
+                  <el-form-item label='组件机构：'>
+                      <el-cascader
+                        v-model="checkForm.companyCode"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"             
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='7'>
+                  <el-form-item label='时间范围：'>
+                      <el-date-picker
+                        v-model="checkForm.date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions">
+                        </el-date-picker>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='6'>
+                <el-button type="primary">开始查询</el-button>
+              </el-col>           
+          </el-form>
+          </el-row>
           <el-row style="height:350px">
           <el-table
           border
@@ -192,25 +261,74 @@
           </el-table>
           </el-row>
       </el-row>
+      <el-row v-else-if="listcate === 'QHSE问题清单'">
+          <p  style="width:100%">QHSE问题清单</p>
+          <el-form>
+              <el-row>
+          <el-form>
+              <el-col :span='5'>
+                  <el-form-item label='组件机构：'>
+                      <el-cascader
+                        v-model="checkForm.companyCode"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"             
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='7'>
+                  <el-form-item label='时间范围：'>
+                      <el-date-picker
+                        v-model="checkForm.date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions">
+                        </el-date-picker>
+                  </el-form-item>
+              </el-col>
+              <el-col :span='6'>
+                <el-button type="primary">开始查询</el-button>
+              </el-col>           
+          </el-form>
+          </el-row>      
+          </el-form>
+          <el-row style="height:370px">
+              <el-table></el-table>
+          </el-row>
+      </el-row>
   </div>
 </template>
 
 <script>
 import {queryDangerrecord,queryRegulationrecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
+import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
    data() {
        return {
            regulationrecord: [],
            dangerrecord: [],
            serdata:{},
+           companyList: [],
+           checkForm: {
+                companyName: '',
+                companyCode: '',
+                date: ''
+            },
            listcate: 'QHSE违章清单'
        }
    },
    methods: {
+       
        getDangerrecord () {
           queryDangerrecord().then(res => {
               this.dangerrecord = res.data.list
-              console.log(res)
           }).catch(err => {
               this.$message.error(err)
           })
@@ -218,13 +336,22 @@ export default {
        getRegulationrecord () {
            queryRegulationrecord().then(res => {
                this.regulationrecord = res.data.list
-               console.log(res)
            }).catch(err => {
               this.$message.error(err)
            })
-       }
+       },
+       getCompanyList () {
+            GetqhseCompanytree().then(res => {
+                this.companyList = res.data
+                console.log(res)
+            })
+        },
+        handleChange(value) {
+        console.log(value);
+        }
    },
    mounted() {
+       this.getCompanyList()
        this.getDangerrecord()
        this.getRegulationrecord()
    },

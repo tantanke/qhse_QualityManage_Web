@@ -167,9 +167,7 @@ export default {
         serchform = {year: this.filterQuery.year}
         queryFileaduit(serchform).then(res => {
         this.tableData = res.data.list;
-        console.log(res.data.list)
         this.loading = false;
-        console.log(res)
       }).catch(err => {
           this.message.error(err.message);
           this.loading = false;
@@ -180,10 +178,11 @@ export default {
         queryFileaduit2(serchform).then(res => {
         this.tableData = res.data.list;
         this.loading = false;
-        console.log(res)
+        this.searchForm.companyName = ''
       }).catch(err => {
           this.message.error(err.message);
           this.loading = false;
+          this.searchForm.companyName = ''
         });
       }
 
