@@ -27,6 +27,7 @@
                 placeholder="选择状态"
                 clearable
                 filterable
+                @change="selectDepart2"
               style="width: 100%;" 
               loading-text="查询中...">
               <el-option
@@ -111,10 +112,12 @@
               </el-form-item>
               </div >
               <el-form-item style="text-align:right">
-                <el-button v-if="this.node.status==='未审核'" type="danger" @click="pass_click">审核通过</el-button>
+                <el-button v-if="detailData.evidenceDsecription==null" type="info" >无法审核</el-button>
+                <el-button v-if="this.node.status==='未审核'&&detailData.evidenceDsecription!=null" type="danger" @click="pass_click">审核通过</el-button>
                 <el-button v-if="this.node.status==='未批准'" type="danger" @click="appr_click">批准通过</el-button>
-                <el-button type="danger" @click="no_passclick">不通过</el-button>
+                <el-button type="danger" v-if="detailData.evidenceDsecription!=null" @click="no_passclick">不通过</el-button>
                 <el-button type="danger" @click="dialogVisible = false">返回</el-button>
+                <p v-if="detailData.evidenceDsecription==null" style="color:red">未录入附件，请先录入附件</p>
               </el-form-item>
             </el-col>
           </el-row>
@@ -143,7 +146,9 @@ const DefaultQuery = {
 export default {
   data() {
     return {
-      filterQuery: {},//记载公司的信息
+      filterQuery: {
+        status:''
+      },//记载公司的信息
       companyList: [],//记载公司的展开树节点
       disabled1:false,
       dialogFormVisible: false,
@@ -174,69 +179,27 @@ export default {
     },
     selectDepart2(res) {
       console.log('selectDepart2', res);
-      this.filterQuery.status = res;
-      // let obj = {}
-      //   //遍历下拉数组中的item
-      //   obj = this.status.find((item)=>{
-      //     return item.status === data
-      //   })
-      //   console.log(JSON.stringify(obj.status))
-      //   this.filterQuery.status = obj.status    
+      let obj = {}
+        //遍历下拉数组中的item
+        obj = this.status.find((item)=>{
+          return item.status === res
+        })
+        console.log(JSON.stringify(obj.status))
+        this.$set(this.filterQuery,this.filterQuery.status,res.value)
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
+          this.dialogFormVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
     no_passclick(){
-      no_elementReviewer(this.code).then(res => {
+      no_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
-        }).catch(err => {
-          this.$message.error(err.message);
-        })
-    },
-    pass_click(){
-      pass_elementReviewer(this.node).then(res => {
-          console.log(res.message);
-          this.message.success(res.message);
-          this.dialogVisible=false;
-        }).catch(err => {
-          this.$message.error(err.message);
-        })
-    },
-    appr_click(){
-      approval_elementReviewer(this.node).then(res => {
-          console.log(res.message);
-          this.message.success(res.message);
-          this.dialogVisible=false
-        }).catch(err => {
-          this.$message.error(err.message);
-        })
-    },
-    loadFilterParams() {//获取年份
-     //把filterquery加上信息与路由
-      this.filterQuery = { ...DefaultQuery, ...this.$route.query };
-      this.filterQuery = {
-        ...this.filterQuery
-      };
-      this.filterQuery.status = ''
-      let year = new Date();
-      this.filterQuery.year = String(year.getFullYear());
-     
-    },
-    handleClick() {//点击查询获取到公司的证据项  改为check页面的显示节点
-      this.treeData=''
-      this.filterQuery.companyCode='';
-      if(!this.filterQuery.year){//显示年份
-        this.filterQuery.year = new Date()
-      }
-      let nowdata = new Date(this.filterQuery.year);
-      this.filterQuery.year = String(nowdata.getFullYear());
-      
-      this.handleGetInitialData();//更改loading状态
-      if(this.filterQuery.status==='未审核'){
+          console.log(this.code.qHSE_CompanyYearManagerSysElement_ID)
+          if(this.filterQuery.status==='未审核'){
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -262,6 +225,97 @@ export default {
           this.message.error(err.message);
         });
       }
+          this.dialogFormVisible=false;
+        }).catch(err => {
+          this.$message.error(err.message);
+        })
+    },
+    pass_click(){
+      pass_elementReviewer(this.nodeData).then(res => {
+          console.log(res.message);
+          this.$message.success(res.message);
+          if(this.filterQuery.status==='未审核'){
+         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+          // this.companyName = res.data.name;
+          // this.year = res.data.year;
+          // this.status = res.data.status;
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+         }
+          else {
+           query_elementReviewers(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+          // this.companyName = res.data.name;
+          // this.year = res.data.year;
+          // this.status = res.data.status;
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+        }
+          this.dialogVisible=false;
+         }).catch(err => {
+          this.$message.error(err.message);
+        })
+    },
+    appr_click(){
+      approval_elementReviewer(this.nodeData).then(res => {
+          console.log(res.message);
+          this.$message.success(res.message);
+          this.dialogVisible=false
+        }).catch(err => {
+          this.$message.error(err.message);
+        })
+    },
+    loadFilterParams() {//获取年份
+     //把filterquery加上信息与路由
+      this.filterQuery = { ...DefaultQuery, ...this.$route.query };
+      this.filterQuery = {
+        ...this.filterQuery
+      };
+      this.filterQuery.status = ''
+      let year = new Date();
+      this.filterQuery.year = String(year.getFullYear());
+     
+    },
+    handleClick() {//点击查询获取到公司的证据项  改为check页面的显示节点
+      this.treeData=''
+      this.filterQuery.companyCode='00';
+      if(!this.filterQuery.year){//显示年份
+        this.filterQuery.year = new Date()
+      }
+      let nowdata = new Date(this.filterQuery.year);
+      this.filterQuery.year = String(nowdata.getFullYear());
+      
+      this.handleGetInitialData();//更改loading状态
+      if(this.filterQuery.status==='未审核'){
+         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+          console.log(this.filterQuery.compayCode)
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+      }
+      else {
+        query_elementReviewers(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+      }
       
       this.loading = false;
         
@@ -278,7 +332,8 @@ export default {
       this.loading = true;
     },
     updateScore(data){//显示出证据项的内容
-    
+    console.log(this.userId)
+    this.attachs={};
       show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
@@ -307,11 +362,18 @@ export default {
         this.message.error(err.message);
       })
       this.node=data;
+      
       this.detailData = {}
       this.detailData.name = data.name
       this.detailData.code = data.code
       this.detailData.content = data.content
+      if(data.content==null){
+        this.detailData.content ='未输入内容'
+      }
       this.detailData.basis = data.basis
+      if(data.basis==null){
+        this.detailData.basis ='未输入内容'
+      }
       this.detailData.auditMode = data.auditMode
       this.detailData.initialScore = data.initialScore
       this.detailData.formula = data.formula

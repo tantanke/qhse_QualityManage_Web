@@ -43,3 +43,10 @@ export const GetQhseTable =(data)=>{
 export const publishTableElement =(param)=>{
 	return request('/api/approval_companyYearManager/'+param,{method:'PUT'})
 }
+
+export const querryQhseElement = (data) => {
+  return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
+      method: 'GET',
+      data
+    })
+}
