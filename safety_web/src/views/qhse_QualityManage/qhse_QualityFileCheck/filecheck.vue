@@ -351,7 +351,6 @@ export default {
     },
     goUpdateFile(data){
       let _this = this
-      let promblem = []
       _this.editdata = data
       // 填充文件审核详情页面
       _this.detailData.status = data.status 
@@ -363,11 +362,7 @@ export default {
       _this.fileRecord.code = data.code
       _this.updateCheckForm.code = data.code
       _this.nopass.code = data.code
-      promblem = data.problemDescription.split(/[0-9.]+/)
-      promblem.pop()
-      promblem.shift()
-      _this.problem =  promblem
-      console.log(_this.problem )
+      _this.problem =  _this.filterProblem(data.problemDescription)
       _this.dialogVisible = true
     },
     hasdata(){
@@ -376,6 +371,15 @@ export default {
           this.$message('请检查要素证据审批是否完成！')
           this.$router.go(-1)
         }
+    },
+    filterProblem(data) {
+      let problem
+      if(data !== null){
+      problem = data.split(/[0-9.]+/)
+      problem.pop()
+      problem.shift()
+      }
+      return problem
     },
     handleGetInitialData() {
       let _this = this
