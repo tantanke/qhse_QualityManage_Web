@@ -28,11 +28,11 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center" v-if="checkType === '树形审核'">
+      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center" >
+        <div v-show="checkType === '树形审核'">
         <el-table
           :data="treeList"
           style="width: 100%"
-          show-summary
           ref="treeTable"
           row-key="id"
           :indent="30"
@@ -43,7 +43,7 @@
           v-loading="loading"
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column label="操作" width="150" align="center">
+          <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button
                 type="primary"
@@ -59,23 +59,37 @@
               >
               审核完成  
               </el-button>
+              <el-button
+              type="danger"
+              size="mini"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
+              @click="deleteFile(scope.row)"
+              >
+              删除记录  
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
-      </el-row >
-      <el-row v-else style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+        </div>
+        <div v-if="checkType === '列表审核'">
          <el-table
-          :data="fileList"
+          :data="fileList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
           ref="listTable"
           style="width: 100%"
-          show-summary
+          v-loading="loading"
           :indent="30"
           max-height="560"
           highlight-current-row
           border
           >
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column  width="150" align="center">
+          <el-table-column  width="200" align="center">
+            <template slot="header" slot-scope="scope">
+              <el-input
+                v-model="search"
+                size="mini"
+                placeholder="输入关键字搜索"/>
+            </template>
             <template slot-scope="scope">
               <el-button
                 type="primary"
@@ -89,11 +103,12 @@
               v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
               @click="detaileFile(scope.row)"
               >
-              审核完成  
+              查看详情  
               </el-button>
             </template>
           </el-table-column>
         </el-table>
+        </div>
       </el-row>
       <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="1200px">
         
@@ -215,6 +230,7 @@ import {querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "
 export default {
   data() {
     return {
+      search: '',
       checkType: '树形审核',
       filterQuery: {
         year: "",
@@ -235,7 +251,9 @@ export default {
         fileAuditId: '',
         code: '',
         codeScore: '',
-        pass: ''
+        pass: '',
+        additor: '',
+        auditTime: ''
       },
       statusForm: {
         fileAuditId: '',
@@ -277,6 +295,7 @@ export default {
     // 筛选树形图叶子结点信息
     async deepTree (treedata) {
             let _this = this
+            
             treedata.forEach(item => {
                 if (item.childNode.length === 0) {
                     _this.fileList.push(item)
@@ -291,6 +310,7 @@ export default {
       let _this = this
       _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
       const initData = JSON.parse(localStorage.getItem('data'));
+      console.log(initData)
       _this.filterQuery.year = initData.year
       _this.filterQuery.companyCode = initData.companyCode
       _this.filterQuery.companyName = initData.companyName
@@ -302,6 +322,8 @@ export default {
       _this.querryTree.companyCode = initData.companyCode
       // 新增审核记录表单
       _this.fileRecord.fileAuditId = initData.fileAuditId
+      _this.fileRecord.additor = initData.additor
+      _this.fileRecord.auditTime = initData.auditTime
       // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
       console.log(initData)
@@ -325,6 +347,7 @@ export default {
        })
        
     },
+    // 获取已经审核完成的记录的详细信息
     detaileFile(data) {
       let _this = this
       // 获取问题清单
@@ -372,6 +395,7 @@ export default {
           this.$router.go(-1)
         }
     },
+    // 筛选问题列表
     filterProblem(data) {
       let problem
       if(data !== null){
@@ -394,29 +418,28 @@ export default {
           _this.$message.warning('请检查要素证据审批是否完成！')
           _this.$router.go(-1)
         }
+         _this.fileList = []
         return _this.deepTree(_this.treeData)
       })  
       .then(() => {
         _this.loading = false
         })
       .catch(err => {
-          _this.message.error(err.message);
+          _this.$message.error(err.message);
         });   
     },
     updateCompanyStatus(){
         this.dialogFormVisible = true
     },
-    setlocalStorage () {
-     
-    },
+    // 删除文件审核记录
     updataFileAudit() {
       // 上传文件审核记录
       let _this = this
       console.log(_this.nopass)
-      if(_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '') {
+      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '' || (_this.proTextarea === '' || _this.problemList === [])) ) {
         _this.$message.error('请填写审核内容')
         return
-      }
+        }
       _this.status = _this.fileRecord.pass
       updateCheckstatus(_this.updateCheckForm).then(() => {
         return addFileaduitrecord(_this.fileRecord)
@@ -427,6 +450,9 @@ export default {
         _this.dialogVisible = false
         _this.fileRecord.pass = ''
         _this.fileRecord.codeScore = ''
+        _this.problemList = []
+        _this.proTextarea = ''
+        _this.elsePro = false
         _this.handleGetInitialData()
         if(_this.status === '不通过') {
          _this.noinnerVisible = true

@@ -13,9 +13,9 @@
                         v-model="checkForm.companyId"
                         :options="companyList"
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
-                        :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"   
+                        ref="cascaderAddr"  
+                        :show-all-levels="false" 
                         clearable
                         filterable          
                         >             
@@ -344,7 +344,7 @@ export default {
            serdata:{},
            companyList: [],
            checkForm: {
-                companyId: null,
+                companyId: [],
                 startDate: null,
                 endDate: null
             },
@@ -353,114 +353,90 @@ export default {
    },
    methods: {
        searchQuestion () {
-        let _this = this
-         // 查询全部
-          if (!_this.checkForm.companyId && !_this.date) {
-                queryRegulationrecord().then(res => {
-                    this.regulationrecord = res.data.list
-                }).catch(err => {
-              this.$message.error(err)
-          })
-          } else if (_this.checkForm.companyId && !_this.date) {
-              // 查询时间
-                let data = this.checkForm.companyId.pop()
-                queryRegulationrecordCompany({companyId:data}).then(res => {
-                    this.regulationrecord = res.data.list
-                    this.checkForm.companyId = null
-                }).catch(err => {
-              this.$message.error(err)
-          })
-          } else if (!_this.checkForm.companyId && _this.date) {
-              // 查询公司
-                let start = _this.date[0]
-                let end = _this.date[1]
-                queryRegulationrecordDate({startDate:start,endDate:end}).then(res => {
-                    this.regulationrecord = res.data.list
-                })
-          } else if (_this.checkForm.companyId && _this.date) {
-              // 都查询
-              let data = this.checkForm.companyId.pop()           
-              let start = _this.date[0]
-              let end = _this.date[1]
-              queryRegulationrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
-                  this.regulationrecord = res.data.list
-                  this.checkForm.companyId = null
-              })
-              console.log(4)
-          }
+        // 根据参数的不同选择不同的拼接方式
+       
        },
        searchDanger () {
+         // 根据参数的不同选择不同的拼接方式
          let _this = this
          // 查询全部
-          if (!_this.checkForm.companyId && !_this.date) {
+          if (_this.checkForm.companyId.length === 0 && !_this.date) {
                 queryDangerrecord().then(res => {
-                    this.dangerrecord = res.data.list
+                    _this.dangerrecord = res.data.list
                 }).catch(err => {
-              this.$message.error(err)
+              _this.$message.error(err)
           })
-          } else if (_this.checkForm.companyId && !_this.date) {
-              // 查询时间
-                let data = this.checkForm.companyId.pop()
-                queryDangerrecordCompany({companyId:data}).then(res => {
-                    this.dangerrecord = res.data.list
-                    this.checkForm.companyId = null
-                }).catch(err => {
-              this.$message.error(err)
-          })
-          } else if (!_this.checkForm.companyId && _this.date) {
+          } else if ( !_this.date && _this.checkForm.companyId.length !== 0) {
               // 查询公司
+              console.log(this.checkForm)
+                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
+                queryDangerrecordCompany({companyId:data}).then(res => {
+                    _this.dangerrecord = res.data.list
+                    _this.checkForm.companyId = []
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
+              // 查询时间
                 let start = _this.date[0]
                 let end = _this.date[1]
                 queryDangerrecordDate({startDate:start,endDate:end}).then(res => {
-                    this.dangerrecord = res.data.list
-                })
-          } else if (_this.checkForm.companyId && _this.date) {
+                    _this.dangerrecord = res.data.list
+                    _this.date = null
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
               // 都查询
-              let data = this.checkForm.companyId.pop()           
+              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
               let start = _this.date[0]
               let end = _this.date[1]
               queryDangerrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
-                  this.dangerrecord = res.data.list
-                  this.checkForm.companyId = null
-              })
-              console.log(4)
+                  _this.dangerrecord = res.data.list
+                  _this.checkForm.companyId = []
+                  _this.date = null
+              }).catch(err => {
+              _this.$message.error(err)
+          })
           }
        },
        searchRegulation () {
         let _this = this
+        console.log(_this.checkForm)
          // 查询全部
-          if (!_this.checkForm.companyId && !_this.date) {
+          if (_this.checkForm.companyId.length === 0 && !_this.date) {
                 queryRegulationrecord().then(res => {
-                    this.regulationrecord = res.data.list
+                    _this.regulationrecord = res.data.list
                 }).catch(err => {
-              this.$message.error(err)
+              _this.$message.error(err)
           })
-          } else if (_this.checkForm.companyId && !_this.date) {
-              // 查询时间
-                let data = this.checkForm.companyId.pop()
-                queryRegulationrecordCompany({companyId:data}).then(res => {
-                    this.regulationrecord = res.data.list
-                    this.checkForm.companyId = null
-                }).catch(err => {
-              this.$message.error(err)
-          })
-          } else if (!_this.checkForm.companyId && _this.date) {
+          } else if (!_this.date && _this.checkForm.companyId.length !== 0) {
               // 查询公司
+                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+                queryRegulationrecordCompany({companyId:data}).then(res => {
+                    _this.regulationrecord = res.data.list
+                    _this.checkForm.companyId = []
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
+              // 查询时间
                 let start = _this.date[0]
                 let end = _this.date[1]
                 queryRegulationrecordDate({startDate:start,endDate:end}).then(res => {
-                    this.regulationrecord = res.data.list
+                    _this.regulationrecord = res.data.list
+                    _this.date = null
                 })
-          } else if (_this.checkForm.companyId && _this.date) {
+          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
               // 都查询
-              let data = this.checkForm.companyId.pop()           
+              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
               let start = _this.date[0]
               let end = _this.date[1]
               queryRegulationrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
-                  this.regulationrecord = res.data.list
-                  this.checkForm.companyId = null
+                  _this.regulationrecord = res.data.list
+                  _this.checkForm.companyId = []
+                  _this.date = null
               })
-              console.log(4)
           }
        },
        getDangerrecord () {
