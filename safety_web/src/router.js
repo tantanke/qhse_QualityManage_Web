@@ -69,6 +69,7 @@ export default new Router({
         //QHSE 量化标准
         { path: '/qhse_QualityManage/qhse_QualityStandard/index', name:'QHSEQualityStandardIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityStandard/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityFill/index', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/index.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_QualityFill/addmuch', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/addsome.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/index', name:'QHSEQualityCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityCheck/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index', name:'QHSEStatisticAnalysis', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_ElementEvidenceApproval/index', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
@@ -155,8 +156,7 @@ export default new Router({
         { path: '/hidden_danger/accident', name: 'QHSEAccidentEvent', component: resolve => require(['./views/hidden_danger_investigation/accident/index.vue'],resolve)},
         { path: '/hidden_danger/illegal_entry', name: 'illegal_entry', component: resolve => require(['./views/hidden_danger_investigation/illegal_entry/index.vue'],resolve)},
         { path: '/hidden_danger/input', name: 'input', component: resolve => require(['./views/hidden_danger_investigation/hidden_danger_input/index.vue'],resolve)},
-        { path: '/hidden_danger/QHSETroubleCheckTable', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/index.vue'],resolve)},
-        { path: 'hidden_danger_investigation', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/index.vue'],resolve)},
+        { path: '/hidden_danger/QHSETroubleCheckTable', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/checkList.vue'],resolve)},
         //检查表配置
         { path: '/hidden_danger/check_list_item', name: 'QHSEChecklistConfig', component: resolve => require(['./views/hidden_danger_investigation/check_list_item/index.vue'],resolve)},
       ]

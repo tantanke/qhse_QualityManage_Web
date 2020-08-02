@@ -3,8 +3,42 @@
           <div class="page-title" style="width:100%">QHSE问题清单</div>
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE隐患清单">QHSE隐患清单</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单">QHSE问题清单</el-radio>
       <el-row v-if="listcate === 'QHSE违章清单'">
           <p style="width:100%">QHSE违章清单</p>
+          <el-row>
+          <el-form :inline="true">
+                  <el-form-item label='组件机构：' >
+                      <el-cascader
+                        v-model="checkForm.companyId"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        @change="handleChange"
+                        ref="cascaderAddr"  
+                        :show-all-levels="false" 
+                        clearable
+                        filterable          
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+                  <el-form-item label='时间范围：' labelWidth='120px'>
+                      <el-date-picker
+                        v-model="date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"                       
+                        >
+                        </el-date-picker>
+                  </el-form-item>
+                  <el-form-item>
+                <el-button type="primary" @click="searchRegulation">开始查询</el-button>   
+                </el-form-item>     
+          </el-form>
+          </el-row>
           <el-row style="height:370px" >
          <el-table
           type="expand"
@@ -107,12 +141,43 @@
           </el-table>
           </el-row>
       </el-row>
-      <el-row v-else> 
+      <el-row v-else-if="listcate === 'QHSE隐患清单'"> 
           <p  style="width:100%">QHSE隐患清单</p>
+          <el-row>
+          <el-form :inline="true">
+                  <el-form-item label='组件机构：' >
+                      <el-cascader
+                        v-model="checkForm.companyId"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"             
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+                  <el-form-item label='时间范围：' labelWidth='120px'>
+                      <el-date-picker
+                        v-model="date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                        >
+                        </el-date-picker>
+                  </el-form-item>
+                  <el-form-item>
+                <el-button type="primary" @click="searchDanger">开始查询</el-button>   
+                </el-form-item>     
+          </el-form>
+          </el-row>
           <el-row style="height:350px">
           <el-table
           border
-          :data='regulationrecord'
+          :data='dangerrecord'
           style="width: 100%"
           max-height="735">
           <el-table-column type="expand">
@@ -188,25 +253,192 @@
           <el-table-column prop='profession' label='监督人员'></el-table-column>
           <el-table-column prop='description' label='隐患描述'></el-table-column>
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>    
-          <el-table-column prop='affixName' label='附件名称'></el-table-column>
           </el-table>
+          </el-row>
+      </el-row>
+      <el-row v-else-if="listcate === 'QHSE问题清单'">
+          <p  style="width:100%">QHSE问题清单</p>
+          <el-form>
+              <el-row>
+          <el-form :inline="true">
+                  <el-form-item label='组件机构：' >
+                      <el-cascader
+                        v-model="checkForm.companyId"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"             
+                        >             
+                      </el-cascader>
+                  </el-form-item>
+                  <el-form-item label='时间范围：' labelWidth='120px'>
+                      <el-date-picker
+                        v-model="checkForm.date"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        >
+                        </el-date-picker>
+                  </el-form-item>
+                  <el-form-item>
+                <el-button type="primary" @click="searchQuestion">开始查询</el-button>   
+                </el-form-item>     
+          </el-form>
+          </el-row>      
+          </el-form>
+          <el-row style="height:370px">
+              <el-table></el-table>
           </el-row>
       </el-row>
   </div>
 </template>
 
-<script>
-import {queryDangerrecord,queryRegulationrecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
+<script> 
+import { queryDangerrecord,
+        queryDangerrecordDate,
+        queryDangerrecordTwo,
+        queryDangerrecordCompany,
+        queryRegulationrecord,
+        queryRegulationrecordCompany,
+        queryRegulationrecordTwo,
+        queryRegulationrecordDate
+} from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
+import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
    data() {
        return {
+          pickerOptions: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
+           date: '',
            regulationrecord: [],
            dangerrecord: [],
            serdata:{},
+           companyList: [],
+           checkForm: {
+                companyId: [],
+                startDate: null,
+                endDate: null
+            },
            listcate: 'QHSE违章清单'
        }
    },
    methods: {
+       searchQuestion () {
+        // 根据参数的不同选择不同的拼接方式
+       
+       },
+       searchDanger () {
+         // 根据参数的不同选择不同的拼接方式
+         let _this = this
+         // 查询全部
+          if (_this.checkForm.companyId.length === 0 && !_this.date) {
+                queryDangerrecord().then(res => {
+                    _this.dangerrecord = res.data.list
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if ( !_this.date && _this.checkForm.companyId.length !== 0) {
+              // 查询公司
+              console.log(this.checkForm)
+                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
+                queryDangerrecordCompany({companyId:data}).then(res => {
+                    _this.dangerrecord = res.data.list
+                    _this.checkForm.companyId = []
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
+              // 查询时间
+                let start = _this.date[0]
+                let end = _this.date[1]
+                queryDangerrecordDate({startDate:start,endDate:end}).then(res => {
+                    _this.dangerrecord = res.data.list
+                    _this.date = null
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
+              // 都查询
+              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
+              let start = _this.date[0]
+              let end = _this.date[1]
+              queryDangerrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
+                  _this.dangerrecord = res.data.list
+                  _this.checkForm.companyId = []
+                  _this.date = null
+              }).catch(err => {
+              _this.$message.error(err)
+          })
+          }
+       },
+       searchRegulation () {
+        let _this = this
+        console.log(_this.checkForm)
+         // 查询全部
+          if (_this.checkForm.companyId.length === 0 && !_this.date) {
+                queryRegulationrecord().then(res => {
+                    _this.regulationrecord = res.data.list
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (!_this.date && _this.checkForm.companyId.length !== 0) {
+              // 查询公司
+                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+                queryRegulationrecordCompany({companyId:data}).then(res => {
+                    _this.regulationrecord = res.data.list
+                    _this.checkForm.companyId = []
+                }).catch(err => {
+              _this.$message.error(err)
+          })
+          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
+              // 查询时间
+                let start = _this.date[0]
+                let end = _this.date[1]
+                queryRegulationrecordDate({startDate:start,endDate:end}).then(res => {
+                    _this.regulationrecord = res.data.list
+                    _this.date = null
+                })
+          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
+              // 都查询
+              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
+              let start = _this.date[0]
+              let end = _this.date[1]
+              queryRegulationrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
+                  _this.regulationrecord = res.data.list
+                  _this.checkForm.companyId = []
+                  _this.date = null
+              })
+          }
+       },
        getDangerrecord () {
           queryDangerrecord().then(res => {
               this.dangerrecord = res.data.list
@@ -215,18 +447,20 @@ export default {
               this.$message.error(err)
           })
        },
-       getRegulationrecord () {
-           queryRegulationrecord().then(res => {
-               this.regulationrecord = res.data.list
-               console.log(res)
-           }).catch(err => {
-              this.$message.error(err)
-           })
-       }
+       getCompanyList () {
+            GetqhseCompanytree().then(res => {
+                this.companyList = res.data
+                console.log(res)
+            })
+        },
+        handleChange(value) {
+        console.log(value);
+        }
    },
    mounted() {
+       this.getCompanyList()
        this.getDangerrecord()
-       this.getRegulationrecord()
+       this.searchRegulation()
    },
 }
 </script>

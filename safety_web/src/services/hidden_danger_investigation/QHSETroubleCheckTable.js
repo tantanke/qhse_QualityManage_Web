@@ -22,7 +22,7 @@ export const addCheckRecord = (data) => {
   })
 }
 export const editCheckRecord = (data) => {
-  return request('/api/check_record/'+ data.id, {
+  return request('/api/check_record/'+ data.checkRecordID, {
       method: 'put',
       data
   })
@@ -30,6 +30,12 @@ export const editCheckRecord = (data) => {
 export const deleteCheckRecord = (data) => {
   return request('/api/check_record/' + data.id, {
       method: 'delete',
+      data
+  })
+}
+export const addCheckList = (data) => {
+  return request('/api/add_checkList', {
+      method: 'post',
       data
   })
 }
