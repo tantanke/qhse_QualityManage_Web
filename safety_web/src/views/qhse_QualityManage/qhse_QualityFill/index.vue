@@ -3,11 +3,11 @@
 		<div class="page-title" style="width: 100%">要素配置管理</div>
 		<div class="page-content" v-loading="loading">
 			<el-form label-width="130px" :inline="true" :model="filterQuery">
-				<el-form-item lable="选择公司:">
+				<el-form-item label="选择公司:">
 					<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 200px" :options="companyList" v-model="filterQuery.companyId"></treeselect>
 				</el-form-item>
 				<el-form-item label="选择年份：">
-					<el-date-picker type="year" placeholder="选择年份" style="width:200px" v-model="filterQuery.year">
+					<el-date-picker type="year" placeholder="请选择年份" style="width:200px" v-model="filterQuery.year">
 					</el-date-picker>
 				</el-form-item>
 				&nbsp;&nbsp;&nbsp;
@@ -17,48 +17,40 @@
 					<el-button type="primary" icon='el-icon-plus' @click="addmuch">批量新增</el-button>
 				</el-form-item>
 			</el-form>
-			<!--highlight-current-row @current-change="dialogVisible =true"-->
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table :data="filterQuery.selected" style="width: 100%" max-height="560" border v-loading="loading">
 					<el-table-column type="index" label="序号" width="100%" align="center"></el-table-column>
 					<el-table-column prop="companyName" label="单位名称" width="250%" align="center"></el-table-column>
 					<el-table-column prop="year" label="年度" width="100%" align="center"></el-table-column>
 					<el-table-column prop="elementTableName" label="检查表名称" width="340%" align="center"></el-table-column>
-					<!--
-					<el-table-column prop="status" label="状态" width="120" align="center"></el-table-column>
-					-->
 					<el-table-column label="操作" width="270%" align="center">
 						<template slot-scope="scope">
-							<el-button type="primary" size="mini" @click="handlChosen(scope.row)">配置</el-button>
-							<!--
-							<el-button type="primary" size="mini" @click="archived(scope.row)">归档</el-button>
-							-->
-
-							<el-button type="danger" size="mini" @click="deleteTable(scope.row)">删除</el-button>
+							<el-button type="primary" icon="el-icon-more" size="mini" @click="handlChosen(scope.row)">配置</el-button>
+							<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteTable(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
-				<el-dialog title="新增年度检查表" :visible.sync="insertCheckListDialog" align="left" width="30%">
-						<el-form :inline="true" label-width="90px" label-postion="left">
-							<el-form-item label="请选择公司:">
-								<treeselect :multiple="false" required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
-								 v-model="insertCompanyCode"></treeselect>
-							</el-form-item>
-							<el-form-item label="请选择年份:">
-								<el-date-picker type="year" required="true" placeholder="选择年份" style="width:250px" v-model="insertYear">
-								</el-date-picker>
-							</el-form-item>
-							<el-form-item label="检查表名称:">
-								<el-input placeholder="请输入检查表名称" style="width:250px;" v-model="insertElementTableName"></el-input>
-							</el-form-item>
-							<br />
-						</el-form>
+				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="30%">
+					<el-form :inline="true" label-width="90px" label-postion="left">
+						<el-form-item label="请选择公司:">
+							<treeselect :multiple="false" required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
+							 v-model="insertCompanyId"></treeselect>
+						</el-form-item>
+						<el-form-item label="请选择年份:">
+							<el-date-picker type="year" required="true" placeholder="请选择年份" style="width:250px" v-model="insertYear">
+							</el-date-picker>
+						</el-form-item>
+						<el-form-item label="要素表名称:">
+							<el-input placeholder="请输入要素表名称" style="width:250px;" v-model="insertElementTableName"></el-input>
+						</el-form-item>
+						<br />
+					</el-form>
 					<div slot="footer" class="dialog-footer">
-						<el-button @click="insertCheckListDialog=false">取消</el-button>
-								<el-button type="primary" @click="insertCheckList()">新增</el-button>
+						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="insertCheckListDialog=false">取消</el-button>
+						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新增</el-button>
 					</div>
 				</el-dialog>
-				<el-dialog title="年度检查表明细" :visible.sync="annCheckListDialog" width="70%" align="left">
+				<el-dialog title="要素表明细" :visible.sync="annCheckListDialog" width="70%" align="left">
 					<div class="page-content" width="70%" align="left">
 						<el-row>
 							<el-form :inline="true">
@@ -90,25 +82,21 @@
 <script>
 	import {
 		GetCompany,
+		GetQhseElement,
 		GetQhseChildElement,
 		GetQhseTable,
 		insertQhseTable,
 		deleteQhseTable,
 		addQHSEYearElement,
 		querryQhseElement,
-		publishTableElement
 	} from "../../../services/gettreedata"
 	const DefaultQuery = {
 		companyId: null,
 		companyName: '',
+		companyCode: '',
 		year: '',
 		chosenCompany: null,
 		chosenYear: '',
-		
-		insertCompanyId: '',
-		
-		
-		insertStatus: '未发布',
 		elementTree: [],
 		//从后端得到的列表数据应当存入tableData，再经过筛选后在前端呈现出筛选后的selected
 		selected: [],
@@ -118,18 +106,18 @@
 		data() {
 			return {
 				filterQuery: {},
-				insertCompanyCode: null,
+				insertCompanyCode: '',
 				insertCompanyName: '',
+				insertCompanyId: null,
 				insertYear: '',
 				insertElementTableName: '',
+				isChild: true,
 				companyList: [],
 				loading: false,
 				treeNodeList: [],
 				insertCheckListDialog: false,
-				annCheckListShow: false,
 				annCheckListDialog: false,
-				isChild: true,
-				querryQhseElement: {
+				QhseElement: {
 					companyCode: '',
 					year: ''
 				},
@@ -154,17 +142,18 @@
 				}
 			}
 		},
-		watch:{
-			insertCompanyCode(){
-				if(this.insertYear){
-					this.bindIdToName(this.companyList, this.insertCompanyCode)
-					this.insertElementTableName=this.insertYear.getFullYear()+this.insertCompanyName+"检查表"
+		watch: {
+			//实时监测单位输入框和年度输入框数据变化，当两者都不为空时将表名字段填入
+			insertCompanyId() {
+				if (this.insertYear) {
+					this.bindIdToName(this.companyList, this.insertCompanyId)
+					this.insertElementTableName = this.insertYear.getFullYear() + this.insertCompanyName + "检查表"
 				}
 			},
-			insertYear(){
-				if(this.insertCompanyCode){
-					this.bindIdToName(this.companyList, this.insertCompanyCode)
-					this.insertElementTableName=this.insertYear.getFullYear()+this.insertCompanyName+"检查表"
+			insertYear() {
+				if (this.insertCompanyId) {
+					this.bindIdToName(this.companyList, this.insertCompanyId)
+					this.insertElementTableName = this.insertYear.getFullYear() + this.insertCompanyName + "检查表"
 				}
 			}
 		},
@@ -181,19 +170,24 @@
 				this.selected
 				GetQhseTable().then(res => {
 					this.filterQuery.tableData = res.data
+				}).catch(err => {
+					this.$message.error(err.message)
 				})
 				this.loading = false
 			},
 			//加载选择公司的树形列表
 			handleGetCompany() {
 				GetCompany().then(res => {
+
 					this.companyList = res.data
+					console.log(this.companyList)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
 			},
 			//实现查询按钮，根据公司名和年度查询对应记录
 			handleSelect() {
+				this.isChild = true
 				//获取到年度的yyyy格式数据
 				if (this.filterQuery.year) {
 					var data = new Date(this.filterQuery.year).getFullYear()
@@ -210,15 +204,30 @@
 						//当只有公司信息时所做查询
 					} else if (!data && this.filterQuery.companyId) {
 						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
-						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
-							return item.companyName == this.filterQuery.companyName
-						})
+						this.checkCompany(this.companyList, this.filterQuery.companyName)
+						if (this.isChild == false) {
+							this.filterQuery.companyId = null
+							this.$message.error('公司选择错误，请重新选择')
+						} else {
+
+							this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
+								return item.companyName == this.filterQuery.companyName
+							})
+						}
 						//当有年度信息和公司信息时所做查询
 					} else if (data && this.filterQuery.companyId) {
 						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
-						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
-							return (item.year == data && item.companyName == this.filterQuery.companyName)
-						})
+						this.checkCompany(this.companyList, this.filterQuery.companyName)
+						if (this.isChild == false) {
+							this.filterQuery.companyId = null
+							this.$message.error('公司选择错误，请重新选择')
+						} else {
+
+							this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
+								return (item.year == data && item.companyName == this.filterQuery.companyName)
+							})
+						}
+
 					}
 				}
 			},
@@ -237,8 +246,6 @@
 			},
 			//点击列表中的某一列加载勾选要素表一二级节点
 			handlChosen(val) {
-				//如果鼠标点击到的是操作框，则不打开要素节点框，因为操作里有三个按钮，会影响到使用
-				//如果记录状态不是“未发布”，表示该记录不能再进行操作
 				//记录选中的该行数据
 				this.chosenConlumn.companyCode = val.companyCode
 				this.chosenConlumn.conpanyName = val.companyName
@@ -248,19 +255,19 @@
 				this.filterQuery.chosenCompany = String(val.companyName);
 				this.filterQuery.chosenYear = String(val.year)
 				//组装要素查询数组
-				this.querryQhseElement.companyCode = val.companyCode
-				this.querryQhseElement.year = val.year
+				this.QhseElement.companyCode = val.companyCode
+				this.QhseElement.year = val.year
 				//构建要素树
 				this.handleGetQhseChildElement()
 				//将已勾选的要素展示
-				querryQhseElement(this.querryQhseElement).then(res => {
+				querryQhseElement(this.QhseElement).then(res => {
+					console.log(res)
 					var code = []
 					for (var i = 0; i < res.data.length; i++) {
 						code.push(res.data[i].code)
 					}
 					this.$refs.tree.setCheckedKeys(code, true)
 				})
-				console.log(this.filterQuery.elementTree)
 				this.annCheckListDialog = true
 			},
 			//加载要素表的一二级节点
@@ -271,7 +278,6 @@
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
-
 			},
 			//构建要素表一二级节点树，由于el-tree所能显示的数据类型为{label:'',children:[]}，
 			//而从接口中返回的数据类型为data，所以需要对数据进行转换，使得能够呈现
@@ -298,7 +304,7 @@
 					if (val[j]) {
 						if (val[j].id == companyId) {
 							this.insertCompanyName = val[j].label;
-							this.filterQuery.insertCompanyId = val[j].nodeCode;
+							this.insertCompanyCode = val[j].nodeCode;
 							break;
 						} else if (val[j].children) {
 							this.bindIdToName(val[j].children, companyId);
@@ -308,55 +314,83 @@
 			},
 			//显示新增记录的框
 			openInsertCheckListDialog() {
-				this.insertCompanyCode = null
+				this.insertCompanyId = null
+				this.insertCompanyCode = ''
 				this.insertYear = ''
+				this.insertElementTableName = ''
 				this.insertCheckListDialog = true
 			},
 			//实现新增框的新增一列数据
 			insertCheckList() {
-				if (this.insertCompanyCode && this.insertYear) {
+				//判断单位和年度是否为空
+				if (this.insertCompanyId && this.insertYear) {
+					//判断单位是否为叶子结点标志，默认为true
 					this.isChild = true
-					//关闭新增记录框
-					this.checkCompany(this.companyList)
+					//判断新增记录是否重复标志，默认为false
+					var isCopy = false
+					//调用转换方法，将选中的公司id转换为公司名称
+					this.bindIdToName(this.companyList, this.insertCompanyId)
+					//检查公司是否为叶子节点方法
+					this.checkCompany(this.companyList, this.insertCompanyName)
+					//单位不是叶子节点，将单位输入框重置，并提供提示信息
 					if (this.isChild == false) {
+						this.insertCompanyId = null
 						this.insertCompanyCode = null
 						this.$message.error('公司选择错误，请重新选择')
 					} else {
-						//调用转换方法，将选中的公司id转换为公司名称
-						this.bindIdToName(this.companyList, this.insertCompanyCode)
-						//将新增记录框中的数据添加到准备好的数组中，组装出一条tabledate的数据
-						this.addData.companyName = this.insertCompanyName
-						this.addData.companyCode = this.insertCompanyId
-						this.addData.year = this.insertYear.getFullYear().toString()
-						this.addData.elementTableName = this.insertYear.getFullYear() + this.insertCompanyName +
-							"检查表"
-						//调用接口将新增的记录返回后端，并重新渲染tabledata
-						insertQhseTable(this.addData).then(res => {
-							if (res.code == '1000') {
-								//重新获取tableData，重新渲染前端界面
-								GetQhseTable().then(res => {
-									this.filterQuery.tableData = res.data
-									this.handleSelect()
-								})
-								this.$message({
-									message: "添加成功",
-									type: "success"
-								})
-							} else {
-								this.$message.error('添加失败')
+						//遍历记录数组，检查将要新增的记录是否重复，重复时将输入框重置，并提供提示信息
+						for (var i = 0; i < this.filterQuery.tableData.length; i++) {
+							if (this.filterQuery.tableData[i].companyName == this.insertCompanyName && this.filterQuery.tableData[i].year ==
+								this.insertYear.getFullYear().toString()) {
+								this.insertCompanyId = null
+								this.insertCompanyCode = ''
+								this.insertYear = ''
+								this.insertElementTableName = ''
+								isCopy = true
+								this.$message.error('该记录已存在')
+								break
 							}
-						}).catch(err => {
-							this.$message.error(err.message)
-						})
-						this.insertCheckListDialog = false
+						}
+						//当将要新增的记录不重复时，进行新增记录操作
+						if (isCopy == false) {
+							//将新增记录框中的数据添加到准备好的数组中，组装出一条tabledate的数据
+							this.addData.companyName = this.insertCompanyName
+							this.addData.companyCode = this.insertCompanyCode
+							this.addData.year = this.insertYear.getFullYear().toString()
+							this.addData.elementTableName = this.insertElementTableName
+							console.log(this.addData)
+							//调用接口将新增的记录返回后端，并重新渲染tabledata
+							insertQhseTable(this.addData).then(res => {
+								if (res.code == '1000') {
+									//重新获取tableData，重新渲染前端界面
+									GetQhseTable().then(res => {
+										console.log(res)
+										this.filterQuery.tableData = res.data
+										this.handleSelect()
+									})
+									this.$message({
+										message: "添加成功",
+										type: "success"
+									})
+								} else {
+									this.$message.error('添加失败')
+								}
+							}).catch(err => {
+								this.$message.error(err.message)
+							})
+							//关闭新增记录框
+							this.insertCheckListDialog = false
+						}
 					}
+					//显示数据不完整的提示信息
 				} else {
 					this.$message.error('数据不完整')
 				}
 			},
-			checkCompany(val) {
+			//递归检查公司是否为叶子节点方法
+			checkCompany(val, company) {
 				for (var i = 0; i < val.length; i++) {
-					if (val[i].id == this.insertCompanyCode) {
+					if (val[i].label == company) {
 						if (val[i].children) {
 							this.isChild = false
 							break
@@ -365,7 +399,7 @@
 							break
 						}
 					} else if (val[i].children) {
-						this.checkCompany(val[i].children)
+						this.checkCompany(val[i].children, company)
 					}
 				}
 			},
@@ -409,6 +443,7 @@
 				this.addQhseElementData.year = this.chosenConlumn.year
 				this.addQhseElementData.qhseCompanyYearManagerSysElementTableID = this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID
 				//调用接口向后端返回更新了的年度检查表要素表
+				console.log(this.addQhseElementData)
 				addQHSEYearElement(this.addQhseElementData).then(res => {
 					if (res.code == '1000') {
 						this.$message({
@@ -422,36 +457,9 @@
 					this.$message.error(err.message)
 				})
 			},
-			//发布一列数据
-			publishTable(val) {
-				this.$confirm('确认发布本条记录吗', '提示', {
-					confirmButtonText: '确认',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					publishTableElement(val.qhse_CompanyYearManagerSysElementTable_ID).then(res => {
-						if (res.code == '1000') {
-							this.$message({
-								message: '发布成功',
-								type: 'success'
-							})
-							//发布成功，重新渲染前端界面，显示操作后的效果
-							this.filterQuery.tableData.filter(item => {
-								if (item == val) {
-									item.status = '已发布'
-								}
-							})
-						} else {
-							this.$message.error('发布失败')
-						}
-					}).catch(err => {
-						this.$message.error(err.message)
-					})
-				})
-			},
 			//删除一列数据，通过slot获取到一行的数据，从而可以得到id删除该行数据
 			deleteTable(val) {
-				this.$confirm('确认删除本条记录吗', '提示', {
+				this.$confirm('确认删除本条记录吗?配置信息也将一并删除！', '提示', {
 					confirmButtonText: '确认',
 					cancelButtonText: '取消',
 					type: "warning"
@@ -478,10 +486,10 @@
 
 			},
 			// 批量新增
-			addmuch () {
-              this.$router.push({
-				path: '/qhse_QualityManage/qhse_QualityFill/addmuch'
-            })
+			addmuch() {
+				this.$router.push({
+					path: '/qhse_QualityManage/qhse_QualityFill/addmuch'
+				})
 			}
 		},
 		mounted() {
