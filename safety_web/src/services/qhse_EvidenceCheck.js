@@ -38,7 +38,7 @@ export const no_elementReviewer =(data)=>{
 }
 //显示信息
 export const show_elementReviewer =(data)=>{
-  return request(`/api/show_elementReviewer?qHSE_CompanyYearManagerSysElement_ID=${data.qHSE_CompanyYearManagerSysElement_ID}`,{
+  return request(`/api/show_elementReviewer?qHSE_CompanyYearManagerSysElement_ID=${data.id}`,{
     data
   })
 }
