@@ -11,7 +11,7 @@ export const GetqhseCompanytree = () => {
   })
 }
 export const getChecklistTree = () => {
-  return request('/api/check_list_tree', {
+  return request('/api/check_list_tree/0', {
       method: 'get'
   })
 }
