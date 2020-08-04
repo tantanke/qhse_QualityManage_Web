@@ -79,6 +79,13 @@
                 </el-card>
               </div >
               </el-form-item>
+              <el-form-item label="证据文件：" 
+              style="margin-bottom:10px"
+              >
+                <div v-for="(item,index) in files" :key="index">
+                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                </div>
+              </el-form-item>
             </el-col>
             <el-col :span="12">
 
@@ -177,6 +184,7 @@ export default {
       hideUpload: false,//隐藏上传按钮
       attach:'',//存储新增的文件id
       attachs:[],//将attach按照分号转化为数组
+      files:[],//保存的文本文件
       form:{//保存上传的文件
         evidenceID:'',//证据id
         id:'',//年度要素id,
@@ -222,7 +230,6 @@ export default {
         querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
-          console.log('不应该呀')
         })
         .catch(err => {
           console.log(err);
@@ -262,12 +269,19 @@ export default {
               if(attach!=null){
                 var arr=attach.split(";");
               
-                for(var i=0;i<arr.length-1;i++)
+                for(var i=0,j=0,k=0;i<arr.length-1;i++)
                 {
-                  this.attachs[i]=arr[i];
+                  //j代表图片数量，k代表文件数量
+                  var houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
+                  if(houzhui=='jpg'||houzhui=='png'){
+                  this.attachs[j]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
+                  j++;
+                  }
+                  else{
+                    this.files[k]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
+                    k++;
+                  }
                 }
-                console.log('attach数量：',arr.length,this.attachs);
-                console.log('获取到的图片拼接',this.attachs)
               }
         
               console.log('获取到的要素节点内容：',res.data);
