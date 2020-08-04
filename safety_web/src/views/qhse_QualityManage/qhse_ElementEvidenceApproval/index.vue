@@ -175,7 +175,7 @@ export default {
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
-          this.dialogFormVisible=false;
+          this.dialogVisible=false;
           this.filterQuery.companyCode ='00'
         }).catch(err => {
           this.$message.error(err.message);
@@ -205,7 +205,7 @@ export default {
       else{
        no_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
-          console.log(this.code.qHSE_CompanyYearManagerSysElement_ID)
+          this.$message.success(res.message);
          query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -218,7 +218,7 @@ export default {
           this.message.error(err.message);
         });
       
-          this.dialogFormVisible=false;
+          this.dialogVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
         })
@@ -271,6 +271,7 @@ export default {
     updateScore(data){//显示出证据项的内容
     console.log(this.userId)
     this.attachs={};
+    this.files={};
       show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
@@ -288,7 +289,7 @@ export default {
                 {
                   //j代表图片数量，k代表文件数量
                   var houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
-                  if(houzhui=='jpg'||houzhui=='png'){
+                  if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
                   this.attachs[j]=arr[i];
                   j++;
                   }

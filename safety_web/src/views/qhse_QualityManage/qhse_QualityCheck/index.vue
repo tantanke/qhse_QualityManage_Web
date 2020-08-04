@@ -226,7 +226,8 @@ export default {
         this.$message.success('添加成功');
 
         //上传后刷新树
-         this.treeData={};
+        this.treeData='';
+        this.handleGetInitialData();//更改loading状态
         querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -240,6 +241,7 @@ export default {
     updateScore(data){
         this.attach='';
         this.attachs='';
+        this.files='';
         this.detailData.name = data.name    
         this.form.evidenceDescription='';//初始化证据
         this.form.evidenceID='';//初始化
@@ -273,7 +275,7 @@ export default {
                 {
                   //j代表图片数量，k代表文件数量
                   var houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
-                  if(houzhui=='jpg'||houzhui=='png'){
+                  if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
                   this.attachs[j]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
                   j++;
                   }
