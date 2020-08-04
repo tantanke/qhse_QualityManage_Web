@@ -7,8 +7,8 @@ export const querryYearElement = (data) => {
     })
 }
 
-export const element_evidence = (data) => {
-    return request(`/api/element_evidence?code=${data.code}`,{
+export const query_evidence_attach = (data) => {
+    return request(`/api/query_evidence_attach?id=${data.id}`,{
         data
     })
 }
@@ -18,8 +18,8 @@ export const evidence = (data) => {
         data
     })
 }
-export const element_evidence_attach = (data) => {
-    return request(`/api/element_evidence_attach`,{
+export const addAll_evidence_attach = (data) => {
+    return request(`/api/addAll_evidence_attach`,{
         method: 'post',
         data
     })

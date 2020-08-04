@@ -18,7 +18,7 @@ export const query_elementReviewer =(data)=>{
 }
 //审核人通过?
 export const pass_elementReviewer =(data)=>{
-  return request('/api/pass_elementReviewer',{
+  return request(`/api/pass_elementReviewer`,{
     method:'put',
     data
   })

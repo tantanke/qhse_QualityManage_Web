@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title" style="width:100%">要素证据审核</div>
+    <div class="page-title" style="width:100%">要素证据批准</div>
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true" :model="filterQuery">
@@ -48,8 +48,8 @@
                 type="primary"
                 size="mini"
                 @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0 "
-              >进入审核</el-button>
+                v-if="scope.row.childNode.length === 0 && scope.row.status==='未批准' "
+              >进入批准</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -68,9 +68,8 @@
                   active-text="通过"
                   inactive-text="不通过">
                 </el-switch>
-                <el-button v-if="detailData.evidenceDsecription==null" type="info" >无法审核</el-button>
-                <el-button type="primary" v-if="detailData.evidenceDsecription!=null" @click="passornot" >确认审核</el-button>
-                <span v-if="detailData.evidenceDsecription==null" style="color:red"> 未录入附件，请先录入附件</span>
+                <el-button v-if="detailData.evidenceDsecription==null" type="info" >无法批准</el-button>
+                <el-button type="primary" v-if="detailData.evidenceDsecription!=null" @click="passornot" >确认批准</el-button>
               </el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
@@ -110,8 +109,8 @@
 <script>
 
 import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司及诶单数
-import { query_elementReviewer } from"../../../services/qhse_EvidenceCheck"//证据项
-import { pass_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过审核
+import { query_elementReviewers } from"../../../services/qhse_EvidenceCheck"//证据项
+import { approval_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过批准
 import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通过审核
 import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 
@@ -178,10 +177,10 @@ export default {
       
       if(this.upstatus==true){//当按钮选择通过
       
-        pass_elementReviewer(this.nodeData).then(res => {
+        approval_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
           this.$message.success(res.message);
-         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+         query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
         })
@@ -199,7 +198,7 @@ export default {
        no_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
           console.log(this.code.qHSE_CompanyYearManagerSysElement_ID)
-         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+         query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
           // this.companyName = res.data.name;
@@ -237,7 +236,7 @@ export default {
       this.filterQuery.year = String(nowdata.getFullYear());
       
       this.handleGetInitialData();//更改loading状态
-         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+         query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
           console.log(this.filterQuery.compayCode)

@@ -49,82 +49,38 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供')"
               >录入</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
 
-       <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="600px">
-        <el-form label-width="120px" :model="detailData" style="width:100%;" >
-          <el-row>
-            <el-col >
-              <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
-              <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
-                <el-input type="textarea"  v-if="textuse" label="证据描述  ："  class="resizeNone" v-model="text.evidenceDescription" placeholder="请输入内容"></el-input>
-                <el-input type="textarea"  v-if="!textuse" readonly="true" label="证据描述  ："  class="resizeNone" v-model="text.evidenceDescription" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item 
-              label="证据审核人：" 
-              v-if="people1use"
-               prop="employeeID">
-                <el-select  
-                v-model="text.checkStaffID"
-                placeholder="输入姓名搜索员工"
-                clearable
-                filterable
-                style="width:100%"
-                loading-text="查询中..."
-              >
-                <el-option
-                  v-for="item in peopleList"
-                  :key="item.index"
-                  :label="`${item.name}(${item.companyName})`"
-                  :value="item.employeeID">
-                </el-option>
-              </el-select>
-            </el-form-item>
-           <el-form-item label="证据审核人：" v-if="!people1use">
-             <el-form-column   style="margin-bottom:1px">{{form.people1name}}</el-form-column>
-            </el-form-item>
-             <el-form-item label="证据批准人："
-               v-if="people2use"
-               prop="employeeID">
-              <el-select
-                v-model="text.approverStaffID"
-                placeholder="输入姓名搜索员工"
-                clearable
-                filterable
-                style="width:100%"
-                loading-text="查询中..."
-              >
-                <el-option
-                  v-for="item in peopleList"
-                  :key="item.index"
-                  :label="`${item.name}(${item.companyName})`"
-                  :value="item.employeeID">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="证据批准人：" v-if="!people2use">
-             <el-form-column   style="margin-bottom:1px">{{form.people2name}}</el-form-column>
-            </el-form-item>
-            <el-form-item >
-            <el-button type="primary" v-if="buttonVisible" style="margin-top:10px" @click="addEvidence">新增证据</el-button>
-              <el-button type="info" v-if="buttonVisible" style="margin-top:10px" >请新增证据后再录入</el-button>
-              <el-button type="info" v-if="!buttonVisible" style="margin-top:10px">已新增证据</el-button>
-              <el-button type="primary" v-if="!buttonVisible" style="margin-top:10px" @click="gotoEvidence">录入证据附件</el-button>
-              </el-form-item >
-              </el-col>
-          </el-row>
-        </el-form>
-      </el-dialog>
-
-      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="600px">
+      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px">
          <el-form label-width="120px" style="width:100%;" >
            <el-row>
-            <el-col >
+            <el-col :span="12">
+              <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
+              <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
+                <el-input type="textarea"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="证据图片：" 
+              style="margin-bottom:10px"
+              >
+              <div  v-for="(item,index) in attachs" :key="index">
+                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
+                  <span v-if="!item">无图片文件记录！</span>
+                  <el-popover placement="right" title trigger="click" v-else>
+                    <div style="max-width:600px;height:auto">
+                      <img :src="item" style="max-width:600px;height:auto" />
+                    </div>
+                    <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
+                  </el-popover>
+                </el-card>
+              </div >
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
 
               <el-form-item label="上传文件">
                 <el-upload
@@ -173,7 +129,7 @@
                   </el-dialog> 
               </el-form-item>
               <el-form-item label="附件描述："  prop="desc" style="margin-bottom:1px">
-                <el-input type="textarea"  label="附件描述  ："  class="resizeNone" v-model="evidence.attachDescrption" placeholder="请输入内容"></el-input>
+                <el-input type="textarea"  label="附件描述  ："  class="resizeNone" v-model="form.attachDescrption" placeholder="请输入内容"></el-input>
                 <el-button type="primary" style="margin-top:10px" @click="addEvidenceFile">新增证据附件</el-button>
               </el-form-item>
             </el-col>
@@ -188,10 +144,10 @@
 <script>
 import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
 import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示公司所有的证据项节点
-import { element_evidence } from "../../../services/qhse_QualityCheck";//显示证据项内容
+import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
 import { employees } from "../../../services/qhse_QualityCheck";//显示成员
 import { evidence } from "../../../services/qhse_QualityCheck";//显示成员
-import { element_evidence_attach } from "../../../services/qhse_QualityCheck";//显示成员
+import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
 const DefaultQuery = {
   year: "",
   companyCode: null,
@@ -201,12 +157,11 @@ export default {
   data() {
     return {
       filterQuery: {},
-      companyList: [],
-      peopleList:[],
+      companyList: [],//公司列表
+      peopleList:[],//职员列表
       disabled1:false,
       dialogFormVisible: false,
       loading: true,
-      dialogVisible: false,
       detailData: {},//存储查询到的employe信息
       treeData: [],
       initData:[],
@@ -216,31 +171,21 @@ export default {
       dialogVisible2: false,
       uploadDisabled: false,
       disabled: false,
-      textuse:true,
-      people1use:true,
-      people2use:true,
-      buttonVisible:true,
-      dialogVisible3: false,//证据录入按钮
+      buttonVisible:false,
+      dialogVisible3: false,//证据录入
       fileList:[],//文件列表
       hideUpload: false,//隐藏上传按钮
-      text:{//获取到左边的描述框
-        evidenceDescription:'',
-        code:'',
-        qhseCompanyYearManagerSysElementID:'', 
-        checkStaffID:'',
-        approverStaffID:''},
+      attach:'',//存储新增的文件id
+      attachs:[],//将attach按照分号转化为数组
       form:{//保存上传的文件
-        address: '',
-        emergencyHandler: '',
-        briefDescription: '',
-        people1name:'',
-        pelple2name:'',
-        fileID:''},
-      evidence:{
-        uploadTime:'',
-        qhseCompanyYearManagerSysElementEvidenceID:'',
-        attachDescrption:'',
-        attach:''
+        evidenceID:'',//证据id
+        id:'',//年度要素id,
+        code:'',//要素编码
+        evidenceDescription:'',//证据描述
+        attachID:'',//附件id
+        attachDescrption:'',//附件描述
+        attach:'',//附件
+        uploadTime:''//上传时间
         }
     };
   },
@@ -251,98 +196,136 @@ export default {
       this.form.fileID='';
       this.dialogVisible3=true;
     },
+    //添加附件，与下面整合
     addEvidenceFile(){
       var datetime = new Date();
       var year = datetime.getFullYear();
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
-      this.evidence.uploadTime=year+'-'+month+'-'+date;
-      console.log(this.evidence)
-      element_evidence_attach(this.evidence).then(res => {
+      this.form.uploadTime=year+'-'+month+'-'+date;
+      this.form.attach+=this.attach;
+      //打印上传的信息
+      console.log('表单中的数据',this.form)
+      this.$refs.upload.clearFiles();
+      //上传接口
+      addAll_evidence_attach(this.form).then(res => {
          console.log(res);
          console.log(1);
-         this.dialogVisible3=false
+         this.dialogVisible3=false;
+        }).catch(err => {
+          this.$message.error(err.message);
+        });
         this.$message.success('添加成功');
-        }).catch(err => {
-          this.$message.error(err.message);
-        });
-    },
-    addEvidence(){
-      //新增信息
-      evidence(this.text).then(res => {
-         console.log(res);
-         console.log(this.text)
-         this.buttonVisible=false;
-         this.people1use=false;
-         this.people2use=false;
-         this.textuse=false;
-        }).catch(err => {
-          this.$message.error(err.message);
-        });
-      //重新显示信息
-       element_evidence(this.text)
-      .then(res => {
-        this.nodeData= res.data;
-        console .log(res.data)
-        this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
-        this.text.evidenceDescription=this.nodeData.evidenceDescription;
-        this.form.people1name=this.nodeData.checkStaffName;
-        this.form.people2name=this.nodeData.approverStaffName;
-        if(this.nodeData.evidenceDescription!=null)
-        {
-          this.buttonVisible=false;
-          this.textuse=false
-          this.people1use=false;
-          this.people2use=false
-        }
-        console.log('获取到的要素节点内容：',this.nodeData);
-        console.log('获取到要素表后的text:',this.text)
-      })
-      .catch(err => {
-        console.log(err);
-        this.message.error(err.message);
-      });//证据表数据
 
+        //上传后刷新树
+         this.treeData={};
+        querryYearElement(this.filterQuery)//获取到叶子节点信息
+        .then(res => {
+          this.treeData = res.data;
+          console.log('不应该呀')
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+        this.loading = false;
     },
+    updateScore(data){
+        this.attach='';
+        this.attachs='';
+        this.detailData.name = data.name    
+        this.form.evidenceDescription='';//初始化证据
+        this.form.evidenceID='';//初始化
+        this.form.attachID='';//初始化
+        this.form.attachDescrption=null;//初始化附件描述
+        this.form.code=data.code;//赋值要素编码
+        this.form.id=data.id;//附件id
+        //获取证据项内容
+        query_evidence_attach(data)
+        .then(res => {
+          console.log('树中获取到数据',data)
+          console .log('数据库中该证据项数据',res.data)
+          //当数据不为空的时候
+          if(res.data!=null){
+            this.form.attach=res.data.attach;//赋值附件id
+            this.form.attachID=res.data.attachID;//赋值附件id
+            this.form.evidenceID=res.data.evidenceID;//赋值证据id
+            this.form.attachDescrption=res.data.attachDescrption;//赋值附件描述
+            this.form.evidenceDescription=res.data.evidenceDescription;//赋值证据描述
+            console.log(this.form.attachDescrption);
+            //辨析图片
+            this.node=data;
+            //展示attachs图片数组url
+            this.attachs={};//初始化图片数组
+            
+            var attach = this.form.attach;//获取地址字符串
+              if(attach!=null){
+                var arr=attach.split(";");
+              
+                for(var i=0;i<arr.length-1;i++)
+                {
+                  this.attachs[i]=arr[i];
+                }
+                console.log('attach数量：',arr.length,this.attachs);
+                console.log('获取到的图片拼接',this.attachs)
+              }
+        
+              console.log('获取到的要素节点内容：',res.data);
+
+          }
+          else{//为空的时候好像就不怎么地
+          }
+          this.dialogVisible3=true;
+        })
+        .catch(err => {
+          console.log(err);
+        });//证据表数据
+
+        this.node=data;
+         
+    },
+    //限制文件数量并新增
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
-                    this.form.fileID = res.data;
-
-                    this.evidence.attach += res.data;
-                    this.evidence.attach+=';';
+                    this.attach += res.data;
+                    this.attach+=';';
                 }
                 else {
                     this.$message.error('上传失败');
-                    this.form.fileID = '';
+                    this.form.attachID = '';
                 }
             },
-    handleExceed() {
+      handleExceed() {
         this.$message.warning('当前限制选择 2 个文件');
       },
-    handleRemove() {
+      handleRemove() {
         this.$refs.upload.clearFiles();
     },
-    handlePictureCardPreview(file) {//放大显示
+    //放大显示
+    handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
         this.dialogVisible2 = true;
     },
+    //选中公司后将公司的nodecode赋值给filterQuery
     selectDepart(val) {
       this.filterQuery.companyCode = val.nodeCode;
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
+        this.filterQuery.companyCode='00'
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
-    handleGetPeople() {//获取到公司的名字 即在选择页面显示
+    handleGetPeople() {//获取到成员的名字 即在选择页面显示
         employees().then(res => {
           this.peopleList = JSON.parse(JSON.stringify(res.data));
         }).catch(err => {
           this.$message.error(err.message);
         });
     },
+    //缓存年份
     loadFilterParams() {
       this.filterQuery = { ...DefaultQuery, ...this.$route.query };
       this.filterQuery = {
@@ -366,9 +349,9 @@ export default {
       }
       let nowdata = new Date(this.filterQuery.year);
       this.filterQuery.year = String(nowdata.getFullYear());
-      
+      if(this.filterQuery.companyCode==null)
+         this.filterQuery.companyCode='00'
       this.handleGetInitialData();//更改loading状态
-      this.filterQuery.companyCode='';
       querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -379,58 +362,18 @@ export default {
         });
       this.loading = false;
     },
+    //转换年份
     handleGetDate(date) {
       let nowdata = new Date(date);
       return String(nowdata.getFullYear());
     },
     handleGetInitialData() {
       this.loading = true;
-    },
-    updateScore(data){
-      this.form.people1name='';
-      this.form.people2name='';
-      this.text.evidenceDescription='';
-      this.textuse=true;
-      this.people1use=true;
-      this.people2use=true;
-      this.dialogVisible =true;  
-      this.buttonVisible=true;
-      
-      this.text.code=data.code;
-      this.text.qhseCompanyYearManagerSysElementID=data.id;
-      element_evidence(data)
-      .then(res => {
-        this.nodeData= res.data;
-        console .log(res.data)
-        this.evidence.qhseCompanyYearManagerSysElementEvidenceID=this.nodeData.qhseCompanyYearManagerSysElementEvidenceID;
-        this.text.evidenceDescription=this.nodeData.evidenceDescription;
-        this.form.people1name=this.nodeData.checkStaffName;
-        this.form.people2name=this.nodeData.approverStaffName;
-        if(this.nodeData.evidenceDescription!=null)
-        {
-          this.buttonVisible=false;
-          this.textuse=false
-          this.people1use=false;
-          this.people2use=false
-        }
-        console.log('获取到的要素节点内容：',this.nodeData);
-        console.log('获取到要素表后的text:',this.text)
-      })
-      .catch(err => {
-        console.log(err);
-        this.message.error(err.message);
-      });//证据表数据
-
-    
-    
-    this.node=data;
-    this.detailData = {}
-    this.detailData.name = data.name
-    this.dialogVisible = true;            
     }
     
   },
   mounted() {
+    console.log('这里开始录入部分的报错，前面的都不用care')
     this.handleGetCompany();//第一个函数 获取到公司信息
     this.handleGetPeople();
     this.loadFilterParams();
