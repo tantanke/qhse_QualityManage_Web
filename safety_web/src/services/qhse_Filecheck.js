@@ -47,3 +47,10 @@ export const updateCheckstatus = (data) => {
       data
     })
 }
+
+export const addProblemDescription = (data) => {
+  return request('/api/add_problemDescription',{
+      method: 'post',
+      data
+    })
+}

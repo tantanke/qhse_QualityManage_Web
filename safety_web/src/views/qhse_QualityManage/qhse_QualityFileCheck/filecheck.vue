@@ -59,14 +59,6 @@
               >
               审核完成  
               </el-button>
-              <el-button
-              type="danger"
-              size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
-              @click="deleteFile(scope.row)"
-              >
-              删除记录  
-              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -86,6 +78,7 @@
           <el-table-column  width="200" align="center">
             <template slot="header" slot-scope="scope">
               <el-input
+                :ref="scope.$index"
                 v-model="search"
                 size="mini"
                 placeholder="输入关键字搜索"/>
@@ -147,7 +140,7 @@
               </el-select>
               </el-form-item>
               <el-form-item label='问题选择:' labelWidth='100px' v-if="fileRecord.pass === '不通过'">
-                <el-checkbox-group v-model="problemList" >
+                <el-checkbox-group v-model="proTextarea" >
                   <el-checkbox v-for="(item,index) in problem" :key="index" :label="item">                   
                   </el-checkbox>
                   </el-checkbox-group>
@@ -226,7 +219,7 @@
 </template>
 
 <script>
-import {querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
 export default {
   data() {
     return {
@@ -259,6 +252,13 @@ export default {
         fileAuditId: '',
         code: ''
       },
+      // 问题描述
+      addQuestionForm: {
+        qHSE_FileAudit_ID: '',
+        qHSE_FileAuditRecord_ID: '',
+        code: '',
+        problemDescription: ''
+      },
       nowcode: null,
       // 控制弹出页面
       detaildialogVisible: false,
@@ -281,7 +281,6 @@ export default {
       treeList: [],
       // 问题列表
       problemForm: {},
-      problemList:[],
       problem: [],
       elsePro: false,
       proTextarea: ''
@@ -321,6 +320,7 @@ export default {
       // 查询单位年度审核表表表单
       _this.querryTree.companyCode = initData.companyCode
       // 新增审核记录表单
+      _this.addQuestionForm.qHSE_FileAudit_ID = initData.fileAuditId
       _this.fileRecord.fileAuditId = initData.fileAuditId
       _this.fileRecord.additor = initData.additor
       _this.fileRecord.auditTime = initData.auditTime
@@ -412,7 +412,6 @@ export default {
       querryQhseElement(_this.querryTree).then(res => {
         _this.treeData = res.data;
         _this.treeList = res.data;
-        console.log(res.data)
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
           _this.$message.warning('请检查要素证据审批是否完成！')
@@ -431,21 +430,37 @@ export default {
     updateCompanyStatus(){
         this.dialogFormVisible = true
     },
+    addQuestion () { 
+       let _this = this
+       _this.addQuestionForm.code = _this.fileRecord.code
+       _this.addQuestionForm.problemDescription = _this.proTextarea
+       console.log(_this.addQuestionForm)
+       addProblemDescription(_this.addQuestionForm).then(res => {
+         console.log(res)
+       }).catch(err => {
+        _this.$message.error(err)
+      })
+    },
     // 删除文件审核记录
     updataFileAudit() {
       // 上传文件审核记录
       let _this = this
       console.log(_this.nopass)
-      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '' || (_this.proTextarea === '' || _this.problemList === [])) ) {
+      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === ''  ) ) {
         _this.$message.error('请填写审核内容')
         return
+        } else if (_this.proTextarea === ''   && _this.fileRecord.pass === '不通过') {
+          _this.$message.error('请填写具体问题内容')
+          return
         }
       _this.status = _this.fileRecord.pass
       updateCheckstatus(_this.updateCheckForm).then(() => {
         return addFileaduitrecord(_this.fileRecord)
-      }).then(res => {
+      }).then(() => {
         // 这里应该返回文件审核记录的recordID
-        if(res.code === 1000){
+        if(_this.status === '不通过') {
+         _this.addQuestion()
+        }  
         _this.$message.success('添加成功！')
         _this.dialogVisible = false
         _this.fileRecord.pass = ''
@@ -454,10 +469,6 @@ export default {
         _this.proTextarea = ''
         _this.elsePro = false
         _this.handleGetInitialData()
-        if(_this.status === '不通过') {
-         _this.noinnerVisible = true
-        }
-        }
       })
       .catch(err => {
         _this.$message.error(err)

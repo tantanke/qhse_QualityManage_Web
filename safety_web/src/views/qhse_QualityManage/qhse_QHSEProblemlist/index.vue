@@ -4,7 +4,7 @@
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE隐患清单">QHSE隐患清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE问题清单">QHSE问题清单</el-radio>
-      <el-row v-if="listcate === 'QHSE违章清单'">
+      <el-row v-show="listcate === 'QHSE违章清单'">
           <p style="width:100%">QHSE违章清单</p>
           <el-row>
           <el-form :inline="true">
@@ -45,7 +45,7 @@
           :data='regulationrecord'
           border
           style="width: 100%"
-          max-height="735">
+          max-height="675">
            <el-table-column type="expand">
             <template slot-scope="props">
                 <el-form label-position="left" inline class="table-expand">
@@ -141,7 +141,7 @@
           </el-table>
           </el-row>
       </el-row>
-      <el-row v-else-if="listcate === 'QHSE隐患清单'"> 
+      <el-row v-show="listcate === 'QHSE隐患清单'"> 
           <p  style="width:100%">QHSE隐患清单</p>
           <el-row>
           <el-form :inline="true">
@@ -179,7 +179,7 @@
           border
           :data='dangerrecord'
           style="width: 100%"
-          max-height="735">
+          max-height="675">
           <el-table-column type="expand">
             <template slot-scope="props">
                 <el-form label-position="left" inline class="table-expand">
@@ -256,7 +256,7 @@
           </el-table>
           </el-row>
       </el-row>
-      <el-row v-else-if="listcate === 'QHSE问题清单'">
+      <el-row v-show="listcate === 'QHSE问题清单'">
           <p  style="width:100%">QHSE问题清单</p>
           <el-form>
               <el-row>
@@ -268,44 +268,56 @@
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"             
+                        ref="cascaderAddr"           
                         >             
                       </el-cascader>
                   </el-form-item>
                   <el-form-item label='时间范围：' labelWidth='120px'>
                       <el-date-picker
-                        v-model="checkForm.date"
+                        v-model="date"
                         type="daterange"
                         align="right"
                         unlink-panels
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
                         >
                         </el-date-picker>
                   </el-form-item>
                   <el-form-item>
-                <el-button type="primary" @click="searchQuestion">开始查询</el-button>   
+                <el-button type="primary" @click="getProblemDescription">开始查询</el-button>   
                 </el-form-item>     
           </el-form>
           </el-row>      
           </el-form>
           <el-row style="height:370px">
-              <el-table></el-table>
+              <el-table
+            :data='problemrecord'
+            style="width: 100%"
+            max-height="675">
+                  <el-table-column
+                    prop="problemDescription"
+                    label="问题描述">
+                </el-table-column>
+                <el-table-column
+                    prop="problemDescription"
+                    label="检查人">
+                </el-table-column>
+                <el-table-column
+                    prop="problemDescription"
+                    label="公司名称">
+                </el-table-column>
+            </el-table>
           </el-row>
       </el-row>
   </div>
 </template>
 
 <script> 
-import { queryDangerrecord,
-        queryDangerrecordDate,
-        queryDangerrecordTwo,
-        queryDangerrecordCompany,
+import {queryDangerrecord,
         queryRegulationrecord,
-        queryRegulationrecordCompany,
-        queryRegulationrecordTwo,
-        queryRegulationrecordDate
+        queryProblemDescription
 } from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
@@ -340,6 +352,7 @@ export default {
         },
            date: '',
            regulationrecord: [],
+           problemrecord: [],
            dangerrecord: [],
            serdata:{},
            companyList: [],
@@ -352,97 +365,56 @@ export default {
        }
    },
    methods: {
-       searchQuestion () {
-        // 根据参数的不同选择不同的拼接方式
-       
-       },
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
-         let _this = this
-         // 查询全部
-          if (_this.checkForm.companyId.length === 0 && !_this.date) {
-                queryDangerrecord().then(res => {
-                    _this.dangerrecord = res.data.list
-                }).catch(err => {
-              _this.$message.error(err)
-          })
-          } else if ( !_this.date && _this.checkForm.companyId.length !== 0) {
-              // 查询公司
-              console.log(this.checkForm)
-                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
-                queryDangerrecordCompany({companyId:data}).then(res => {
-                    _this.dangerrecord = res.data.list
-                    _this.checkForm.companyId = []
-                }).catch(err => {
-              _this.$message.error(err)
-          })
-          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
-              // 查询时间
-                let start = _this.date[0]
-                let end = _this.date[1]
-                queryDangerrecordDate({startDate:start,endDate:end}).then(res => {
-                    _this.dangerrecord = res.data.list
-                    _this.date = null
-                }).catch(err => {
-              _this.$message.error(err)
-          })
-          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
-              // 都查询
-              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
-              let start = _this.date[0]
-              let end = _this.date[1]
-              queryDangerrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
-                  _this.dangerrecord = res.data.list
-                  _this.checkForm.companyId = []
+         let baseurl 
+            let form = {}
+            let start,end         
+            let _this = this
+            if (_this.date) {
+               start = _this.date[0]
+               end = _this.date[1]
+               form.startDate = start
+               form.endDate = end
+            } 
+            if (_this.checkForm.companyId.length !== 0) {
+                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+            }
+           baseurl  = _this.getUrl('/api/query_dangerrecord',form)
+           queryDangerrecord(baseurl,form).then(res => {
+               _this.dangerrecord = res.data.list
+               _this.checkForm.companyId = []
                   _this.date = null
-              }).catch(err => {
-              _this.$message.error(err)
+           }).catch(err => {
+              this.$message.error(err)
           })
-          }
        },
        searchRegulation () {
-        let _this = this
-        console.log(_this.checkForm)
-         // 查询全部
-          if (_this.checkForm.companyId.length === 0 && !_this.date) {
-                queryRegulationrecord().then(res => {
-                    _this.regulationrecord = res.data.list
-                }).catch(err => {
-              _this.$message.error(err)
-          })
-          } else if (!_this.date && _this.checkForm.companyId.length !== 0) {
-              // 查询公司
-                let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
-                queryRegulationrecordCompany({companyId:data}).then(res => {
-                    _this.regulationrecord = res.data.list
-                    _this.checkForm.companyId = []
-                }).catch(err => {
-              _this.$message.error(err)
-          })
-          } else if (_this.checkForm.companyId.length === 0 && _this.date) {
-              // 查询时间
-                let start = _this.date[0]
-                let end = _this.date[1]
-                queryRegulationrecordDate({startDate:start,endDate:end}).then(res => {
-                    _this.regulationrecord = res.data.list
-                    _this.date = null
-                })
-          } else if (_this.checkForm.companyId.length !== 0 && _this.date) {
-              // 都查询
-              let data = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]           
-              let start = _this.date[0]
-              let end = _this.date[1]
-              queryRegulationrecordTwo({startDate:start,endDate:end,companyId:data}).then(res => {
-                  _this.regulationrecord = res.data.list
-                  _this.checkForm.companyId = []
+        let baseurl 
+            let form = {}
+            let start,end         
+            let _this = this
+            if (_this.date) {
+               start = _this.date[0]
+               end = _this.date[1]
+               form.startDate = start
+               form.endDate = end
+            } 
+            if (_this.checkForm.companyId.length !== 0) {
+                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+            }
+           baseurl  = _this.getUrl('/api/query_regulationrecord',form)
+           queryRegulationrecord(baseurl,form).then(res => {
+               _this.regulationrecord = res.data.list
+               _this.checkForm.companyId = []
                   _this.date = null
-              })
-          }
+           }).catch(err => {
+              this.$message.error(err)
+          })
        },
        getDangerrecord () {
           queryDangerrecord().then(res => {
               this.dangerrecord = res.data.list
-              console.log(res)
           }).catch(err => {
               this.$message.error(err)
           })
@@ -450,17 +422,51 @@ export default {
        getCompanyList () {
             GetqhseCompanytree().then(res => {
                 this.companyList = res.data
-                console.log(res)
-            })
+            }).catch(err => {
+              this.$message.error(err)
+          })
         },
         handleChange(value) {
         console.log(value);
-        }
+        },
+        
+        getProblemDescription() {
+            let baseurl 
+            let form = {}
+            let start,end         
+            let _this = this
+            if (_this.date) {
+               start = _this.date[0]
+               end = _this.date[1]
+               form.startDate = start
+               form.endDate = end
+            } 
+            if (_this.checkForm.companyId.length !== 0) {
+                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+            }
+           baseurl  = _this.getUrl('/api/query_problemDescription',form)
+           queryProblemDescription(baseurl,form).then(res => {
+               console.log(res)
+               _this.problemrecord = res.data
+               _this.checkForm.companyId = []
+                _this.date = null
+           }).catch(err => {
+              this.$message.error(err)
+          })
+        },
+        getUrl(baseurl,data) {
+            let url = baseurl
+            Object.keys(data).forEach(function (key) {
+                 url =  `${url}?${key}=${data[key]}`              
+                });
+            return url
+        },
    },
-   mounted() {
+   mounted() {     
        this.getCompanyList()
-       this.getDangerrecord()
+       this.searchDanger()
        this.searchRegulation()
+       this.getProblemDescription()
    },
 }
 </script>

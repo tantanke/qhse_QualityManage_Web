@@ -82,9 +82,10 @@
         >
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
-            <template slot="header">
+            <template slot="header" slot-scope="scope">
                 <el-input
                 v-model="search"
+                :ref="scope.$index"
                 size="mini"
                 placeholder="输入关键字搜索"/>
             </template>
@@ -103,16 +104,25 @@
   :close-on-click-modal='false'
   width="30%"
   >
-  <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
-  <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
-  <el-input
-  v-show="checkRecordForm.pass === '不通过'"
-  style="margin-top:30px"
-  type="textarea"
-  :rows="3"
-  placeholder="请输入问题"
-  v-model="checkRecordForm.problems">
-</el-input>
+  <el-form>
+      <el-form-item label='通过详情：'>
+          <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
+          <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
+      </el-form-item>
+      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='问题描述：'>
+           <el-input            
+            type="textarea"
+            :rows="3"
+            placeholder="请输入问题"
+            v-model="checkRecordForm.problems">
+            </el-input>
+      </el-form-item>
+      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='隐患违章：'>
+          <el-radio v-model="reason" label="不录入">不录入</el-radio>
+          <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
+          <el-radio v-model="reason" label="违章">录入违章</el-radio>
+      </el-form-item>
+</el-form>
   <span slot="footer" class="dialog-footer">
     <el-button @click="checkDialogVisible = false">取 消</el-button>
     <el-button type="primary" @click="submitadd">确 定</el-button>
@@ -144,19 +154,25 @@
 
 <script>
 import {addCheckList,GetqhseCompanytree,getChecklistTree,GetCheckRecordTree,editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
+import { GetDictionary } from '../../../services/dictionary'
 import CurrentUser from '../../../store/CurrentUser'
 export default {
     data() {
         return {
+            // 控制页面
             checkDialogVisible: false,
             detailDialogVisible: false,
             loading: false,
+            // 筛选表格
             search: '',
             value2: '',
+            // 树形图相关
             companyList: [],
             checkTreeData: [],
             checkListData: [],
             checkingTreeData: [],
+            // 隐患违章录入
+            reason: '不录入',
             formControl: false,
             // 筛选出检查表
             checkForm: {
@@ -211,6 +227,28 @@ export default {
             
             },
     methods: {
+        // 获取检查类别
+        getCheckType() {
+         GetDictionary({name:'检查类型'}).then(res => {
+             console.log(res)
+         }).catch(err => {
+              this.$message.error(err)
+          })
+        },
+        // 隐患违章跳转
+        pushRouter() {
+            let _this = this
+           if (_this.reason === '不录入') return
+          else if (_this.reason === '隐患'){
+           _this.$router.push({
+            path: '/hidden_danger/input',
+          })
+            } else {
+                    _this.$router.push({
+                    path: '/hidden_danger/illegal_entry',
+                })
+            }
+        },
         // 添加记录
         submitadd () {
             let _this = this
@@ -223,6 +261,7 @@ export default {
                 _this.checkListData = res.data
                 _this.loading = false
                 _this.$message.success('新增成功！')
+                _this.pushRouter()
             })
             .catch(err => {
               _this.$message.error(err)
@@ -357,6 +396,7 @@ export default {
         }
     },
     mounted() {
+        this.getCheckType()
         this.getCheckRecord()
         this.getCheckTree()
         this.getCompanyList()

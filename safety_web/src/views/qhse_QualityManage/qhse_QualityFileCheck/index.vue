@@ -101,6 +101,7 @@ export default {
         auditType: '',
         auditName: ''
       },
+      // 添加文件审核
       addForm: {
         auditName: '',
         auditType: '',
@@ -237,6 +238,7 @@ export default {
          }
        })
     }, 
+    // 获取tableid
     submitAdd () {
        let _this = this
        _this.initForm()
