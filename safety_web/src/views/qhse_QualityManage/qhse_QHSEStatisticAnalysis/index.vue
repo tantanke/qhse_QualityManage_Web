@@ -84,10 +84,10 @@
             <el-col :span="12">
               <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attacjDescription}}</el-form-item>
               <el-form-item label="上传时间：" style="margin-bottom:1px">{{detailData.uploadTime}}</el-form-item>
-              <div  v-for="(item,index) in attachs" :key="index">
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
+              <div  v-for="(item,index) in attachs" :key="index">
                 <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
                   <span v-if="!item">无图片文件记录！</span>
                   <el-popover placement="right" title trigger="click" v-else>
@@ -97,8 +97,15 @@
                     <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
                   </el-popover>
                 </el-card>
-              </el-form-item>
               </div >
+              </el-form-item>
+              <el-form-item label="证据文件：" 
+              style="margin-bottom:10px"
+              >
+                <div v-for="(item,index) in files" :key="index">
+                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                </div>
+              </el-form-item>
             </el-col>
           </el-row>
         </el-form>
@@ -138,6 +145,7 @@ export default {
       node:[],
       nodeData:[],
       attachs:[],
+      files:[],
       status:[{
         id:1,
         label:"未审核",
@@ -168,7 +176,7 @@ export default {
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
-          this.dialogFormVisible=false;
+          this.dialogVisible=false;
           this.filterQuery.companyCode ='00'
         }).catch(err => {
           this.$message.error(err.message);
@@ -197,21 +205,18 @@ export default {
       }
       else{
        no_elementReviewer(this.nodeData).then(res => {
-          console.log(res.message);
-          console.log(this.code.qHSE_CompanyYearManagerSysElement_ID)
+         console.log(res.message);
+          this.$message.success(res.message);
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
-          // this.companyName = res.data.name;
-          // this.year = res.data.year;
-          // this.status = res.data.status;
         })
         .catch(err => {
           console.log(err);
           this.message.error(err.message);
         });
       
-          this.dialogFormVisible=false;
+          this.dialogVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
         })
@@ -264,6 +269,7 @@ export default {
     updateScore(data){//显示出证据项的内容
     console.log(this.userId)
     this.attachs={};
+    this.files={};
       show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
@@ -277,11 +283,19 @@ export default {
         var attach = this.nodeData.attach;//获取地址字符串
         if(attach!=null){
           var arr=attach.split(";");
-          this
-          for(var i=0;i<arr.length-1;i++)
-          {
-            this.attachs[i]=arr[i];
-          }
+          for(var i=0,j=0,k=0;i<arr.length-1;i++)
+                {
+                  //j代表图片数量，k代表文件数量
+                  var houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
+                  if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
+                  this.attachs[j]=arr[i];
+                  j++;
+                  }
+                  else{
+                    this.files[k]=arr[i];
+                    k++;
+                  }
+                }
           console.log('attach数量：',arr.length,this.attachs);
         }
         
