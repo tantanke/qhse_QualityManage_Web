@@ -140,7 +140,7 @@
               </el-select>
               </el-form-item>
               <el-form-item label='问题选择:' labelWidth='100px' v-if="fileRecord.pass === '不通过'">
-                <el-checkbox-group v-model="proTextarea" >
+                <el-checkbox-group v-model="selectProblem" >
                   <el-checkbox v-for="(item,index) in problem" :key="index" :label="item">                   
                   </el-checkbox>
                   </el-checkbox-group>
@@ -220,6 +220,7 @@
 
 <script>
 import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
+import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 export default {
   data() {
     return {
@@ -282,6 +283,7 @@ export default {
       // 问题列表
       problemForm: {},
       problem: [],
+      selectProblem: [],
       elsePro: false,
       proTextarea: ''
     };
@@ -351,7 +353,7 @@ export default {
     detaileFile(data) {
       let _this = this
       // 获取问题清单
-      
+      console.log(data)
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
       _this.detailData.initialScore = data.initialScore
@@ -385,8 +387,19 @@ export default {
       _this.fileRecord.code = data.code
       _this.updateCheckForm.code = data.code
       _this.nopass.code = data.code
-      _this.problem =  _this.filterProblem(data.problemDescription)
-      _this.dialogVisible = true
+      /* _this.problem =  _this.filterProblem(data.problemDescription) */
+      querryQHSEproblemDiscription({code:data.code}).then(res => {
+        if(res.data.length !== 0){
+        res.data.forEach(item => {
+          if(!item.description.includes('其他')){
+          _this.problem.push(item.description)
+          }
+        })
+        }
+        _this.dialogVisible = true
+      })
+      console.log(data.code)
+      
     },
     hasdata(){
       if(this.treeData === [])
@@ -430,11 +443,16 @@ export default {
     updateCompanyStatus(){
         this.dialogFormVisible = true
     },
+    // 添加问题
     addQuestion () { 
        let _this = this
+       let str = ''
        _this.addQuestionForm.code = _this.fileRecord.code
        _this.addQuestionForm.problemDescription = _this.proTextarea
-       console.log(_this.addQuestionForm)
+       _this.selectProblem.forEach(item => {
+          str = str + item + ' '
+       })
+       _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
        addProblemDescription(_this.addQuestionForm).then(res => {
          console.log(res)
        }).catch(err => {

@@ -1,7 +1,7 @@
 
 <template>
   <div>
-    <div class="page-title" style="width:100%">审核要素管理</div>
+    <div class="page-title" style="width:100%">量化标准</div>
     <div class="page-content">
       &nbsp;&nbsp;
       <el-row>
@@ -41,7 +41,7 @@
           </el-upload>
         </el-col>
         <el-col>
-          <el-checkbox label="仅显示启用项" v-model="queryStatus" @change="changeStatus" checked></el-checkbox>
+          <el-checkbox label="仅显示启用项" :true-label="0" :false-label="1" v-model="queryStatus" @change="getDate"></el-checkbox>
         </el-col>
       </el-row>&nbsp;&nbsp;
       <el-tree
@@ -60,8 +60,11 @@
             <el-button type="text" size="mini" @click="() => onEdit(data,node)">
               <i>编辑</i>
             </el-button>&nbsp;&nbsp;
+            <el-button  type="text" size="mini" v-if="data.childNode.length === 0 && node.level !== 1" @click="addQuestion(data)">
+              <i>问题</i>
+            </el-button>&nbsp;&nbsp;
             <el-button type="text" size="mini" @click="() => onStopUse(data)">
-              <i>停用</i>
+              <i>{{data.status=='启用'?'停用':'启用'}}</i>
             </el-button>
           </span>
         </span>
@@ -90,11 +93,74 @@
           <el-button type="primary" @click="addEventFormSubmitBtn2(addEventForm2)">确 定</el-button>
         </span>
       </el-dialog>
+      <el-dialog title="问题详情" :visible.sync="addQuestiondialogVisible" 
+      :close-on-click-modal='false'>
+      <!--编辑问题数据 --> 
+        <el-dialog
+          width="30%"
+          title="编辑问题"
+          :visible.sync="innerVisible"
+          :close-on-click-modal='false'
+          append-to-body>
+          <el-input v-model="editValue" style='margin-bottom:20px' placeholder="请输入新的的问题描述"></el-input>
+          <el-button type="primary" @click="submitedit">确定</el-button>
+            <el-button type="danger" @click="innerVisible = false">取消</el-button>
+        </el-dialog>
+        <el-form :inline='true' :model="addquestionDiscription">
+          <el-form-item>
+            <el-button type="primary" @click="buttoncontrol = true" :disabled='buttoncontrol' plain>新增问题描述</el-button>
+          </el-form-item>
+          <el-form-item v-show="buttoncontrol">
+            <el-input v-model="addquestionDiscription.description" placeholder="请输入问题"></el-input>
+          </el-form-item>
+          <el-form-item v-show="buttoncontrol">
+            <el-button type="primary" @click="submitQuestion">确定</el-button>
+            <el-button type="danger" @click="buttoncontrol = false">取消</el-button>
+          </el-form-item>
+        </el-form>      
+        <!--记录问题数据 -->  
+        <el-table
+        v-loading="loading"
+          :data="problemList"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="description"
+            label="已有问题描述">
+          </el-table-column>
+          <el-table-column
+          label="操作"
+             align="center">
+            <template slot-scope="scope">
+              <el-button
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                @click="deleteProblem(scope.row)"
+              >删除</el-button>
+              <el-button
+              icon="el-icon-edit"
+                type="primary"
+                size="mini"
+                @click="editProblem(scope.row)"
+              >编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="addQuestiondialogVisible=false">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
 <script>
 import { GetCurrentUser } from '../../../store/CurrentUser';
+import { querryQHSEproblemDiscription,
+         addQHSEproblemDiscription,
+         deleteQHSEproblemDiscription,
+         updateQHSEproblemDiscription
+} from '../../../services/qhse_QualityStandard'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { GetCheckListTree } from '../../../services/hidden_danger_investigation/checkListTree'
 import { Createcheck_item, delete_tree, getcontent, Createcontent } from '../../../services/hidden_danger_investigation/checkListItem'
@@ -135,7 +201,6 @@ export default {
         let tempArr = response.data.data;
 
         for (const temp of tempArr) {
-          delete temp.id;
           delete temp.childNode;
         }
 
@@ -146,7 +211,7 @@ export default {
         option.datas = [
           {
             sheetData: tempArr,
-            sheetHeader: ["编码", "要素名称", "内容", "依据", "审核方式", "分数", "计算公式", "可能存在的问题", "总数", "状态"]
+            sheetHeader: ["ID","编码", "要素名称", "内容", "依据", "审核方式", "分数", "计算公式", "可能存在的问题", "总数", "状态"]
           }
         ];
 
@@ -157,7 +222,7 @@ export default {
     },
     //获取单位树
     getDate() {
-      querryQhseElement().then((res) => {
+      querryQhseElement({queryStatus: this.queryStatus}).then((res) => {
         this.treedata = res.data
         console.log(this.treedata)
         console.log(JSON.stringify(res.data))
@@ -244,11 +309,10 @@ export default {
       })
     },
     onStopUse(val) {
-      console.log(val);
-      val.status = '停用';
+      val.status = val.status == '停用' ? '启用' : '停用';
       this.$http.put('http://39.98.173.131:7000/wlhse/api/v3/updateQHSEElementStatus', val).then((response) => {
         this.getDate();
-        this.$message.success('停用成功');
+        this.$message.success(val.status+'成功');
       })
     },
     addEventFormSubmitBtn1() {
@@ -290,18 +354,113 @@ export default {
       }, (err) => {
         this.$message.error(err.message)
       })
+    },
+    // 数据获取
+    getProblems (data) {
+      let _this = this
+      _this.loading = true
+      _this.problemList = []
+      querryQHSEproblemDiscription({code:data}).then(res => {
+        console.log(res.data)
+        res.data.forEach((item) => {
+          let obj = {}
+          obj.code = item.code
+          obj.description = item.description
+          obj.qHSE_ManagerSysElementProblemDescription_ID = item.qHSE_ManagerSysElementProblemDescription_ID
+          _this.problemList.push(obj)
+        })       
+        _this.loading = false
+      }).catch(err => {
+         this.$message.error(err)
+         _this.loading = false
+         _this.addQuestiondialogVisible = false
+       })
+    },
+    // 弹出对话框
+    addQuestion(data) {
+      let _this = this    
+      _this.problemCode = data.code
+      _this.getProblems(data.code)
+      _this.addQuestiondialogVisible = true
+    },
+    // 添加问题描述
+    submitQuestion() {
+      let _this = this
+      _this.addquestionDiscription.code = _this.problemCode
+       if(_this.addquestionDiscription.description === '') {
+         this.$message.warning('请输入具体问题！')
+         return
+       }
+       addQHSEproblemDiscription(this.addquestionDiscription).then(() => {
+         _this.$message.success('添加成功')
+         _this.addquestionDiscription.description = ''
+         _this.getProblems(_this.problemCode)
+       }).catch(err => {
+         _this.$message.error(err)
+       })
+    },
+    // 删除问题描述
+    deleteProblem(data) {
+        let form = {}
+        let _this = this
+        form.id = data.qHSE_ManagerSysElementProblemDescription_ID
+        deleteQHSEproblemDiscription(form).then(() => {
+           _this.$message.success('删除成功')
+           _this.getProblems(_this.problemCode)
+        }).catch(err => {
+          _this.$message.error(err)
+       })
+    },
+    editProblem(data) {      
+        this.editForm = {...data}
+        this.innerVisible = true
+    },
+    // 提交编辑问题
+    submitedit() {
+      let _this = this
+      if(_this.editValue === ''){
+         _this.$message.warning('请输入具体问题！')
+         return
+      }
+        _this.editForm.description = _this.editValue
+        updateQHSEproblemDiscription(_this.editForm).then(() => {
+          _this.$message.success('编辑成功')
+           _this.getProblems(_this.problemCode)
+           _this.innerVisible = false
+        }).catch(err => {
+          _this.$message.error(err)
+          _this.innerVisible = false
+       })
+       
     }
   },
   data() {
     return {
+      buttoncontrol: false,
+      innerVisible: false,
+      loading:false,
       addEventForm1: {
         categoryName: ''
       },
       addEventForm2: {
         categoryName: ''
       },
+      addquestionDiscription: {
+        qHSE_ManagerSysElementProblemDescription_ID: null,
+        code: '',
+        description: ''
+      },
+      editquestionDiscription: {
+        qHSE_ManagerSysElementProblemDescription_ID: null,
+        code: '',
+        description: ''
+      },
+      editValue: '',
+      editForm: {},
+      problemCode: '',
       addEventdialogVisible1: false,
       addEventdialogVisible2: false,
+      addQuestiondialogVisible:false,
       addNodeCode: '',
       filterText: '',
       fileList: [],
@@ -313,7 +472,9 @@ export default {
       checkListPojo: {
         checkListCode: ''
       },
-      currentNodeData: null
+      problemList: [],
+      currentNodeData: null,
+      queryStatus: 0
     };
   }
 };
@@ -335,5 +496,8 @@ export default {
   background: #e5e9f2;
 }
 </style>
+
+
+    
 
     

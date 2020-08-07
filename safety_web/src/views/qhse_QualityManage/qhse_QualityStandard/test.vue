@@ -146,6 +146,30 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import {GetCheckItem} from '../../../services/gettreedata'
 import {Createcheck_item,delete_tree,getcontent,Createcontent} from '../../../services/checkitem'
 export default {
+  data() {
+      return {
+        addEventForm1:{
+          categoryName: ''
+        },
+        addEventForm2:{
+          categoryName: ''
+        },
+        problemList:[],
+        addEventdialogVisible1: false,
+        addEventdialogVisible2: false,
+        addNodeCode: '',
+        filterText: '',
+        fileList:[],
+        treedata: [],
+        defaultProps: {
+        children: 'children',
+        label: 'label'
+        },
+        checkItemPojo:{
+          checkItemCode:''
+        }
+      };
+    },
     watch: {
     filterText(val) {
         this.$refs.tree2.filter(val);
@@ -257,29 +281,7 @@ export default {
         })
       }
     },
-    data() {
-      return {
-        addEventForm1:{
-          categoryName: ''
-        },
-        addEventForm2:{
-          categoryName: ''
-        },
-        addEventdialogVisible1: false,
-        addEventdialogVisible2: false,
-        addNodeCode: '',
-        filterText: '',
-        fileList:[],
-        treedata: [],
-        defaultProps: {
-        children: 'children',
-        label: 'label'
-        },
-        checkItemPojo:{
-          checkItemCode:''
-        }
-      };
-    }
+    
   };
 </script>
 <style>

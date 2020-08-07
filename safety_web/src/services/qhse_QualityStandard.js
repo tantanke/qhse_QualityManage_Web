@@ -30,3 +30,32 @@ import request from '../utils/request'
       data
     })
   }
+
+  export const querryQHSEproblemDiscription = (data) => {
+    return request(`/api/querryQHSEproblemDiscription/${data.code}`, {
+      method: 'get', 
+      data
+    })
+  }
+// 增加问题描述
+  export const addQHSEproblemDiscription = (data) => {
+    return request('/api/addQHSEproblemDiscription', {
+      method: 'post', 
+      data
+    })
+  }
+
+// 编辑问题描述
+export const deleteQHSEproblemDiscription = (data) => {
+  return request(`/api/deleteQHSEproblemDiscription/${data.id}`, {
+    method: 'delete', 
+    data
+  })
+}
+// 删除问题描述
+export const updateQHSEproblemDiscription = (data) => {
+  return request(`/api/updateQHSEproblemDiscription/${data.qHSE_ManagerSysElementProblemDescription_ID}`, {
+    method: 'put', 
+    data
+  })
+}
