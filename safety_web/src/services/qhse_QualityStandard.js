@@ -54,7 +54,7 @@ export const deleteQHSEproblemDiscription = (data) => {
 }
 // 删除问题描述
 export const updateQHSEproblemDiscription = (data) => {
-  return request(`/api/updateQHSEproblemDiscription/${data.qHSE_ManagerSysElementProblemDescription_ID}`, {
+  return request(`/api/updateQHSEproblemDiscription`, {
     method: 'put', 
     data
   })

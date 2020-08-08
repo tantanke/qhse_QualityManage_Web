@@ -414,12 +414,17 @@ export default {
     editProblem(data) {      
         this.editForm = {...data}
         this.innerVisible = true
+        this.editValue = data.description
     },
     // 提交编辑问题
     submitedit() {
       let _this = this
       if(_this.editValue === ''){
          _this.$message.warning('请输入具体问题！')
+         return
+      }
+      if(_this.editValue === _this.editForm.description) {
+        _this.$message.warning('请不要与原问题一致！')
          return
       }
         _this.editForm.description = _this.editValue

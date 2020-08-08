@@ -383,6 +383,7 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
+               console.log(res.data)
                _this.checkForm.companyId = []
                   _this.date = null
            }).catch(err => {
