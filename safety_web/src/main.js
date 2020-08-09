@@ -16,11 +16,13 @@ import './styles/index.scss'
 // import AMap from 'vue-amap'
 import axios from 'axios';
 import VueAxios from 'vue-axios'
+import plugins from './plugins';
 // Vue.use(AMap)
 Vue.config.productionTip = false
 Vue.use(ElementUI, {size: 'medium'})
 Vue.component('treeselect', Treeselect)
 Vue.use(VueAxios, axios)
+Vue.use(plugins);
 
 new Vue({
   router,

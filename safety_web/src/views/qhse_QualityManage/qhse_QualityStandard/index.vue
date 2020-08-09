@@ -253,7 +253,10 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true;
-      return data.checkListName.indexOf(value) !== -1;
+      console.log('hha')
+      console.log(value);
+      console.log(data);
+      return data.name.indexOf(value) !== -1;
     },
     detail(checkListCode) {
       this.checkListPojo.checkListCode = checkListCode
@@ -310,7 +313,7 @@ export default {
     },
     onStopUse(val) {
       val.status = val.status == '停用' ? '启用' : '停用';
-      this.$http.put('http://39.98.173.131:7000/wlhse/api/v3/updateQHSEElementStatus', val).then((response) => {
+      this.$http.put(`http://39.98.173.131:7000/wlhse/api/v3/updateQHSEElementStatus/${val.id}`).then((response) => {
         this.getDate();
         this.$message.success(val.status+'成功');
       })

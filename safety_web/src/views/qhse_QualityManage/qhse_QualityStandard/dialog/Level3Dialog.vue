@@ -4,9 +4,6 @@
       <el-form-item label="管理及运行要求">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="依据或备注">
-        <el-input v-model="form.basis"></el-input>
-      </el-form-item>
     </el-form>
   </dialog-container>
 </template>
@@ -19,8 +16,7 @@ export default {
   data() {
     return {
       form: {
-        name: null,
-        basis: null
+        name: null
       }
     };
   },

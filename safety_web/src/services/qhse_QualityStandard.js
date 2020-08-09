@@ -39,7 +39,7 @@ import request from '../utils/request'
   }
 // 增加问题描述
   export const addQHSEproblemDiscription = (data) => {
-    return request('/api/addQHSEproblemDiscription', {
+    return request('/api/addQHSEElement', {
       method: 'post', 
       data
     })
