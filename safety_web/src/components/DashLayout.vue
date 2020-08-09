@@ -257,6 +257,7 @@ export default {
             console.log(res.data)
             if (res.code === 1000)
                 this.navs = res.data
+                console.log(this.navs)
         })
     }
   },
@@ -277,7 +278,7 @@ export default {
           }
         }
       }
-      return 'Home'
+      return 'QHSEQualityStandardIndex'
     },
      currentUser(){
       return GetCurrentUser()

@@ -336,6 +336,7 @@ export default {
         .then(res => {
           console.log(res)
           this.$message.success(res.message)
+          this.$router.go(-1)
         })
         .catch(err => {
           console.log(err)

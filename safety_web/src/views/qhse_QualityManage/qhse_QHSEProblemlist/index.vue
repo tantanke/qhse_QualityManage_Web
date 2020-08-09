@@ -61,7 +61,7 @@
                 <el-form-item label="作业项目:">
                     <span>{{ props.row.workItem }}</span>
                 </el-form-item>
-                <el-form-item label="违章类别:">
+                <el-form-item label="可能后果:">
                     <span>{{ props.row.consequenceID }}</span>
                 </el-form-item>
                 <el-form-item label="对应体系要素:">
@@ -75,9 +75,6 @@
                 </el-form-item>
                 <el-form-item label="归属部门:">
                     <span>{{ props.row.factorDepartment }}</span>
-                </el-form-item>
-                <el-form-item label="可能后果:">
-                    <span>{{ props.row.consequenceID }}</span>
                 </el-form-item>
                 <el-form-item label="整改负责人:">
                     <span>{{ props.row.punish }}</span>
@@ -406,6 +403,7 @@ export default {
             }
            baseurl  = _this.getUrl('/api/query_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
+               console.log(res.data.list)
                _this.regulationrecord = res.data.list
                _this.checkForm.companyId = []
                   _this.date = null
