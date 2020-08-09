@@ -433,6 +433,11 @@ export default {
     // 获取已经审核完成的记录的详细信息
     detaileFile(data) {
       let _this = this
+       _this.nodeData = ''
+      _this.attachs = []
+      _this.files = []
+      _this.problem = []
+      _this.selectProblem = []
       // 获取证据图片 
       _this.eviLoaind = true
       _this.detaildialogVisible = true
@@ -443,9 +448,6 @@ export default {
     // 重置证据
     resetEvidence () {
        this.detaildialogVisible = false
-       this.nodeData = ''
-       this.attachs = []
-       this.files = []
     },
     // 填充文件审核页面
     goUpdateFile(data){
@@ -453,6 +455,11 @@ export default {
       _this.dialogVisible = true
       _this.editdata = data
       _this.addLoading  = true
+      _this.nodeData = ''
+      _this.attachs = []
+      _this.files = []
+      _this.problem = []
+      _this.selectProblem = []
       _this.getEvidence(data)
       // 填充文件审核详情页面
       _this.updateCheckForm.code = data.code
@@ -565,8 +572,6 @@ export default {
     },
     resetQuestion () {
         this.dialogVisible = false
-        this.problem = []
-        this.selectProblem = []
     },
     checkNopass () {
       this.noScore()
