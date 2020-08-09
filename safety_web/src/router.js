@@ -89,7 +89,8 @@ export default new Router({
         { path: '/report_management/report_unit_price/index', name:'ReportUnitPrice', component: resolve => require(['./views/report_management/report_unit_price/index.vue'],resolve)},
         { path: '/report_management/ERP_cost_detail/index', name:'ERPCostDetailIndex', component: resolve => require(['./views/report_management/ERP_cost_detail/index.vue'],resolve)},
         { path: '/report_management/notERP_cost_detail/index', name:'NotERPCostDetailIndex', component: resolve => require(['./views/report_management/notERP_cost_detail/index.vue'],resolve)},
-
+        { path: '/report_management/documentPublicity/acceptFile/index', name:'AcceptFile', component: resolve => require(['./views/report_management/documentPublicity/acceptFile/index.vue'],resolve)},
+        { path: '/report_management/documentPublicity/sendFile/index', name:'SendFile', component:resolve => require(['./views/report_management/documentPublicity/sendFile/index.vue'],resolve)},
         //nave4
         { path: '/nav4/issueTrend', name: 'IssueTrendEcharts', component: resolve => require(['./views/nav4/issueTrend/Index.vue'],resolve)},
         { path: '/nav4/taskprocedure_analysis', name: 'Taskprocedureanalysis', component: resolve => require(['./views/nav4/taskprocedure_analysis/Index.vue'],resolve)},

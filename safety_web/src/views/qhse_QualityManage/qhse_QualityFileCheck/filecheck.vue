@@ -9,8 +9,7 @@
     <div style="margin:15px 0px">
       <span style="margin-right:15px">请选择文件审核方式:</span>
           <el-radio v-model="checkType" label="树形审核">树形审核</el-radio> 
-          <el-radio v-model="checkType" label="列表审核">列表审核</el-radio>
-       
+          <el-radio v-model="checkType" label="列表审核">列表审核</el-radio>     
     </div>
     <el-row style="padding:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
     <div class="page-content">
@@ -103,8 +102,10 @@
         </el-table>
         </div>
       </el-row>
+
+      <!--文件审核的具体页面 -->
       <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="1200px">
-        
+        <div v-loading='addLoading'>
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
             <el-col :span="12">
@@ -113,16 +114,28 @@
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
-              <el-form-item label="证据图片：" style="margin-bottom:10px">
+              <el-form-item label="证据图片：" 
+              style="margin-bottom:10px"
+              >
+              <span v-show="attachs.length === 0">无图片附件记录！</span>
+              <div  v-for="(item,index) in attachs" :key="index">
                 <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                  <span v-if="!detailData.pictureFile">无图片文件记录！</span>
-                  <el-popover placement="right" title trigger="click" v-else>
+                  <el-popover placement="right" title trigger="click">
                     <div style="max-width:600px;height:auto">
-                      <img :src="detailData.pictureFile" style="max-width:600px;height:auto" />
+                      <img :src="item" style="max-width:600px;height:auto" />
                     </div>
-                    <img slot="reference" :src="detailData.pictureFile" :alt="detailData.pictureFile" style="max-height: 180px" />
+                    <img slot="reference" :src="item"  style="max-height: 180px" />
                   </el-popover>
                 </el-card>
+              </div >
+              </el-form-item>
+              <el-form-item label="证据文件：" 
+              style="margin-bottom:10px"
+              >
+               <span v-show="files.length === 0">无文件附件记录！</span>
+                <div v-for="(item,index) in files" :key="index">
+                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                </div>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -131,7 +144,7 @@
               </h3>
               <el-form :v-model="fileRecord">
               <el-form-item label='分数:' labelWidth='100px' style="width:280px">
-                <el-input type="text" v-model="fileRecord.codeScore"></el-input>
+                <el-input type="text" v-model.number="fileRecord.codeScore"></el-input>
               </el-form-item>
               <el-form-item label='通过状态:' labelWidth='100px' >
                 <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:200px">
@@ -154,19 +167,21 @@
                   </el-input>
               </el-form-item>
               </el-form>
+              
             </el-col>
-          </el-row>
-          
+          </el-row>         
         </el-form>
+        </div>
         <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="updataFileAudit">确定</el-button>
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="resetQuestion">取 消</el-button>
           </div>
       </el-dialog>
-      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center width="1200px">
-        
-        <el-form label-width="140px" :model="detailData" style="width:100%;" >
-          <el-row>
+      <!-- 查看文件审核详情 -->
+      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center style="height:850px" >
+        <div v-loading='eviLoaind'>
+        <el-form   label-width="140px" :model="detailData" style="width:100%;" >
+          <el-row >
             <el-col :span="12">
               <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>            
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
@@ -174,25 +189,40 @@
               <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>
-              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
-              <el-form-item label="证据图片：" style="margin-bottom:10px">
+              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription === null? detailData.problemDescription : '暂无'}}</el-form-item>       
+            </el-col>
+            <el-col :span="12" >
+              <el-form-item label="证据图片：" 
+              style="margin-bottom:10px"
+              >
+              <span v-show="attachs.length === 0">无图片文件记录！</span>
+              <div  v-for="(item,index) in attachs" :key="index">
                 <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                  <span v-if="!detailData.pictureFile">无图片文件记录！</span>
-                  <el-popover placement="right" title trigger="click" v-else>
+                  <el-popover placement="right" title trigger="click">
                     <div style="max-width:600px;height:auto">
-                      <img :src="detailData.pictureFile" style="max-width:600px;height:auto" />
+                      <img :src="item" style="max-width:600px;height:auto" />
                     </div>
-                    <img slot="reference" :src="detailData.pictureFile" :alt="detailData.pictureFile" style="max-height: 180px" />
+                    <img slot="reference" :src="item"  style="max-height: 180px" />
                   </el-popover>
                 </el-card>
+              </div >
+              </el-form-item>
+              <el-form-item label="证据文件：" 
+              style="margin-bottom:10px"
+              >
+                <span v-show="files.length === 0">无文件附件记录！</span>
+                <div v-for="(item,index) in files" :key="index">         
+                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                </div>
               </el-form-item>
             </el-col>
           </el-row>
           
         </el-form>
+        </div>
         <div slot="footer" class="dialog-footer">
             <!-- <el-button type="primary" @click="updataFileAudit">确定</el-button> -->
-            <el-button @click="detaildialogVisible = false">确 定</el-button>
+            <el-button @click="resetEvidence">确 定</el-button>
           </div>
       </el-dialog>
       <el-dialog
@@ -221,6 +251,7 @@
 <script>
 import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
+import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
   data() {
     return {
@@ -285,7 +316,13 @@ export default {
       problem: [],
       selectProblem: [],
       elsePro: false,
-      proTextarea: ''
+      proTextarea: '',
+      // 控制证据图片的具体录入
+      nodeData: '',
+      attachs: [],
+      files: [],
+      eviLoaind: false,
+      addLoading: false
     };
   },
   methods: {
@@ -349,45 +386,84 @@ export default {
        })
        
     },
-    // 获取已经审核完成的记录的详细信息
-    detaileFile(data) {
-      let _this = this
-      // 获取问题清单
-      console.log(data)
+    getEvidence(data) {
+        let _this = this 
+        show_elementReviewer({qHSE_CompanyYearManagerSysElement_ID:data.id}).then(res => {
+        this.nodeData=res.data;
+        console.log(this.nodeData)
+        let attach = this.nodeData.attach;//获取地址字符串
+        if(attach !== null){
+          let arr = attach.split(";");
+          for(let i=0,j=0,k=0;i<arr.length-1;i++)
+                {
+                  //j代表图片数量，k代表文件数量
+                  let houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
+                  if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
+                  this.attachs[j]=arr[i];
+                  j++;
+                  }
+                  else{
+                    this.files[k]=arr[i];
+                    k++;
+                  }
+                }
+        }
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
       _this.detailData.initialScore = data.initialScore
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
       _this.detailData.problemDescription = data.problemDescription
-      // 获取信息表单
+      // 获取信息表单    
       _this.statusForm.code = data.code
-      
-      getStatus(_this.statusForm).then(res => {
+         return  getStatus(_this.statusForm)
+      }).then(res => {
         if(res.data.length > 0){
         _this.detailData.codeScore = res.data[0].codeScore
         _this.detailData.pass = res.data[0].pass
-        _this.detaildialogVisible = true}
-      }).catch(err => {
+        }
+         _this.eviLoaind = false
+         _this.addLoading = false
+         
+      })
+      .catch(err => {
         _this.$message.error(err)
       })
+    },
+    // 获取已经审核完成的记录的详细信息
+    detaileFile(data) {
+      let _this = this
+       _this.nodeData = ''
+      _this.attachs = []
+      _this.files = []
+      _this.problem = []
+      _this.selectProblem = []
+      // 获取证据图片 
+      _this.eviLoaind = true
+      _this.detaildialogVisible = true
+      _this.getEvidence(data)  
       //  获取分数与状态填充
       
     },
+    // 重置证据
+    resetEvidence () {
+       this.detaildialogVisible = false
+    },
+    // 填充文件审核页面
     goUpdateFile(data){
       let _this = this
+      _this.dialogVisible = true
       _this.editdata = data
+      _this.addLoading  = true
+      _this.nodeData = ''
+      _this.attachs = []
+      _this.files = []
+      _this.problem = []
+      _this.selectProblem = []
+      _this.getEvidence(data)
       // 填充文件审核详情页面
-      _this.detailData.status = data.status 
-      _this.detailData.auditMode = data.auditMode
-      _this.detailData.initialScore = data.initialScore
-      _this.detailData.formula = data.formula
-      _this.detailData.name = data.name
-      _this.detailData.problemDescription = data.problemDescription      
-      _this.fileRecord.code = data.code
       _this.updateCheckForm.code = data.code
       _this.nopass.code = data.code
-      /* _this.problem =  _this.filterProblem(data.problemDescription) */
       querryQHSEproblemDiscription({code:data.code}).then(res => {
         if(res.data.length !== 0){
         res.data.forEach(item => {
@@ -396,9 +472,9 @@ export default {
           }
         })
         }
-        _this.dialogVisible = true
+
       })
-      console.log(data.code)
+
       
     },
     hasdata(){
@@ -464,10 +540,10 @@ export default {
       // 上传文件审核记录
       let _this = this
       console.log(_this.nopass)
-      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === ''  ) ) {
-        _this.$message.error('请填写审核内容')
+      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === ''  || _this.fileRecord.codeScore > Number(_this.detailData.initialScore)) ) {
+        _this.$message.error('请填写正确的审核内容')
         return
-        } else if (_this.proTextarea === ''   && _this.fileRecord.pass === '不通过') {
+        } else if (_this.proTextarea === '' &&  _this.selectProblem.length === 0 && _this.fileRecord.pass === '不通过') {
           _this.$message.error('请填写具体问题内容')
           return
         }
@@ -477,7 +553,8 @@ export default {
       }).then(() => {
         // 这里应该返回文件审核记录的recordID
         if(_this.status === '不通过') {
-         _this.addQuestion()
+          _this.noinnerVisible = true
+         _this.addQuestion()     
         }  
         _this.$message.success('添加成功！')
         _this.dialogVisible = false
@@ -492,6 +569,9 @@ export default {
         _this.$message.error(err)
       })
 
+    },
+    resetQuestion () {
+        this.dialogVisible = false
     },
     checkNopass () {
       this.noScore()
