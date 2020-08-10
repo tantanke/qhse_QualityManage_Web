@@ -92,6 +92,7 @@
               <el-form-item label="上传文件">
                 <el-upload
                   v-model="form.fileID"
+                  :headers="headers"
                   :limit="1"
                   :on-success="handleAvatarSuccess"
                   :action="accidentOrEventUploadAddress">
@@ -101,6 +102,7 @@
               <el-form-item label="上传图片"> 
               <el-upload
                 :action="accidentOrEventUploadAddress"
+                :headers="headers"
                 list-type="picture-card"
                 clearable
                 ref="upload"
@@ -153,8 +155,18 @@ import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获�
 import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示公司所有的证据项节点
 import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
 import { employees } from "../../../services/qhse_QualityCheck";//显示成员
-import { evidence } from "../../../services/qhse_QualityCheck";//显示成员
 import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
+import  {GetCurrentUser} from '../../../store/CurrentUser'
+
+const headers1 = {
+              Accept: 'application/json',
+              'Content-Type': 'application/json; charset=utf-8'
+              }
+              const newOptions = {...headers1}
+              let user = GetCurrentUser()
+              if (user) {
+              newOptions.headers = {...newOptions.headers1, Authorization: user.token}
+              }
 const DefaultQuery = {
   year: "",
   companyCode: null,
@@ -163,6 +175,7 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      headers:newOptions.headers,
       filterQuery: {},
       companyList: [],//公司列表
       peopleList:[],//职员列表
@@ -280,6 +293,7 @@ export default {
                   j++;
                   }
                   else{
+                    if(arr.length!=0)
                     this.files[k]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
                     k++;
                   }
@@ -397,8 +411,9 @@ export default {
     this.loading = false;
   },
   computed: {
+    
             accidentOrEventUploadAddress: function () {
-                return '/api/evidence_upload'
+                return  '/api/evidence_upload'
             }
         }
 };

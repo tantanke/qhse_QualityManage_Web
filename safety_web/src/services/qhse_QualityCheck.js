@@ -27,6 +27,9 @@ export const addAll_evidence_attach = (data) => {
 export const employees = () => {
     return request(`/api/employees`)
 }
+export const accidentOrEventUploadAddress=()=> {
+    return request('/api/evidence_upload')
+}
 // export const UpdateComSysEleStatus = (data) => {
 //     return request(`/api/updateComSysEleStatus`, {
 //         method: 'put',
