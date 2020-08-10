@@ -57,7 +57,7 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="上传文件">
-							<el-upload :action="'/api/propagationFileUpload'" multiple show-file-list="true" :file-list="propagationPlan.list"
+							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.list"
 							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove">
 								<el-button type="primary" icon="el-icon-upload">点击上传</el-button>
 							</el-upload>
@@ -132,6 +132,15 @@
 		GetCurrentUser
 	} from '../../../../store/CurrentUser'
 	import ExportJsonExcel from "js-export-excel";
+	const headers1={
+		Accept:'application/json',
+		'Content-Type':'aplication/json;charset=utf-8'
+	}
+	const newOptions={...headers1}
+	let user=GetCurrentUser()
+	if(user){
+		newOptions.headers={...newOptions.headers1,Authorization:user.token}
+	}
 	const DefaultQuery = {
 		putSelected: [],
 		putTableData: [],
@@ -140,6 +149,7 @@
 		data() {
 			return {
 				filterQuery: {},
+				headers:newOptions.headers,
 				companyId: null,
 				companyCode: '',
 				companyName: '',
