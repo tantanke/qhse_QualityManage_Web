@@ -27,9 +27,9 @@
 						<el-table-column prop="description" label="描述" width="200%" align="center" show-overflow-tooltip="true"></el-table-column>
 						<el-table-column label="操作" width="330%" align="center">
 							<template v-slot="scope">
-								<el-button type="primary" icon="el-icon-edit" @click="openConfigDialog(scope.row)">配置</el-button>
-								<el-button type="info" icon="el-icon-message" @click="openStatisticsDialog(scope.row)">统计</el-button>
-								<el-button type="danger" icon="el-icon-close" @click="deletePropagationPlan(scope.row)">删除</el-button>
+								<el-button type="primary" size="mini" icon="el-icon-edit" @click="openConfigDialog(scope.row)">配置</el-button>
+								<el-button type="info" size="mini" icon="el-icon-message" @click="openStatisticsDialog(scope.row)">统计</el-button>
+								<el-button type="danger" size="mini" icon="el-icon-close" @click="deletePropagationPlan(scope.row)">删除</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
