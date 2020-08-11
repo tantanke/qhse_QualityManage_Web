@@ -6,6 +6,7 @@
         <el-form label-width="130px" :inline="true" :model="filterQuery">
           <el-form-item label="选择公司：" prop="companyCode">
             <treeselect
+              :disable-branch-nodes="true"
               :multiple="false"
               :options="companyList"
               placeholder="请选择公司单位"
@@ -49,7 +50,7 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='未通过')"
               >录入</el-button>
             </template>
           </el-table-column>
@@ -239,7 +240,6 @@ export default {
         this.$message.success('添加成功');
 
         //上传后刷新树
-        this.treeData='';
         this.handleGetInitialData();//更改loading状态
         querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
@@ -252,7 +252,7 @@ export default {
         this.loading = false;
     },
     updateScore(data){
-        this.attach='';
+        this.attach={};
         this.attachs='';
         this.files='';
         this.detailData.name = data.name    
@@ -262,6 +262,7 @@ export default {
         this.form.attachDescrption=null;//初始化附件描述
         this.form.code=data.code;//赋值要素编码
         this.form.id=data.id;//附件id
+        this.form.attach='';
         //获取证据项内容
         query_evidence_attach(data)
         .then(res => {
@@ -341,7 +342,6 @@ export default {
       this.filterQuery.companyCode = val.nodeCode;
     },
     handleGetCompany() {//获取到公司的名字 即在选择页面显示
-        this.filterQuery.companyCode='00'
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
         }).catch(err => {
@@ -380,8 +380,9 @@ export default {
       let nowdata = new Date(this.filterQuery.year);
       this.filterQuery.year = String(nowdata.getFullYear());
       if(this.filterQuery.companyCode==null)
-         this.filterQuery.companyCode='00'
-      this.handleGetInitialData();//更改loading状态
+         this.$message.error('请选择公司')
+      else{
+           this.handleGetInitialData();//更改loading状态
       querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -391,6 +392,8 @@ export default {
           this.message.error(err.message);
         });
       this.loading = false;
+         }
+      
     },
     //转换年份
     handleGetDate(date) {

@@ -10,6 +10,7 @@ export default new Router({
     { path: '/sign_in', name: 'Login',component: resolve => require(['./views/Login.vue'],resolve)},
     {
       path: '/',
+      name:'mainPath',
       component:  resolve => require(['./components/DashLayout.vue'],resolve),
       children: [
         { path: '/components/index', name: 'index', component: resolve => require(['./components/index.vue'],resolve)},

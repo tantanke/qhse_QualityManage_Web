@@ -6,6 +6,7 @@
         <el-form label-width="130px" :inline="true" :model="filterQuery">
           <el-form-item label="选择公司：">
             <treeselect
+              :disable-branch-nodes="true"
               :multiple="false"
               :options="companyList"
               placeholder="请选择公司单位"
@@ -60,7 +61,7 @@
             <el-col :span="12">
               <el-form-item style="text-align:left">
                 <el-switch
-                  v-if="detailData.evidenceDsecription!=null"
+                  v-if="attach!=null||files!=null"
                   style="margin-right:10px"
                   v-model="upstatus"
                   active-color="#13ce66"
@@ -68,8 +69,8 @@
                   active-text="通过"
                   inactive-text="不通过">
                 </el-switch>
-                <el-button v-if="detailData.evidenceDsecription==null" type="info" >无法批准</el-button>
-                <el-button type="primary" v-if="detailData.evidenceDsecription!=null" @click="passornot" >确认批准</el-button>
+                <el-button v-if="attach==null&&files==null" type="info" >无法批准</el-button>
+                <el-button type="primary" v-if="attach!=null||files!=null" @click="passornot" >确认批准</el-button>
               </el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
@@ -176,7 +177,6 @@ export default {
         qhse_company_tree().then(res => {
           this.companyList = JSON.parse(JSON.stringify(res.data));
           this.dialogVisible=false;
-          this.filterQuery.companyCode ='00'
         }).catch(err => {
           this.$message.error(err.message);
         });
@@ -242,7 +242,10 @@ export default {
       }
       let nowdata = new Date(this.filterQuery.year);
       this.filterQuery.year = String(nowdata.getFullYear());
-      
+
+       if(this.filterQuery.companyCode==null)
+         this.$message.error('请选择公司')
+      else{
       this.handleGetInitialData();//更改loading状态
          query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
@@ -253,7 +256,7 @@ export default {
           console.log(err);
           this.message.error(err.message);
         });
-      
+      }
       this.loading = false;
         
     },

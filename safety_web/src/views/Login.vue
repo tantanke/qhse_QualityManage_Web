@@ -53,7 +53,8 @@ export default {
       console.log(JSON.stringify(this.formData))
       SignIn(this.formData).then((res) => {
         CurrentUser.set(res.data)
-        this.$router.push({name: 'QHSEQualityStandardIndex'})
+        this.$router.push({name: 'mainPath'})
+        console.log('进入页面')
       }).catch((err) => {
         this.$message.error(err.message)
         

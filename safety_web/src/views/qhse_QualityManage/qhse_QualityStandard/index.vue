@@ -224,8 +224,8 @@ export default {
     getDate() {
       querryQhseElement({queryStatus: this.queryStatus}).then((res) => {
         this.treedata = res.data
-        console.log(this.treedata)
-        console.log(JSON.stringify(res.data))
+        console.log('审核要素管理1',this.treedata)
+        console.log('审核要素管理2',JSON.stringify(res.data))
       }).catch((err) => {
         this.$message.error(err.message)
       })
@@ -243,7 +243,7 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     handleSuccess(response) {
-      console.log(response)
+      console.log('隐患排查',response)
       this.$message.warning(response);
       this.getDate();
     },
@@ -253,9 +253,9 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true;
-      console.log('hha')
-      console.log(value);
-      console.log(data);
+      console.log('隐患排查','hha')
+      console.log('隐患排查',value);
+      console.log('隐患排查',data);
       return data.name.indexOf(value) !== -1;
     },
     detail(checkListCode) {
@@ -274,13 +274,13 @@ export default {
       this.addEventdialogVisible2 = true;
     },
     append(val, val1) {
-      console.log(val1);
+      console.log('隐患排查',val1);
       // this.addNodeCode = checkListCode
       this.currentNodeData = val;
       this.addEventdialogVisible1 = true;
     },
     onEdit(data, node) {
-      console.log(node.level);
+      console.log('隐患排查',node.level);
       let level = node.level;
       let component = null;
       if (level == 1) component = Level1dialog;
