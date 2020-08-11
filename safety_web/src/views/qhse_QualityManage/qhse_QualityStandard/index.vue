@@ -220,14 +220,6 @@
 	import {
 		querryQhseElement
 	} from '../../../services/querryQhseElement'
-
-	import ExportJsonExcel from "js-export-excel";
-	import Level1dialog from './dialog/Level1Dialog';
-	import Level2dialog from './dialog/Level2Dialog';
-	import Level3dialog from './dialog/Level3Dialog';
-	import Level4dialog from './dialog/Level4Dialog';
-	import Level5dialog from './dialog/Level5Dialog';
-
 	export default {
 		data() {
 			return {
