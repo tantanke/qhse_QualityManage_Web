@@ -252,11 +252,9 @@
 		},
 		mounted() {
 			this.loadParams()
-			this.queryPropagationPlan()
-			this.getFilePropagationDetailList()
-			this.handleGetCompany()
 		},
 		methods: {
+			//加载初试数据
 			loadParams() {
 				this.loading = true
 				this.filterQuery = { ...DefaultQuery,
@@ -265,33 +263,43 @@
 				this.filterQuery = {
 					...this.filterQuery
 				};
+				this.queryPropagationPlan()
+				this.getFilePropagationDetailList()
+				this.handleGetCompany()
 				this.loading = false
 			},
+			//预览上传文件
 			handlePreview(file) {
 				console.log(file)
 			},
+			//删除上传文件
 			handleRemove(file, fileList) {
 				console.log(file, fileList)
 				var deleteFile = this.fileList.filter(item => {
 					return item.name = file.name
 				})
+				//在文件列表中删除文件
 				this.fileList.pop(deleteFile)
+				//在新增计划数组中删除该文件路径
 				this.propagationPlan.filePath.pop(deleteFile.filePath)
 			},
+			//上传文件成功
 			handleSuccess(res, file) {
+				//将文件路径加入新增计划数组
 				this.propagationPlan.filePath.push(res.data)
 				this.file.filePath = res.data
 				this.file.originName = file.name
 				this.fileList.push(this.file)
 				console.log(res)
 			},
+			//删除文件前
 			beforeRemove(file, FileList) {
 				console.log(file, FileList)
 			},
+			//获取公司列表
 			handleGetCompany() {
 				GetCompany().then(res => {
 					this.companyList = res.data
-					console.log(this.companyList)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -299,11 +307,13 @@
 			//发送方查询功能，根据两个查询框数据分别进行判断，再查询合适的数据
 			select() {
 				this.isChild = true
+				//转换公司id
 				if (this.selectData.selectCompanyId) {
 					this.changeCompanyIdTocompanyName(this.companyList, this.selectData.selectCompanyId)
 					this.selectData.selectCompanyName = this.companyName
 					this.checkCompany(this.companyList, this.selectData.selectCompanyName)
 				}
+				//根据搜索框数据情况进行搜索
 				if (!this.selectData.selectCompanyId && !this.selectData.selectDateRange) {
 					this.filterQuery.putSelected = this.filterQuery.putTableData
 				} else if (!this.selectData.selectCompanyId && this.selectData.selectDateRange) {
@@ -313,6 +323,7 @@
 							1]
 					})
 				} else if (this.selectData.selectCompanyId && !this.selectData.selectDateRange) {
+					//不能查询非叶子公司节点
 					if (this.isChild == false) {
 						this.selectData.selectCompanyId = null
 						this.selectData.selectCompanyName = ''
@@ -335,6 +346,7 @@
 					}
 				}
 			},
+			//获取宣贯计划细节列表
 			getFilePropagationDetailList() {
 				getFilePropagationDetailList().then(res => {
 					this.getTableData = res.data
@@ -342,26 +354,7 @@
 					this.$message.error(err.message)
 				})
 			},
-			getSelect() {
-				console.log(this.getSelectData)
-				if (!this.getSelectData.selectDateRange && !this.getSelectData.selectStatus) {
-					this.getSelected = this.getTableData
-				} else if (this.getSelectData.selectDateRange && !this.getSelectData.selectStatus) {
-					this.getSelected = this.getTableData.filter(item => {
-						return item.propagationDate >= this.getSelectData.selectDateRange[0] && item.propagationDate <= this.getSelectData
-							.selectDateRange[1]
-					})
-				} else if (!this.getSelectData.selectDateRange && this.getSelectData.selectStatus) {
-					this.getSelected = this.getTableData.filter(item => {
-						return item.status == this.getSelectData.selectStatus
-					})
-				} else {
-					this.getSelected = this.getTableData.filter(item => {
-						return item.status == this.getSelectData.selectStatus && (item.propagationDate >= this.getSelectData.selectDateRange[
-							0] && item.propagationDate <= this.getSelectData.selectDateRange[1])
-					})
-				}
-			},
+			//将公司id转换为公司名称，同时保存公司code，递归实现
 			changeCompanyIdTocompanyName(val, companyId) {
 				for (var j = 0; j < val.length; j++) {
 					if (val[j]) {
@@ -375,6 +368,7 @@
 					}
 				}
 			},
+			//将公司名称转换为公司code，同时保存id，递归实现
 			changeCompanyNameTocompanyCode(val, companyName) {
 				for (var j = 0; j < val.length; j++) {
 					if (val[j]) {
@@ -415,7 +409,9 @@
 				})
 				this.loading = false
 			},
+			//打开新增宣贯计划对话框
 			openInsertPropagationDialog() {
+				//初始化新增宣贯计划数组
 				this.propagationPlan.description = ''
 				this.propagationPlan.fileName = ''
 				this.propagationPlan.propagationDate = ''
@@ -429,21 +425,25 @@
 			},
 			//打开宣贯统计框，并加载对应记录的宣贯细节表
 			openStatisticsDialog(row) {
+				//保存被选中的数据
 				this.chosenData.companyName = row.companyName
 				this.chosenData.fileName = row.fileName
 				this.chosenData.staffName = row.staffName
 				this.chosenData.propagationId = row.filePropagationID
 				this.chosenData.propagationDate = row.propagationDate
 				this.chosenData.filePath = row.filePath
+				//查询接口显示统计数据
 				queryPropagationDetailAll(row).then(res => {
-					console.log(res.data)
 					this.statisticsTableData = res.data
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				//显示统计框
 				this.statisticsDialog = true
 			},
+			//导出统计数据
 			downloadStatisticsFile() {
+				//组装导出数据
 				for (var i = 0; i < this.statisticsTableData.length; i++) {
 					this.downloadFileItem = {}
 					this.downloadFileItem.fileName = this.chosenData.fileName
@@ -459,34 +459,39 @@
 					this.downloadFileItem.downloadDate = newDate
 					this.downloadFile.push(this.downloadFileItem)
 				}
-				console.log(this.downloadFile)
 				var option = {};
+				//组装导出文件名，公司名称+记录名称+宣贯统计表
 				option.fileName = this.chosenData.companyName + this.chosenData.fileName + "宣贯计划统计表";
+				//设置导出数据和导出格式
 				option.datas = [{
 					sheetData: this.downloadFile,
 					sheetHeader: ["文件名", "宣贯单位", "宣贯人", "宣贯时间", "推送单位", "推送部门", "推送人", "阅读状态", "阅读时间", "导出时间"]
 				}];
+				//导出数据
 				var toExcel = new ExportJsonExcel(option);
 				toExcel.saveExcel();
 			},
+			//新增宣贯计划
 			insertPropagation() {
 				this.isChild = true
 				this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
 				this.propagationPlan.companyName = this.companyName
 				this.propagationPlan.companyCode = this.companyCode
-				// this.checkCompany(this.companyList,this.propagationPlan.insertPutCompanyName)
-				// if(this.isChild==false){
-				// 	this.propagationPlan.insertPutCompanyId=null
-				// 	this.propagationPlan.insertPutCompanyName=''
-				// 	this.$message.error('公司选择错误，请重新选择')
-				// }
+				this.checkCompany(this.companyList,this.propagationPlan.insertPutCompanyName)
+				if(this.isChild==false){
+					this.propagationPlan.insertPutCompanyId=null
+					this.propagationPlan.insertPutCompanyName=''
+					this.$message.error('公司选择错误，请重新选择')
+				}
+				//检查数据完整性
 				if (this.propagationPlan.companyCode && this.propagationPlan.staffId && this.propagationPlan.fileName && this.propagationPlan
 					.propagationDate && this.propagationPlan.filePath.length > 0) {
-					console.log(this.propagationPlan)
+						//调用接口新增数据
 					insertPropagationPlan(this.propagationPlan).then(res => {
 						if (res.code == '1000') {
 							queryPropagationPlan().then(res => {
 								this.filterQuery.putTableData = res.data
+								//调用搜索方法刷新页面
 								this.select()
 							}).catch(err => {
 								this.$message.error(err.message)
@@ -501,11 +506,13 @@
 					}).catch(err => {
 						this.$message.error(err.message)
 					})
+					//关闭新增宣贯计划框
 					this.insertPropagationDialog = false
 				} else {
 					this.$message.error('数据不完整')
 				}
 			},
+			//配置对话框搜索
 			chosenSelect() {
 				//初始化选择后的数组后部门数组
 				this.employeeSelected = []
@@ -537,14 +544,14 @@
 				//将员工数组从中间数组中重新赋值
 				this.employeeSelected = x
 			},
+			//打开配置宣贯计划框
 			openConfigDialog(row) {
+				//加载员工信息
 				GetEmployee().then(res => {
-					console.log(res)
 					this.employeeTableData = res.data
-					console.log(this.employeeTableData)
 					this.employeeSelected = []
 				})
-				console.log(row)
+				//保存选中数据
 				this.chosenData.propagationId = row.filePropagationID
 				this.chosenData.fileName = row.fileName
 				this.chosenData.companyName = row.companyName
@@ -554,9 +561,11 @@
 				this.showFileName = row.fileName
 				this.pushCompanyId = []
 				this.pushStaffName = []
+				//调用接口根据宣贯计划id查询所有宣贯计划细节
 				queryPropagationDetailAll(row.filePropagationID).then(res => {
 					this.propagationDetailList = res.data
 				})
+				//根据选中的公司来加载对应数据
 				for (var i = 0; i < this.propagationDetailList.length; i++) {
 					this.changeCompanyNameTocompanyCode(this.companyList, this.propagationDetailList[i].pushCompanyName)
 					if (this.pushCompanyId.filter(item => {
@@ -568,28 +577,35 @@
 						return item.name = this.propagationDetailList.staffName
 					}))
 				}
+				//调用搜索方法加载数据
 				this.chosenSelect()
+				//打开配置宣贯计划框
 				this.configPropagationDialog = true
 			},
+			//勾选员工数据，记录信息
 			handleSelectionChange(val) {
 				this.selectionData = val
 				console.log(this.selectionData)
 			},
+			//返回部门筛选后的信息
 			filterHandler(value, row, column) {
 				const property = column['property'];
 				return row[property] === value;
 			},
+			//删除宣贯计划
 			deletePropagationPlan(row) {
+				//二次确认
 				this.$confirm('确认删除本条记录吗?配置信息也将一并删除！', '提示', {
 					confirmButtonText: '确认',
 					cancelButtonText: '取消',
 					type: "warning"
 				}).then(() => {
+					//调用接口删除数据
 					deletePropagationPlan(row.filePropagationID).then(res => {
 						if (res.code == '1000') {
 							queryPropagationPlan().then(res => {
 								this.filterQuery.putTableData = res.data
-								console.log(this.filterQuery.putTableData)
+								//调用搜索方法刷新界面
 								this.select()
 							}).catch(err => {
 								this.$message.error(err.message)
@@ -606,9 +622,11 @@
 					})
 				})
 			},
+			//推送宣贯计划
 			pushPropagation() {
+				//初始化推送列表
 				this.propagationDetailList = []
-				console.log(this.selectionData)
+				//装填推送列表
 				for (var i = 0; i < this.selectionData.length; i++) {
 					this.changeCompanyNameTocompanyCode(this.companyList, this.selectionData[i].companyName)
 					this.propagationDetail.filePropagationID = this.chosenData.propagationId
@@ -618,10 +636,9 @@
 					this.propagationDetail.pushStaffId = this.selectionData[i].employeeID
 					this.propagationDetail.pushStaffName = this.selectionData[i].name
 					this.propagationDetail.status = '未读'
-					console.log(this.propagationDetail)
 					this.propagationDetailList.push(this.propagationDetail)
 				}
-				console.log(this.propagationDetailList)
+				//调用接口推送数据
 				insertPropagationDetail(this.propagationDetailList).then(res => {
 					if (res.code == '1000') {
 						this.$message({
@@ -634,8 +651,10 @@
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				//关闭配置框
 				this.configPropagationDialog = false
 			},
+			//查询当前用户
 			currentUser() {
 				return GetCurrentUser()
 			},
@@ -644,4 +663,12 @@
 </script>
 
 <style>
+	.custom-tree-node {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 15px;
+		padding-right: 8px;
+	}
 </style>
