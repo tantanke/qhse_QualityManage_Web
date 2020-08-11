@@ -42,3 +42,7 @@ export const show_elementReviewer =(data)=>{
     data
   })
 }
+//下载文件
+export  const downloadElementFile = (data)=>{
+  return request(`/api/downloadElementFile?fileName=${data}`,{data})
+}

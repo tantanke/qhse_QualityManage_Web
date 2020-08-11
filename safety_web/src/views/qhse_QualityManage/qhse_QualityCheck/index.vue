@@ -50,7 +50,7 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='未通过')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='不通过')"
               >录入</el-button>
             </template>
           </el-table-column>
@@ -84,7 +84,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                    <a :href="item" style="max-width:600px;height:auto">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -158,6 +158,8 @@ import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//�
 import { employees } from "../../../services/qhse_QualityCheck";//显示成员
 import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
 import  {GetCurrentUser} from '../../../store/CurrentUser'
+import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
+
 
 const headers1 = {
               Accept: 'application/json',
@@ -181,6 +183,7 @@ export default {
       companyList: [],//公司列表
       peopleList:[],//职员列表
       disabled1:false,
+      download:'',
       dialogFormVisible: false,
       loading: true,
       detailData: {},//存储查询到的employe信息
@@ -228,19 +231,12 @@ export default {
       this.form.attach+=this.attach;
       //打印上传的信息
       console.log('表单中的数据',this.form)
-      this.$refs.upload.clearFiles();
+      this.$refs.upload.clearFiles();//清空数据
       //上传接口
       addAll_evidence_attach(this.form).then(res => {
          console.log(res);
          console.log(1);
-         this.dialogVisible3=false;
-        }).catch(err => {
-          this.$message.error(err.message);
-        });
-        this.$message.success('添加成功');
-
-        //上传后刷新树
-        this.handleGetInitialData();//更改loading状态
+         //上传后刷新树
         querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
@@ -249,12 +245,20 @@ export default {
           console.log(err);
           this.message.error(err.message);
         });
-        this.loading = false;
+         this.dialogVisible3=false;
+        }).catch(err => {
+          this.$message.error(err.message);
+        });
+        this.$message.success('添加成功');
+
+        
     },
     updateScore(data){
+      
+        
         this.attach={};
-        this.attachs='';
-        this.files='';
+        this.attachs={};
+        this.files={};
         this.detailData.name = data.name    
         this.form.evidenceDescription='';//初始化证据
         this.form.evidenceID='';//初始化
@@ -275,7 +279,7 @@ export default {
             this.form.evidenceID=res.data.evidenceID;//赋值证据id
             this.form.attachDescrption=res.data.attachDescrption;//赋值附件描述
             this.form.evidenceDescription=res.data.evidenceDescription;//赋值证据描述
-            console.log(this.form.attachDescrption);
+            console.log(this.form.attach);
             //辨析图片
             this.node=data;
             //展示attachs图片数组url
@@ -296,11 +300,13 @@ export default {
                   else{
                     if(arr.length!=0)
                     this.files[k]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
+                     downloadElementFile(arr[i]).then(res=>{
+                      this.download[k]=res.data;
+                    })
                     k++;
                   }
                 }
               }
-        
               console.log('获取到的要素节点内容：',res.data);
 
           }
@@ -320,6 +326,7 @@ export default {
                 if (res.code === 1000){ 
                     this.attach += res.data;
                     this.attach+=';';
+                    console.log('attach',this.attach)
                 }
                 else {
                     this.$message.error('上传失败');

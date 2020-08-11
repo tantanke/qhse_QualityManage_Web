@@ -61,7 +61,6 @@
             <el-col :span="12">
               <el-form-item style="text-align:left">
                 <el-switch
-                  v-if="attach!=null||files!=null"
                   style="margin-right:10px"
                   v-model="upstatus"
                   active-color="#13ce66"
@@ -69,9 +68,7 @@
                   active-text="通过"
                   inactive-text="不通过">
                 </el-switch>
-                <el-button v-if="this.attach==null&&this.files==null" type="info" >无法审核</el-button>
-                <el-button type="primary" v-if="attach!=null||files!=null" @click="passornot" >确认审核</el-button>
-                <span v-if="this.attach==null&&this.files==null" style="color:red"> 未录入附件，请先录入附件</span>
+                <el-button type="primary"  @click="passornot" >确认审核</el-button>
               </el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
@@ -104,7 +101,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                    <a :href="item" style="max-width:600px;height:auto">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -122,7 +119,7 @@ import { query_elementReviewer } from"../../../services/qhse_EvidenceCheck"//证
 import { pass_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过审核
 import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通过审核
 import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
-
+import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
 
 const DefaultQuery = {
   year: "",
@@ -137,6 +134,7 @@ export default {
       },//记载公司的信息
       companyList: [],//记载公司的展开树节点
       disabled1:false,
+      download:'',
       dialogFormVisible: false,
       loading: true,
       dialogVisible: false,
@@ -146,6 +144,7 @@ export default {
       node:[],
       nodeData:[],
       attachs:[],
+      attach:'',
       files:[],
       status:[{
         id:1,
@@ -248,7 +247,6 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
-          console.log(this.filterQuery.compayCode)
         })
         .catch(err => {
           console.log(err);
@@ -274,6 +272,7 @@ export default {
     console.log(this.userId)
     this.attachs={};
     this.files={};
+    this.download={},
       show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
@@ -297,6 +296,9 @@ export default {
                   }
                   else{
                     this.files[k]=arr[i];
+                    downloadElementFile(this.files[k].substring(49,this.files[k].length)).then(res=>{
+                      this.download[k]=res.data;
+                    })
                     k++;
                   }
                 }
