@@ -220,6 +220,7 @@
 	import {
 		querryQhseElement
 	} from '../../../services/querryQhseElement'
+	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
 			return {
