@@ -170,11 +170,11 @@
               
             </el-col>
           </el-row>         
-        </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
+        </el-form>     
+        <div style='text-align:right'>
             <el-button type="primary" @click="updataFileAudit">确定</el-button>
             <el-button @click="resetQuestion">取 消</el-button>
+          </div>
           </div>
       </el-dialog>
       <!-- 查看文件审核详情 -->
@@ -217,12 +217,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-          
-        </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
-            <!-- <el-button type="primary" @click="updataFileAudit">确定</el-button> -->
+        </el-form>       
+        <div style='text-align:center'>
             <el-button @click="resetEvidence">确 定</el-button>
+          </div>
           </div>
       </el-dialog>
       <el-dialog
@@ -390,7 +388,6 @@ export default {
         let _this = this 
         show_elementReviewer({qHSE_CompanyYearManagerSysElement_ID:data.id}).then(res => {
         this.nodeData=res.data;
-        console.log(this.nodeData)
         let attach = this.nodeData.attach;//获取地址字符串
         if(attach !== null){
           let arr = attach.split(";");
@@ -428,6 +425,8 @@ export default {
       })
       .catch(err => {
         _this.$message.error(err)
+         _this.dialogVisible = false
+          _this.detaildialogVisible = false
       })
     },
     // 获取已经审核完成的记录的详细信息
@@ -539,7 +538,6 @@ export default {
     updataFileAudit() {
       // 上传文件审核记录
       let _this = this
-      console.log(_this.nopass)
       if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === ''  || _this.fileRecord.codeScore > Number(_this.detailData.initialScore)) ) {
         _this.$message.error('请填写正确的审核内容')
         return

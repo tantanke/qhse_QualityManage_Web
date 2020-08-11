@@ -5,8 +5,7 @@
 			<el-row>
 				<el-form label-width="130px" :inline="true">
 					<el-form-item label="选择时间">
-						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
-						 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
+						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"				 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="阅读状态">
 						<el-select placeholder="请选择" v-model="selectData.selectStatus" clearable='true'>
@@ -28,7 +27,7 @@
 						<el-table-column prop="status" label="阅读状态" width="120%" align="center"></el-table-column>
 						<el-table-column prop="readDate" label="阅读时间" width="160%" align="center"></el-table-column>
 						<el-table-column label="操作" width="180%" align="center">
-							<template v-slot="scope">
+							<template slot-scope="scope">
 								<el-button type="success" icon="el-icon-check" size="mini" @click="readedFile(scope.row)">已读</el-button>
 								<el-button type="warning" size="mini" icon="el-icon-download">
 									<a ref="download" href="" @click="download(scope.row)">下载</a>
@@ -42,7 +41,8 @@
 				<!-- 文件展示的超链接，可以下载 -->
 				<el-table>
 					<el-table-column type="index" label="序号"></el-table-column>
-					<el-table-column label </el-table> <div slot="footer" class="dialog-footer" :inline="true">
+					</el-table> 
+					<div slot="footer" class="dialog-footer" :inline="true">
 						<el-button type="success" icon="el-icon-check" @click="readedFile">已读</el-button>
 						<el-button type="warning" icon="el-icon-download" @click="downloadFile">导出</el-button>
 						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="readFileDialog=false">关闭</el-button>

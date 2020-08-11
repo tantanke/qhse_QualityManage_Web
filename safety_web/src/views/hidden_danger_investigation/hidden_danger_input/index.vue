@@ -26,7 +26,7 @@
                 <el-cascader
                   v-model="form.companyId"
                   :options="companys"
-                  :props="{value: 'id'}"
+                  :props="{value: 'nodeCode'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                 />
@@ -229,7 +229,8 @@ export default {
         factorSource: '',
         factorHSE: '',
         factorDepartment: '',
-        location: ''
+        location: '',
+        qHSE_FileAudit_ID: '' //文件审核id
       },
       header: { Authorization: GetCurrentUser().token },
       companys: [], // 公司
@@ -251,8 +252,13 @@ export default {
     this.getFactorHSEs()
     this.getFactorDepartments()
     this.getRanks()
+    this.getfileAuditId()
   },
   methods: {
+    getfileAuditId () {
+      const initData = JSON.parse(localStorage.getItem('data'))
+      this.form.qHSE_FileAudit_ID = initData.fileAuditId
+    },
     // 获取数据方法
     getCompany() {
       QueryCompany()
@@ -332,7 +338,7 @@ export default {
       this.form.checkId = '0001'
       this.form.ok = this.form.ok ? '1' : '0'
       console.log(JSON.stringify(this.form))
-      addDangerRecord(this.form)
+      /* addDangerRecord(this.form)
         .then(res => {
           console.log(res)
           this.$message.success(res.message)
@@ -341,7 +347,7 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error(err.message)
-        })
+        }) */
     },
 
     // 一些事件

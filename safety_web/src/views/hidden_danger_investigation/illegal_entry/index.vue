@@ -10,7 +10,7 @@
                 <el-cascader
                   v-model="form.companyId"
                   :options="companys"
-                  :props="{value: 'id'}"
+                  :props="{value: 'nodeCode'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                 />
@@ -297,7 +297,8 @@ export default {
       factorObservers: [], //对应安全沟通类型
       factoSources: [], //原因
       factorDepartments: [], //归属部门
-      consequences: [] //可能后果
+      consequences: [], //可能后果
+      qHSE_FileAudit_ID: '' //文件审核id
     }
   },
   created() {
@@ -313,13 +314,19 @@ export default {
     this.getFactoSources()
     this.getFactorDepartments()
     this.getConsequences()
+    this.getfileAuditId()
   },
   methods: {
+    getfileAuditId () {
+      const initData = JSON.parse(localStorage.getItem('data'))
+      this.form.qHSE_FileAudit_ID = initData.fileAuditId
+    },
     // 获取数据
     getCompany() {
       QuerCompany()
         .then(res => {
           this.companys = res.data
+          console.log(this.companys)
         })
         .catch(() => {
           this.$message.error('获取公司数据失败！')

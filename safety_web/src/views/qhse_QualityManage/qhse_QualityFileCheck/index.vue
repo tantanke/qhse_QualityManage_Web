@@ -12,6 +12,7 @@
               @select='getQueryCode'
               v-model="filterQuery.companyCode"
               style="width:200px"
+              :disable-branch-nodes='true'
             />
           </el-form-item>
           <el-form-item label="选择年份：">
