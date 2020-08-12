@@ -52,7 +52,7 @@ export default (url, options={}) => {
       if (!response.data.code) {
         return reject({
           code: 2001,
-          message: '服务端返回的数据格式不规范,无法解析'
+          message: '服务端返回的数据格式不规范,无法解析',
         })
       }
       return reject({

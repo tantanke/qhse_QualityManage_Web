@@ -101,7 +101,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto">{{download[index]}}</a>
+                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -296,8 +296,14 @@ export default {
                   }
                   else{
                     this.files[k]=arr[i];
-                    downloadElementFile(this.files[k].substring(49,this.files[k].length)).then(res=>{
+                    downloadElementFile(this.files[k].substring(49,this.files[k].length))
+                    .then(res=>{
+                      // console.log('什么东西',res.headers.filename)
                       this.download[k]=res.data;
+                      console.log(this.download[k])
+                    })
+                    .catch(err=>{
+                      console.log('报错',err)
                     })
                     k++;
                   }

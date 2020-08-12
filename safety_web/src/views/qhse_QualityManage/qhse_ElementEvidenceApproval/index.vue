@@ -101,7 +101,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto">{{download[index]}}</a>
+                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
