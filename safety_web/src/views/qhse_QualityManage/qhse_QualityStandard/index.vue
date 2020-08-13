@@ -60,7 +60,7 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelOneDialog=false" icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;">取消</el-button>
+					<el-button @click="levelOneDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
@@ -77,7 +77,7 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelTwoDialog=false" icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;">取消</el-button>
+					<el-button @click="levelTwoDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
@@ -94,7 +94,7 @@
 				  </el-form-item> -->
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelThreeDialog=false" icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;">取消</el-button>
+					<el-button @click="levelThreeDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
@@ -108,7 +108,7 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelFourDialog=false" icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;">取消</el-button>
+					<el-button @click="levelFourDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
@@ -128,32 +128,20 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelFiveDialog=false" icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;">取消</el-button>
+					<el-button @click="levelFiveDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
 			<!--新增事件节点分类弹窗-->
-			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible1" width="40%">
-				<el-form ref="addEventForm1" :model="addEventForm1" label-width="20%" :label-position="left">
+			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible" width="40%">
+				<el-form ref="addEventForm" :model="addEventForm" label-width="20%" :label-position="left">
 					<el-form-item label="检查项" prop="categoryName">
-						<el-input v-model="addEventForm1.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="addEventdialogVisible1=false">取 消</el-button>
-					<el-button type="primary" @click="addEventFormSubmitBtn1()">确 定</el-button>
-				</span>
-			</el-dialog>
-
-			<el-dialog title="新增检查项详情" :visible.sync="addEventdialogVisible2">
-				<el-form ref="addEventForm2" :model="addEventForm2">
-					<el-form-item label="检查项描述" prop="content">
-						<el-input v-model="addEventForm2.categoryName"></el-input>
-					</el-form-item>
-				</el-form>
-				<span slot="footer" class="dialog-footer">
-					<el-button @click="addEventdialogVisible2=false">取 消</el-button>
-					<el-button type="primary" @click="addEventFormSubmitBtn2(addEventForm2)">确 定</el-button>
+					<el-button @click="addEventdialogVisible=false">取 消</el-button>
+					<el-button type="primary" @click="addEventFormSubmitBtn()">确 定</el-button>
 				</span>
 			</el-dialog>
 			<el-dialog title="问题详情" :visible.sync="addQuestiondialogVisible" :close-on-click-modal='false'>
@@ -220,6 +208,7 @@
 	import {
 		querryQhseElement
 	} from '../../../services/querryQhseElement'
+
 	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
@@ -236,11 +225,8 @@
 				loading: false,
 				selectedData: [],
 				tableData: [],
-				addEventForm1: {
+				addEventForm: {
 					name: ''
-				},
-				addEventForm2: {
-					categoryName: ''
 				},
 				addquestionDiscription: {
 					qHSE_ManagerSysElementProblemDescription_ID: null,
@@ -255,8 +241,7 @@
 				editValue: '',
 				editForm: {},
 				problemCode: '',
-				addEventdialogVisible1: false,
-				addEventdialogVisible2: false,
+				addEventdialogVisible: false,
 				addQuestiondialogVisible: false,
 				addNodeCode: '',
 				filterText: '',
@@ -407,9 +392,10 @@
 			},
 			//搜索树
 			select() {
+				this.getDate()
 				//如果搜索框为空，则直接显示
 				if (!this.filterText) {
-					this.selectedData=this.tableData
+					this.selectedData = this.tableData
 				}
 				//否则进行搜索
 				else {
@@ -418,7 +404,9 @@
 			},
 			//获取单位树
 			getDate() {
-				querryQhseElement({queryStatus: this.queryStatus}).then(res=> {
+				querryQhseElement({
+					queryStatus: this.queryStatus
+				}).then(res => {
 					this.tableData = res.data
 				}).catch((err) => {
 					this.$message.error(err.message)
@@ -441,32 +429,13 @@
 				this.$message.warning(response);
 				this.getDate();
 			},
-			addFirst() {
-				this.addNodeCode = '';
-				this.addEventdialogVisible1 = true;
-			},
-			detail(checkListCode) {
-				this.checkListPojo.checkListCode = checkListCode
-				getcontent(this.checkListPojo).then((res) => {
-					this.$alert(res.data.list, '检查项详情', {
-						confirmButtonText: '确定',
-					});
-					console.log(res.data);
-				}).catch((err) => {
-					this.$message.error(err.message)
-				})
-			},
-			adddetail(checkListCode) {
-				this.addNodeCode = checkListCode
-				this.addEventdialogVisible2 = true;
-			},
 			//打开新增框
 			append(val, val1) {
 				//保存选中的节点的code，初始化要书名称框
 				this.insertDate.code = val.code
-				this.addEventForm1.name = ''
+				this.addEventForm.name = ''
 				//显示新增节点框
-				this.addEventdialogVisible1 = true;
+				this.addEventdialogVisible = true;
 			},
 			//打开编辑框
 			onEdit(data, node) {
@@ -495,10 +464,20 @@
 			},
 			//更新要素节点数据
 			updateQHSEElement() {
+				if (!this.chosenData.name) {
+					this.$message.error('数据不完整')
+					return
+				}
+				if (this.chosenData.initialScore < 0) {
+					this.$message.error('分数输入错误')
+					this.chosenData.initialScore = ''
+					return
+				}
 				//调用接口编辑数据
 				updateQHSEElement(this.chosenData).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
+						this.filterText = ''
 						this.select()
 						this.$message.success('修改信息成功')
 					} else {
@@ -514,22 +493,6 @@
 				else if (this.level == 4) this.levelFourDialog = false
 				else if (this.level == 5) this.levelFiveDialog = false
 			},
-			remove(checkListCode) {
-				this.$confirm('此操作将永久删除该条数据, 是否继续?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					this.checkListPojo.checkListCode = checkListCode
-					delete_tree(this.checkListPojo).then(() => {
-						this.$message.success('删除成功')
-						this.getDate()
-					}, (err) => {
-						this.$message.error(err.message)
-					})
-					this.getDate()
-				}).catch(() => {})
-			},
 			//更改当前节点的启用状态
 			onStopUse(val) {
 				//点击后的状态更新
@@ -538,6 +501,7 @@
 				updateQHSEElementStatus(val.id).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
+						this.filterText = ''
 						this.select()
 						this.$message.success('更新状态成功')
 					} else {
@@ -548,42 +512,31 @@
 				})
 			},
 			//新增节点
-			addEventFormSubmitBtn1() {
+			addEventFormSubmitBtn() {
 				//对节点数据完整性进行检查
-				if (!this.addEventForm1.name) {
+				if (!this.addEventForm.name) {
 					this.$message.error('数据不完整')
-				} else {
-					//组装数据
-					this.insertDate.name = this.addEventForm1.name
-					//调用接口新增数据
-					addQHSEElement(this.insertDate).then(res => {
-						if (res.code == '1000') {
-							//调用搜索方法重新渲染界面
-							this.select()
-							this.$message.success('节点添加成功')
-
-						} else {
-							this.$message.error('节点添加失败')
-						}
-					}).catch(err => {
-						this.$message.error(err.message)
-					})
-					//关闭新增节点框
-					this.addEventdialogVisible1 = false
+					return
 				}
-			},
-			addEventFormSubmitBtn2(formData) {
-				let newContent = {
-					"content": formData.categoryName,
-					"checkListCode": this.addNodeCode
-				};
-				Createcontent(newContent).then(() => {
-					this.$message.success('创建成功')
-					this.addEventdialogVisible2 = false;
-					this.getDate()
-				}, (err) => {
+				//组装数据
+				this.insertDate.name = this.addEventForm.name
+				//调用接口新增数据
+				addQHSEElement(this.insertDate).then(res => {
+					if (res.code == '1000') {
+						//调用搜索方法重新渲染界面
+						this.filterText = ''
+						this.select()
+						this.$message.success('节点添加成功')
+
+					} else {
+						this.$message.error('节点添加失败')
+					}
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				//关闭新增节点框
+				this.addEventdialogVisible = false
+
 			},
 			// 数据获取
 			getProblems(data) {
