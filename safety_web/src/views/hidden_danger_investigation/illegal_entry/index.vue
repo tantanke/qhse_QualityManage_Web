@@ -10,6 +10,7 @@
                 <el-cascader
                   v-model="form.companyId"
                   :options="companys"
+                  ref='companyChoose'
                   :props="{value: 'nodeCode'}"
                   @change="changeCompany"
                   :show-all-levels="false"
@@ -434,6 +435,7 @@ export default {
 
     // 确认提交
     onSubmit() {
+      this.form.companyName = this.$refs['companyChoose'].inputValue
       addRegulationRecord(this.form)
         .then(res => {
           console.log(res)
@@ -453,6 +455,9 @@ export default {
     handleAvatarSuccess(res) {
       this.form.affixName = res.data
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next()
   }
 }
 </script>

@@ -24,11 +24,13 @@
               </el-form-item>
               <el-form-item label="施工队伍">
                 <el-cascader
+                  ref="companyChoose"
                   v-model="form.companyId"
                   :options="companys"
                   :props="{value: 'nodeCode'}"
                   @change="changeCompany"
                   :show-all-levels="false"
+                  
                 />
               </el-form-item>
               <el-form-item label="位置区域">
@@ -332,13 +334,12 @@ export default {
           this.$message.error(err.message)
         })
     },
-
     // 确认提交方法
     onSubmit() {
       this.form.checkId = '0001'
       this.form.ok = this.form.ok ? '1' : '0'
-      console.log(JSON.stringify(this.form))
-      /* addDangerRecord(this.form)
+      this.form.companyName = this.$refs['companyChoose'].inputValue
+      addDangerRecord(this.form)
         .then(res => {
           console.log(res)
           this.$message.success(res.message)
@@ -347,7 +348,7 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error(err.message)
-        }) */
+        })
     },
 
     // 一些事件
@@ -356,7 +357,11 @@ export default {
     },
     handleAvatarSuccess(res) {
       this.form.affixName = res.data
-    }
+    },
+     
+  },
+  beforeRouteEnter (to, from, next) {
+    next()
   }
 }
 </script>
