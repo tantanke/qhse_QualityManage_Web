@@ -5,6 +5,22 @@ import request from '../utils/request'
 //       params
 //     })
 //   }
+//编辑更新节点数据
+export const updateQHSEElement =(data)=>{
+	return request('/api/updateQHSEElement',{method:'put',data})
+}
+//添加一个节点
+export const addQHSEElement=(data)=>{
+	return request('/api/addQHSEElement',{method:'post',data})
+}
+//更新节点启用状态
+export const updateQHSEElementStatus=(param)=>{
+	return request('/api/updateQHSEElementStatus/'+param,{method:'put'})
+}
+//根据启用状态查询要素表
+export const querryQhseElements=(param)=>{
+	return request('/api/querryQhseElements/'+param,{method:'get'})
+}
   export const QuerryQHSEChildRules = (status) => {
     return request(`/api/querryQHSEChildRules/${status}`)
 
@@ -16,6 +32,7 @@ import request from '../utils/request'
       data
     })
   }
+
 
   export const updateQHSERule = (data) => {
     return request('/api/updateQHSERule ', {
@@ -39,7 +56,7 @@ import request from '../utils/request'
   }
 // 增加问题描述
   export const addQHSEproblemDiscription = (data) => {
-    return request('/api/addQHSEElement', {
+    return request('/api/addQHSEproblemDiscription', {
       method: 'post', 
       data
     })

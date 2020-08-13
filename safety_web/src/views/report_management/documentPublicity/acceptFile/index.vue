@@ -5,7 +5,8 @@
 			<el-row>
 				<el-form label-width="130px" :inline="true">
 					<el-form-item label="选择时间">
-						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"				 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
+						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
+						 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="阅读状态">
 						<el-select placeholder="请选择" v-model="selectData.selectStatus" clearable='true'>
@@ -41,8 +42,7 @@
 				<!-- 文件展示的超链接，可以下载 -->
 				<el-table>
 					<el-table-column type="index" label="序号"></el-table-column>
-					</el-table> 
-					<div slot="footer" class="dialog-footer" :inline="true">
+					<el-table-column label </el-table> <div slot="footer" class="dialog-footer" :inline="true">
 						<el-button type="success" icon="el-icon-check" @click="readedFile">已读</el-button>
 						<el-button type="warning" icon="el-icon-download" @click="downloadFile">导出</el-button>
 						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="readFileDialog=false">关闭</el-button>
@@ -94,43 +94,16 @@
 					readDate: '',
 					filePath: []
 				},
-				tableData: [
-					// 	{
-					// 	filePropagationId:'13414624',
-					// 	propagationDetailId:'2',
-					// 	fileName:'测试',
-					// 	pushCompanyName:'科技信息中心',
-					// 	pushCompanyCode:'10101',
-					// 	pushStaffName:'lifeng',
-					// 	pushStaffId:'168',
-					// 	propagationDate:'2020-08-15',
-					// 	description:'测试',
-					// 	status:'未读',
-					// 	readDate:'',
-					// },
-					// {
-					// 	filePropagationId:'13414614',
-					// 	propagationDetailId:'1',
-					// 	fileName:'测试',
-					// 	pushCompanyName:'科技信息中心',
-					// 	pushCompanyCode:'10101',
-					// 	pushStaffName:'lifeng',
-					// 	pushStaffId:'168',
-					// 	propagationDate:'2020-08-12',
-					// 	description:'测试',
-					// 	status:'已读',
-					// 	readDate:'2020-08-10',
-					// },
-				]
+				tableData: []
 			}
 		},
 		mounted() {
 			this.loadParams()
-			this.queryPropagationDetailOne()
-			this.queryPropagationPlan()
+			
 
 		},
 		methods: {
+			//加载数据
 			loadParams() {
 				this.loading = true
 				this.filterQuery = { ...DefaultQuery,
@@ -139,8 +112,11 @@
 				this.filterQuery = {
 					...this.filterQuery
 				};
+				this.queryPropagationDetailOne()
+				this.queryPropagationPlan()
 				this.loading = false
 			},
+			//根据用户id查询宣贯计划细节
 			queryPropagationDetailOne() {
 				getFilePropagationDetailList().then(res => {
 					this.tempDate = res.data
@@ -149,8 +125,8 @@
 					this.$message.error(err.message)
 				})
 			},
+			//下载文件
 			download(row) {
-				console.log(row)
 				if (row.filePath.length > 0) {
 					for (var i = 0; i < row.filePath.length; i++) {
 						this.$refs.download.href = `/api/downloadFilePropagationFile?fileName=` + row.filePath[0]
@@ -161,6 +137,7 @@
 				}
 
 			},
+			//查询宣贯计划
 			queryPropagationPlan() {
 				queryPropagationPlan().then(res => {
 					this.propagationPlan = res.data
@@ -168,8 +145,11 @@
 					this.$message.error(err.message)
 				})
 			},
+			//处理数据，组装进行呈现
 			processData() {
+				//初始化数据数组
 				this.tableData = []
+				//组装数据
 				for (var i = 0; i < this.tempDate.length; i++) {
 					this.tableDataItem.filePropagationId = this.tempDate[i].filePropagationId
 					this.tableDataItem.propagationDetailId = this.tempDate[i].filePropagationPlanDetailID
@@ -186,13 +166,14 @@
 					this.tableDataItem.pushCompanyName = temp.companyName
 					this.tableDataItem.pushStaffId = temp.staffId
 					this.tableDataItem.pushStaffName = temp.staffName
-					console.log(this.tableDataItem)
 					this.tableData.push(this.tableDataItem)
 				}
 			},
+			//搜索
 			Select() {
+				//处理数据
 				this.processData()
-				console.log(this.selectData)
+				//根据搜索框数据进行搜索
 				if (!this.selectData.selectDateRange && !this.selectData.selectStatus) {
 					this.Selected = this.tableData
 				} else if (this.selectData.selectDateRange && !this.selectData.selectStatus) {
@@ -211,14 +192,16 @@
 					})
 				}
 			},
+			//阅读文件
 			readedFile(row) {
-				console.log(row)
+				//阻止重复点击导致阅读时间被更改
 				if (row.status == "已读") {
 					this.$message.error('请勿重复点击')
 				} else {
+					//调用接口更改阅读状态，同时存入阅读时间
 					readPropagation(row.propagationDetailId).then(res => {
-						console.log(res)
 						if (res.code == '1000') {
+							//调用接口，重新渲染数据
 							getFilePropagationDetailList().then(res => {
 								this.tempDate = res.data
 								this.Select()
@@ -242,4 +225,12 @@
 </script>
 
 <style>
+	.custom-tree-node {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 15px;
+		padding-right: 8px;
+	}
 </style>
