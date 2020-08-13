@@ -48,16 +48,17 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核'"
+                v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
+              v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)"
               >
               审核完成  
               </el-button>
+              <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查'">请完成要素证据录入</span>
             </template>
           </el-table-column>
         </el-table>
@@ -87,16 +88,17 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核'"
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)"
               >
               查看详情  
               </el-button>
+              <span v-show="scope.row.status !== '备案待查'">请完成要素证据录入</span>
             </template>
           </el-table-column>
         </el-table>
@@ -134,7 +136,7 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                    <a :href="item" :download="download[index]" style="max-width:600px;height:auto">什么东西{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -212,7 +214,7 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">         
-                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index+1}}</a>
+                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index + 1}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -247,7 +249,7 @@
 </template>
 
 <script>
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck";
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
@@ -320,7 +322,8 @@ export default {
       attachs: [],
       files: [],
       eviLoaind: false,
-      addLoading: false
+      addLoading: false,
+      download: [1,2,3,4]
     };
   },
   methods: {
@@ -333,7 +336,7 @@ export default {
             let _this = this
             
             treedata.forEach(item => {
-                if (item.childNode.length === 0) {
+                if (item.childNode.length === 0 && item.status === '备案待查') {
                     _this.fileList.push(item)
                     return
                 } else {

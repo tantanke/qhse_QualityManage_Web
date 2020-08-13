@@ -64,6 +64,7 @@
               @select="getCompanyCode"
               placeholder="请选择公司单位"
               v-model="ScompanyCode"
+              :disable-branch-nodes='true'
             />
           </el-form-item>
             <el-form-item label="审核类别:" :label-width="formLabelWidth">
@@ -245,30 +246,30 @@ export default {
        _this.initForm()
        _this.querryQhseElement.companyCode = _this.addForm.companyCode
        _this.querryQhseElement.year = _this.addForm.year
+       if(_this.addForm.auditType === '' ||  _this.addForm.companyCode === '') {
+         _this.$message.warning('请填写完整的审核信息！')
+         return
+       }
        querryQhseElement(_this.querryQhseElement).then(res => {
          if(res.data.length > 0){
            _this.addForm.tableId = res.data[0].tableID
            return addFileaduit(_this.addForm)
          } else {
-           _this.$message.warning('请选择已经通过要素证据审批的公司信息！')
+           _this.$message.error('请选择已经通过要素证据审批的公司信息！')
            _this.ScompanyCode = null
+           _this.reloadForm()
+           _this.dialogFormVisible = false
+           return {code: 0}
          }
        }).then((res) => {
             if(res.code === 1000) {
-            this.handleGetInitialData();
-            this.dialogFormVisible = false
+            _this.handleGetInitialData();
+            _this.dialogFormVisible = false
             _this.reloadForm() 
-            _this.$message({
-              message: '添加成功！',
-              type: 'success'
-            })
-            } 
-        
-      })
-       .catch(err => {
-          this.$message.error(err)
-          _this.reloadForm()
-         this.dialogFormVisible = false
+            _this.$message.success('添加成功！')
+            }      
+      }).catch(err => {
+          _this.$message.error(err)        
        })
       
       
