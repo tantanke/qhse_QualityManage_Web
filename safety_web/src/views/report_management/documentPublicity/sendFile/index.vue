@@ -57,7 +57,7 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="上传文件">
-							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.list"
+							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.filePath"
 							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove">
 								<el-button type="primary" icon="el-icon-upload">点击上传</el-button>
 							</el-upload>
