@@ -10,7 +10,8 @@
       <div class="form-content">
         <el-form :model="planForm" @submit.native.prevent="handleSubmit">
 					<el-form-item>
-						<el-tree v-model="planForm.checkedContent" :data="checkItem" :default-checked-keys="this.nodeIdList" show-checkbox node-key="nodeCode" ref="tree" highlight-current></el-tree>
+						<el-tree v-model="planForm.checkedContent" :data="checkItem"  node-key="nodeCode" 
+						:default-checked-keys="[...nodeIdList]"  show-checkbox  ref="tree" highlight-current></el-tree>
 					</el-form-item>
 					<el-form-item>
             <el-button type="primary" native-type="submit">确定</el-button>
@@ -34,7 +35,7 @@
 				planForm: {
 					roleModule: ''
 				},
-				checkItem: [],		
+				checkItem: [],	
 				companyLoading: false,
 				nodeIdList: []
 			}
@@ -44,6 +45,7 @@
 			CheckContentsTree () {
 				GetModuleTree().then((res) => {
 					this.checkItem = res.data
+					console.log(res)
 					this.getCheckContent()
 				});
 			},
@@ -51,13 +53,11 @@
 				const roleCode = this.$route.params.id
 
 				GetRoleNodeId({roleCode:roleCode}).then((res) => {
-					let a = []
-					for(let i=0;i<res.data.length;i++){
-						if(res.data[i].length === 6){
-							a.push(res.data[i])
-						}
-					}
-					this.nodeIdList = a
+					res.data.forEach(item => {
+						if(item !== '')
+						this.nodeIdList.push(item)
+					})
+					console.log(this.nodeIdList)
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})

@@ -55,8 +55,10 @@
 				})
 			},
 			handleGetTreeData () {
+				console.log(this.value)
 				GetRoleTree({roleCode:this.value}).then((res) => {
 					this.checkItem = res.data
+					console.log(res)
 				});
 			},
 		},
