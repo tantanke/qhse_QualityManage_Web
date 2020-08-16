@@ -229,6 +229,8 @@ export default {
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.form.uploadTime=year+'-'+month+'-'+date;
+      console.log('哪里有attach',this.form.attach)
+      console.log('哪里有attach',this.attach)
       this.form.attach+=this.attach;
       //打印上传的信息
       console.log('表单中的数据',this.form)
@@ -258,7 +260,7 @@ export default {
       if(this.$refs.upload!=undefined)
         this.$refs.upload.clearFiles();//清空数据
         this.form.fileID='';
-        this.attach=[];
+        this.attach='';
         this.attachs={};
         this.files={};
         this.download=[];

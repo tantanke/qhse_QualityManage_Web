@@ -324,6 +324,7 @@ export default {
         }
         var strings=JSON.parse(JSON.stringify(this.download))
         this.strings=strings;
+        console.log('文件信息',this.strings)
       
       
       this.detailData = {}
