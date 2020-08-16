@@ -136,7 +136,7 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" :download="download[index]" style="max-width:600px;height:auto">什么东西{{download[index]}}</a>
+                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -191,7 +191,7 @@
               <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>
-              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription === null? detailData.problemDescription : '暂无'}}</el-form-item>       
+              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription === null? detailData.problemDescription :  noProblem}}</el-form-item>       
             </el-col>
             <el-col :span="12" >
               <el-form-item label="证据图片：" 
@@ -251,10 +251,11 @@
 <script>
 import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
-import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
+import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
   data() {
     return {
+      noProblem: '暂无',
       search: '',
       checkType: '树形审核',
       filterQuery: {
@@ -323,7 +324,7 @@ export default {
       files: [],
       eviLoaind: false,
       addLoading: false,
-      download: [1,2,3,4]
+      download:[]
     };
   },
   methods: {
@@ -389,21 +390,33 @@ export default {
     },
     getEvidence(data) {
         let _this = this 
+        _this.files = []
+        _this.download = []
+        _this.attachs = []
         show_elementReviewer({qHSE_CompanyYearManagerSysElement_ID:data.id}).then(res => {
         this.nodeData=res.data;
         let attach = this.nodeData.attach;//获取地址字符串
-        if(attach !== null){
-          let arr = attach.split(";");
+         if(attach!=null){
+          let arr=attach.split(";");
           for(let i=0,j=0,k=0;i<arr.length-1;i++)
                 {
                   //j代表图片数量，k代表文件数量
-                  let houzhui=arr[i].substring(arr[i].length-3);//获取到链接后缀
+                  let houzhuis=arr[i].split('.');//获取到链接后缀
+                  let houzhui = houzhuis[1]
                   if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
                   this.attachs[j]=arr[i];
                   j++;
                   }
                   else{
                     this.files[k]=arr[i];
+                    console.log(arr[i])
+                    downloadElementFile(this.files[k].substring(49,this.files[k].length))
+                    .then(res=>{
+                      this.download.push(res.data)
+                    })
+                    .catch(err=>{
+                      console.log('报错',err)
+                    })
                     k++;
                   }
                 }
