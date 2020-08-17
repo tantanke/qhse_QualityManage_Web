@@ -65,7 +65,7 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="addEventdialogVisible=false">取 消</el-button>
+					<el-button @click="configEventDialog=false">取 消</el-button>
 					<el-button type="primary" @click="configNode()">确 定</el-button>
 				</span>
 			</el-dialog>
