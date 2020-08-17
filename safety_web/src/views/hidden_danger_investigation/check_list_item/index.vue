@@ -323,12 +323,7 @@
 				updateNodeStatus(node.data.checkListID).then(res=>{
 					if(res.code=='1000'){
 						//调用接口，重新加载数据，渲染界面
-						GetCheckListTree(this.queryStatus).then((res) => {
-							this.treeData = res.data
-							this.select()
-						}).catch((err) => {
-							this.$message.error(err.message)
-						})
+						node.data.status=node.data.status== '停用' ? '启用' : '停用'
 						this.$message.success('更新状态成功')
 					}else{
 						this.$message.error('更新状态失败')

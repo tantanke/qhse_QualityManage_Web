@@ -120,7 +120,7 @@
 			queryPropagationDetailOne() {
 				getFilePropagationDetailList().then(res => {
 					this.tempDate = res.data
-					console.log(res.data)
+					console.log("detail",res.data)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -141,6 +141,7 @@
 			queryPropagationPlan() {
 				queryPropagationPlan().then(res => {
 					this.propagationPlan = res.data
+					console.log(this.propagationPlan)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -160,7 +161,7 @@
 					this.tableDataItem.fileName = this.tempDate[i].fileName
 					this.tableDataItem.propagationDate = this.tempDate[i].propagationDate
 					var temp = this.propagationPlan.filter(item => {
-						return item.filePropagationId == this.tempDate[i].filePropagationId
+						return item.filePropagationID == this.tempDate[i].filePropagationID
 					})
 					this.tableDataItem.pushCompanyCode = temp.companyCode
 					this.tableDataItem.pushCompanyName = temp.companyName

@@ -62,9 +62,6 @@
 					<el-form-item label="主题">
 						<el-input v-model="chosenData.name" style="width: 90%;"></el-input>
 					</el-form-item>
-					<el-form-item label="分数">
-						<el-input v-model="chosenData.initialScore" readonly='true' style="width: 90%;"></el-input>
-					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
 					<el-button @click="levelOneDialog=false" icon='el-icon-refresh-left'>取消</el-button>
@@ -75,9 +72,6 @@
 				<el-form :model="chosenData">
 					<el-form-item label="项目">
 						<el-input v-model="chosenData.name" style="width: 90%;"></el-input>
-					</el-form-item>
-					<el-form-item label="分数">
-						<el-input v-model="chosenData.initialScore" readonly='true' style="width: 90%;"></el-input>
 					</el-form-item>
 					<el-form-item label="内容">
 						<el-input v-model="chosenData.content" style="width: 90%;" type="textarea" autosize='true'></el-input>
@@ -93,9 +87,6 @@
 					<el-form-item label="管理及运行要求">
 						<el-input v-model="chosenData.name" style="width: 80%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
-					<el-form-item label="分数">
-						<el-input v-model="chosenData.initialScore" readonly='true' style="width: 80%;"></el-input>
-					</el-form-item>
 					<!-- <el-form-item label="依据或备注">
 				    <el-input v-model="chosenData.basis"></el-input>
 				  </el-form-item> -->
@@ -109,9 +100,6 @@
 				<el-form :model="chosenData" label-width="20%" :label-position="left">
 					<el-form-item label="量化说明">
 						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-					</el-form-item>
-					<el-form-item label="分数">
-						<el-input v-model="chosenData.initialScore" readonly='true' style="width: 90%;"></el-input>
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
@@ -437,8 +425,18 @@
 			},
 			handleSuccess(response) {
 				console.log(response)
-				this.$message.warning(response);
-				this.getDate();
+				if(response.code=='1000'){
+					querryQhseElement({queryStatus: this.queryStatus}).then(res => {
+					this.tableData = res.data
+					this.select()
+				}).catch((err) => {
+					this.$message.error(err.message)
+				})
+				this.$message.success('上传成功')
+				}else{
+					this.$message.error('上传失败')
+				}
+				
 			},
 			//打开新增框
 			append(val, val1) {
@@ -488,8 +486,12 @@
 				updateQHSEElement(this.chosenData).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						this.filterText = ''
-						this.select()
+						querryQhseElement({queryStatus: this.queryStatus}).then(res => {
+							this.tableData = res.data
+							this.select()
+						}).catch((err) => {
+							this.$message.error(err.message)
+						})
 						this.$message.success('修改信息成功')
 					} else {
 						this.$message.error('修改信息失败')
@@ -506,14 +508,11 @@
 			},
 			//更改当前节点的启用状态
 			onStopUse(val) {
-				//点击后的状态更新
-				val.status = val.status == '停用' ? '启用' : '停用';
 				//调用接口传回数据
 				updateQHSEElementStatus(val.id).then(res => {
 					if (res.code == '1000') {
-						//调用搜索方法重新渲染界面
-						this.filterText = ''
-						this.select()
+						//点击后的状态更新
+						val.status = val.status == '停用' ? '启用' : '停用';
 						this.$message.success('更新状态成功')
 					} else {
 						this.$message.error('更新状态失败')
@@ -535,8 +534,12 @@
 				addQHSEElement(this.insertDate).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						this.filterText = ''
-						this.select()
+						querryQhseElement({queryStatus: this.queryStatus}).then(res => {
+							this.tableData = res.data
+							this.select()
+						}).catch((err) => {
+							this.$message.error(err.message)
+						})
 						this.$message.success('节点添加成功')
 
 					} else {
