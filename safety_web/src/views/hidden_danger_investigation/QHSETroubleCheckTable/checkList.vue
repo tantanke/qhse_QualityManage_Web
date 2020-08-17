@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div v-loading='checkLoading'>
       <div class="page-title" style="width:100%">QHSE隐患排查</div>
-      <el-row>
+      <el-row >
         <!--控制级联菜单 -->
       <el-form :model='checkForm' style="width:90%" :disabled='formControl' >
             <el-form-item label='检查类别：' >
@@ -90,8 +90,8 @@
                 placeholder="输入关键字搜索"/>
             </template>
             <template slot-scope="scope" >
-                   <el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" size="mini" >新增检查</el-button>
-                   <el-button type="success" v-else @click="detailCheckRecord(scope.row)" size="mini" >查看记录</el-button>
+                   <el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" size="mini" >检查</el-button>
+                   <el-button :type="scope.row.pass === '通过'? 'success': 'danger'" v-else @click="detailCheckRecord(scope.row)" size="mini" >查看记录</el-button>
             </template>
           </el-table-column>
     </el-table>
@@ -106,10 +106,10 @@
   >
   <el-form>
       <el-form-item label='通过详情：'>
-          <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
-          <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
+          <el-radio v-model="pass" label="通过">通过</el-radio>
+          <el-radio v-model="pass" label="不通过">不通过</el-radio>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='问题描述：'>
+      <el-form-item v-show="pass === '不通过'" label='问题描述：'>
            <el-input            
             type="textarea"
             :rows="3"
@@ -117,7 +117,7 @@
             v-model="checkRecordForm.problems">
             </el-input>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='隐患违章：'>
+      <el-form-item v-show="pass === '不通过'" label='隐患违章：'>
           <el-radio v-model="reason" label="不录入">不录入</el-radio>
           <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
           <el-radio v-model="reason" label="违章">录入违章</el-radio>
@@ -140,7 +140,7 @@
               <el-form-item label="检查类型：" style="margin-bottom:1px">{{detailForm.checkType}}</el-form-item>
               <el-form-item label="检查日期：" style="margin-bottom:1px">{{detailForm.checkDate}}</el-form-item>
               <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
-              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
+              <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
           </el-row>
           
         </el-form>
@@ -160,9 +160,11 @@ export default {
     data() {
         return {
             // 控制页面
+            pass: '通过',
             checkDialogVisible: false,
             detailDialogVisible: false,
             loading: false,
+            checkLoading:true,
             // 筛选表格
             search: '',
             value2: '',
@@ -221,9 +223,9 @@ export default {
             checkType2: [],
             CheckList: [], 
             // 检查详情表单      
-            detailForm: {}
+            detailForm: {},
+            type: 'primary'
               }
-
             
             },
     methods: {
@@ -253,8 +255,6 @@ export default {
         submitadd () {
             let _this = this
             _this.loading = true
-            console.log(_this.checkRecordForm )
-            console.log(_this.checkListForm )
             editCheckRecord(_this.checkRecordForm).then(() => {
                 return addCheckList(_this.checkListForm)
             }).then(res => {
@@ -285,6 +285,7 @@ export default {
             _this.checkRecordForm.checkPerson = user.userName
             _this.checkRecordForm.checkPersonId = user.userId
             _this.checkRecordForm.checkTypeCode = _this.checkForm.checkListCode
+            _this.checkRecordForm.pass = _this.pass
            this.checkDialogVisible = true
         },
         // 显示出检查详情
@@ -319,6 +320,7 @@ export default {
           getChecklistTree().then(res => {
               _this.checkTreeData = res.data            
               _this.getSelectList(res.data)
+              _this.checkLoading = false
           }).catch(err => {
               _this.$message.error(err)
           })
@@ -339,6 +341,12 @@ export default {
            })
            return value
         },
+        // 初始化最近一次的检查记录
+        initChecklist () {
+           const data = JSON.parse(localStorage.getItem('checkdata'))
+           console.log(data)
+           this.checkForm = {...data}
+        },
         // 添加检查记录表
         addChecklist () {
             let _this = this
@@ -349,7 +357,10 @@ export default {
             
            _this.formControl = true
            _this.loading = true
-           _this.formatForm()
+           _this.formatForm()      
+           localStorage.setItem('checkdata',JSON.stringify(_this.checkForm));
+            const initData = JSON.parse(localStorage.getItem('checkdata'));
+            console.log(initData)
            addCheckList(_this.checkListForm).then(res => {
                console.log(res)
                _this.checkListData = res.data
@@ -396,6 +407,7 @@ export default {
         }
     },
     mounted() {
+        this.initChecklist()
         this.getCheckType()
         this.getCheckRecord()
         this.getCheckTree()

@@ -57,7 +57,7 @@
     <!--添加审核表 -->
         <el-dialog title="新建文件审核" :visible.sync="dialogFormVisible" :close-on-click-modal='false'>
           <el-form :model="addFileForm">
-            <el-form-item label="选择公司：" :label-width="formLabelWidth" style="width:320px">
+            <el-form-item label="选择公司：" :label-width="formLabelWidth" style="width:420px">
             <treeselect
               :multiple="false"
               :options="companyList"
@@ -68,13 +68,16 @@
             />
           </el-form-item>
             <el-form-item label="审核类别:" :label-width="formLabelWidth">
-              <el-select v-model="addForm.auditType" placeholder="请选择审核类别" style="width:200px">
+              <el-select v-model="addForm.auditType" placeholder="请选择审核类别" style="width:300px">
                 <el-option label="基础审核" value="基础审核"></el-option>
                 <el-option label="内部审核" value="内部审核"></el-option>
                 <el-option label="联系点审核" value="联系点审核"></el-option>
               </el-select>
             </el-form-item>
-          </el-form>
+            <el-form-item label="审核名称:"  :label-width="formLabelWidth" style="width:420px">
+              <el-input placeholder="请输入审核名称" v-model="addForm.auditName" @focus=" initName"></el-input>
+            </el-form-item>
+          </el-form>       
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitAdd">确 定</el-button>
@@ -97,6 +100,7 @@ export default {
   data() {
     return {
       ScompanyCode: null,
+      ScompanyName: '',
       addFileForm: {
         year: '',
         companyCode: null,
@@ -113,6 +117,7 @@ export default {
         year: '',
         tableId: ''
       },
+      hasFocus:true,
       querryQhseElement: {
         companyCode: '',
         year: ''
@@ -193,7 +198,6 @@ export default {
     },
     deleteFile(data) {
       let _this = this
-      console.log(data)
       let url ='/api/delete_fileaduit/' +  data.fileAuditId.toString()
       _this.$confirm('确认删除该条审核记录吗？','提示',{
         confirmButtonText: '确定',
@@ -223,27 +227,25 @@ export default {
        let nowTime = new Date()
        _this.addForm.auditTime = nowTime.toLocaleDateString()
        _this.addForm.year = nowTime.getFullYear().toString()
-       _this.addForm.auditName = _this.addForm.auditName + _this.addForm.auditTime + _this.addForm.auditType
+       _this.ScompanyCode = null
+       _this.addForm.auditName = ''
+       _this.addForm.auditType = ''
+       _this.hasFocus = true     
     },
-    addNewFile() {
-       this.dialogFormVisible = true
-       this.initForm()
-    },
-    serchStatus(deeptree) {
+    initName() {
       let _this = this
-       deeptree.forEach(item => {
-         if(item.childNode.length === 0 && item.status === '未批准') {
-           this.isStatus = true
-           return
-         } else {
-           _this.serchStatus(item)
-         }
-       })
-    }, 
+      if(_this.ScompanyCode && _this.addForm.auditType !== '' && _this.hasFocus ){
+      _this.addForm.auditName = _this.ScompanyName + _this.addForm.auditTime + _this.addForm.auditType
+      _this.hasFocus = false
+      }
+    },
+    addNewFile() {     
+       this.initForm()     
+       this.dialogFormVisible = true
+    },
     // 获取tableid
     submitAdd () {
        let _this = this
-       _this.initForm()
        _this.querryQhseElement.companyCode = _this.addForm.companyCode
        _this.querryQhseElement.year = _this.addForm.year
        if(_this.addForm.auditType === '' ||  _this.addForm.companyCode === '') {
@@ -275,7 +277,7 @@ export default {
       
     },
     getCompanyCode(node) {
-        this.addForm.auditName = node.label
+        this.ScompanyName = node.label
         this.addForm.companyCode = node.nodeCode
     },
     getUserName() {

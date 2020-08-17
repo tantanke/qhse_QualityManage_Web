@@ -58,7 +58,7 @@
               >
               审核完成  
               </el-button>
-              <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查'">请完成要素证据录入</span>
+              <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
             </template>
           </el-table-column>
         </el-table>
@@ -98,7 +98,7 @@
               >
               查看详情  
               </el-button>
-              <span v-show="scope.row.status !== '备案待查'">请完成要素证据录入</span>
+              <span v-show="scope.row.status !== '备案待查'">请完成要素证据批准</span>
             </template>
           </el-table-column>
         </el-table>
@@ -115,7 +115,6 @@
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
@@ -190,8 +189,7 @@
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>
-              <el-form-item label="问题描述：" style="margin-bottom:1px">{{detailData.problemDescription === null? detailData.problemDescription :  noProblem}}</el-form-item>       
+              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>      
             </el-col>
             <el-col :span="12" >
               <el-form-item label="证据图片：" 
@@ -213,8 +211,8 @@
               style="margin-bottom:10px"
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
-                <div v-for="(item,index) in files" :key="index">         
-                    <a :href="item" style="max-width:600px;height:auto">文件附件{{index + 1}}</a>
+                <div v-for="(item,index) in files" :key="index">
+                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -231,6 +229,7 @@
            title="违章隐患录入"
           :visible.sync="noinnerVisible"
           >
+          <div v-loading='questionLoading'>
           <el-form>
             <el-form-item  style="margin-bottom:30px;">
                <el-radio v-model="reason" label="不录入">不录入</el-radio> 
@@ -242,13 +241,14 @@
             <el-button @click="cancelInput">取 消</el-button>
            </el-form-item>
           </el-form>
-         
+         </div>
         </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
+import CurrentUser from '../../../store/CurrentUser'
 import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
@@ -263,16 +263,19 @@ export default {
         companyCode: null,
         status:''
       },
+      // 获取单位年度审核表
       querryTree: {
         companyCode: '',
         year: ''
       },
+      // 更新文件深恨状态
       updateCheckForm: {
         qhseCompanyYearManagerSysElementTableID: '',
         code: '',
         fileCheckStatus:'已审核'
       },
       addformVisible: false,
+      // 添加文件审核记录
       fileRecord: {
         fileAuditId: '',
         code: '',
@@ -281,6 +284,9 @@ export default {
         additor: '',
         auditTime: ''
       },
+      // 控制问题
+      questionLoading: false,
+      // 获取审核状态
       statusForm: {
         fileAuditId: '',
         code: ''
@@ -350,8 +356,10 @@ export default {
       let _this = this
       _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
       const initData = JSON.parse(localStorage.getItem('data'));
-      console.log(initData)
+      const user = CurrentUser.get()
+      initData.additor = user.userName
       _this.filterQuery.year = initData.year
+      console.log(initData)
       _this.filterQuery.companyCode = initData.companyCode
       _this.filterQuery.companyName = initData.companyName
       _this.querryTree.year = initData.year
@@ -364,10 +372,12 @@ export default {
       _this.addQuestionForm.qHSE_FileAudit_ID = initData.fileAuditId
       _this.fileRecord.fileAuditId = initData.fileAuditId
       _this.fileRecord.additor = initData.additor
-      _this.fileRecord.auditTime = initData.auditTime
       // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
-      console.log(initData)
+      // 添加问题表单
+      _this.addQuestionForm.companyCode = initData.companyCode
+      _this.addQuestionForm.companyName = initData.companyName
+      _this.addQuestionForm.additor = initData.additor
     },
     handleCellClick(row, cell, column) {
       if (row.code.length < 10) {
@@ -393,6 +403,7 @@ export default {
         _this.files = []
         _this.download = []
         _this.attachs = []
+        // 获取证据
         show_elementReviewer({qHSE_CompanyYearManagerSysElement_ID:data.id}).then(res => {
         this.nodeData=res.data;
         let attach = this.nodeData.attach;//获取地址字符串
@@ -431,6 +442,8 @@ export default {
       _this.statusForm.code = data.code
          return  getStatus(_this.statusForm)
       }).then(res => {
+        _this.detailData.codeScore = ''
+        _this.detailData.pass = ''
         if(res.data.length > 0){
         _this.detailData.codeScore = res.data[0].codeScore
         _this.detailData.pass = res.data[0].pass
@@ -470,6 +483,8 @@ export default {
       _this.dialogVisible = true
       _this.editdata = data
       _this.addLoading  = true
+      _this.fileRecord.pass = ''
+      _this.fileRecord.codeScore = ''
       _this.nodeData = ''
       _this.attachs = []
       _this.files = []
@@ -477,6 +492,7 @@ export default {
       _this.selectProblem = []
       _this.getEvidence(data)
       // 填充文件审核详情页面
+      _this.fileRecord.code = data.code
       _this.updateCheckForm.code = data.code
       _this.nopass.code = data.code
       querryQHSEproblemDiscription({code:data.code}).then(res => {
@@ -514,6 +530,7 @@ export default {
       _this.loading = true;
       // 获取单位年度审核表
       querryQhseElement(_this.querryTree).then(res => {
+        console.log(res.data)
         _this.treeData = res.data;
         _this.treeList = res.data;
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
@@ -544,8 +561,9 @@ export default {
           str = str + item + ' '
        })
        _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
-       addProblemDescription(_this.addQuestionForm).then(res => {
-         console.log(res)
+       console.log(_this.addQuestionForm)
+       addProblemDescription(_this.addQuestionForm).then(() => {
+         _this.questionLoading = false
        }).catch(err => {
         _this.$message.error(err)
       })
@@ -554,24 +572,31 @@ export default {
     updataFileAudit() {
       // 上传文件审核记录
       let _this = this
-      if((_this.fileRecord.codeScore === '' || _this.fileRecord.pass === ''  || _this.fileRecord.codeScore > Number(_this.detailData.initialScore)) ) {
+      if(_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '' ) {
         _this.$message.error('请填写正确的审核内容')
         return
         } else if (_this.proTextarea === '' &&  _this.selectProblem.length === 0 && _this.fileRecord.pass === '不通过') {
           _this.$message.error('请填写具体问题内容')
           return
+        } else if (_this.fileRecord.codeScore > Number(_this.detailData.initialScore) || _this.fileRecord.codeScore < 0) {
+          _this.$message.error('请填写合法的分数')
+          return
         }
       _this.status = _this.fileRecord.pass
+      console.log(_this.fileRecord)
+      this.addQuestion()
       updateCheckstatus(_this.updateCheckForm).then(() => {
         return addFileaduitrecord(_this.fileRecord)
       }).then(() => {
         // 这里应该返回文件审核记录的recordID
         if(_this.status === '不通过') {
           _this.noinnerVisible = true
+          _this.questionLoading = true
          _this.addQuestion()     
         }  
         _this.$message.success('添加成功！')
         _this.dialogVisible = false
+        // 重置添加状态
         _this.fileRecord.pass = ''
         _this.fileRecord.codeScore = ''
         _this.problemList = []

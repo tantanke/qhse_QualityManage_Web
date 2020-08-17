@@ -44,8 +44,8 @@
           type="expand"
           :data='regulationrecord'
           border
-          style="width: 100%"
-          max-height="675">
+          style="width:100%"
+          max-height="590">
            <el-table-column type="expand">
             <template slot-scope="props">
                 <el-form label-position="left" inline class="table-expand">
@@ -135,7 +135,7 @@
           <el-table-column prop='checkType' label='违章类别'></el-table-column>
           <el-table-column prop='punish1' label='罚款'></el-table-column>
           <el-table-column prop='description' label='违章描述'></el-table-column>
-          </el-table>
+        </el-table>
           </el-row>
       </el-row>
       <el-row v-show="listcate === 'QHSE隐患清单'"> 
@@ -176,7 +176,7 @@
           border
           :data='dangerrecord'
           style="width: 100%"
-          max-height="675">
+          max-height="590">
           <el-table-column type="expand">
             <template slot-scope="props">
                 <el-form label-position="left" inline class="table-expand">
@@ -292,19 +292,26 @@
               <el-table
             :data='problemrecord'
             style="width: 100%"
-            max-height="675">
-                  <el-table-column
+            max-height="590">
+             <el-table-column
                     prop="problemDescription"
-                    label="问题描述">
+                    label="检查时间">
+                </el-table-column>
+                    <el-table-column
+                    prop="problemDescription"
+                    label="公司名称">
                 </el-table-column>
                 <el-table-column
                     prop="problemDescription"
                     label="检查人">
                 </el-table-column>
-                <el-table-column
+                  <el-table-column
                     prop="problemDescription"
-                    label="公司名称">
+                    label="问题描述">
                 </el-table-column>
+                
+                
+               
             </el-table>
           </el-row>
       </el-row>
@@ -471,6 +478,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.el-table{
+    height: 590px;
+}
 .table-expand {
     font-size: 0;
     
