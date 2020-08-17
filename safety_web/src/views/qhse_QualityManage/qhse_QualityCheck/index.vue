@@ -84,7 +84,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -179,11 +179,12 @@ export default {
   data() {
     return {
       headers:newOptions.headers,
+      strings:null,
       filterQuery: {},
       companyList: [],//公司列表
       peopleList:[],//职员列表
       disabled1:false,
-      download:'',
+      download:[],
       dialogFormVisible: false,
       loading: true,
       detailData: {},//存储查询到的employe信息
@@ -228,6 +229,8 @@ export default {
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.form.uploadTime=year+'-'+month+'-'+date;
+      console.log('哪里有attach',this.form.attach)
+      console.log('哪里有attach',this.attach)
       this.form.attach+=this.attach;
       //打印上传的信息
       console.log('表单中的数据',this.form)
@@ -253,12 +256,14 @@ export default {
 
         
     },
-    updateScore(data){
-      
-        
-        this.attach={};
+    async updateScore(data){
+      if(this.$refs.upload!=undefined)
+        this.$refs.upload.clearFiles();//清空数据
+        this.form.fileID='';
+        this.attach='';
         this.attachs={};
         this.files={};
+        this.download=[];
         this.detailData.name = data.name    
         this.form.evidenceDescription='';//初始化证据
         this.form.evidenceID='';//初始化
@@ -267,11 +272,10 @@ export default {
         this.form.code=data.code;//赋值要素编码
         this.form.id=data.id;//附件id
         this.form.attach='';
+        this.form.filelength='';//文件长度
         //获取证据项内容
-        query_evidence_attach(data)
+        await query_evidence_attach(data)
         .then(res => {
-          console.log('树中获取到数据',data)
-          console .log('数据库中该证据项数据',res.data)
           //当数据不为空的时候
           if(res.data!=null){
             this.form.attach=res.data.attach;//赋值附件id
@@ -300,15 +304,11 @@ export default {
                   else{
                     if(arr.length!=0)
                     this.files[k]='http://39.98.173.131:7000/resources/QHSEEvidence/'+arr[i];
-                     downloadElementFile(arr[i]).then(res=>{
-                      this.download[k]=res.data;
-                    })
                     k++;
+                    this.form.filelength=k;
                   }
                 }
               }
-              console.log('获取到的要素节点内容：',res.data);
-
           }
           else{//为空的时候好像就不怎么地
           }
@@ -317,7 +317,16 @@ export default {
         .catch(err => {
           console.log(err);
         });//证据表数据
-
+        this.download=[];
+        for(var i=0;i<this.form.filelength;i++){
+          await downloadElementFile(this.files[i].substring(49,this.files[i].length))
+          .then(res=>{
+            console.log(this.download)
+            this.download[i]=JSON.parse(JSON.stringify(res.data))
+          })
+        }
+        var strings=JSON.parse(JSON.stringify(this.download))
+        this.strings=strings;
         this.node=data;
          
     },

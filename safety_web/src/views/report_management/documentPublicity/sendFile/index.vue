@@ -41,27 +41,25 @@
 						<el-form-item label="记录名">
 							<el-input v-model="propagationPlan.fileName" style="width: 80%;" placeholder="请输入记录名"></el-input>
 						</el-form-item>
-						<el-form-item label="发起单位">
-							<!-- 这里应该是一个只读input，直接显示从当前登录用户那里得到的公司信息 -->
-							<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 80%" :options="companyList" v-model="companyId"></treeselect>
-							<!-- <el-input v-model="propagationPlan.insertStaffName" style="width: 80%;" placeholder="请输入发起单位"></el-input> -->
+						<!-- <el-form-item label="发起单位">
+							<el-input v-model="propagationPlan.companyName" style="width: 80%;" placeholder="请输入发起公司"></el-input>
 						</el-form-item>
 						<el-form-item label="发起人">
 							<el-input v-model="propagationPlan.staffName" style="width: 80%;" placeholder="请输入发起人姓名"></el-input>
-						</el-form-item>
+						</el-form-item> -->
 						<el-form-item label="宣贯时间">
 							<el-date-picker type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:80%"
 							 v-model="propagationPlan.propagationDate">
 							</el-date-picker>
 						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="上传文件">
 							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.filePath"
 							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove">
 								<el-button type="primary" icon="el-icon-upload">点击上传</el-button>
 							</el-upload>
 						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<el-form-item label="描述">
 							<el-input v-model="propagationPlan.description" type="textarea" :rows="6" style="width: 100%;" placeholder="请输入文件描述"></el-input>
 						</el-form-item>
@@ -402,8 +400,7 @@
 			queryPropagationPlan() {
 				this.loading = true
 				queryPropagationPlan().then(res => {
-					this.filterQuery.putTableData = res.data
-					console.log(this.filterQuery.putTableData)
+					this.filterQuery.putTableData = res.data.reverse()
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -419,8 +416,8 @@
 				this.propagationPlan.companyCode = ''
 				this.propagationPlan.companyName = ''
 				this.propagationPlan.filePath = []
-				this.propagationPlan.staffName = this.currentUser().userName
-				this.propagationPlan.staffId = this.currentUser().userId
+				this.propagationPlan.staffName =''
+				this.propagationPlan.staffId =''
 				this.insertPropagationDialog = true
 			},
 			//打开宣贯统计框，并加载对应记录的宣贯细节表
@@ -474,18 +471,8 @@
 			//新增宣贯计划
 			insertPropagation() {
 				this.isChild = true
-				this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
-				this.propagationPlan.companyName = this.companyName
-				this.propagationPlan.companyCode = this.companyCode
-				this.checkCompany(this.companyList,this.propagationPlan.insertPutCompanyName)
-				if(this.isChild==false){
-					this.propagationPlan.insertPutCompanyId=null
-					this.propagationPlan.insertPutCompanyName=''
-					this.$message.error('公司选择错误，请重新选择')
-				}
 				//检查数据完整性
-				if (this.propagationPlan.companyCode && this.propagationPlan.staffId && this.propagationPlan.fileName && this.propagationPlan
-					.propagationDate && this.propagationPlan.filePath.length > 0) {
+				if (this.propagationPlan.fileName && this.propagationPlan.propagationDate && this.propagationPlan.filePath.length > 0) {
 						//调用接口新增数据
 					insertPropagationPlan(this.propagationPlan).then(res => {
 						if (res.code == '1000') {

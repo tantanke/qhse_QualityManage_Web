@@ -101,7 +101,7 @@
               style="margin-bottom:10px"
               >
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -129,6 +129,8 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      filelength:'',
+      strings:null,
       upstatus:false,
       filterQuery: {
       },//记载公司的信息
@@ -268,12 +270,12 @@ export default {
     handleGetInitialData() {
       this.loading = true;
     },
-    updateScore(data){//显示出证据项的内容
+    async updateScore(data){//显示出证据项的内容
     console.log(this.userId)
     this.attachs={};
     this.files={};
     this.download={},
-      show_elementReviewer(data)
+       await show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
         this.nodeData=res.data;
@@ -296,16 +298,8 @@ export default {
                   }
                   else{
                     this.files[k]=arr[i];
-                    downloadElementFile(this.files[k].substring(49,this.files[k].length))
-                    .then(res=>{
-                      // console.log('什么东西',res.headers.filename)
-                      this.download[k]=res.data;
-                      console.log(this.download[k])
-                    })
-                    .catch(err=>{
-                      console.log('报错',err)
-                    })
                     k++;
+                    this.filelength=k;
                   }
                 }
           console.log('attach数量：',arr.length,this.attachs);
@@ -319,6 +313,19 @@ export default {
         this.message.error(err.message);
       })
       this.node=data;
+
+       this.download=[];
+        for(var i=0;i<this.filelength;i++){
+          await downloadElementFile(this.files[i].substring(49,this.files[i].length))
+          .then(res=>{
+            console.log(this.download)
+            this.download[i]=JSON.parse(JSON.stringify(res.data))
+          })
+        }
+        var strings=JSON.parse(JSON.stringify(this.download))
+        this.strings=strings;
+        console.log('文件信息',this.strings)
+      
       
       this.detailData = {}
       this.detailData.name = data.name
