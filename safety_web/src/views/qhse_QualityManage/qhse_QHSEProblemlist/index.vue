@@ -294,15 +294,15 @@
             style="width: 100%"
             max-height="590">
              <el-table-column
-                    prop="problemDescription"
+                    prop="recordDate"
                     label="检查时间">
                 </el-table-column>
                     <el-table-column
-                    prop="problemDescription"
+                    prop="companyName"
                     label="公司名称">
                 </el-table-column>
                 <el-table-column
-                    prop="problemDescription"
+                    prop="safeStaffName"
                     label="检查人">
                 </el-table-column>
                   <el-table-column
@@ -387,7 +387,6 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               console.log(res.data)
                _this.checkForm.companyId = []
                   _this.date = null
            }).catch(err => {
@@ -410,7 +409,6 @@ export default {
             }
            baseurl  = _this.getUrl('/api/query_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
-               console.log(res.data.list)
                _this.regulationrecord = res.data.list
                _this.checkForm.companyId = []
                   _this.date = null

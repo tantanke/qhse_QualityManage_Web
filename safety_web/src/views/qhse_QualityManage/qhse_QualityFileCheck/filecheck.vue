@@ -460,6 +460,7 @@ export default {
     },
     // 获取已经审核完成的记录的详细信息
     detaileFile(data) {
+      console.log(data)
       let _this = this
        _this.nodeData = ''
       _this.attachs = []

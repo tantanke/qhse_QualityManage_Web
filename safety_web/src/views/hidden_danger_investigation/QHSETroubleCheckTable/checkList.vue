@@ -106,10 +106,10 @@
   >
   <el-form>
       <el-form-item label='通过详情：'>
-          <el-radio v-model="pass" label="通过">通过</el-radio>
-          <el-radio v-model="pass" label="不通过">不通过</el-radio>
+          <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
+          <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
       </el-form-item>
-      <el-form-item v-show="pass === '不通过'" label='问题描述：'>
+      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='问题描述：'>
            <el-input            
             type="textarea"
             :rows="3"
@@ -117,7 +117,7 @@
             v-model="checkRecordForm.problems">
             </el-input>
       </el-form-item>
-      <el-form-item v-show="pass === '不通过'" label='隐患违章：'>
+      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='隐患违章：'>
           <el-radio v-model="reason" label="不录入">不录入</el-radio>
           <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
           <el-radio v-model="reason" label="违章">录入违章</el-radio>
@@ -160,7 +160,6 @@ export default {
     data() {
         return {
             // 控制页面
-            pass: '通过',
             checkDialogVisible: false,
             detailDialogVisible: false,
             loading: false,
@@ -189,6 +188,7 @@ export default {
             },
             // 添加检查记录
             checkRecordForm: {
+                pass:'通过'
             },
             // 检查表单
             checkListForm: {
@@ -281,11 +281,10 @@ export default {
         addCheckRecord(data) {
             let _this = this
             let user = CurrentUser.get()
-            _this.checkRecordForm = {...data}
+            _this.checkRecordForm = {...data,..._this.checkRecordForm}
             _this.checkRecordForm.checkPerson = user.userName
             _this.checkRecordForm.checkPersonId = user.userId
             _this.checkRecordForm.checkTypeCode = _this.checkForm.checkListCode
-            _this.checkRecordForm.pass = _this.pass
            this.checkDialogVisible = true
         },
         // 显示出检查详情
