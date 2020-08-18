@@ -29,9 +29,44 @@
         </el-form>
       </el-row>
 
+
+
 <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+   <div style="margin:15px 0px">
+      <span style="margin-right:15px">请选择录入方式:</span>
+          <el-radio v-model="checkType" label="树形录入">树形录入</el-radio> 
+          <el-radio v-model="checkType" label="列表录入">列表录入</el-radio>     
+    </div>
         <el-table
+          v-if="checkType=='树形录入'"
           :data="treeData"
+          style="width: 100%"
+          ref="treeTable"
+          row-key="code"
+          :indent="30"
+          max-height="560"
+          highlight-current-row
+          border
+          @cell-click="handleCellClick"
+          v-loading="loading"
+          :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+          <el-table-column prop="name" label="内容"></el-table-column>
+          <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+          <el-table-column label="操作" width="150" align="center">
+            <template slot-scope="scope">
+              <el-button 
+              type="primary"
+              size="mini"
+              @click="updateScore(scope.row)"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='不通过')"
+              >录入</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-table
+          v-if="checkType=='列表录入'"
+          :data="listData"
           style="width: 100%"
           ref="treeTable"
           row-key="code"
@@ -181,6 +216,7 @@ export default {
       headers:newOptions.headers,
       strings:null,
       filterQuery: {},
+      checkType:'树形录入',
       companyList: [],//公司列表
       peopleList:[],//职员列表
       disabled1:false,
@@ -189,6 +225,7 @@ export default {
       loading: true,
       detailData: {},//存储查询到的employe信息
       treeData: [],
+      listData:[],
       initData:[],
       node:[],
       nodeData:[],
@@ -222,6 +259,19 @@ export default {
       this.form.fileID='';
       this.dialogVisible3=true;
     },
+    async deepTree (treedata) {
+            let _this = this
+            
+            treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                    _this.listData.push(item)
+                    return
+                } else {
+                    _this.deepTree(item.childNode)
+                }
+            })
+            return _this.listData
+      },
     //添加附件，与下面整合
     addEvidenceFile(){
       var datetime = new Date();
@@ -243,6 +293,8 @@ export default {
         querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.deepTree(this.treeData)
+          console.log('列表数据',this.listData)
         })
         .catch(err => {
           console.log(err);
@@ -390,6 +442,7 @@ export default {
       }
     },
     handleClick() {
+      this.listData=[];
       if(!this.filterQuery.year){//显示年份
         this.filterQuery.year = new Date()
       }
@@ -402,6 +455,8 @@ export default {
       querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.deepTree(this.treeData)
+          console.log('列表数据',this.listData)
         })
         .catch(err => {
           console.log(err);
