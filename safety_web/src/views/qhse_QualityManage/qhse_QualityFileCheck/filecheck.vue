@@ -296,7 +296,10 @@ export default {
         qHSE_FileAudit_ID: '',
         qHSE_FileAuditRecord_ID: '',
         code: '',
-        problemDescription: ''
+        problemDescription: '',
+        /* companyCode: '',
+        companyName: '',
+        auditTime: '' */
       },
       nowcode: null,
       // 控制弹出页面
@@ -375,9 +378,10 @@ export default {
       // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
       // 添加问题表单
-      _this.addQuestionForm.companyCode = initData.companyCode
+      /* _this.addQuestionForm.companyCode = initData.companyCode
       _this.addQuestionForm.companyName = initData.companyName
       _this.addQuestionForm.additor = initData.additor
+      _this.addQuestionForm.auditTime = nowTime.toLocaleDateString() */
     },
     handleCellClick(row, cell, column) {
       if (row.code.length < 10) {
@@ -584,8 +588,6 @@ export default {
           return
         }
       _this.status = _this.fileRecord.pass
-      console.log(_this.fileRecord)
-      this.addQuestion()
       updateCheckstatus(_this.updateCheckForm).then(() => {
         return addFileaduitrecord(_this.fileRecord)
       }).then(() => {
