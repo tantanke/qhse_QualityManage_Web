@@ -6,22 +6,6 @@
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
           <el-row>
             <el-col :xl="8" :lg="10" :sm="12">
-              <el-form-item label="检查人员">
-                <el-select
-                  v-model="form.safeStaff_ID"
-                  placeholder="请选择"
-                  clearable
-                  filterable
-                  loading-text="查询中..."
-                >
-                  <el-option
-                    v-for="item in employees"
-                    :key="item.employeeID"
-                    :label="`${item.name}(${item.companyName})`"
-                    :value="item.employeeID"
-                  />
-                </el-select>
-              </el-form-item>
               <el-form-item label="施工队伍">
                 <el-cascader
                   ref="companyChoose"
@@ -216,7 +200,6 @@ export default {
     return {
       form: {
         checkId: '',
-        safeStaff_ID: null,
         workItem: '',
         companyId: '',
         description: '',

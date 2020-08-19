@@ -1,5 +1,5 @@
 <template>
-  <div v-loading='checkLoading'>
+  <div v-loading='checkLoading' element-loading-text="拼命加载中">
       <div class="page-title" style="width:100%">QHSE隐患排查</div>
       <el-row >
         <!--控制级联菜单 -->
@@ -39,7 +39,6 @@
                 :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                 :show-all-levels="false"
                 filterable
-                @change="handleChange"
                 ref="cascaderAddr"
                 >
                 
@@ -124,7 +123,7 @@
       </el-form-item>
 </el-form>
   <span slot="footer" class="dialog-footer">
-    <el-button @click="checkDialogVisible = false">取 消</el-button>
+    <el-button @click="cancelSub">取 消</el-button>
     <el-button type="primary" @click="submitadd">确 定</el-button>
   </span>
 </el-dialog>
@@ -252,20 +251,30 @@ export default {
             }
         },
         // 添加记录
+        cancelSub() {
+          this.checkDialogVisible = false
+          this.checkRecordForm = {pass:'通过'}
+        },
         submitadd () {
-            let _this = this
-            _this.loading = true
+            let _this = this          
+            if(_this.checkRecordForm.pass === '不通过' && !_this.checkRecordForm.problems){
+                _this.$message.warning('请输入具体问题！')
+                return
+            }
+             _this.loading = true
             editCheckRecord(_this.checkRecordForm).then(() => {
                 return addCheckList(_this.checkListForm)
             }).then(res => {
                 _this.checkListData = res.data
                 _this.loading = false
                 _this.$message.success('新增成功！')
+                _this.checkRecordForm = {pass:'通过'}
                 _this.pushRouter()
             })
             .catch(err => {
               _this.$message.error(err)
               _this.loading = false
+              _this.checkRecordForm = {}
           })
            _this.checkDialogVisible = false
         },
@@ -285,7 +294,7 @@ export default {
             _this.checkRecordForm.checkPerson = user.userName
             _this.checkRecordForm.checkPersonId = user.userId
             _this.checkRecordForm.checkTypeCode = _this.checkForm.checkListCode
-           this.checkDialogVisible = true
+            this.checkDialogVisible = true
         },
         // 显示出检查详情
         detailCheckRecord(data) {
@@ -297,7 +306,6 @@ export default {
             _this.detailForm.checkDate = data.checkDate
             _this.detailForm.pass = data.pass
             _this.detailForm.checkPerson = data.checkPerson
-            console.log(_this.detailForm)
             _this.detailDialogVisible = true
         },
         // 筛选出所有叶子节点
@@ -324,11 +332,6 @@ export default {
               _this.$message.error(err)
           })
         },
-        getCheckRecord() {
-            GetCheckRecordTree().then(res => {
-                console.log(res)
-            })
-        },
         async getCheckForm () {
             let value
              this.checkTreeData.forEach((item) => {
@@ -343,7 +346,6 @@ export default {
         // 初始化最近一次的检查记录
         initChecklist () {
            const data = JSON.parse(localStorage.getItem('checkdata'))
-           console.log(data)
            this.checkForm = {...data}
         },
         // 添加检查记录表
@@ -358,10 +360,7 @@ export default {
            _this.loading = true
            _this.formatForm()      
            localStorage.setItem('checkdata',JSON.stringify(_this.checkForm));
-            const initData = JSON.parse(localStorage.getItem('checkdata'));
-            console.log(initData)
            addCheckList(_this.checkListForm).then(res => {
-               console.log(res)
                _this.checkListData = res.data
                _this.loading = false
            }).catch(err => {
@@ -398,17 +397,12 @@ export default {
         getCompanyList () {
             GetqhseCompanytree().then(res => {
                 this.companyList = res.data
-                console.log(res)
             })
-        },
-        handleChange(value) {
-        console.log(value);
         }
     },
     mounted() {
         this.initChecklist()
         this.getCheckType()
-        this.getCheckRecord()
         this.getCheckTree()
         this.getCompanyList()
     },
