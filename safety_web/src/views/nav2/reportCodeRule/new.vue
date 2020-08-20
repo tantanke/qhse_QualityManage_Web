@@ -15,7 +15,7 @@
             :multiple="false"
             :options="options"
             placeholder="请选择单位名称"
-            v-model="ReportCodeRule.companyCode"
+            @select="selectDepart"
             style="width:250px"/>
           </el-form-item>
           <el-form-item label="业务：" prop="business">
@@ -75,6 +75,9 @@ export default {
     this.getreportTypes()
   },
   methods: {
+    selectDepart(val) {
+      this.ReportCodeRule.companyCode = val.nodeCode;
+    },
     handleGetCompany(){
         GetCompany().then((res) => {
           this.options = res.data;
@@ -101,6 +104,7 @@ export default {
               }).catch((err) => {
                 this.$message.error(err.message)
                 })
+            console.log('code是',this.ReportCodeRule)
           } else {
             return false;
           }

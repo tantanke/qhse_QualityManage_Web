@@ -15,7 +15,8 @@
             :multiple="false"
             :options="options"
             placeholder="请选择单位名称"
-            v-model="ReportCodeRule.companyCode"
+            v-model="ReportCodeRule.companyName"
+            @select="selectDepart"
             style="width:250px"/>
           </el-form-item>
           <el-form-item label="业务：" prop="business">
@@ -59,27 +60,40 @@ export default {
       reportTypes:[],
       ReportCodeRule: {},
       rules:{
-        companyCode :[{required: true, message: '请填写基层单位', trigger: 'blur' }],
-        // business :[{required: true, message: '请填写业务名称', trigger: 'blur' }],
-        // businessType :[{required: true, message: '请填写业务类别', trigger: 'blur' }],
-        // serviceContent :[{required: true, message: '请填写服务名称', trigger: 'blur' }],
-        businessCode :[{required: true, message: '请填写业务编码', trigger: 'blur' }],
-        reportType :[{required: true, message: '请填写报告类别', trigger: 'change' }],
+        // companyCode :[{required: true, message: '请填写基层单位', trigger: 'blur' }],
+        // // business :[{required: true, message: '请填写业务名称', trigger: 'blur' }],
+        // // businessType :[{required: true, message: '请填写业务类别', trigger: 'blur' }],
+        // // serviceContent :[{required: true, message: '请填写服务名称', trigger: 'blur' }],
+        // businessCode :[{required: true, message: '请填写业务编码', trigger: 'blur' }],
+        // reportType :[{required: true, message: '请填写报告类别', trigger: 'change' }],
       }
     }
   },
 
   mounted () {
+    console.log('修改页面开始的接口')
+    console.log('路由传递过来的参数',this.$route.params)
+    this.ReportCodeRule.business=this.$route.params.business;
+    this.ReportCodeRule.businessCode=this.$route.params.businessCode
+    this.ReportCodeRule.businessType=this.$route.params.businessType
+    this.ReportCodeRule.companyCode=this.$route.params.companyCode
+    this.ReportCodeRule.reportCodeRuleID=this.$route.params.id
+    this.ReportCodeRule.reportType=this.$route.params.reportType
+    this.ReportCodeRule.serviceContent=this.$route.params.serviceContent
+    this.ReportCodeRule.companyName=this.$route.params.companyName
     this.handleGetCompany()
     this.getreportTypes()
     this.getReportCodeRule()
   },
   methods: {
+    selectDepart(val) {
+      this.ReportCodeRule.companyCode = val.nodeCode;
+    },
     handleSubmit (formName) {
        this.$refs[formName].validate((valid) => {
           if (valid) {
             UpdateReportCodeRule(this.ReportCodeRule.reportCodeRuleID,this.ReportCodeRule).then(() => {
-              this.$message.success('创建成功')
+              this.$message.success('修改成功')
               this.$router.go(-1)
               }).catch((err) => {
                 this.$message.error(err.message)
@@ -89,7 +103,7 @@ export default {
           }
         }); 
     },
-    handleGetCompany(){
+    handleGetCompany(){//获取公司名字
         GetCompany().then((res) => {
           this.options = res.data;
         }).catch((err) => {

@@ -13,7 +13,7 @@
           :multiple="false"
           :options="options"
           placeholder="请选择单位名称"
-          v-model="filterQuery.companyCode"
+          @select="selectDepart"
           style="width:250px"/>
         </el-form-item>
         <el-form-item label="报告类别：" prop="reportType">
@@ -51,7 +51,16 @@
         <el-table-column label="操作" align="center" header-align="center" width="200">
           <template slot-scope="scope">
             <div class="inline-td">
-              <router-link :to='{name: "ReportCodeRuleChange", params: {id: scope.row.reportCodeRuleID}}'>
+              <router-link :to='{name: "ReportCodeRuleChange", params: {
+                id: scope.row.reportCodeRuleID,
+                companyCode:scope.row.companyCode,
+                business:scope.row.business,
+                businessCode:scope.row.businessCode,
+                businessType:scope.row.businessType,
+                reportType:scope.row.reportType,
+                serviceContent:scope.row.serviceContent,
+                companyName:scope.row.companyName
+                }}'>
                 <el-button size="mini" type="primary" icon="el-icon-edit-outline">修改</el-button>
               </router-link>
               &nbsp;&nbsp;
@@ -109,6 +118,9 @@ export default {
       this.handleGetListData() 
     },
     methods:{
+      selectDepart(val) {
+      this.filterQuery.companyCode = val.nodeCode;
+    },
       loadFilterParams () {
       this.filterQuery = {...DefaultQuery, ...this.$route.query}
       this.filterQuery = {
