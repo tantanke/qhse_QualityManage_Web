@@ -126,16 +126,19 @@
             <el-col :span="12">
 
               <el-form-item label="上传文件">
+                <span>限制上传数量为1</span>
                 <el-upload
+                :on-remove="removeFile"
                   v-model="form.fileID"
                   :headers="headers"
                   :limit="1"
-                  :on-success="handleAvatarSuccess"
+                  :on-success="handleFilerSuccess"
                   :action="accidentOrEventUploadAddress">
                 <div class="span1">浏览附件</div>
                 </el-upload>
               </el-form-item>
               <el-form-item label="上传图片"> 
+                <span>限制上传数量为2</span>
               <el-upload
                 :action="accidentOrEventUploadAddress"
                 :headers="headers"
@@ -237,7 +240,8 @@ export default {
       dialogVisible3: false,//证据录入
       fileList:[],//文件列表
       hideUpload: false,//隐藏上传按钮
-      attach:'',//存储新增的文件id
+      attach:'',//存储新增的图片id
+      fileattach:'',//存储新增文件的id
       attachs:[],//将attach按照分号转化为数组
       files:[],//保存的文本文件
       form:{//保存上传的文件
@@ -259,7 +263,8 @@ export default {
       this.form.fileID='';
       this.dialogVisible3=true;
     },
-    async deepTree (treedata) {
+    deepTree (treedata) {
+            this.listData=[];
             let _this = this
             
             treedata.forEach(item => {
@@ -270,42 +275,38 @@ export default {
                     _this.deepTree(item.childNode)
                 }
             })
-            return _this.listData
+            return _this.listData;
       },
     //添加附件，与下面整合
-    addEvidenceFile(){
+    async addEvidenceFile(){
       var datetime = new Date();
       var year = datetime.getFullYear();
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
       var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate(); 
       this.form.uploadTime=year+'-'+month+'-'+date;
-      console.log('哪里有attach',this.form.attach)
-      console.log('哪里有attach',this.attach)
-      this.form.attach+=this.attach;
-      //打印上传的信息
-      console.log('表单中的数据',this.form)
+      this.form.attach+=this.attach;//加上图片attach
+      this.form.attach+=this.fileattach;//加上文件attach
+      
       this.$refs.upload.clearFiles();//清空数据
       //上传接口
-      addAll_evidence_attach(this.form).then(res => {
+      await addAll_evidence_attach(this.form).then(res => {
          console.log(res);
          console.log(1);
          //上传后刷新树
-        querryYearElement(this.filterQuery)//获取到叶子节点信息
+         this.dialogVisible3=false;
+        }).catch(err => {
+          this.$message.error(err.message);
+        });
+      await querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
-          this.deepTree(this.treeData)
-          console.log('列表数据',this.listData)
         })
         .catch(err => {
           console.log(err);
           this.message.error(err.message);
         });
-         this.dialogVisible3=false;
-        }).catch(err => {
-          this.$message.error(err.message);
-        });
+      await this.deepTree(this.treeData);
         this.$message.success('添加成功');
-
         
     },
     async updateScore(data){
@@ -313,6 +314,7 @@ export default {
         this.$refs.upload.clearFiles();//清空数据
         this.form.fileID='';
         this.attach='';
+        this.fileattach='';
         this.attachs={};
         this.files={};
         this.download=[];
@@ -383,22 +385,41 @@ export default {
          
     },
     //限制文件数量并新增
-    handleAvatarSuccess(res) {
-                if (res.code === 1000){ 
-                    this.attach += res.data;
-                    this.attach+=';';
-                    console.log('attach',this.attach)
+    handleFilerSuccess(res){
+       if (res.code === 1000){ 
+                    this.fileattach += res.data;
+                    this.fileattach+=';';
                 }
                 else {
                     this.$message.error('上传失败');
                     this.form.attachID = '';
                 }
-            },
-      handleExceed() {
+        console.log('添加文件',this.attach,'and',this.fileattach)
+    },
+    handleAvatarSuccess(res) {
+                if (res.code === 1000){ 
+                    this.attach += res.data;
+                    this.attach+=';';
+                }
+                else {
+                    this.$message.error('上传失败');
+                    this.form.attachID = '';
+                }
+                console.log('添加图片',this.attach,'and',this.fileattach)
+    },
+    handleExceed() {
         this.$message.warning('当前限制选择 2 个文件');
       },
-      handleRemove() {
+    removeFile(){
+      console.log('文件删除前',this.attach,'and',this.fileattach)
+        this.fileattach='';
+        console.log('文件删除后',this.attach,'and',this.fileattach)
+    },
+    handleRemove() {
+        console.log('图片删除前',this.attach,'and',this.fileattach)
         this.$refs.upload.clearFiles();
+        this.attach='';
+        console.log('图片删除后',this.attach,'and',this.fileattach)
     },
     //放大显示
     handlePictureCardPreview(file) {
@@ -456,7 +477,6 @@ export default {
         .then(res => {
           this.treeData = res.data;
           this.deepTree(this.treeData)
-          console.log('列表数据',this.listData)
         })
         .catch(err => {
           console.log(err);

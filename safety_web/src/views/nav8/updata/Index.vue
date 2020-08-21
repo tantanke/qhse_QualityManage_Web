@@ -122,12 +122,15 @@
           <el-row style="padding-top:5px; border-top: 2px solid #dddddd">
             <el-col :span="12">
               <el-form-item  label="旧密码：">
-                <el-input style="width:100%" v-model="password.oldPassword" placeholder="请输入旧密码"></el-input>
+                <el-input type="password" style="width:100%" v-model="password.oldPassword" placeholder="请输入旧密码"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="24">
               <el-form-item label="新密码：">
-                <el-input style="width:100%" v-model="password.newPassword" placeholder="请输入新密码"></el-input>
+                <el-input type="password" style="width:100%" v-model="newPassword1" placeholder="请输入新密码"></el-input>
+              </el-form-item>
+              <el-form-item label="新密码：">
+                <el-input type="password" style="width:100%" v-model="newPassword2" placeholder="再次确认新密码"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -151,6 +154,8 @@ export default {
     return{
       information:{},
       password:{},
+      newPassword1:'',
+      newPassword2:'',
       sexes:[],
       educations:[],
       rules:{
@@ -193,19 +198,28 @@ export default {
     handleSubmit () {
       UpdateStaff(this.information).then(() => {
         this.$message.success('操作成功')
-        this.$router.go(0) //返回上一url
-      }, (err) => {
+      })
+      .catch (err => {
         this.$message.error(err.message)
       })
     },
     //更新个人密码
     handleSubmitPassword() {
-      UpdateStaff(this.password).then(() => {
-        this.$message.success('操作成功')
-        this.$router.go(0) //返回上一url
+      if(this.newPassword1==this.newPassword2){
+        this.password.newPassword=this.newPassword1
+        UpdateStaff(this.password).then(() => {
+        this.$message.success('密码更新成功')
+        this.password=[];
+        this.newPassword1='';
+        this.newPassword2='';
       }, (err) => {
-        this.$message.error(err.message)
+        this.$message.error('密码更新失败，请检查原有密码是否正确')
       })
+      }
+      else{
+        this.$message.error('两次密码输入不一致')
+      }
+      
     },
     //获取性别
     getsex(){
