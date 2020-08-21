@@ -152,12 +152,18 @@
 </template>
 
 <script>
-import {addCheckList,GetqhseCompanytree,getChecklistTree,GetCheckRecordTree,editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
+import {addCheckList,GetqhseCompanytree,getChecklistTree,editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import { GetDictionary } from '../../../services/dictionary'
 import CurrentUser from '../../../store/CurrentUser'
 export default {
     data() {
         return {
+            pickerOptions: {
+            disabledDate(time) {
+                return time.getTime() > Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+                // return date.getTime() <= Date.now();    //禁用今天以及以前的日期
+            }
+            },
             // 控制页面
             checkDialogVisible: false,
             detailDialogVisible: false,

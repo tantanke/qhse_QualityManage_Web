@@ -18,7 +18,7 @@
               </el-form-item>
               <el-form-item label="检查时间">
                 <el-date-picker
-                  v-model="form.recordDate"
+                  v-model="form.supervisionDate"
                   type="date"
                   placeholder="选择日期时间"
                   value-format="yyyy-MM-dd"
@@ -436,6 +436,8 @@ export default {
     // 确认提交
     onSubmit() {
       this.form.companyName = this.$refs['companyChoose'].inputValue
+      this.form.recordDate  = this.form.supervisionDate
+      console.log(this.form)
       addRegulationRecord(this.form)
         .then(res => {
           console.log(res)

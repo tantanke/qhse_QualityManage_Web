@@ -54,3 +54,10 @@ export const addProblemDescription = (data) => {
       data
     })
 }
+
+export const queryRecordId = (data) => {
+  return request(`/api/queryRecordId?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
+      method: 'get',
+      data
+    })
+}

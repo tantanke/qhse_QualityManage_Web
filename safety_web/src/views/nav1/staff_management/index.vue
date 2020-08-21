@@ -17,6 +17,7 @@
               placeholder="请选择公司名称"
               v-model="filterQuery.companyCode"
               style="width:220px"
+              :disable-branch-nodes='true'
               /> 
             </el-form-item>
           </el-col>

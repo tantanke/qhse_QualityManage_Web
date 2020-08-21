@@ -327,33 +327,6 @@ import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/
 export default {
    data() {
        return {
-          pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
            date: '',
            regulationrecord: [],
            problemrecord: [],
@@ -459,10 +432,11 @@ export default {
           })
         },
         getUrl(baseurl,data) {
-            let url = baseurl
+            let url = baseurl+'?'
             Object.keys(data).forEach(function (key) {
-                 url =  `${url}?${key}=${data[key]}`              
+                 url =  `${url}${key}=${data[key]}&`              
                 });
+                url = url.substring(0,url.length-1)
             return url
         },
    },
@@ -478,18 +452,16 @@ export default {
 <style lang='scss' scoped>
 .el-table{
     height: 590px;
-}
-.table-expand {
+    .table-expand {
     font-size: 0;
     
   .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
     width: 30%;
-    label {
-    width: 90px;
     color: #99a9bf;
-    }
    }
   }
+}
+
 </style>

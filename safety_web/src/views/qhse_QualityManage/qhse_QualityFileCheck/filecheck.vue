@@ -35,7 +35,7 @@
           ref="treeTable"
           row-key="id"
           :indent="30"
-          max-height="560"
+          max-height="510"
           highlight-current-row
           border
           @cell-click="handleCellClick"
@@ -70,7 +70,7 @@
           style="width: 100%"
           v-loading="loading"
           :indent="30"
-          max-height="560"
+          max-height="510"
           highlight-current-row
           border
           >
@@ -106,7 +106,7 @@
       </el-row>
 
       <!--文件审核的具体页面 -->
-      <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="1200px">
+      <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="55%">
         <div v-loading='addLoading'>
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
@@ -135,20 +135,20 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a :href="item"  target='_blank' style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <h3 style="margin-left:80px">
+              <h3 style="margin-left:50px">
                     填写审核内容                
               </h3>
               <el-form :v-model="fileRecord">
-              <el-form-item label='分数:' labelWidth='100px' style="width:280px">
-                <el-input type="text" v-model.number="fileRecord.codeScore"></el-input>
+              <el-form-item label='分数:' labelWidth='100px' style="width:70%">
+                <el-input type="text" v-model.number="fileRecord.codeScore" :placeholder="inputPlace"></el-input>
               </el-form-item>
               <el-form-item label='通过状态:' labelWidth='100px' >
-                <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:200px">
+                <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:62%">
                 <el-option label="通过" value="通过"></el-option>
                 <el-option label="不通过" value="不通过"></el-option>
               </el-select>
@@ -172,7 +172,7 @@
             </el-col>
           </el-row>         
         </el-form>     
-        <div style='text-align:right'>
+        <div style='margin-left:60%'>
             <el-button type="primary" @click="updataFileAudit">确定</el-button>
             <el-button @click="resetQuestion">取 消</el-button>
           </div>
@@ -212,7 +212,7 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a :href="item" target='_blank' style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -249,7 +249,7 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus,queryRecordId} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
@@ -258,6 +258,7 @@ export default {
       noProblem: '暂无',
       search: '',
       checkType: '树形审核',
+      inputPlace: '',
       filterQuery: {
         year: "",
         companyCode: null,
@@ -297,9 +298,9 @@ export default {
         qHSE_FileAuditRecord_ID: '',
         code: '',
         problemDescription: '',
-        /* companyCode: '',
+        companyCode: '',
         companyName: '',
-        auditTime: '' */
+        auditTime: ''
       },
       nowcode: null,
       // 控制弹出页面
@@ -337,9 +338,17 @@ export default {
     };
   },
   methods: {
-    getlist() {
-      console.log(this.treeData)
-      
+    // 获取当前时间
+    getTime() {
+      let nowDate = new Date()
+      let month  = Number(nowDate.getMonth() + 1)
+      if(month>=10) {
+        month = String(month)
+      } else {
+        month = String('0' + month)
+      }
+      this.fileRecord.auditTime = `${nowDate.getFullYear()}-${month}-${nowDate.getDate()}`
+      this.addQuestionForm.auditTime = this.fileRecord.auditTime
     },
     // 筛选树形图叶子结点信息
     async deepTree (treedata) {
@@ -355,6 +364,7 @@ export default {
             })
             return _this.fileList
       },
+      // 填充基础表单
     loadFilterParams() {
       let _this = this
       _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
@@ -362,7 +372,6 @@ export default {
       const user = CurrentUser.get()
       initData.additor = user.userName
       _this.filterQuery.year = initData.year
-      console.log(initData)
       _this.filterQuery.companyCode = initData.companyCode
       _this.filterQuery.companyName = initData.companyName
       _this.querryTree.year = initData.year
@@ -378,10 +387,10 @@ export default {
       // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
       // 添加问题表单
-      /* _this.addQuestionForm.companyCode = initData.companyCode
+      _this.addQuestionForm.companyCode = initData.companyCode
       _this.addQuestionForm.companyName = initData.companyName
       _this.addQuestionForm.additor = initData.additor
-      _this.addQuestionForm.auditTime = nowTime.toLocaleDateString() */
+      
     },
     handleCellClick(row, cell, column) {
       if (row.code.length < 10) {
@@ -424,7 +433,6 @@ export default {
                   }
                   else{
                     this.files[k]=arr[i];
-                    console.log(arr[i])
                     downloadElementFile(this.files[k].substring(49,this.files[k].length))
                     .then(res=>{
                       this.download.push(res.data)
@@ -439,6 +447,7 @@ export default {
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
       _this.detailData.initialScore = data.initialScore
+      _this.inputPlace = `请输入0-${data.initialScore}之间的分数`
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
       _this.detailData.problemDescription = data.problemDescription
@@ -464,7 +473,6 @@ export default {
     },
     // 获取已经审核完成的记录的详细信息
     detaileFile(data) {
-      console.log(data)
       let _this = this
        _this.nodeData = ''
       _this.attachs = []
@@ -508,10 +516,7 @@ export default {
           }
         })
         }
-
-      })
-
-      
+      })     
     },
     hasdata(){
       if(this.treeData === [])
@@ -535,7 +540,6 @@ export default {
       _this.loading = true;
       // 获取单位年度审核表
       querryQhseElement(_this.querryTree).then(res => {
-        console.log(res.data)
         _this.treeData = res.data;
         _this.treeList = res.data;
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
@@ -553,9 +557,6 @@ export default {
           _this.$message.error(err.message);
         });   
     },
-    updateCompanyStatus(){
-        this.dialogFormVisible = true
-    },
     // 添加问题
     addQuestion () { 
        let _this = this
@@ -566,11 +567,16 @@ export default {
           str = str + item + ' '
        })
        _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
-       console.log(_this.addQuestionForm)
-       addProblemDescription(_this.addQuestionForm).then(() => {
+       // 先获取到id之后再进行添加问题
+       queryRecordId({fileAuditId:_this.addQuestionForm.qHSE_FileAudit_ID,code:_this.addQuestionForm.code})
+       .then(res => {
+         _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.data[0].qHSE_FileAudit_RecordID
+         return addProblemDescription(_this.addQuestionForm)
+       }).then(() => {     
          _this.questionLoading = false
        }).catch(err => {
         _this.$message.error(err)
+        _this.noinnerVisible = false
       })
     },
     // 删除文件审核记录
@@ -601,6 +607,7 @@ export default {
         _this.dialogVisible = false
         // 重置添加状态
         _this.fileRecord.pass = ''
+        _this.fileRecord.code = ''
         _this.fileRecord.codeScore = ''
         _this.problemList = []
         _this.proTextarea = ''
@@ -646,6 +653,7 @@ export default {
   mounted() {
     this.loadFilterParams();
     this.handleGetInitialData();
+    this.getTime()
   }
 };
 </script>

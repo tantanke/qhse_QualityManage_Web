@@ -53,12 +53,14 @@
           </el-table-column>
         </el-table>
       </el-row>
-    </div>
+    </div >
     <!--添加审核表 -->
-        <el-dialog title="新建文件审核" :visible.sync="dialogFormVisible" :close-on-click-modal='false'>
-          <el-form :model="addFileForm">
-            <el-form-item label="选择公司：" :label-width="formLabelWidth" style="width:420px">
+        <el-dialog title="新建文件审核" :visible.sync="dialogFormVisible" center :close-on-click-modal='false' width='32%'>
+          <div v-loading='addloading'>
+          <el-form :model="addFileForm" style="50%">
+            <el-form-item label="审核公司：" :label-width="formLabelWidth">
             <treeselect
+             style="width:90%"
               :multiple="false"
               :options="companyList"
               @select="getCompanyCode"
@@ -68,19 +70,29 @@
             />
           </el-form-item>
             <el-form-item label="审核类别:" :label-width="formLabelWidth">
-              <el-select v-model="addForm.auditType" placeholder="请选择审核类别" style="width:300px">
+              <el-select v-model="addForm.auditType" placeholder="请选择审核类别" style="width:90%">
                 <el-option label="基础审核" value="基础审核"></el-option>
                 <el-option label="内部审核" value="内部审核"></el-option>
                 <el-option label="联系点审核" value="联系点审核"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="审核名称:"  :label-width="formLabelWidth" style="width:420px">
-              <el-input placeholder="请输入审核名称" v-model="addForm.auditName" @focus=" initName"></el-input>
+            <el-form-item label="审核年份：" :label-width="formLabelWidth" >
+            <el-date-picker
+            style="width:90%"
+              v-model="addForm.year"
+              type="year"
+              placeholder="选择年份">
+              </el-date-picker>
+          </el-form-item>
+            <el-form-item label="审核名称:"  :label-width="formLabelWidth" >
+              <el-input style="width:90%" placeholder="请输入审核名称" v-model="addForm.auditName" @focus=" initName"></el-input>
             </el-form-item>
-          </el-form>       
-      <div slot="footer" class="dialog-footer">
+          </el-form>         
+      
+       <div style="text-align:right" >
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitAdd">确 定</el-button>
+      </div>
       </div>
     </el-dialog>
   </div>
@@ -107,6 +119,7 @@ export default {
         auditType: '',
         auditName: ''
       },
+      addloading: false,
       // 添加文件审核
       addForm: {
         auditName: '',
@@ -122,7 +135,7 @@ export default {
         companyCode: '',
         year: ''
       },
-      formLabelWidth: '120px',
+      formLabelWidth: '140px',
       dialogFormVisible:false,
       filterQuery: {},
       searchForm: {},
@@ -226,7 +239,6 @@ export default {
       let _this = this
        let nowTime = new Date()
        _this.addForm.auditTime = nowTime.toLocaleDateString()
-       _this.addForm.year = nowTime.getFullYear().toString()
        _this.ScompanyCode = null
        _this.addForm.auditName = ''
        _this.addForm.auditType = ''
@@ -234,9 +246,9 @@ export default {
     },
     initName() {
       let _this = this
-      if(_this.ScompanyCode && _this.addForm.auditType !== '' && _this.hasFocus ){
-      _this.addForm.auditName = _this.ScompanyName + _this.addForm.auditTime + _this.addForm.auditType
-      _this.hasFocus = false
+      _this.addForm.year = String(_this.addForm.year.getFullYear())
+      if(_this.ScompanyCode && _this.addForm.auditType !== '' && _this.addForm.year !== ''){
+      _this.addForm.auditName = _this.ScompanyName + _this.addForm.year + _this.addForm.auditType
       }
     },
     addNewFile() {     
@@ -248,10 +260,11 @@ export default {
        let _this = this
        _this.querryQhseElement.companyCode = _this.addForm.companyCode
        _this.querryQhseElement.year = _this.addForm.year
-       if(_this.addForm.auditType === '' ||  _this.addForm.companyCode === '') {
+       if(_this.addForm.auditType === '' ||  _this.addForm.companyCode === '' || _this.addForm.year === '' || _this.addForm.auditName === '') {
          _this.$message.warning('请填写完整的审核信息！')
          return
        }
+       _this.addloading = true
        querryQhseElement(_this.querryQhseElement).then(res => {
          if(res.data.length > 0){
            _this.addForm.tableId = res.data[0].tableID
@@ -269,9 +282,11 @@ export default {
             _this.dialogFormVisible = false
             _this.reloadForm() 
             _this.$message.success('添加成功！')
+            _this.addloading = false   
             }      
       }).catch(err => {
-          _this.$message.error(err)        
+          _this.$message.error(err)     
+          _this.addloading = false   
        })
       
       
@@ -289,6 +304,7 @@ export default {
       _this.addForm.auditName = ''
       _this.addForm.auditType = ''
       _this.addForm.auditTime = ''
+      _this.addForm.year = ''
       _this.ScompanyCode = null
 
     },

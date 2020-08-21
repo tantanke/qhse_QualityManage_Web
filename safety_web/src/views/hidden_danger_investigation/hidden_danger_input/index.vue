@@ -112,7 +112,7 @@
               </el-form-item>
               <el-form-item label="检查时间">
                 <el-date-picker
-                  v-model="form.recordDate"
+                  v-model="form.supervisionDate"
                   type="date"
                   placeholder="选择日期时间"
                   value-format="yyyy-MM-dd"
@@ -215,7 +215,8 @@ export default {
         factorHSE: '',
         factorDepartment: '',
         location: '',
-        qHSE_FileAudit_ID: '' //文件审核id
+        qHSE_FileAudit_ID: '', //文件审核id
+        supervisionDate: ''
       },
       header: { Authorization: GetCurrentUser().token },
       companys: [], // 公司
@@ -322,6 +323,7 @@ export default {
       this.form.checkId = '0001'
       this.form.ok = this.form.ok ? '1' : '0'
       this.form.companyName = this.$refs['companyChoose'].inputValue
+      this.form.recordDate  = this.form.supervisionDate
       addDangerRecord(this.form)
         .then(res => {
           console.log(res)
