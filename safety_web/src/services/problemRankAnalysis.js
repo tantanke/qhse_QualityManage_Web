@@ -8,7 +8,7 @@ export const GetResponseEmployee= (params) => {
 }
 //得到公司
 export const GetCompany = (params) => {
-  return request('/api/company/tree ', {
+  return request('/api/qhse_company/tree ', {
   params
 })
 }
