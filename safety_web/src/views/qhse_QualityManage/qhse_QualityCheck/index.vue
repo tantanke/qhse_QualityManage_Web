@@ -264,7 +264,6 @@ export default {
       this.dialogVisible3=true;
     },
     deepTree (treedata) {
-            this.listData=[];
             let _this = this
             
             treedata.forEach(item => {
@@ -305,6 +304,7 @@ export default {
           console.log(err);
           this.message.error(err.message);
         });
+      this.listData=[];
       await this.deepTree(this.treeData);
         this.$message.success('添加成功');
         
@@ -394,7 +394,6 @@ export default {
                     this.$message.error('上传失败');
                     this.form.attachID = '';
                 }
-        console.log('添加文件',this.attach,'and',this.fileattach)
     },
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
@@ -405,21 +404,16 @@ export default {
                     this.$message.error('上传失败');
                     this.form.attachID = '';
                 }
-                console.log('添加图片',this.attach,'and',this.fileattach)
     },
     handleExceed() {
         this.$message.warning('当前限制选择 2 个文件');
       },
     removeFile(){
-      console.log('文件删除前',this.attach,'and',this.fileattach)
         this.fileattach='';
-        console.log('文件删除后',this.attach,'and',this.fileattach)
     },
     handleRemove() {
-        console.log('图片删除前',this.attach,'and',this.fileattach)
         this.$refs.upload.clearFiles();
         this.attach='';
-        console.log('图片删除后',this.attach,'and',this.fileattach)
     },
     //放大显示
     handlePictureCardPreview(file) {
@@ -464,6 +458,8 @@ export default {
     },
     handleClick() {
       this.listData=[];
+      this.listData=[];
+
       if(!this.filterQuery.year){//显示年份
         this.filterQuery.year = new Date()
       }
