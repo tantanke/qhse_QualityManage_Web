@@ -45,9 +45,9 @@
           <el-table-column prop="auditType" label="审核类别"></el-table-column>
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
-              <el-button type='danger' size="mini" style='margin-right:20px' @click="deleteFile(scope.row)">删除</el-button>
+              <el-button type='danger' size="mini" style='margin-right:20px' icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
               <router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>        
-                <el-button type="primary" size="mini" >审核</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-edit" >审核</el-button>
               </router-link>
             </template>
           </el-table-column>
@@ -177,10 +177,12 @@ export default {
       this.filterQuery.year = String(nowdata.getFullYear())
       this.handleGetInitialData();
     },
+    // 获取当前年份
     handleGetDate(date) {
       let nowdata = new Date(date);
       return String(nowdata.getFullYear());
     },
+    // 初始化表格数据
     handleGetInitialData() {
       let serchform = {};
       this.loading = true;
@@ -209,6 +211,7 @@ export default {
 
       
     },
+    // 删除文件审核记录
     deleteFile(data) {
       let _this = this
       let url ='/api/delete_fileaduit/' +  data.fileAuditId.toString()
@@ -242,6 +245,7 @@ export default {
        _this.ScompanyCode = null
        _this.addForm.auditName = ''
        _this.addForm.auditType = ''
+       _this.addForm.year = ''
        _this.hasFocus = true     
     },
     initName() {

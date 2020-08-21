@@ -54,9 +54,9 @@
               type="success"
               size="mini"
               v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
-              @click="detaileFile(scope.row)"
+              @click="detaileFile(scope.row)" icon="el-icon-search"
               >
-              审核完成  
+              查看详情
               </el-button>
               <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
             </template>
@@ -94,7 +94,7 @@
               type="success"
               size="mini"
               v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
-              @click="detaileFile(scope.row)"
+              @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
               </el-button>
@@ -518,23 +518,7 @@ export default {
         }
       })     
     },
-    hasdata(){
-      if(this.treeData === [])
-        {
-          this.$message('请检查要素证据审批是否完成！')
-          this.$router.go(-1)
-        }
-    },
-    // 筛选问题列表
-    filterProblem(data) {
-      let problem
-      if(data !== null){
-      problem = data.split(/[0-9.]+/)
-      problem.pop()
-      problem.shift()
-      }
-      return problem
-    },
+   // 再次验证数据
     handleGetInitialData() {
       let _this = this
       _this.loading = true;

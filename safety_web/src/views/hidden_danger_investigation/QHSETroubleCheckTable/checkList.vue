@@ -89,7 +89,7 @@
                 placeholder="输入关键字搜索"/>
             </template>
             <template slot-scope="scope" >
-                   <el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" size="mini" >检查</el-button>
+                   <el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" icon='el-icon-edit-outline' size="mini" >检查</el-button>
                    <el-button :type="scope.row.pass === '通过'? 'success': 'danger'" v-else @click="detailCheckRecord(scope.row)" size="mini" >查看记录</el-button>
             </template>
           </el-table-column>
@@ -351,8 +351,10 @@ export default {
         },
         // 初始化最近一次的检查记录
         initChecklist () {
-           const data = JSON.parse(localStorage.getItem('checkdata'))
+           let data = JSON.parse(localStorage.getItem('checkdata'))
+           if(data)
            this.checkForm = {...data}
+           
         },
         // 添加检查记录表
         addChecklist () {
@@ -365,6 +367,7 @@ export default {
            _this.formControl = true
            _this.loading = true
            _this.formatForm()      
+           console.log(_this.checkForm)
            localStorage.setItem('checkdata',JSON.stringify(_this.checkForm));
            addCheckList(_this.checkListForm).then(res => {
                _this.checkListData = res.data
@@ -384,6 +387,7 @@ export default {
            _this.checkListForm.checkType = _this.checkForm.checkType
            _this.checkListForm.checkListCode = _this.checkForm.checkListCode
            _this.checkListForm.checkDate = _this.checkForm.checkDate
+
         },
         cacelCheck () {
             this.formControl = false
