@@ -41,6 +41,7 @@
           </el-row>
           <el-row style="height:370px" >
          <el-table
+         v-loading='regulationrecordLoading'
           type="expand"
           :data='regulationrecord'
           border
@@ -121,8 +122,6 @@
           <el-table-column prop='workItem' label='作业项目'></el-table-column>
           <el-table-column prop='consequenceID' label='违章类别'></el-table-column>
           <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>        
-          <el-table-column prop='factorObserver' label='对应安全沟通类型'></el-table-column>
-          <el-table-column prop='factoSource' label='原因'></el-table-column>
           <el-table-column prop='factorDepartment' label='归属部门'></el-table-column>
           <el-table-column prop='consequenceID' label='可能后果'></el-table-column>
           <el-table-column prop='punish' label='整改负责人'></el-table-column>
@@ -174,6 +173,7 @@
           <el-row style="height:350px">
           <el-table
           border
+          v-loading='dangerLoading'
           :data='dangerrecord'
           style="width: 100%"
           max-height="590">
@@ -290,6 +290,7 @@
           </el-form>
           <el-row style="height:370px">
               <el-table
+              v-loading='questionLoading'
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
@@ -327,6 +328,10 @@ import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/
 export default {
    data() {
        return {
+           // 控制加载
+           regulationrecordLoading: false,
+           problemLoading: false,
+           dangerLoading: false,
            date: '',
            regulationrecord: [],
            problemrecord: [],
@@ -344,10 +349,11 @@ export default {
    methods: {
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
-         let baseurl 
+            let baseurl 
             let form = {}
             let start,end         
             let _this = this
+            _this.dangerLoading = true        
             if (_this.date) {
                start = _this.date[0]
                end = _this.date[1]
@@ -362,8 +368,10 @@ export default {
                _this.dangerrecord = res.data.list
                _this.checkForm.companyId = []
                   _this.date = null
+                  _this.dangerLoading = false
            }).catch(err => {
               this.$message.error(err)
+              _this.dangerLoading = false
           })
        },
        searchRegulation () {
@@ -371,6 +379,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
+            _this.regulationrecordLoading = true
             if (_this.date) {
                start = _this.date[0]
                end = _this.date[1]
@@ -385,8 +394,10 @@ export default {
                _this.regulationrecord = res.data.list
                _this.checkForm.companyId = []
                   _this.date = null
+                  _this.regulationrecordLoading = false
            }).catch(err => {
               this.$message.error(err)
+              _this.regulationrecordLoading = false
           })
        },
        getDangerrecord () {
@@ -412,6 +423,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
+            _this.problemLoading = true
             if (_this.date) {
                start = _this.date[0]
                end = _this.date[1]
@@ -423,12 +435,13 @@ export default {
             }
            baseurl  = _this.getUrl('/api/query_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
-               console.log(res)
                _this.problemrecord = res.data
                _this.checkForm.companyId = []
                 _this.date = null
+                _this.problemLoading = false
            }).catch(err => {
               this.$message.error(err)
+              _this.problemLoading = false
           })
         },
         getUrl(baseurl,data) {

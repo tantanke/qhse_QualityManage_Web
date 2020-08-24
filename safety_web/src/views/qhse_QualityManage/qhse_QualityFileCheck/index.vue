@@ -221,6 +221,7 @@ export default {
         type: 'warning'
       })
       .then(()=>{
+        this.loading = true;
         return request(url,{method: 'DELETE'})
        })
        .then(res => {
@@ -230,12 +231,14 @@ export default {
           message: '删除成功！',
           type: 'success'
         }) 
+        this.loading = false;
         this.handleGetInitialData();
         }else{
           this.$message.error('删除失败!')
         }
        }).catch(err => {
          this.$message.error(err.message)
+         this.loading = false;
        })
     }, 
     initForm () {
@@ -278,6 +281,7 @@ export default {
            _this.ScompanyCode = null
            _this.reloadForm()
            _this.dialogFormVisible = false
+           _this.addloading = false   
            return {code: 0}
          }
        }).then((res) => {
