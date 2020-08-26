@@ -49,6 +49,7 @@
                 size="mini"
                 @click="goUpdateFile(scope.row)"
                 v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"
+                icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
@@ -89,6 +90,7 @@
                 size="mini"
                 @click="goUpdateFile(scope.row)"
                 v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
+                icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
@@ -189,7 +191,12 @@
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item>      
+              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item> 
+              <el-form-item label="操作：" style="margin-bottom:1px">
+                <el-button @click="resetEvidence" size='mini'>确 定</el-button>
+                <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
+                <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
+                </el-form-item>      
             </el-col>
             <el-col :span="12" >
               <el-form-item label="证据图片：" 
@@ -218,8 +225,8 @@
             </el-col>
           </el-row>
         </el-form>       
-        <div style='text-align:center'>
-            <el-button @click="resetEvidence">确 定</el-button>
+        <div style="margin-left:55px">
+            
           </div>
           </div>
       </el-dialog>
@@ -425,10 +432,11 @@ export default {
           for(let i=0,j=0,k=0;i<arr.length-1;i++)
                 {
                   //j代表图片数量，k代表文件数量
-                  let houzhuis=arr[i].split('.');//获取到链接后缀
-                  let houzhui = houzhuis[1]
-                  if(houzhui=='jpg'||houzhui=='png'||houzhui=='PNG'||houzhui=='JPG'){
-                  this.attachs[j]=arr[i];
+                  let startIndex = arr[i].lastIndexOf(".");
+                  let houzhui=arr[i].substring(startIndex+1, arr[i].length).toLowerCase();//获取到链接后缀
+                  console.log(houzhui)
+                  if(houzhui=='jpg'||houzhui=='png'){
+                  this.attachs[j]=arr[i];            
                   j++;
                   }
                   else{
@@ -489,6 +497,22 @@ export default {
     // 重置证据
     resetEvidence () {
        this.detaildialogVisible = false
+    },
+    goRegulation() {
+       this.$router.push({
+            path: '/hidden_danger/illegal_entry',
+            params: {
+            data: this.editdata
+            }
+            })
+    },
+    goDanger() {
+      this.$router.push({
+            path: '/hidden_danger/input',
+            params: {
+            data: this.editdata
+            }
+            })
     },
     // 填充文件审核页面
     goUpdateFile(data){

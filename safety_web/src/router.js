@@ -78,6 +78,7 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheck', name:'FileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemVerify', name:'ProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
         //报告管理  report_management
         { path: '/report_management/report_plan/index', name:'ReportPlanIndex', component: resolve => require(['./views/report_management/report_plan/index.vue'],resolve)},
         { path: '/report_management/report_complete/index', name:'ReportCompleteIndex', component: resolve => require(['./views/report_management/report_complete/index.vue'],resolve)},
