@@ -38,6 +38,7 @@
           <el-radio v-model="checkType" label="列表录入">列表录入</el-radio>     
     </div>
         <el-table
+          :cell-style="cellStyle"
           v-if="checkType=='树形录入'"
           :data="treeData"
           style="width: 100%"
@@ -51,7 +52,8 @@
           v-loading="loading"
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+          <el-table-column prop="status" label="状态" width="80" align="center">
+          </el-table-column>
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button 
@@ -65,6 +67,7 @@
         </el-table>
 
         <el-table
+          :cell-style="cellStyle"
           v-if="checkType=='列表录入'"
           :data="listData"
           style="width: 100%"
@@ -78,7 +81,8 @@
           v-loading="loading"
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+          <el-table-column prop="status" label="状态" width="80" align="center">
+          </el-table-column>
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button 
@@ -95,16 +99,16 @@
       <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px">
          <el-form label-width="120px" style="width:100%;" >
            <el-row>
-            <el-col :span="12">
+            <el-col :span="24">
               <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
-                <el-input type="textarea"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
+                <el-input type="text"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
               </el-form-item>
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
               <div  v-for="(item,index) in attachs" :key="index">
-                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
+                <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left; margin:10px" >
                   <span v-if="!item">无图片文件记录！</span>
                   <el-popover placement="right" title trigger="click" v-else>
                     <div style="max-width:600px;height:auto">
@@ -123,39 +127,38 @@
                 </div>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="24" style="border:1px solid gray; ">
 
               <el-form-item label="上传文件">
-                <span>限制上传数量为1</span>
                 <el-upload
                 :on-remove="removeFile"
                   v-model="form.fileID"
                   :headers="headers"
                   :limit="1"
+                  style="float:left"
                   :on-success="handleFilerSuccess"
                   :action="accidentOrEventUploadAddress">
                 <div class="span1">浏览附件</div>
                 </el-upload>
+                <div style="float:left;margin-left:10px;line-height:60px">限制上传数量为1</div>
               </el-form-item>
               <el-form-item label="上传图片"> 
-                <span>限制上传数量为2</span>
               <el-upload
                 :action="accidentOrEventUploadAddress"
                 :headers="headers"
                 list-type="picture-card"
                 clearable
                 ref="upload"
-                :limit="2"
-                :on-exceed="handleExceed"
                 :on-success="handleAvatarSuccess"
                 >
                   <i slot="default" class="el-icon-plus"></i>
-                  <div slot="file" slot-scope="{file}">
+                  <div slot="file" slot-scope="{file}" >
                     <img
                     class="el-upload-list__item-thumbnail"
                     :src="file.url" alt=""
                     >
-                    <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-actions"
+                    style="width:100px">
                       <span
                       class="el-upload-list__item-preview"
                       @click="handlePictureCardPreview(file)"
@@ -178,9 +181,14 @@
               </el-form-item>
               <el-form-item label="附件描述："  prop="desc" style="margin-bottom:1px">
                 <el-input type="textarea"  label="附件描述  ："  class="resizeNone" v-model="form.attachDescrption" placeholder="请输入内容"></el-input>
-                <el-button type="primary" style="margin-top:10px" @click="addEvidenceFile">新增证据附件</el-button>
               </el-form-item>
             </el-col>
+             <el-col :span="24" >
+            <el-form-item>
+            <el-button type="" style="margin-top:10px;margin-left:380px;float:left" @click="dialogVisible3=false">取消</el-button>
+            <el-button type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入</el-button>
+            </el-form-item>
+             </el-col>
           </el-row>
           </el-form>
       </el-dialog>
@@ -257,6 +265,19 @@ export default {
     };
   },
   methods: {
+    cellStyle(row,column,rowIndex,columnIndex){//根据报警级别显示颜色
+        // console.log(row);
+        // console.log(row.column);
+        if(row.column.label==="状态"&& row.row.status==="备案待查"){
+          return 'color:red'
+        }else if(row.column.label==="状态"&& row.row.status==="未提供" ){
+          return 'color:orange'
+        }else if(row.column.label==="状态"&& row.row.status==="未批准" ){
+          return 'color:blue'
+        }else if(row.column.label==="状态"&& row.row.status==="未审核" ){
+          return 'color:pink'
+        }
+    },
     gotoEvidence(){
       this.evidence.attach='';
       this.evidence.attachDescrption='';
@@ -405,9 +426,6 @@ export default {
                     this.form.attachID = '';
                 }
     },
-    handleExceed() {
-        this.$message.warning('当前限制选择 2 个文件');
-      },
     removeFile(){
         this.fileattach='';
     },
@@ -525,8 +543,7 @@ export default {
 .resizeNone{
    .el-textarea__inner{ //el_input中的隐藏属性
          resize: none;  //主要是这个样式
-         width: 420px;
-         height: 100px;
+         height: 40px;
          margin-bottom: 10px;
      }   
  }

@@ -28,10 +28,19 @@
           </el-form-item>
         </el-form>
       </el-row>
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-        <el-table
+      <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
+        <div style="margin:15px 0px">
+          <span style="margin-right:15px">请选择查看内容:</span>
+          <el-radio v-model="checkType" label="未审核">未审核</el-radio> 
+          <el-radio v-model="checkType" label="已审核">已审核</el-radio>
+          <div style="float:right;margin:5px 20px;color:blue">未审核:{{this.total1}}</div>
+          <div style="float:right;margin:5px;color:red">已审核:{{this.total2}}</div>  
+          <div style="float:right;margin:5px">全要素:{{this.total}}</div>           
+        </div>
+        <el-table 
+          v-if="checkType=='未审核'"
           :data="treeData"
-          style="width: 100%"
+          style="width: 100%text-align:center"
           ref="treeTable"
           row-key="code"
           :indent="30"
@@ -54,12 +63,38 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-table
+          v-if="checkType=='已审核'"
+          :data="hasData"
+          style="width: 100% text-align:center"
+          ref="treeTable"
+          row-key="code"
+          :indent="30"
+          max-height="560"
+          highlight-current-row
+          border
+          @cell-click="handleCellClick"
+          v-loading="loading"
+          :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+          <el-table-column prop="name" label="内容"></el-table-column>
+          <!-- <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+          <el-table-column label="操作" width="150" align="center">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                size="mini"
+                @click="updateScore(scope.row)"
+                v-if="scope.row.childNode.length === 0 "
+              >进入审核</el-button>
+            </template>
+          </el-table-column> -->
+        </el-table>
       </el-row>
       <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px">
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
-            <el-col :span="12">
-              <el-form-item style="text-align:left">
+            <el-col :span="24">
+              <el-form-item style="margin-left:300px;text-align:left">
                 <el-switch
                   style="margin-right:10px"
                   v-model="upstatus"
@@ -71,26 +106,19 @@
                 <el-button type="primary"  @click="passornot" >确认审核</el-button>
               </el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
-              <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
-              <el-form-item label="依据：" style="margin-bottom:1px">{{detailData.basis}}</el-form-item>
-              <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
-              <el-form-item label="分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
-              <el-form-item label="计算分数：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="可能存在的问题：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item>
               <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDsecription}}</el-form-item>
               </el-col>
-            <el-col :span="12">
-              <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attacjDescription}}</el-form-item>
-              <el-form-item label="上传时间：" style="margin-bottom:1px">{{detailData.uploadTime}}</el-form-item>
+            <el-col :span="24"
+            style="border:1px solid gray">
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
               <div  v-for="(item,index) in attachs" :key="index">
-                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
+                <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left;margin:05px" >
                   <span v-if="!item">无图片文件记录！</span>
                   <el-popover placement="right" title trigger="click" v-else>
-                    <div style="max-width:600px;height:auto">
-                      <img :src="item" style="max-width:600px;height:auto" />
+                    <div style="width:100px;height:100px">
+                      <img :src="item" style="width:100px;height:100px" />
                     </div>
                     <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
                   </el-popover>
@@ -120,6 +148,8 @@ import { pass_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通�
 import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通过审核
 import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
+import { show_approve_check} from"../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
+
 
 const DefaultQuery = {
   year: "",
@@ -129,6 +159,10 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      total:'还没写接口 ',
+      total1:'',
+      total2:'',
+      checkType:'未审核',
       filelength:'',
       strings:null,
       upstatus:false,
@@ -142,6 +176,7 @@ export default {
       dialogVisible: false,
       detailData: {},
       treeData: [],
+      hasData:[],
       initData:[],
       node:[],
       nodeData:[],
@@ -183,6 +218,36 @@ export default {
           this.$message.error(err.message);
         });
     },
+    deepTree1 (treedata) {
+            let _this = this
+            _this.total1=0;
+            console.log('啊这',treedata)
+            
+            treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                    _this.total1++;
+                    return
+                } else {
+                    _this.deepTree1(item.childNode)
+                }
+            })
+            return _this.total1
+      },
+      deepTree2 (treedata) {
+      let _this = this
+            _this.total2=0;
+            console.log('啊这',treedata)
+            
+            treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                    _this.total2++;
+                    return
+                } else {
+                    _this.deepTree2(item.childNode)
+                }
+            })
+            return _this.total2
+      },
     passornot(){
       
       if(this.upstatus==true){//当按钮选择通过
@@ -193,12 +258,23 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.deepTree1(this.treeData);
         })
         .catch(err => {
           console.log(err);
           this.message.error(err.message);
         });
-         
+
+         show_approve_check(this.filterQuery)
+        .then(res => {
+          this.hasData = res.data;
+          console.log('啊',this.hasData)
+           this.deepTree2(this.hasData);
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
           this.dialogVisible=false;
          }).catch(err => {
           this.$message.error(err.message);
@@ -211,12 +287,22 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.deepTree1(this.treeData);
         })
         .catch(err => {
           console.log(err);
           this.message.error(err.message);
         });
-      
+
+        show_approve_check(this.filterQuery)
+        .then(res => {
+          this.hasData = res.data;
+           this.deepTree2(this.hasData);
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
           this.dialogVisible=false;
         }).catch(err => {
           this.$message.error(err.message);
@@ -235,13 +321,14 @@ export default {
      
     },
     handleClick() {//点击查询获取到公司的证据项  改为check页面的显示节点
-      this.treeData=''
+      this.treeData='',
+      this.hasData=''
       if(!this.filterQuery.year){//显示年份
         this.filterQuery.year = new Date()
       }
       let nowdata = new Date(this.filterQuery.year);
       this.filterQuery.year = String(nowdata.getFullYear());
-
+      this.filterQuery.status=0
        if(this.filterQuery.companyCode==null)
          this.$message.error('请选择公司')
       else{
@@ -249,11 +336,25 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.deepTree1(this.treeData);
         })
         .catch(err => {
           console.log(err);
           this.message.error(err.message);
         });
+        console.log('获取已审核')
+        show_approve_check(this.filterQuery)
+        .then(res => {
+          this.hasData = res.data;
+          console.log('已审核数据源1',this.hasData)
+           this.deepTree2(this.hasData);
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
+        
+       
       }
       
       this.loading = false;
@@ -275,7 +376,7 @@ export default {
     this.attachs={};
     this.files={};
     this.download={},
-       await show_elementReviewer(data)
+      await show_elementReviewer(data)
       .then(res => {
         this.dialogVisible = true; 
         this.nodeData=res.data;
@@ -347,6 +448,7 @@ export default {
     }
   },
   mounted() {
+    console.log('审核从这里开始报错')
     this.handleGetCompany();//第一个函数 获取到公司信息
     this.loadFilterParams();
     this.handleGetInitialData();//获取到表单信息

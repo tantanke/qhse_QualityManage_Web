@@ -53,3 +53,7 @@ export const publishTableElement =(param)=>{
 export const querryQhseElement = (data) => {
   return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {method: 'GET',data})
 }
+//要素证据推送
+export const getFileAuditProgress = (data) => {
+  return request(`/api/getFileAuditProgress`,{method:'get',data})
+}

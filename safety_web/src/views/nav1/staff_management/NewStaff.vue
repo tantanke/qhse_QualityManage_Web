@@ -38,7 +38,7 @@
                      :multiple="false"
                      :options="options"
                      placeholder="请选择单位名称"
-                     v-model="filterQuery.companyCode"
+                     @select="selectDepart"
                      style="width:100%"
                      /> 
                    </el-form-item>
@@ -220,6 +220,9 @@ export default {
 
   },
   methods: {
+     selectDepart(val) {
+      this.filterQuery.companyCode = val.nodeCode;
+    },
     handleSubmit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {

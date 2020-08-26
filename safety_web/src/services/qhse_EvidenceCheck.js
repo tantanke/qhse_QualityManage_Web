@@ -46,3 +46,7 @@ export const show_elementReviewer =(data)=>{
 export  const downloadElementFile = (data)=>{
   return request(`/api/downloadElementFile?fileName=${data}`,{data})
 }
+//查看已审核或者批准
+export  const show_approve_check = (data)=>{
+  return request(`/api/show_approve_check?companyCode=${data.companyCode}&year=${data.year}&status=${data.status}`,{data})
+}
