@@ -14,14 +14,26 @@
     <el-row style="padding:8px; border-top: 2px dashed #dddddd;text-align:center"></el-row>
     <div class="page-content">
       <el-row>
-        <el-form label-width="100px"  :inline="true" :model="filterQuery">
+        <el-form label-width="80px"  :inline="true" :model="filterQuery">
           <el-form-item label="公司：">
             <el-input v-model="filterQuery.companyName" readonly></el-input>
           </el-form-item>
           <el-form-item label="年份：">
             <el-input v-model="filterQuery.year" readonly></el-input>
           </el-form-item>
+          <el-form-item label="全要素：">
+            <el-input v-model="allTotal" readonly  style="width:80px"></el-input>
+          </el-form-item>
+           <el-form-item label="已审核：">
+            <el-input v-model="hasTotal" class="hasAudit" readonly  style="width:80px"></el-input>
+          </el-form-item>
+           <el-form-item label="未审核：">
+            <el-input v-model="noTotal" class="noAudit" readonly  style="width:80px"></el-input>
+          </el-form-item>
           &nbsp;&nbsp;&nbsp;
+          <el-form-item>
+            <el-button type="primary" v-show="finishAudit">完成审核</el-button>
+          </el-form-item>
           <el-form-item>
             <el-button type="danger" @click="$router.go(-1)">返回前一页</el-button>
           </el-form-item>
@@ -341,7 +353,12 @@ export default {
       files: [],
       eviLoaind: false,
       addLoading: false,
-      download:[]
+      download:[],
+      // 管理审核数量
+      hasTotal: 0,
+      noTotal: 0,
+      allTotal: 0,
+      finishAudit: false
     };
   },
   methods: {
@@ -362,9 +379,17 @@ export default {
             let _this = this
             
             treedata.forEach(item => {
-                if (item.childNode.length === 0 && item.status === '备案待查') {
-                    _this.fileList.push(item)
-                    return
+                if (item.childNode.length === 0) {
+                     _this.allTotal++
+                   if (item.status === '备案待查' && item.fileCheckStatus === '已审核'){
+                      _this.fileList.push(item)
+                      _this.hasTotal++
+                      return
+                   } else if (item.status === '备案待查' && item.fileCheckStatus === '未审核') {
+                      _this.fileList.push(item)
+                      _this.noTotal++
+
+                   }                    
                 } else {
                     _this.deepTree(item.childNode)
                 }
@@ -546,6 +571,9 @@ export default {
     handleGetInitialData() {
       let _this = this
       _this.loading = true;
+      _this.hasTotal = 0
+      _this.noTotal = 0
+      _this.allTotal = 0
       // 获取单位年度审核表
       querryQhseElement(_this.querryTree).then(res => {
         _this.treeData = res.data;
@@ -559,6 +587,9 @@ export default {
         return _this.deepTree(_this.treeData)
       })  
       .then(() => {
+        if(_this.hasTotal + _this.noTotal === _this.allTotal){
+           _this.finishAudit = true
+        }
         _this.loading = false
         })
       .catch(err => {
@@ -667,5 +698,14 @@ export default {
 </script>
 
 <style lang="scss">
-
+.hasAudit{
+  .el-input__inner{
+    color: green;
+  }
+}
+.noAudit{
+  .el-input__inner{
+    color: red;
+  }
+}
 </style>
