@@ -32,7 +32,7 @@
           </el-form-item>
           &nbsp;&nbsp;&nbsp;
           <el-form-item>
-            <el-button type="primary" v-show="finishAudit">完成审核</el-button>
+            <el-button type="primary" v-show="finishAudit">审核完成</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="danger" @click="$router.go(-1)">返回前一页</el-button>
@@ -64,6 +64,7 @@
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
+              style="margin-left:2px"
               type="success"
               size="mini"
               v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
@@ -386,8 +387,7 @@ export default {
                       _this.hasTotal++
                       return
                    } else if (item.status === '备案待查' && item.fileCheckStatus === '未审核') {
-                      _this.fileList.push(item)
-                      _this.noTotal++
+                      _this.fileList.push(item)                     
 
                    }                    
                 } else {
@@ -587,7 +587,8 @@ export default {
         return _this.deepTree(_this.treeData)
       })  
       .then(() => {
-        if(_this.hasTotal + _this.noTotal === _this.allTotal){
+        _this.noTotal = _this.allTotal - _this.hasTotal
+        if(_this.hasTotal  === _this.allTotal){
            _this.finishAudit = true
         }
         _this.loading = false
