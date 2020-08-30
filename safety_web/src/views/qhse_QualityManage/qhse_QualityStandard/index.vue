@@ -1,21 +1,26 @@
 <template>
 	<div>
 		<div class="page-title" style="width:100%">审核要素管理</div>
-		<div class="page-content"  style="width: fit-content;min-width: 100%;">
+		<div class="page-content" style="width: fit-content;min-width: 100%;" v-loading="loading">
 			<el-form :inline='true'>
 				<el-form-item label="查询:">
 					<el-input placeholder="输入关键字查询" v-model="filterText" style="width:300px;"></el-input>
+				</el-form-item>
+				<el-form-item label="启用状态:">
+					<el-select placeholder="请选择启用状态" v-model="filterStatus" clearable='true'>
+						<el-option v-for="item in options" :key="item.value" :value="item.value" :label="item.label"></el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search" @click="select()" style="margin-right: 15px;">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="el-icon-plus" @click="() => append({code:''})">新增节点</el-button>
+					<el-button type="primary" icon="el-icon-plus" @click="() => append({code:''})">新增根节点</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="'/api/managesyselements_excel_upload'" :on-preview="handlePreview" :on-remove="handleRemove"
 					 :on-success="handleSuccess" :file-list="fileList" :headers="{Authorization:currentUser.token}" :show-file-list="false"
-					 accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
+					accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
 						<el-button icon="el-icon-upload" type="success" @click="submitUpload">上传文件</el-button>
 					</el-upload>
 				</el-form-item>
@@ -23,24 +28,20 @@
 					<el-button icon="el-icon-download" type="warning" @click="downloadChoice=true">下载文件</el-button>
 				</el-form-item>
 			</el-form>
-			<el-row>
-				<el-col>
-					<el-checkbox label="仅显示启用项" :true-label="0" :false-label="1" v-model="queryStatus" @change="getDate"></el-checkbox>
-				</el-col>
-			</el-row>
 			<el-tree :data="selectedData" node-key="id" :props="defaultProps" :expand-on-click-node="false" ref="tree2"
-			 :filter-node-method="filterNode">
+			 :filter-node-method="filterNode" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse"
+			v-loading="loading">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
 					<span>{{ node.label }}</span>
 					<span>
 						<span>{{data.initialScore}}分</span>&nbsp;&nbsp;
-						<el-button type="text" size="mini" @click="() => append(data,node)" v-if="node.level!==5">
+						<el-button type="text" size="mini" @click="() => append(data,node)" v-if="node.level<6">
 							<i class="el-icon-circle-plus"></i>
 						</el-button>&nbsp;&nbsp;
 						<el-button type="text" size="mini" @click="() => onEdit(data,node)">
 							<i>编辑</i>
 						</el-button>&nbsp;&nbsp;
-						<el-button type="text" size="mini" v-if="data.childNode.length === 0 && node.level === 5" @click="addQuestion(data)">
+						<el-button type="text" size="mini" v-if="data.childNode.length === 0 && node.level === 6" @click="addQuestion(data)">
 							<i>问题</i>
 						</el-button>&nbsp;&nbsp;
 						<el-button type="text" size="mini" @click="() => onStopUse(data)">
@@ -52,8 +53,8 @@
 			<el-dialog title="导出选择" :visible.sync="downloadChoice" width="30%" align="center">
 				<el-form :inline='true'>
 					<el-form-item>
-						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部项</el-button>&nbsp;&nbsp;
-						<el-button icon="el-icon-download" type="warning" @click="downloadUse()">导出启用项</el-button>
+						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部文件</el-button>&nbsp;&nbsp;
+						<el-button icon="el-icon-download" type="warning" @click="downloadmodel()">导出模板文件</el-button>
 					</el-form-item>
 				</el-form>
 			</el-dialog>
@@ -83,13 +84,10 @@
 				</div>
 			</el-dialog>
 			<el-dialog title="编辑" :visible.sync="levelThreeDialog" width="40%">
-				<el-form :model="chosenData" label-width="20%" :label-position="left">
-					<el-form-item label="管理及运行要求">
-						<el-input v-model="chosenData.name" style="width: 80%;" type="textarea" autosize='true'></el-input>
+				<el-form :model="chosenData">
+					<el-form-item label="内容">
+						<el-input v-model="chosenData.content" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
-					<!-- <el-form-item label="依据或备注">
-				    <el-input v-model="chosenData.basis"></el-input>
-				  </el-form-item> -->
 				</el-form>
 				<div slot="footer" class="dialog-footer">
 					<el-button @click="levelThreeDialog=false" icon='el-icon-refresh-left'>取消</el-button>
@@ -98,8 +96,8 @@
 			</el-dialog>
 			<el-dialog title="编辑" :visible.sync="levelFourDialog" width="40%">
 				<el-form :model="chosenData" label-width="20%" :label-position="left">
-					<el-form-item label="量化说明">
-						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					<el-form-item label="管理及运行要求">
+						<el-input v-model="chosenData.name" style="width: 80%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
@@ -108,6 +106,17 @@
 				</div>
 			</el-dialog>
 			<el-dialog title="编辑" :visible.sync="levelFiveDialog" width="40%">
+				<el-form :model="chosenData" label-width="20%" :label-position="left">
+					<el-form-item label="量化说明">
+						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button @click="levelFiveDialog=false" icon='el-icon-refresh-left'>取消</el-button>
+					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
+				</div>
+			</el-dialog>
+			<el-dialog title="编辑" :visible.sync="levelSixDialog" width="40%">
 				<el-form :model="chosenData" label-width="20%" :label-position="left">
 					<el-form-item label="量化项">
 						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
@@ -123,7 +132,7 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelFiveDialog=false" icon='el-icon-refresh-left'>取消</el-button>
+					<el-button @click="levelSixDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
@@ -191,19 +200,10 @@
 		querryQhseElements
 	} from '../../../services/qhse_QualityStandard'
 	import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-	import {
-		GetCheckListTree
-	} from '../../../services/hidden_danger_investigation/checkListTree'
-	import {
-		Createcheck_item,
-		delete_tree,
-		getcontent,
-		Createcontent
-	} from '../../../services/hidden_danger_investigation/checkListItem'
+	import xlsx from 'xlsx'
 	import {
 		querryQhseElement
 	} from '../../../services/querryQhseElement'
-
 	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
@@ -213,16 +213,27 @@
 				levelThreeDialog: false,
 				levelFourDialog: false,
 				levelFiveDialog: false,
+				levelSixDialog: false,
 				buttoncontrol: false,
 				innerVisible: false,
 				downloadChoice: false,
 				level: '',
+				expandedList: [],
 				loading: false,
 				selectedData: [],
 				tableData: [],
 				addEventForm: {
 					name: ''
 				},
+				options: [{
+						value: '启用',
+						label: '启用'
+					},
+					{
+						value: '全部',
+						label: '全部'
+					}
+				],
 				addquestionDiscription: {
 					qHSE_ManagerSysElementProblemDescription_ID: null,
 					code: '',
@@ -240,6 +251,7 @@
 				addQuestiondialogVisible: false,
 				addNodeCode: '',
 				filterText: '',
+				filterStatus: '启用',
 				fileList: [],
 				treedata: [],
 				defaultProps: {
@@ -264,17 +276,7 @@
 					status: ''
 				},
 				downloadData: [],
-				downloadDataItem: {
-					code: '',
-					name: '',
-					content: '',
-					auditMode: '',
-					initialScore: '',
-					formula: '',
-					problemDescription: '',
-					totalCount: '',
-					status: ''
-				},
+				downloadDataItem: [],
 				insertDate: {
 					code: '',
 					name: '',
@@ -285,14 +287,15 @@
 					totalCount: '',
 					status: '启用'
 				},
-				problemDescription: ''
+				problemDescription: '',
+				mergeTable: []
 			};
 		},
 		watch: {
 			//实时监测搜索input输入框数据变化，并根据变化对tree进行筛选
 			filterText(val) {
 				this.$refs.tree2.filter(val)
-			}
+			},
 		},
 		mounted() {
 			this.getDate()
@@ -308,6 +311,14 @@
 			filterNode(value, data) {
 				if (!value) return this.tableData;
 				return data.name.indexOf(value) !== -1;
+			},
+			//展开要素树时将展开的节点进行记录
+			nodeExpand(data) {
+				this.expandedList.splice(this.expandedList.length, 1, data.id)
+			},
+			//折叠要素树时将折叠的节点从数组中删除
+			nodeCollapse(data) {
+				this.expandedList.splice(this.expandedList.indexOf(data.id), 1)
 			},
 			//下载所有要素，启用和停用要素都下载
 			downloadAll() {
@@ -385,27 +396,122 @@
 					}
 				}
 			},
-			//搜索树
-			select() {
-				this.getDate()
-				//如果搜索框为空，则直接显示
-				if (!this.filterText) {
-					this.selectedData = this.tableData
-				}
-				//否则进行搜索
-				else {
-					this.filterNode(this.filterText, this.selectedData)
+			//递归将tree型数据转换为table型数据，用于导出模板文件
+			parseTreeToModleTable(node) {
+				for (var i = 0; i < node.length; i++) {
+					//删除返回过程之中已经录入的节点名
+					while (this.downloadDataItem.length * 3 >= node[i].code.length) {
+						this.downloadDataItem.pop()
+					}
+					//将访问到的当前节点名录入临时存储器
+					this.downloadDataItem.push(node[i].name)
+					//当访问到最后一级节点时将储存的节点树导出，从而得到一个一维的数据
+					if (node[i].childNode.length == 0) {
+						//将临时储存器中的数据序列化，并且保存到待合并的数组中
+						this.downloadDataItem.push(node[i].problemDescription)
+						this.downloadData.push(JSON.parse(JSON.stringify(this.downloadDataItem)))
+						this.downloadDataItem.pop()
+						this.downloadDataItem.pop()
+					} else {
+						//递归访问
+						this.parseTreeToModleTable(node[i].childNode)
+					}
 				}
 			},
-			//获取单位树
+			//搜索树
+			select() {
+				//如果搜索框为空，则直接显示
+				this.getDate()
+			},
+			//获取要素树
 			getDate() {
+				//根据选择的状态构造参数查询要素
+				if (this.filterStatus == '启用') {
+					this.queryStatus = 0
+				} else {
+					this.queryStatus = 1
+				}
+				//调用接口传入状态参数查询要素
 				querryQhseElement({
 					queryStatus: this.queryStatus
 				}).then(res => {
-					this.tableData = res.data
+					this.selectedData = res.data
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
+			},
+			//构建合并数组
+			mergeData() {
+				let mergeTable = []
+				//遍历下载数据的二维数组构建合并数组
+				//第一层循环遍历六列数据
+				for (var i = 0; i < 6; i++) {
+					//构建一个合并开始单元格对象，包含开始行标，开始列标，并将
+					var start = {
+						r: null,
+						c: null
+					}
+					start.r = 0
+					start.c = i
+					//第二层循环遍历一列的所有行
+					for (var j = 1; j < this.downloadData.length; j++) {
+						//处理空单元格，避免空单元格合并
+						if (!this.downloadData[j][i] && !this.downloadData[j - 1][i]) {
+							start.r = j
+							start.c = i
+						}
+						//由于数据规则排列，所以只需要处理两个相邻处不相同时的情况
+						else if (this.downloadData[j][i] != this.downloadData[j - 1][i]) {
+							//构建合并结束单元格对象，包含结束行标，列标，并将不相同的前一个坐标写入
+							var e = {
+								r: null,
+								c: null
+							}
+							e.r = j - 1
+							e.c = i
+							//将之前得到的开始单元格坐标重新拷贝，实现深拷贝
+							var s = {
+								r: null,
+								c: null
+							}
+							s.r = start.r
+							s.c = start.c
+							//保存合并信息
+							mergeTable.push({
+								s,
+								e
+							})
+							//将不相同的后一个坐标写入，开始下一次循环
+							start.r = j
+							start.c = i
+						}
+					}
+				}
+				return mergeTable
+			},
+			//下载模板文件
+			downloadmodel() {
+				//调用转换方法，得到table型数据
+				this.parseTreeToModleTable(this.selectedData)
+				if (this.downloadData.length > 0) {
+					//在待下载数据中加入表头
+					this.downloadData.splice(0, 1, ["主题", "项目", "内容", "管理及运行要求", "量化说明", "量化项", "问题描述"])
+					//将table型数据转换为sheet
+					var sheet = xlsx.utils.aoa_to_sheet(this.downloadData)
+					//将合并数组引入sheet中
+					sheet['!merges'] = this.mergeData()
+					//定义文件名
+					const fileName = 'QHSE体系要素模板文件表.xlsx'
+					//定义表名
+					const sheetName = 'sheet1'
+					//定义新的book用来存储sheet
+					const wb = xlsx.utils.book_new()
+					//将sheet加入book中
+					xlsx.utils.book_append_sheet(wb, sheet, sheetName)
+					//生成文件
+					xlsx.writeFile(wb, fileName)
+				}
+				this.downloadChoice = false
 			},
 			submitUpload() {
 				this.$refs.upload.submit();
@@ -420,26 +526,28 @@
 				return this.$confirm(`确定移除 ${file.name}？`);
 			},
 			//上传过程中
-			handleProgress(file){
-				this.$alert('文件上传中，请稍候','文件上传')
+			handleProgress() {
+				this.$alert('文件上传中，请稍候', '文件上传')
 			},
 			handleSuccess(response) {
 				console.log(response)
-				if(response.code=='1000'){
-					querryQhseElement({queryStatus: this.queryStatus}).then(res => {
-					this.tableData = res.data
-					this.select()
-				}).catch((err) => {
-					this.$message.error(err.message)
-				})
-				this.$message.success('上传成功')
-				}else{
+				if (response.code == '1000') {
+					querryQhseElement({
+						queryStatus: this.queryStatus
+					}).then(res => {
+						this.tableData = res.data
+						this.select()
+					}).catch((err) => {
+						this.$message.error(err.message)
+					})
+					this.$message.success('上传成功')
+				} else {
 					this.$message.error('上传失败')
 				}
-				
+
 			},
 			//打开新增框
-			append(val, val1) {
+			append(val) {
 				//保存选中的节点的code，初始化要书名称框
 				this.insertDate.code = val.code
 				this.addEventForm.name = ''
@@ -458,6 +566,7 @@
 				else if (this.level == 3) this.levelThreeDialog = true
 				else if (this.level == 4) this.levelFourDialog = true
 				else if (this.level == 5) this.levelFiveDialog = true
+				else if (this.level == 6) this.levelSixDialog = true
 			},
 			//保存选中节点的数据
 			saveChosenData(data) {
@@ -486,12 +595,7 @@
 				updateQHSEElement(this.chosenData).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						querryQhseElement({queryStatus: this.queryStatus}).then(res => {
-							this.tableData = res.data
-							this.select()
-						}).catch((err) => {
-							this.$message.error(err.message)
-						})
+						this.getDate()
 						this.$message.success('修改信息成功')
 					} else {
 						this.$message.error('修改信息失败')
@@ -505,6 +609,7 @@
 				else if (this.level == 3) this.levelThreeDialog = false
 				else if (this.level == 4) this.levelFourDialog = false
 				else if (this.level == 5) this.levelFiveDialog = false
+				else if (this.level == 6) this.levelSixDialog = false
 			},
 			//更改当前节点的启用状态
 			onStopUse(val) {
@@ -512,7 +617,8 @@
 				updateQHSEElementStatus(val.id).then(res => {
 					if (res.code == '1000') {
 						//点击后的状态更新
-						val.status = val.status == '停用' ? '启用' : '停用';
+						//val.status = val.status == '停用' ? '启用' : '停用';
+						this.getDate()
 						this.$message.success('更新状态成功')
 					} else {
 						this.$message.error('更新状态失败')
@@ -534,12 +640,7 @@
 				addQHSEElement(this.insertDate).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						querryQhseElement({queryStatus: this.queryStatus}).then(res => {
-							this.tableData = res.data
-							this.select()
-						}).catch((err) => {
-							this.$message.error(err.message)
-						})
+						this.getDate()
 						this.$message.success('节点添加成功')
 
 					} else {
