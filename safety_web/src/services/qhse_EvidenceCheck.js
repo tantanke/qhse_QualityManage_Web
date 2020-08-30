@@ -50,3 +50,7 @@ export  const downloadElementFile = (data)=>{
 export  const show_approve_check = (data)=>{
   return request(`/api/show_approve_check?companyCode=${data.companyCode}&year=${data.year}&status=${data.status}`,{data})
 }
+//获取全要素
+export  const showAllElement = (data)=>{
+  return request(`/api/showAllElement?companyCode=${data.companyCode}&year=${data.year}`,{data})
+}

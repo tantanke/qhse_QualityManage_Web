@@ -52,8 +52,8 @@
           v-loading="loading"
           :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
           <el-table-column prop="name" label="内容"></el-table-column>
-          <el-table-column prop="status" label="状态" width="80" align="center">
-          </el-table-column>
+          <el-table-column prop="schedule" label="进度" width="80" align="center"> </el-table-column>
+          <el-table-column prop="status" label="状态" width="80" align="center"> </el-table-column>
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button 
@@ -131,10 +131,12 @@
 
               <el-form-item label="上传文件">
                 <el-upload
+                 :show-file-list="show"
                 :on-remove="removeFile"
                   v-model="form.fileID"
                   :headers="headers"
                   :limit="1"
+                  ref="uploads"
                   style="float:left"
                   :on-success="handleFilerSuccess"
                   :action="accidentOrEventUploadAddress">
@@ -203,8 +205,9 @@ import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示
 import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
 import { employees } from "../../../services/qhse_QualityCheck";//显示成员
 import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
-import  {GetCurrentUser} from '../../../store/CurrentUser'
-import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
+import  {GetCurrentUser} from '../../../store/CurrentUser';
+import { downloadElementFile } from"../../../services/qhse_EvidenceCheck";
+// import {querryYearElement}from"../../../services/qhse_EvidenceCheck"
 
 
 const headers1 = {
@@ -224,6 +227,7 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      show:false,
       headers:newOptions.headers,
       strings:null,
       filterQuery: {},
@@ -308,6 +312,7 @@ export default {
       this.form.attach+=this.fileattach;//加上文件attach
       
       this.$refs.upload.clearFiles();//清空数据
+      this.$refs.uploads.clearFiles();//清空数据
       //上传接口
       await addAll_evidence_attach(this.form).then(res => {
          console.log(res);
@@ -331,8 +336,12 @@ export default {
         
     },
     async updateScore(data){
+      this.show=false;
+      if(this.$refs.uploads!=undefined){this.$refs.uploads.clearFiles();}
       if(this.$refs.upload!=undefined)
+        // this.removeFile();
         this.$refs.upload.clearFiles();//清空数据
+        
         this.form.fileID='';
         this.attach='';
         this.fileattach='';
@@ -407,6 +416,7 @@ export default {
     },
     //限制文件数量并新增
     handleFilerSuccess(res){
+      this.show=true
        if (res.code === 1000){ 
                     this.fileattach += res.data;
                     this.fileattach+=';';

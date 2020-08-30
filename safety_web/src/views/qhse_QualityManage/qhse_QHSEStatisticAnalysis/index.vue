@@ -33,6 +33,7 @@
           <span style="margin-right:15px">请选择查看内容:</span>
           <el-radio v-model="checkType" label="未审核">未审核</el-radio> 
           <el-radio v-model="checkType" label="已审核">已审核</el-radio>
+          <div style="float:right;margin:5px 20px;color:orange">未录入:{{this.total3}}</div>
           <div style="float:right;margin:5px 20px;color:blue">未审核:{{this.total1}}</div>
           <div style="float:right;margin:5px;color:red">已审核:{{this.total2}}</div>  
           <div style="float:right;margin:5px">全要素:{{this.total}}</div>           
@@ -149,7 +150,7 @@ import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通
 import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
 import { show_approve_check} from"../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
-
+import { showAllElement } from"../../../services/qhse_EvidenceCheck";
 
 const DefaultQuery = {
   year: "",
@@ -159,7 +160,7 @@ const DefaultQuery = {
 export default {
   data() {
     return {
-      total:'还没写接口 ',
+      total:'',
       total1:'',
       total2:'',
       checkType:'未审核',
@@ -333,6 +334,15 @@ export default {
          this.$message.error('请选择公司')
       else{
       this.handleGetInitialData();//更改loading状态
+         showAllElement(this.filterQuery)//获取全要素
+        .then(res => {
+          this.total = res.AllElement;
+           this.total3=res.NotInput;
+        })
+        .catch(err => {
+          console.log(err);
+          this.message.error(err.message);
+        });
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
