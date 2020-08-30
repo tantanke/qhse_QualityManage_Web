@@ -595,6 +595,8 @@ export default {
         })
       .catch(err => {
           _this.$message.error(err.message);
+          _this.$message.warning('请检查要素证据审批是否完成！')
+          _this.$router.go(-1)
         });   
     },
     // 添加问题

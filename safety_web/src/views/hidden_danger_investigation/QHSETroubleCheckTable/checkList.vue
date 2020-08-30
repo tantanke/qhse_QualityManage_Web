@@ -1,5 +1,5 @@
 <template>
-  <div v-loading='checkLoading' element-loading-text="拼命加载中">
+  <div v-loading='checkLoading' element-loading-text="拼命加载中"  style="height:550px">
       <div class="page-title" style="width:100%">QHSE隐患排查</div>
       <el-row >
         <!--控制级联菜单 -->
@@ -58,7 +58,7 @@
       </el-form>
       </el-row>
       <el-row> 
-        <el-button type="primary" :disabled="formControl" @click="addChecklist">生成检查单</el-button>
+        <el-button type="primary" :disabled="formControl" @click="addChecklist" ref="addNewCheck">生成检查单</el-button>
         <el-button type="danger"  :disabled="!formControl" @click="cacelCheck">取消并返回</el-button> 
       </el-row>
       <!--树形检查单 常规检查单 -->
@@ -70,15 +70,17 @@
         v-loading='loading'
         v-if="formControl"
         :data="checkListData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-        style="width: 100%;"
+        style="width: 100%;height:500px"
         row-key="checkRecordID"
         highlight-current-row
         border
-        max-height="513">
+        max-height="490">
         <el-table-column
-        prop="name"
-        label="检查名称"       
+        prop="name"    
         >
+        <template slot="header">
+        <span>检查名称</span>
+      </template>
         </el-table-column>
         <el-table-column label="操作" width="150" align="center">
             <template slot="header" slot-scope="scope">
@@ -108,7 +110,7 @@
           <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
           <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='问题描述：'>
+      <el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'" label='问题描述：'>
            <el-input            
             type="textarea"
             :rows="3"
@@ -116,10 +118,11 @@
             v-model="checkRecordForm.problems">
             </el-input>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='隐患违章：'>
-          <el-radio v-model="reason" label="不录入">不录入</el-radio>
-          <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
-          <el-radio v-model="reason" label="违章">录入违章</el-radio>
+      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='检查记录：'>
+          <el-radio v-model="reason" label="不录入" style="width:12%">不录入</el-radio>
+          <el-radio v-model="reason" label="问题" style="width:15%">录入问题</el-radio>
+          <el-radio v-model="reason" label="隐患" style="width:15%">录入隐患</el-radio>
+          <el-radio v-model="reason" label="违章" style="width:15%">录入违章</el-radio>
       </el-form-item>
 </el-form>
   <span slot="footer" class="dialog-footer">
@@ -140,12 +143,18 @@
               <el-form-item label="检查日期：" style="margin-bottom:1px">{{detailForm.checkDate}}</el-form-item>
               <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
               <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
+              <el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
+                <el-button size='mini'  @click="addquestion">录入问题</el-button>
+                <el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
+                <el-button size='mini' type="danger" @click="addRegulation">录入违章</el-button>
+              </el-form-item>
           </el-row>
           
         </el-form>
-  <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="detailDialogVisible = false">确 定</el-button>
-  </span>
+    <div style="text-align:right">
+    <el-button  type="primary" @click="detailDialogVisible = false">确 定</el-button>
+    </div>
+
 </el-dialog>
     <!--编辑检查记录 -->
   </div>
@@ -234,6 +243,19 @@ export default {
             
             },
     methods: {
+        addquestion() {
+            console.log(1)
+        },
+        addHidden() {
+          this.$router.push({
+            path: '/hidden_danger/input',
+          })
+        },
+        addRegulation() {
+          this.$router.push({
+                    path: '/hidden_danger/illegal_entry',
+                })
+        },
         // 获取检查类别
         getCheckType() {
          GetDictionary({name:'检查类型'}).then(res => {
@@ -245,7 +267,7 @@ export default {
         // 隐患违章跳转
         pushRouter() {
             let _this = this
-           if (_this.reason === '不录入') return
+           if (_this.reason === '不录入' || _this.reason === '问题') return
           else if (_this.reason === '隐患'){
            _this.$router.push({
             path: '/hidden_danger/input',
@@ -263,7 +285,7 @@ export default {
         },
         submitadd () {
             let _this = this          
-            if(_this.checkRecordForm.pass === '不通过' && !_this.checkRecordForm.problems){
+            if(_this.reason === '问题' && !_this.checkRecordForm.problems){
                 _this.$message.warning('请输入具体问题！')
                 return
             }
@@ -331,9 +353,11 @@ export default {
         getCheckTree () {
           let _this = this
           getChecklistTree().then(res => {
+              let data = JSON.parse(localStorage.getItem('checkdata'))
               _this.checkTreeData = res.data            
               _this.getSelectList(res.data)
               _this.checkLoading = false
+              if(data) _this.$refs['addNewCheck'].$listeners.click()
           }).catch(err => {
               _this.$message.error(err)
           })
