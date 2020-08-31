@@ -2,12 +2,13 @@
 	<div>
 		<div class="page-title" style="width: 100%">要素配置管理</div>
 		<div class="page-content" v-loading="loading">
-			<el-form label-width="130px" :inline="true" :model="filterQuery">
+			<el-form label-width="130px" :inline="true">
 				<el-form-item label="选择公司:">
-					<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 200px" :options="companyList" v-model="filterQuery.companyId"></treeselect>
+					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
+					 v-model="companyId"></treeselect>
 				</el-form-item>
 				<el-form-item label="选择年份：">
-					<el-date-picker type="year" placeholder="请选择年份" style="width:200px" v-model="filterQuery.year">
+					<el-date-picker type="year" placeholder="请选择年份" style="width:200px" v-model="year">
 					</el-date-picker>
 				</el-form-item>
 				&nbsp;&nbsp;&nbsp;
@@ -19,22 +20,46 @@
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table :data="filterQuery.selected" style="width: 100%" max-height="560" border v-loading="loading">
+					<el-table-column type="expand">
+						<template slot-scope="props">
+							<el-form label-width="150px" :label-position="left" inline='true' class="demo-table-expand">
+								<el-form-item label="下达时间:">
+									<span>{{props.row.issuedDate}}</span>
+								</el-form-item>
+								<el-form-item label="任务名称:">
+									<span>{{props.row.taskName}}</span>
+								</el-form-item>
+								<el-form-item label="文件备案截止时间:">
+									<span>{{props.row.planDate}}</span>
+								</el-form-item>
+								<el-form-item label="接收人:">
+									<span>{{props.row.receiveName}}</span>
+								</el-form-item>
+								<el-form-item label="实际完成时间:">
+									<span>{{props.row.trueDate}}</span>
+								</el-form-item>
+							</el-form>
+						</template>
+					</el-table-column>
 					<el-table-column type="index" label="序号" width="100%" align="center"></el-table-column>
-					<el-table-column prop="companyName" label="单位名称" width="250%" align="center"></el-table-column>
+					<el-table-column prop="companyName" label="单位名称" width="220%" align="center"></el-table-column>
 					<el-table-column prop="year" label="年度" width="100%" align="center"></el-table-column>
-					<el-table-column prop="elementTableName" label="检查表名称" width="340%" align="center"></el-table-column>
-					<el-table-column label="操作" width="270%" align="center">
+					<el-table-column prop="elementTableName" label="检查表名称" width="260%" align="center"></el-table-column>
+					<el-table-column prop="status" label="任务状态" width="100%" align="center"></el-table-column>
+					<el-table-column label="操作" width="430%" align="center">
 						<template slot-scope="scope">
-							<el-button type="primary" icon="el-icon-more" size="mini" @click="handlChosen(scope.row)">配置</el-button>
+							<el-button type="primary" icon="el-icon-more" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
+							<el-button type="primary" icon="el-icon-bottom" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
+							<el-button type="info" icon="el-icon-message" size="mini" @click="openStatisticsDialog(scope.row)">任务统计</el-button>
 							<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteTable(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="30%">
-					<el-form :inline="true" label-width="90px" label-postion="left">
+					<el-form :inline="true" label-width="90px" :label-postion="left">
 						<el-form-item label="请选择公司:">
 							<treeselect :multiple="false" required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
-							 v-model="insertCompanyId"></treeselect>
+							 v-model="insertCompanyId" :disable-branch-nodes="true"></treeselect>
 						</el-form-item>
 						<el-form-item label="请选择年份:">
 							<el-date-picker type="year" required="true" placeholder="请选择年份" style="width:250px" v-model="insertYear">
@@ -46,12 +71,12 @@
 						<br />
 					</el-form>
 					<div slot="footer" class="dialog-footer">
-						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="insertCheckListDialog=false">取消</el-button>
+						<el-button icon='el-icon-refresh-left' @click="insertCheckListDialog=false">取消</el-button>
 						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新增</el-button>
 					</div>
 				</el-dialog>
-				<el-dialog title="要素表明细" :visible.sync="annCheckListDialog" width="70%" align="left">
-					<div class="page-content" width="70%" align="left">
+				<el-dialog title="要素配置" :visible.sync="annCheckListDialog" width="50%" align="left">
+					<div width="70%" align="left">
 						<el-row>
 							<el-form :inline="true">
 								<el-form-item label="单位:"></el-form-item>
@@ -74,6 +99,41 @@
 						</el-row>
 					</div>
 				</el-dialog>
+				<el-dialog title="下达任务" :visible.sync="assignTaskoDialog" align="left" width="35%">
+					<el-form label-width="150px" :label-postion="left">
+						<el-form-item label="单位名称:">
+							<el-input v-model="task.companyName" placeholder="请输入单位名称" style="width: 300px;" :disable-branch-nodes="true"></el-input>
+						</el-form-item>
+						<el-form-item label="下达任务人:">
+							<el-input v-model="task.issuedName" placeholder="请输入下达任务人姓名" style="width: 300px;"></el-input>
+						</el-form-item>
+						<el-form-item label="任务名称:">
+							<el-input v-model="task.taskName" placeholder="请输入任务名称" style="width: 300px;"></el-input>
+						</el-form-item>
+						<el-form-item label="接收人:">
+							<el-select placeholder="请选择接收人,可搜索姓名" v-model="task.receiveID" clearable='true' style="width: 300px;" filterable='true'>
+								<el-option v-for="item in emploee" :key="item.name" :value="item.employeeID" :label="item.name">
+									<span style="float:left">{{item.name}}({{item.empGroup}})</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="文件备案截止时间:">
+							<el-date-picker type="date" format="yyyy年MM月dd日" value-format="yyyy-MM-dd" placeholder="请选择日期" style="width: 300px;"
+							 v-model="task.planDate">
+							</el-date-picker>
+						</el-form-item>
+					</el-form>
+					<span slot="footer" class="dialog-footer">
+						<el-button icon="el-icon-refresh-left" @click="assignTaskoDialog=false">取消</el-button>
+						<el-button icon="el-icon-bottom" type="primary" @click="assignTask()">下达任务</el-button>
+					</span>
+				</el-dialog>
+				<el-dialog title="任务统计" :visible.sync="statisticsDialog" align="left" width="70%">
+					<span slot="footer" class="dialog-footer">
+						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导出</el-button>
+						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关闭</el-button>
+					</span>
+				</el-dialog>
 			</el-row>
 		</div>
 	</div>
@@ -89,12 +149,18 @@
 		deleteQhseTable,
 		addQHSEYearElement,
 		querryQhseElement,
+		createNewTask,
+		getOrderedTask,
+		getTaskDetails
 	} from "../../../services/gettreedata"
+	import {
+		GetEmployee
+	} from "../../../services/filePropagation.js"
+	import {
+		GetCurrentUser
+	} from '../../../store/CurrentUser'
 	const DefaultQuery = {
-		companyId: null,
-		companyName: '',
-		companyCode: '',
-		year: '',
+
 		chosenCompany: null,
 		chosenYear: '',
 		elementTree: [],
@@ -106,6 +172,10 @@
 		data() {
 			return {
 				filterQuery: {},
+				companyId: null,
+				companyName: '',
+				companyCode: '',
+				year: '',
 				insertCompanyCode: '',
 				insertCompanyName: '',
 				insertCompanyId: null,
@@ -117,6 +187,8 @@
 				treeNodeList: [],
 				insertCheckListDialog: false,
 				annCheckListDialog: false,
+				assignTaskoDialog: false,
+				statisticsDialog: false,
 				QhseElement: {
 					companyCode: '',
 					year: ''
@@ -139,7 +211,37 @@
 					companyCode: '',
 					conpanyName: '',
 					year: ''
-				}
+				},
+				task: {
+					companyCode: '',
+					companyName: '',
+					taskName: '',
+					issuedID: '',
+					issuedName: '',
+					receiveID: '',
+					receiveName: '',
+					planDate: '',
+					tableID: ''
+				},
+				tableItem: {
+					elementTableName: '',
+					status: '',
+					year: '',
+					companyCode: '',
+					companyName: '',
+					taskName: '',
+					receiveID: '',
+					receiveName: '',
+					planDate: '',
+					tableID: '',
+					issuedDate: '',
+					planDate: '',
+					receiveDate: '',
+					trueDate: ''
+				},
+				emploee: [],
+				tableDataList:[],
+				taskList: []
 			}
 		},
 		watch: {
@@ -155,7 +257,28 @@
 					this.bindIdToName(this.companyList, this.insertCompanyId)
 					this.insertElementTableName = this.insertYear.getFullYear() + this.insertCompanyName + "检查表"
 				}
+			},
+			companyId() {
+				if (this.companyId) {
+					this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
+				} else {
+					this.companyName = ''
+					this.companyCode = ''
+				}
+			},
+			year() {
+				if (this.year) {
+					this.year = new Date(this.year).getFullYear().toString()
+					console.log(this.year)
+				} else {
+					this.year = ''
+				}
 			}
+		},
+		mounted() {
+			this.loadParams()
+			this.handleGetCompany()
+			this.handleGetQhseChildElement()
 		},
 		methods: {
 			//加载初始数据
@@ -167,76 +290,171 @@
 				this.filterQuery = {
 					...this.filterQuery
 				};
-				this.selected
 				GetQhseTable().then(res => {
-					this.filterQuery.tableData = res.data
+					console.log("table", res.data)
+					this.tableDataList = res.data
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				getOrderedTask().then(res => {
+					this.taskList = res.data
+					console.log("orderedTask", res.data)
+				})
 				this.loading = false
+			},
+			openStatisticsDialog(row) {
+				var queryData={
+					tableID:'',
+					status:''
+				}
+				queryData.tableID=row.tableID
+				queryData.status=row.status
+				getTaskDetails(queryData).then(res=>{
+					
+				})
+				this.statisticsDialog = true
+			},
+			downloadData() {
+				this.statisticsDialog = false
+			},
+			getEmploee(companyName) {
+				GetEmployee().then(res => {
+					this.emploee = res.data.filter(item => {
+						return item.companyName == companyName
+					})
+				})
+			},
+			openAssignTaskDialog(row) {
+				this.QhseElement.companyCode = row.companyCode
+				this.QhseElement.year = row.year
+				//将已勾选的要素展示
+				querryQhseElement(this.QhseElement).then(res => {
+					if (res.data.length > 0) {
+						console.log(row)
+						this.getEmploee(row.companyName)
+						this.task.companyCode = row.companyCode
+						this.task.companyName = row.companyName
+						this.task.tableID = row.tableID
+						this.task.issuedID = this.GetCurrentUser().employeeId
+						this.task.issuedName = this.GetCurrentUser().employeeName
+						this.task.taskName = ''
+						//将date格式的时间改为“yyyy-MM-dd”类型的时间
+						//this.task.issuedDate =new Date().toISOString().substr(0,10)
+						this.task.receiveID = ''
+						this.task.receiveName = ''
+						this.task.planDate = ''
+						console.log(this.task)
+						this.assignTaskoDialog = true
+					} else {
+						this.$message.error('要素未配置，请配置后再配置任务')
+					}
+				})
+			},
+			assignTask() {
+				var newDate = new Date().toISOString().substr(0, 10)
+				if (this.task.companyName && this.task.issuedName && this.task.taskName && this.task.receiveID && this.task.planDate) {
+					if (this.task.planDate < newDate) {
+						this.task.planDate = ''
+						this.$message.error('任务截止日期选择错误')
+						return
+					}
+					this.assignTaskoDialog = false
+					this.task.receiveName = this.emploee.filter(item => {
+						return item.employeeID == this.task.receiveID
+					})[0].name
+					console.log(this.task)
+					createNewTask(this.task).then(res => {
+						if (res.code == '1000') {
+							this.loadParams()
+							this.handleSelect()
+							this.$message.success('任务下达成功')
+						} else {
+							this.$message.error('任务下达失败')
+						}
+					}).catch(err => {
+						this.$message.error(err.message)
+					})
+				} else {
+					this.$message.error('数据不完整')
+					return
+				}
+			},
+			GetCurrentUser() {
+				return GetCurrentUser()
 			},
 			//加载选择公司的树形列表
 			handleGetCompany() {
 				GetCompany().then(res => {
-
 					this.companyList = res.data
-					console.log(this.companyList)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
 			},
+			combineData(tableData, taskList) {
+				for (var i = 0; i < tableData.length; i++) {
+					var tempData = taskList.filter(item => {
+						return item.tableID == tableData[i].qhse_CompanyYearManagerSysElementTable_ID
+					})
+					var tableItem = {
+						elementTableName: '',
+						status: '',
+						year: '',
+						companyCode: '',
+						companyName: '',
+						taskName: '',
+						receiveID: '',
+						receiveName: '',
+						planDate: '',
+						tableID: '',
+						issuedDate: '',
+						planDate: '',
+						receiveDate: '',
+						trueDate: ''
+					}
+					tableItem.elementTableName=tableData[i].elementTableName
+					tableItem.companyCode=tableData[i].companyCode
+					tableItem.companyName=tableData[i].companyName
+					tableItem.tableID=tableData[i].qhse_CompanyYearManagerSysElementTable_ID
+					tableItem.year=tableData[i].year
+					tableItem.taskName=tempData.taskName
+					tableItem.receiveID=tempData.receiveID
+					tableItem.receiveName=tempData.receiveName
+					tableItem.planDate=tempData.planDate
+					tableItem.issuedDate=tempData.issuedDate
+					tableItem.receiveDate=tempData.receiveDate
+					tableItem.trueDate=tempData.trueDate
+					this.filterQuery.tableData.push(tableItem)
+				}
+			},
 			//实现查询按钮，根据公司名和年度查询对应记录
 			handleSelect() {
-				this.isChild = true
+				var selected = []
+				if (this.tableDataList.length > 0 && this.taskList.length > 0) {
+					this.combineData(this.tableDataList,this.taskList)
+				}
+				if (this.year == '' && this.companyName == '') {
+					selected = this.filterQuery.tableData
+				}
 				//获取到年度的yyyy格式数据
-				if (this.filterQuery.year) {
-					var data = new Date(this.filterQuery.year).getFullYear()
+				if (this.year != '') {
+					selected = this.filterQuery.tableData.filter(item => {
+						return item.year == this.year
+					})
 				}
-				//当两个选择框为空，返回所有数据
-				if (!data && !this.filterQuery.companyId) {
-					this.filterQuery.selected = this.filterQuery.tableData
-				} else {
-					//当只有年度信息时所做查询
-					if (data && !this.filterQuery.companyId) {
-						this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
-							return item.year == data
-						})
-						//当只有公司信息时所做查询
-					} else if (!data && this.filterQuery.companyId) {
-						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
-						this.checkCompany(this.companyList, this.filterQuery.companyName)
-						if (this.isChild == false) {
-							this.filterQuery.companyId = null
-							this.$message.error('公司选择错误，请重新选择')
-						} else {
-
-							this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
-								return item.companyName == this.filterQuery.companyName
-							})
-						}
-						//当有年度信息和公司信息时所做查询
-					} else if (data && this.filterQuery.companyId) {
-						this.changeCompanyIdTocompanyName(this.companyList, this.filterQuery.companyId)
-						this.checkCompany(this.companyList, this.filterQuery.companyName)
-						if (this.isChild == false) {
-							this.filterQuery.companyId = null
-							this.$message.error('公司选择错误，请重新选择')
-						} else {
-
-							this.filterQuery.selected = this.filterQuery.tableData.filter(item => {
-								return (item.year == data && item.companyName == this.filterQuery.companyName)
-							})
-						}
-
-					}
+				if (this.companyName != '') {
+					selected = this.filterQuery.tableData.filter(item => {
+						return item.companyName == this.companyName
+					})
 				}
+				this.filterQuery.selected = selected
 			},
 			//将从filterQuery.companyCode获取的公司id转换为公司名称，递归实现
 			changeCompanyIdTocompanyName(val, companyId) {
 				for (var j = 0; j < val.length; j++) {
 					if (val[j]) {
 						if (val[j].id == companyId) {
-							this.filterQuery.companyName = val[j].label
+							this.companyName = val[j].label
+							this.companyCode = val[j].nodeCode
 							break
 						} else if (val[j].children) {
 							this.changeCompanyIdTocompanyName(val[j].children, companyId)
@@ -324,64 +542,53 @@
 			insertCheckList() {
 				//判断单位和年度是否为空
 				if (this.insertCompanyId && this.insertYear) {
-					//判断单位是否为叶子结点标志，默认为true
-					this.isChild = true
 					//判断新增记录是否重复标志，默认为false
 					var isCopy = false
 					//调用转换方法，将选中的公司id转换为公司名称
 					this.bindIdToName(this.companyList, this.insertCompanyId)
-					//检查公司是否为叶子节点方法
-					this.checkCompany(this.companyList, this.insertCompanyName)
-					//单位不是叶子节点，将单位输入框重置，并提供提示信息
-					if (this.isChild == false) {
-						this.insertCompanyId = null
-						this.insertCompanyCode = null
-						this.$message.error('公司选择错误，请重新选择')
-					} else {
-						//遍历记录数组，检查将要新增的记录是否重复，重复时将输入框重置，并提供提示信息
-						for (var i = 0; i < this.filterQuery.tableData.length; i++) {
-							if (this.filterQuery.tableData[i].companyName == this.insertCompanyName && this.filterQuery.tableData[i].year ==
-								this.insertYear.getFullYear().toString()) {
-								this.insertCompanyId = null
-								this.insertCompanyCode = ''
-								this.insertYear = ''
-								this.insertElementTableName = ''
-								isCopy = true
-								this.$message.error('该记录已存在')
-								break
-							}
-						}
-						//当将要新增的记录不重复时，进行新增记录操作
-						if (isCopy == false) {
-							//将新增记录框中的数据添加到准备好的数组中，组装出一条tabledate的数据
-							this.addData.companyName = this.insertCompanyName
-							this.addData.companyCode = this.insertCompanyCode
-							this.addData.year = this.insertYear.getFullYear().toString()
-							this.addData.elementTableName = this.insertElementTableName
-							console.log(this.addData)
-							//调用接口将新增的记录返回后端，并重新渲染tabledata
-							insertQhseTable(this.addData).then(res => {
-								if (res.code == '1000') {
-									//重新获取tableData，重新渲染前端界面
-									GetQhseTable().then(res => {
-										console.log(res)
-										this.filterQuery.tableData = res.data
-										this.handleSelect()
-									})
-									this.$message({
-										message: "添加成功",
-										type: "success"
-									})
-								} else {
-									this.$message.error('添加失败')
-								}
-							}).catch(err => {
-								this.$message.error(err.message)
-							})
-							//关闭新增记录框
-							this.insertCheckListDialog = false
+					//遍历记录数组，检查将要新增的记录是否重复，重复时将输入框重置，并提供提示信息
+					for (var i = 0; i < this.filterQuery.tableData.length; i++) {
+						if (this.filterQuery.tableData[i].companyName == this.insertCompanyName && this.filterQuery.tableData[i].year ==
+							this.insertYear.getFullYear().toString()) {
+							this.insertCompanyId = null
+							this.insertCompanyCode = ''
+							this.insertYear = ''
+							this.insertElementTableName = ''
+							isCopy = true
+							this.$message.error('该记录已存在')
+							break
 						}
 					}
+					//当将要新增的记录不重复时，进行新增记录操作
+					if (isCopy == false) {
+						//将新增记录框中的数据添加到准备好的数组中，组装出一条tabledate的数据
+						this.addData.companyName = this.insertCompanyName
+						this.addData.companyCode = this.insertCompanyCode
+						this.addData.year = this.insertYear.getFullYear().toString()
+						this.addData.elementTableName = this.insertElementTableName
+						console.log(this.addData)
+						//调用接口将新增的记录返回后端，并重新渲染tabledata
+						insertQhseTable(this.addData).then(res => {
+							if (res.code == '1000') {
+								//重新获取tableData，重新渲染前端界面
+								GetQhseTable().then(res => {
+									this.filterQuery.tableData = res.data
+									this.handleSelect()
+								})
+								this.$message({
+									message: "添加成功",
+									type: "success"
+								})
+							} else {
+								this.$message.error('添加失败')
+							}
+						}).catch(err => {
+							this.$message.error(err.message)
+						})
+						//关闭新增记录框
+						this.insertCheckListDialog = false
+					}
+
 					//显示数据不完整的提示信息
 				} else {
 					this.$message.error('数据不完整')
@@ -491,15 +698,25 @@
 					path: '/qhse_QualityManage/qhse_QualityFill/addmuch'
 				})
 			}
-		},
-		mounted() {
-			this.loadParams()
-			this.handleGetCompany()
-			this.handleGetQhseChildElement()
 		}
 	}
 </script>
 <style>
+	.demo-table-expand {
+		font-size: 0;
+	}
+
+	.demo-table-expand label {
+		width: 130px;
+		color: #99a9bf;
+	}
+
+	.demo-table-expand .el-form-item {
+		margin-right: 0;
+		margin-bottom: 0;
+		width: 50%;
+	}
+
 	.custom-tree-node {
 		flex: 1;
 		display: flex;

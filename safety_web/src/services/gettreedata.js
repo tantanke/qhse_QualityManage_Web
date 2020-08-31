@@ -49,11 +49,32 @@ export const GetQhseTable =(data)=>{
 export const publishTableElement =(param)=>{
 	return request('/api/approval_companyYearManager/'+param,{method:'PUT'})
 }
+//要素证据推送
+export const getFileAuditProgress = (data) => {
+  return request(`/api/getFileAuditProgress`,{method:'get',data})
+}
 //根据公司和年度查询要素
 export const querryQhseElement = (data) => {
+<<<<<<< HEAD
   return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {method: 'GET',data})
 }
 //要素证据推送
 export const getFileAuditProgress = (data) => {
   return request(`/api/getFileAuditProgress`,{method:'get',data})
 }
+=======
+  return request(`/api/queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {method: 'GET',data})
+}
+//发布任务
+export const createNewTask =(data)=>{
+	return request('/api/createNewTask',{method:'post',data})
+}
+//
+export const getOrderedTask =()=>{
+	return request('/api/getOrderedTask',{method:'get'})
+}
+//
+export const getTaskDetails=(data)=>{
+	return request('/api/getTaskDetails?tableId=${data.tableID}&&Status=${data.status}',{method:'get',data})
+}
+>>>>>>> 44c0448... 任务模块第一版
