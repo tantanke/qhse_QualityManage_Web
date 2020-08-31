@@ -57,66 +57,33 @@
 					</el-form-item>
 				</el-form>
 			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelOneDialog" width="30%">
-				<el-form :model="chosenData" align="left">
+			<el-dialog title="编辑" :visible.sync="editDialog" width="40%">
+				<el-form :model="chosenData" align="left" v-if="level===1">
 					<el-form-item label="主题">
 						<el-input v-model="chosenData.name" style="width: 90%;"></el-input>
 					</el-form-item>
 				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelOneDialog=false" icon='el-icon-refresh-left'>取消</el-button>
-					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelTwoDialog" width="30%">
-				<el-form :model="chosenData">
+				<el-form :model="chosenData" align="left" v-else-if="level===2">
 					<el-form-item label="项目">
 						<el-input v-model="chosenData.name" style="width: 90%;"></el-input>
 					</el-form-item>
+				</el-form>
+				<el-form :model="chosenData" align="left" v-else-if="level===3">
 					<el-form-item label="内容">
-						<el-input v-model="chosenData.content" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelTwoDialog=false" icon='el-icon-refresh-left'>取消</el-button>
-					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelThreeDialog" width="40%">
-				<el-form :model="chosenData">
-					<el-form-item label="内容">
-						<el-input v-model="chosenData.content" style="width: 90%;" type="textarea" autosize='true'></el-input>
-					</el-form-item>
-				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelThreeDialog=false" icon='el-icon-refresh-left'>取消</el-button>
-					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelFourDialog" width="40%">
-				<el-form :model="chosenData" label-width="20%" :label-position="left">
+				<el-form :model="chosenData" label-width="20%" :label-position="left" v-else-if="level===4">
 					<el-form-item label="管理及运行要求">
-						<el-input v-model="chosenData.name" style="width: 80%;" type="textarea" autosize='true'></el-input>
+						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelFourDialog=false" icon='el-icon-refresh-left'>取消</el-button>
-					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelFiveDialog" width="40%">
-				<el-form :model="chosenData" label-width="20%" :label-position="left">
+				<el-form :model="chosenData" label-width="20%" :label-position="left" v-else-if="level===5">
 					<el-form-item label="量化说明">
 						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelFiveDialog=false" icon='el-icon-refresh-left'>取消</el-button>
-					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="编辑" :visible.sync="levelSixDialog" width="40%">
-				<el-form :model="chosenData" label-width="20%" :label-position="left">
+				<el-form :model="chosenData" label-width="20%" :label-position="left" v-else-if="level===6">
 					<el-form-item label="量化项">
 						<el-input v-model="chosenData.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
 					</el-form-item>
@@ -131,16 +98,31 @@
 					</el-form-item>
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="levelSixDialog=false" icon='el-icon-refresh-left'>取消</el-button>
+					<el-button @click="editDialog=false" icon='el-icon-refresh-left'>取消</el-button>
 					<el-button type="primary" icon="el-icon-plus" @click="updateQHSEElement">保存</el-button>
 				</div>
 			</el-dialog>
 			<!--新增事件节点分类弹窗-->
-			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible" width="40%">
-				<el-form ref="addEventForm" :model="addEventForm" label-width="20%" :label-position="left">
-					<el-form-item label="检查项" prop="categoryName">
-						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-					</el-form-item>
+			<el-dialog title="新增要素" :visible.sync="addEventdialogVisible" width="40%">
+				<el-form :model="addEventForm" label-width="20%" :label-position="left">
+						<el-form-item prop="categoryName" label="主题:" v-if="level===0">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
+						<el-form-item prop="categoryName" label="项目:" v-else-if="level===1">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
+						<el-form-item prop="categoryName" label="内容:" v-else-if="level===2">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
+						<el-form-item prop="categoryName" label="管理及运行要求:" v-else-if="level===3">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
+						<el-form-item prop="categoryName" label="量化说明:" v-else-if="level===4">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
+						<el-form-item prop="categoryName" label="量化项:" v-else-if="level===5">
+							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+						</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="addEventdialogVisible=false">取 消</el-button>
@@ -207,12 +189,7 @@
 	export default {
 		data() {
 			return {
-				levelOneDialog: false,
-				levelTwoDialog: false,
-				levelThreeDialog: false,
-				levelFourDialog: false,
-				levelFiveDialog: false,
-				levelSixDialog: false,
+				editDialog: false,
 				buttoncontrol: false,
 				innerVisible: false,
 				downloadChoice: false,
@@ -424,8 +401,8 @@
 			},
 			//获取要素树
 			getDate() {
-				this.loading=true
 				//根据选择的状态构造参数查询要素
+				this.loading=true
 				if (this.filterStatus == '启用') {
 					this.queryStatus = 0
 				} else {
@@ -553,6 +530,12 @@
 				this.insertDate.code = val.code
 				this.addEventForm.name = ''
 				//显示新增节点框
+				if(!val){
+					this.lavel=0
+				}else{
+					this.level=val.code.length/3
+				}
+				console.log(this.level)
 				this.addEventdialogVisible = true;
 			},
 			//打开编辑框
@@ -562,12 +545,7 @@
 				//保存当前节点的层级
 				this.level = node.level;
 				//根据层级选择显示的编辑框
-				if (this.level == 1) this.levelOneDialog = true
-				else if (this.level == 2) this.levelTwoDialog = true
-				else if (this.level == 3) this.levelThreeDialog = true
-				else if (this.level == 4) this.levelFourDialog = true
-				else if (this.level == 5) this.levelFiveDialog = true
-				else if (this.level == 6) this.levelSixDialog = true
+				this.editDialog=true
 			},
 			//保存选中节点的数据
 			saveChosenData(data) {
@@ -605,12 +583,7 @@
 					this.$message.error(err.message)
 				})
 				//根据保存的层级信息关闭对应对话框
-				if (this.level == 1) this.levelOneDialog = false
-				else if (this.level == 2) this.levelTwoDialog = false
-				else if (this.level == 3) this.levelThreeDialog = false
-				else if (this.level == 4) this.levelFourDialog = false
-				else if (this.level == 5) this.levelFiveDialog = false
-				else if (this.level == 6) this.levelSixDialog = false
+				this.editDialog=false
 			},
 			//更改当前节点的启用状态
 			onStopUse(val) {
@@ -773,6 +746,7 @@
 		width:100%;
 		text-overflow: ellipsis;
 	}
+
 	.grid-content {
 		border-radius: 4px;
 		min-height: 36px;
