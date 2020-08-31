@@ -15,7 +15,6 @@
 				<el-form-item>
 					<el-button type="primary" icon='el-icon-search' @click="handleSelect">查询</el-button>
 					<el-button type="primary" icon='el-icon-plus' @click="insertCheckListDialog=true">新增</el-button>
-					<el-button type="primary" icon='el-icon-plus' @click="addmuch">批量新增</el-button>
 				</el-form-item>
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
