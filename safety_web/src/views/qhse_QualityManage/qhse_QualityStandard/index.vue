@@ -303,6 +303,8 @@
 				//调用接口，查询数据
 				querryQhseElements(1).then(res => {
 					if (res.code == '1000') {
+						this.loading=true
+						this.loading.text="文件下载中，请稍候"
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(res.data)
 						var option = {};
@@ -317,6 +319,7 @@
 						var toExcel = new ExportJsonExcel(option);
 						toExcel.saveExcel();
 					}
+					this.loading=false
 				})
 				//关闭下载选项框
 				this.downloadChoice = false
@@ -328,6 +331,8 @@
 				//调用接口，查询数据
 				querryQhseElements(0).then(res => {
 					if (res.code == '1000') {
+						this.loading=true
+						this.loading.text="文件下载中，请稍候"
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(res.data)
 						var option = {};
@@ -341,6 +346,7 @@
 						//导出数据
 						var toExcel = new ExportJsonExcel(option);
 						toExcel.saveExcel();
+						this.loading=false
 					}
 				})
 				//关闭下载选项框
@@ -510,14 +516,7 @@
 			handleSuccess(response) {
 				console.log(response)
 				if (response.code == '1000') {
-					querryQhseElement({
-						queryStatus: this.queryStatus
-					}).then(res => {
-						this.tableData = res.data
-						this.select()
-					}).catch((err) => {
-						this.$message.error(err.message)
-					})
+					this.select()
 					this.$message.success('上传成功')
 				} else {
 					this.$message.error('上传失败')
@@ -574,7 +573,7 @@
 				updateQHSEElement(this.chosenData).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						this.getDate()
+						this.select()
 						this.$message.success('修改信息成功')
 					} else {
 						this.$message.error('修改信息失败')
@@ -592,7 +591,7 @@
 					if (res.code == '1000') {
 						//点击后的状态更新
 						//val.status = val.status == '停用' ? '启用' : '停用';
-						this.getDate()
+						this.select()
 						this.$message.success('更新状态成功')
 					} else {
 						this.$message.error('更新状态失败')
@@ -614,7 +613,7 @@
 				addQHSEElement(this.insertDate).then(res => {
 					if (res.code == '1000') {
 						//调用搜索方法重新渲染界面
-						this.getDate()
+						this.select()
 						this.$message.success('节点添加成功')
 
 					} else {
