@@ -1,16 +1,21 @@
 <template>
 	<div>
 		<div class="page-title" style="width:100%">检查表配置</div>
-		<div class="page-content" style="width: fit-content;min-width: 100%;" v-loading="loading">
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<el-form :inline='true'>
 				<el-form-item label="查询:">
 					<el-input placeholder="输入关键字查询" v-model="filterText"></el-input>
+				</el-form-item>
+				<el-form-item label="启用状态:">
+					<el-select placeholder="请选择启用状态" v-model="filterStatus" clearable='true'>
+						<el-option v-for="item in options" :key="item.value" :value="item.value" :label="item.label"></el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-search"style="margin-right: 15px;" @click="select()">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="openAddDialog()" icon='el-icon-circle-plus'>新增节点</el-button>
+					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增表</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="`/api/check_list_excel_upload`" :on-preview="handlePreview" :on-remove="handleRemove"
@@ -23,14 +28,13 @@
 					<el-button type="warning" icon='el-icon-download' @click="downloadChoice=true">下载文件</el-button>
 				</el-form-item>
 			</el-form>
-			<el-checkbox label="仅显示启用项" :true-label="0" :false-label="1" v-model="queryStatus" @change="getDate"></el-checkbox>
-			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree2" :expand-on-click-node="false" v-loading="loading">
-				<div class="custom-tree-node" slot-scope="{ node, data }">
-					<div>{{ node.label }}
-					</div>
-					<div>
+			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode"
+			 ref="tree2" :expand-on-click-node="false" v-loading="loading" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
+				<span  class="custom-tree-node" slot-scope="{ node, data }">
+					<span :title="node.label" class="em-tree-text">{{ node.label }}</span>
+					<span>
 						<el-button type="text" size="mini" @click="() => openAddDialog(node)" v-if="node.level!==3&&node.data.status==='启用'">
-							<i class="el-icon-plus"></i>
+							<i class="el-icon-circle-plus"></i>
 						</el-button>
 						&nbsp;&nbsp;
 						<el-button type="text" size="mini" @click="() => openConfigDialog(node)" v-if="node.data.status==='启用'">
@@ -40,8 +44,8 @@
 						<el-button type="text" size="mini" @click="() => updateStatus(node)">
 							<i>{{data.status=='启用'?'停用':'启用'}}</i>
 						</el-button>
-					</div>
-				</div>
+					</span>
+				</span>
 			</el-tree>
 			<!--新增事件节点分类弹窗-->
 			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible" width="30%">
@@ -72,8 +76,8 @@
 			<el-dialog title="导出选择" :visible.sync="downloadChoice" width="30%" align="center">
 				<el-form :inline='true'>
 					<el-form-item>
-						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部项</el-button>&nbsp;&nbsp;
-						<el-button icon="el-icon-download" type="warning" @click="downloadUse()">导出启用项</el-button>
+						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部文件</el-button>&nbsp;&nbsp;
+						<el-button icon="el-icon-download" type="warning" @click="downloadModle()">导出模板文件</el-button>
 					</el-form-item>
 				</el-form>
 			</el-dialog>
@@ -89,11 +93,9 @@
 		GetCheckListTree,
 		updateNodeStatus,
 		updateCheckList,
-		addCheckListNode,
-		delete_tree,
-		getcontent,
-		Createcontent
+		addCheckListNode
 	} from '../../../services/hidden_danger_investigation/checkListItem'
+	import xlsx from 'xlsx'
 	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
@@ -102,6 +104,17 @@
 					checkListName: '',
 					attribute:''
 				},
+				options: [{
+						value: '启用',
+						label: '启用'
+					},
+					{
+						value: '全部',
+						label: '全部'
+					}
+				],
+				expandedList:[],
+				filterStatus:'启用',
 				loading:false,
 				queryStatus:0,
 				addEventdialogVisible: false,
@@ -135,6 +148,8 @@
 					id:''
 				},
 				downloadData:[],
+				downloadModleData:[],
+				downloadModleItem:[],
 				downloadDataItem:{
 					checkListCode:'',
 					checkListName:'',
@@ -146,7 +161,8 @@
 				updateData:{
 					checkListName:'',
 					checkListCode:''
-				}
+				},
+				mergeTable:[]
 			};
 		},
 		watch: {
@@ -156,7 +172,6 @@
 			}
 		},
 		mounted() {
-			this.getDate()
 		},
 		computed: {
 			//获取当前登录用户
@@ -168,31 +183,95 @@
 			//获取检查表数据
 			getDate(){
 				this.loading=true
+				//根据选择的状态构造参数查询要素
+				if (this.filterStatus == '启用') {
+					this.queryStatus = 0
+				} else {
+					this.queryStatus = 1
+				}
 				//根据当前启用选择框状态查询数据
 				GetCheckListTree(this.queryStatus).then((res) => {
-					this.treeData = res.data
-					this.select()
+					this.selectedDate = res.data
+					this.loading=false
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
-				this.loading=false
+			},
+			nodeExpand(data){
+				this.expandedList.splice(this.expandedList.length, 1, data.checkListID)
+			},
+			nodeCollapse(data){
+				this.expandedList.splice(this.expandedList.indexOf(data.checkListID), 1)
 			},
 			//搜索方法
 			select(){
 				//搜索输入框为空则显示全部数据
-				if(!this.filterText){
-					this.selectedDate=this.treeData
-				}else{
-					//调用树的搜索方法进行关键字搜索
-					this.filterNode(this.filterText, this.selectedData)
+				this.getDate()
+			},
+			parseTreeToModle(node){
+				for(var i=0;i<node.length;i++){
+					while(this.downloadModleItem.length*4>=node[i].checkListCode.length){
+						this.downloadModleItem.pop()
+					}
+					this.downloadModleItem.push(node[i].checkListName)
+					if(!node[i].children){
+						this.downloadModleData.push(JSON.parse(JSON.stringify(this.downloadModleItem)))
+						this.downloadModleItem.pop()
+					}else{
+						this.parseTreeToModle(node[i].children)
+					}
 				}
+			},
+			mergeData(){
+				let mergeTable=[]
+				for(var i=0;i<3;i++){
+					var start = {
+						r: null,
+						c: null
+					}
+					start.r = 0
+					start.c = i
+					for (var j = 1; j < this.downloadModleData.length; j++) {
+						//处理空单元格，避免空单元格合并
+						if (!this.downloadModleData[j][i] && !this.downloadModleData[j - 1][i]) {
+							start.r = j
+							start.c = i
+						}
+						//由于数据规则排列，所以只需要处理两个相邻处不相同时的情况
+						else if (this.downloadModleData[j][i] != this.downloadModleData[j - 1][i]) {
+							//构建合并结束单元格对象，包含结束行标，列标，并将不相同的前一个坐标写入
+							var e = {
+								r: null,
+								c: null
+							}
+							e.r = j - 1
+							e.c = i
+							//将之前得到的开始单元格坐标重新拷贝，实现深拷贝
+							var s = {
+								r: null,
+								c: null
+							}
+							s.r = start.r
+							s.c = start.c
+							//保存合并信息
+							mergeTable.push({
+								s,
+								e
+							})
+							//将不相同的后一个坐标写入，开始下一次循环
+							start.r = j
+							start.c = i
+						}
+					}
+				}
+				return mergeTable
 			},
 			//确认上传
 			submitUpload() {
 				this.$refs.upload.submit();
 			},
 			//上传过程中
-			handleProgress(file){
+			handleProgress(){
 				this.$alert('文件上传中，请稍候','文件上传')
 			},
 			//移除上传文件
@@ -210,12 +289,12 @@
 			//上传成功
 			handleSuccess(res) {
 				if(res.code=='1000'){
+					this.getDate()
 					this.$message.success(res);
 				}else{
 					this.$message.error(res)
 				}
 				//重新渲染界面
-				this.getDate();
 				this.select()
 			},
 			//树的关键字搜索
@@ -260,12 +339,7 @@
 				addCheckListNode(this.insertData).then(res=>{
 					if(res.code=='1000'){
 						//调用接口重新查询数据，渲染界面
-						GetCheckListTree(this.queryStatus).then((res) => {
-							this.treeData = res.data
-							this.select()
-						}).catch((err) => {
-							this.$message.error(err.message)
-						})
+						this.select()
 						this.$message.success('添加成功')
 					}else{
 						this.$message.error('添加失败')
@@ -300,12 +374,7 @@
 				updateCheckList(this.updateData).then(res=>{
 					if(res.code=='1000'){
 						//调用接口重新加载数据，渲染界面
-						GetCheckListTree(this.queryStatus).then((res) => {
-							this.treeData = res.data
-							this.select()
-						}).catch((err) => {
-							this.$message.error(err.message)
-						})
+						this.select()
 						this.$message.success('更新信息成功')
 					}
 					else{
@@ -323,7 +392,7 @@
 				updateNodeStatus(node.data.checkListID).then(res=>{
 					if(res.code=='1000'){
 						//调用接口，重新加载数据，渲染界面
-						node.data.status=node.data.status== '停用' ? '启用' : '停用'
+						this.select()
 						this.$message.success('更新状态成功')
 					}else{
 						this.$message.error('更新状态失败')
@@ -336,40 +405,54 @@
 			downloadAll(){
 				this.downloadData=[]
 				GetCheckListTree(1).then(res=>{
+					this.loading=true
 					if(res.code=='1000'){
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(res.data)
-						//传入表名称，下载文件
-						this.downloadFile("隐患排查检查表")
+						var option={}
+						//设置文件名
+						option.fileName=name
+						//设置文件数据，数据格式
+						option.datas=[{
+							sheetData:"隐患排查检查表",
+							sheetHeader:["编码","名称","属性","父节点","是否子节点","状态"]
+						}]
+						var toExcel = new ExportJsonExcel(option);
+						toExcel.saveExcel();
 					}
 				}).catch(err=>{
 					this.$message.error(err.message)
 				})
+				this.loading=false
 				this.downloadChoice=false
 			},
-			//仅下载启用项
-			downloadUse(){
-				this.downloadData=[]
-				GetCheckListTree(0).then(res=>{
-					if(res.code=='1000'){
-						this.parseTreeToTable(res.data)
-						this.downloadFile("隐患排查启用检查表")
+			downloadModle(){
+				GetCheckListTree(1).then((res) => {
+					this.loading=true
+					this.parseTreeToModle(res.data)
+					if(this.downloadModleData.length>0){
+						this.downloadModleData.splice(0,1,['表名','项目','内容'])
+						//将table型数据转换为sheet
+						var sheet = xlsx.utils.aoa_to_sheet(this.downloadModleData)
+						//将合并数组引入sheet中
+						sheet['!merges'] = this.mergeData()
+						//定义文件名
+						const fileName = '隐患排查模板检查表'
+						//定义表名
+						const sheetName = 'sheet1'
+						//定义新的book用来存储sheet
+						const wb = xlsx.utils.book_new()
+						//将sheet加入book中
+						xlsx.utils.book_append_sheet(wb, sheet, sheetName)
+						//生成文件
+						xlsx.writeFile(wb, fileName)
 					}
+				}).catch((err) => {
+					this.$message.error(err.message)
 				})
+				this.loading=false
 				this.downloadChoice=false
-			},
-			//下载文件
-			downloadFile(name){
-				var option={}
-				//设置文件名
-				option.fileName=name
-				//设置文件数据，数据格式
-				option.datas=[{
-					sheetData:this.downloadData,
-					sheetHeader:["编码","名称","属性","父节点","是否子节点","状态"]
-				}]
-				var toExcel = new ExportJsonExcel(option);
-				toExcel.saveExcel();
+				
 			},
 			//将树形数据转换为table型数据，递归实现
 			parseTreeToTable(node){
@@ -400,8 +483,18 @@
 		justify-content: space-between;
 		font-size: 14px;
 		padding-right: 8px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		width: 100%;
 	}
-
+	.em-tree-text{
+		display: inline-block;
+		overflow: hidden;
+		white-space: nowrap;
+		width:100%;
+		text-overflow: ellipsis;
+	}
 	.grid-content {
 		border-radius: 4px;
 		min-height: 36px;
