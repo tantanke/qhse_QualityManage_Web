@@ -55,14 +55,6 @@ export const getFileAuditProgress = (data) => {
 }
 //根据公司和年度查询要素
 export const querryQhseElement = (data) => {
-<<<<<<< HEAD
-  return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {method: 'GET',data})
-}
-//要素证据推送
-export const getFileAuditProgress = (data) => {
-  return request(`/api/getFileAuditProgress`,{method:'get',data})
-}
-=======
   return request(`/api/queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {method: 'GET',data})
 }
 //发布任务
@@ -77,4 +69,3 @@ export const getOrderedTask =()=>{
 export const getTaskDetails=(data)=>{
 	return request('/api/getTaskDetails?tableId=${data.tableID}&&Status=${data.status}',{method:'get',data})
 }
->>>>>>> 44c0448... 任务模块第一版

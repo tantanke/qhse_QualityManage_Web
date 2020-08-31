@@ -267,7 +267,10 @@ export default {
         // 隐患违章跳转
         pushRouter() {
             let _this = this
-           if (_this.reason === '不录入' || _this.reason === '问题') return
+           if (_this.reason === '不录入' || _this.reason === '问题'){
+               _this.reason = '不录入'
+               return
+           } 
           else if (_this.reason === '隐患'){
            _this.$router.push({
             path: '/hidden_danger/input',
