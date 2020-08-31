@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="page-title" style="width:100%">审核要素管理</div>
-		<div class="page-content" v-loading="loading">
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<el-form :inline='true'>
 				<el-form-item label="查询:">
 					<el-input placeholder="输入关键字查询" v-model="filterText" style="width:300px;"></el-input>
@@ -29,8 +29,7 @@
 				</el-form-item>
 			</el-form>
 			<el-tree :data="selectedData" node-key="id" :props="defaultProps" :expand-on-click-node="false" ref="tree2"
-			 :filter-node-method="filterNode" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse"
-			v-loading="loading">
+			 :filter-node-method="filterNode" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
 					<span :title="node.label" class="em-tree-text">{{ node.label }}</span>
 					<span>
@@ -425,6 +424,7 @@
 			},
 			//获取要素树
 			getDate() {
+				this.loading=true
 				//根据选择的状态构造参数查询要素
 				if (this.filterStatus == '启用') {
 					this.queryStatus = 0
@@ -436,6 +436,7 @@
 					queryStatus: this.queryStatus
 				}).then(res => {
 					this.selectedData = res.data
+					this.loading=false
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
