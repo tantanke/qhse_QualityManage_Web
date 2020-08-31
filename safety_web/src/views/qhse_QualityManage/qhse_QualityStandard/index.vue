@@ -15,7 +15,7 @@
 					<el-button type="primary" icon="el-icon-search" @click="select()" style="margin-right: 15px;">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="el-icon-plus" @click="() => append({code:''})">新增根节点</el-button>
+					<el-button type="primary" icon="el-icon-plus" @click="() => append({code:''})">新增主题</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="'/api/managesyselements_excel_upload'" :on-preview="handlePreview" :on-remove="handleRemove"
