@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="page-title" style="width:100%">审核要素管理</div>
-		<div class="page-content" style="width: fit-content;min-width: 100%;" v-loading="loading">
+		<div class="page-content" v-loading="loading">
 			<el-form :inline='true'>
 				<el-form-item label="查询:">
 					<el-input placeholder="输入关键字查询" v-model="filterText" style="width:300px;"></el-input>
@@ -32,7 +32,7 @@
 			 :filter-node-method="filterNode" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse"
 			v-loading="loading">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<span>{{ node.label }}</span>
+					<span :title="node.label" class="em-tree-text">{{ node.label }}</span>
 					<span>
 						<span>{{data.initialScore}}分</span>&nbsp;&nbsp;
 						<el-button type="text" size="mini" @click="() => append(data,node)" v-if="node.level<6">
@@ -760,8 +760,18 @@
 		justify-content: space-between;
 		font-size: 14px;
 		padding-right: 8px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		width: 100%;
 	}
-
+	.em-tree-text{
+		display: inline-block;
+		overflow: hidden;
+		white-space: nowrap;
+		width:100%;
+		text-overflow: ellipsis;
+	}
 	.grid-content {
 		border-radius: 4px;
 		min-height: 36px;
