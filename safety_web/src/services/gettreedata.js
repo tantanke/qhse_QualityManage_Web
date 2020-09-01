@@ -67,5 +67,5 @@ export const getOrderedTask =()=>{
 }
 //
 export const getTaskDetails=(data)=>{
-	return request('/api/getTaskDetails?tableId=${data.tableID}&&Status=${data.status}',{method:'get',data})
+	return request('/api/getTaskDetails?tableId=${data.tableID}&status=${data.status}',{method:'get',data})
 }
