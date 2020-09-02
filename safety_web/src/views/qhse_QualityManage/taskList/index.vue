@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="page-title" style="width: 100%">待办任务</div>
-		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
+		<div class="page-content" v-loading="loading">
 			<el-form label-width="90px" :inline="true">
 				<el-form-item label="选择公司:">
 					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
@@ -21,7 +21,7 @@
 					<el-button type="primary" icon='el-icon-search' @click="select()">查询</el-button>
 				</el-form-item>
 			</el-form>
-			<el-table :data="selectedData" style="width: 100%" max-height="560" border fixed>
+			<el-table :data="selectedData" style="width: 100%" max-height="560" border v-loading="loading" fixed>
 				<el-table-column type="index" label="序号" width="60%" align="center"></el-table-column>
 				<el-table-column prop="companyName" label="任务单位" width="160%" align="center"></el-table-column>
 				<el-table-column prop="taskName" label="任务名称" width="260%" align="center"></el-table-column>
@@ -33,8 +33,7 @@
 				<el-table-column prop="trueDate" label="证据备案完成时间" width="180%" align="center"></el-table-column>
 				<el-table-column label="操作" width="100%" align="center" fixed='right'>
 					<template slot-scope="scope">
-						<el-button ref="acceptButton" type="primary" icon="el-icon-check" size="mini" @click="accept(scope.row)" v-if="!scope.row.receiveDate">接收</el-button>
-						<el-button type="success" icon="el-icon-check" size="mini" v-else>已接收</el-button>
+						<el-button ref="acceptButton" type="primary" icon="el-icon-check" size="mini" @click="accept(scope.row)">接收</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -175,6 +174,11 @@
 			},
 			//接收任务
 			accept(row) {
+				//对是否已经接受任务进行检查
+				if(row.receiveDate){
+					this.$message.warning('不能重复接收任务')
+					return
+				}
 				//调用接口改变任务接收状态
 				receiveTask(row.qHSETaskID).then(res => {
 					if (res.code == '1000') {
@@ -191,7 +195,6 @@
 			getTaskList() {
 				this.loading=true
 				getTaskList().then(res=>{
-					console.log(res.data)
 						this.taskList=res.data
 						this.select()
 						this.loading=false
