@@ -100,8 +100,7 @@ import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
-import {GetNaviByUserRole} from '../services/navisBar'
-
+import {GetNaviByUserRole,logout} from '../services/navisBar'
 // import IconDashBoard from '../assets/icons/dashboard.svg'
 // import IconSystem from '../assets/icons/system.svg'
 // import IconConfig from '../assets/icons/config.svg'
@@ -230,6 +229,11 @@ export default {
     checkUser () {
       if (!this.currentUser) {
         // this.$message.error('请登录')
+		logout().then(res=>{
+			console.log(res)
+		}).catch(err=>{
+			this.$message.error(err.message)
+		})
         this.$router.push({name: 'Login'})
       }
     },
@@ -238,6 +242,11 @@ export default {
     },
     handleLogout () {
       CurrentUser.clear()
+	  logout().then(res=>{
+		 console.log(res)
+	  }).catch(err=>{
+		  this.$message.error(err.message)
+	  })
       this.$router.push({name: 'Login'})
     },
     //提交信息状态
