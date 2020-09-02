@@ -12,25 +12,25 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="el-icon-search"style="margin-right: 15px;" @click="select()">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" style="margin-right: 15px;" @click="select()">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增表</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="`/api/check_list_excel_upload`" :on-preview="handlePreview" :on-remove="handleRemove"
-					 :on-success="handleSuccess" :file-list="fileList" :headers="{Authorization:currentUser.token}" :on-progress="handleProgress" :show-file-list="false"
-					 accept=".excel,.xls,.xlsx">
-						<el-button icon='el-icon-upload'  type="success" @click="submitUpload">上传文件</el-button>
+					 :on-success="handleSuccess" :file-list="fileList" :headers="{Authorization:currentUser.token}" :on-progress="handleProgress"
+					 :show-file-list="false" accept=".excel,.xls,.xlsx">
+						<el-button icon='el-icon-upload' type="success" @click="submitUpload">上传文件</el-button>
 					</el-upload>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="warning" icon='el-icon-download' @click="downloadChoice=true">下载文件</el-button>
 				</el-form-item>
 			</el-form>
-			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode"
-			 ref="tree2" :expand-on-click-node="false" v-loading="loading" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
-				<span  class="custom-tree-node" slot-scope="{ node, data }">
+			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree2"
+			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
+				<span class="custom-tree-node" slot-scope="{ node, data }">
 					<span :title="node.label" class="em-tree-text">{{ node.label }}</span>
 					<span>
 						<el-button type="text" size="mini" @click="() => openAddDialog(node)" v-if="node.level!==3&&node.data.status==='启用'">
@@ -102,7 +102,7 @@
 			return {
 				addEventForm: {
 					checkListName: '',
-					attribute:''
+					attribute: ''
 				},
 				options: [{
 						value: '启用',
@@ -113,56 +113,56 @@
 						label: '全部'
 					}
 				],
-				expandedList:[],
-				filterStatus:'启用',
-				loading:false,
-				queryStatus:0,
+				expandedList: [],
+				filterStatus: '启用',
+				loading: false,
+				queryStatus: 0,
 				addEventdialogVisible: false,
-				configEventDialog:false,
-				downloadChoice:false,
+				configEventDialog: false,
+				downloadChoice: false,
 				filterText: '',
 				defaultProps: {
 					children: 'children',
 					label: 'checkListName'
 				},
-				selectedDate:[],
-				chosenData:{
-					attribute:'',
-					checkListCode:null,
-					checkListName:'',
-					parentName:null,
-					status:''
+				selectedDate: [],
+				chosenData: {
+					attribute: '',
+					checkListCode: null,
+					checkListName: '',
+					parentName: null,
+					status: ''
 				},
-				insertData:{
-					attribute:'',
-					checkListCode:'',
-					checkListName:'',
-					parentName:'',
-					status:'启用'
+				insertData: {
+					attribute: '',
+					checkListCode: '',
+					checkListName: '',
+					parentName: '',
+					status: '启用'
 				},
-				configData:{
-					attribute:'',
-					checkListCode:'',
-					checkListName:'',
-					status:'',
-					id:''
+				configData: {
+					attribute: '',
+					checkListCode: '',
+					checkListName: '',
+					status: '',
+					id: ''
 				},
-				downloadData:[],
-				downloadModleData:[],
-				downloadModleItem:[],
-				downloadDataItem:{
-					checkListCode:'',
-					checkListName:'',
-					attribute:'',
-					parentName:'',
-					isChildNode:'',
-					status:''
+				downloadData: [],
+				downloadModleData: [],
+				downloadModleItem: [],
+				downloadDataItem: {
+					checkListCode: '',
+					checkListName: '',
+					attribute: '',
+					parentName: '',
+					isChildNode: '',
+					status: ''
 				},
-				updateData:{
-					checkListName:'',
-					checkListCode:''
+				updateData: {
+					checkListName: '',
+					checkListCode: ''
 				},
-				mergeTable:[]
+				mergeTable: []
 			};
 		},
 		watch: {
@@ -171,8 +171,7 @@
 				this.$refs.tree2.filter(val);
 			}
 		},
-		mounted() {
-		},
+		mounted() {},
 		computed: {
 			//获取当前登录用户
 			currentUser() {
@@ -181,8 +180,8 @@
 		},
 		methods: {
 			//获取检查表数据
-			getDate(){
-				this.loading=true
+			getDate() {
+				this.loading = true
 				//根据选择的状态构造参数查询要素
 				if (this.filterStatus == '启用') {
 					this.queryStatus = 0
@@ -192,39 +191,39 @@
 				//根据当前启用选择框状态查询数据
 				GetCheckListTree(this.queryStatus).then((res) => {
 					this.selectedDate = res.data
-					this.loading=false
+					this.loading = false
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
 			},
-			nodeExpand(data){
+			nodeExpand(data) {
 				this.expandedList.splice(this.expandedList.length, 1, data.checkListID)
 			},
-			nodeCollapse(data){
+			nodeCollapse(data) {
 				this.expandedList.splice(this.expandedList.indexOf(data.checkListID), 1)
 			},
 			//搜索方法
-			select(){
+			select() {
 				//搜索输入框为空则显示全部数据
 				this.getDate()
 			},
-			parseTreeToModle(node){
-				for(var i=0;i<node.length;i++){
-					while(this.downloadModleItem.length*4>=node[i].checkListCode.length){
+			parseTreeToModle(node) {
+				for (var i = 0; i < node.length; i++) {
+					while (this.downloadModleItem.length * 4 >= node[i].checkListCode.length) {
 						this.downloadModleItem.pop()
 					}
 					this.downloadModleItem.push(node[i].checkListName)
-					if(!node[i].children){
+					if (!node[i].children) {
 						this.downloadModleData.push(JSON.parse(JSON.stringify(this.downloadModleItem)))
 						this.downloadModleItem.pop()
-					}else{
+					} else {
 						this.parseTreeToModle(node[i].children)
 					}
 				}
 			},
-			mergeData(){
-				let mergeTable=[]
-				for(var i=0;i<3;i++){
+			mergeData() {
+				let mergeTable = []
+				for (var i = 0; i < 3; i++) {
 					var start = {
 						r: null,
 						c: null
@@ -261,6 +260,24 @@
 							//将不相同的后一个坐标写入，开始下一次循环
 							start.r = j
 							start.c = i
+						} else if (j == this.downloadModleData.length - 1) {
+							var end = {
+								r: null,
+								c: null
+							}
+							end.r = j
+							end.c = i
+							var s = {
+								r: null,
+								c: null
+							}
+							s.r = start.r
+							s.c = start.c
+							//保存合并信息
+							mergeTable.push({
+								s,
+								end
+							})
 						}
 					}
 				}
@@ -271,8 +288,8 @@
 				this.$refs.upload.submit();
 			},
 			//上传过程中
-			handleProgress(){
-				this.$alert('文件上传中，请稍候','文件上传')
+			handleProgress() {
+				this.$alert('文件上传中，请稍候', '文件上传')
 			},
 			//移除上传文件
 			handleRemove(file, fileList) {
@@ -288,10 +305,10 @@
 			},
 			//上传成功
 			handleSuccess(res) {
-				if(res.code=='1000'){
+				if (res.code == '1000') {
 					this.getDate()
 					this.$message.success(res);
-				}else{
+				} else {
 					this.$message.error(res)
 				}
 				//重新渲染界面
@@ -303,135 +320,134 @@
 				return data.checkListName.indexOf(value) !== -1;
 			},
 			//打开新增节点的对话框
-			openAddDialog(node){
+			openAddDialog(node) {
 				//记录选中的数据
-				if(node){
-					this.chosenData.parentName=node.data.checkListName
-					this.chosenData.checkListCode=node.data.checkListCode
-					this.chosenData.status=node.data.status
-					if(node.level==1){
-						this.chosenData.attribute='项目'
-					}else if(node.level==2){
-						this.chosenData.attribute='内容'
+				if (node) {
+					this.chosenData.parentName = node.data.checkListName
+					this.chosenData.checkListCode = node.data.checkListCode
+					this.chosenData.status = node.data.status
+					if (node.level == 1) {
+						this.chosenData.attribute = '项目'
+					} else if (node.level == 2) {
+						this.chosenData.attribute = '内容'
 					}
-				}else{
-					this.chosenData.attribute='表'
-					this.chosenData.parentName=null
-					this.chosenData.checkListCode=null
-					this.chosenData.status="启用"
+				} else {
+					this.chosenData.attribute = '表'
+					this.chosenData.parentName = null
+					this.chosenData.checkListCode = null
+					this.chosenData.status = "启用"
 				}
-				this.addEventdialogVisible=true
+				this.addEventdialogVisible = true
 			},
 			//新增节点
-			insertNode(){
+			insertNode() {
 				//判断数据是否完整
-				if(!this.chosenData.checkListName){
+				if (!this.chosenData.checkListName) {
 					this.$message.error('数据不完整')
 					return
 				}
 				//装填新增数据
-				this.insertData.attribute=this.chosenData.attribute
-				this.insertData.checkListCode=this.chosenData.checkListCode
-				this.insertData.checkListName=this.chosenData.checkListName
-				this.insertData.parentName=this.chosenData.parentName
-				this.insertData.status="启用"
+				this.insertData.attribute = this.chosenData.attribute
+				this.insertData.checkListCode = this.chosenData.checkListCode
+				this.insertData.checkListName = this.chosenData.checkListName
+				this.insertData.parentName = this.chosenData.parentName
+				this.insertData.status = "启用"
 				//调用接口新增数据
-				addCheckListNode(this.insertData).then(res=>{
-					if(res.code=='1000'){
+				addCheckListNode(this.insertData).then(res => {
+					if (res.code == '1000') {
 						//调用接口重新查询数据，渲染界面
 						this.select()
 						this.$message.success('添加成功')
-					}else{
+					} else {
 						this.$message.error('添加失败')
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
 				//关闭新增节点框
-				this.addEventdialogVisible=false
+				this.addEventdialogVisible = false
 			},
 			//打开编辑对话框
-			openConfigDialog(node){
+			openConfigDialog(node) {
 				//保存选中的数据
-				this.configData.checkListName=node.data.checkListName
-				this.configData.checkListCode=node.data.checkListCode
-				this.configData.attribute=node.data.attribute
-				this.configData.status=node.data.status
-				this.configData.id=node.data.checkListID
-				this.configEventDialog=true
+				this.configData.checkListName = node.data.checkListName
+				this.configData.checkListCode = node.data.checkListCode
+				this.configData.attribute = node.data.attribute
+				this.configData.status = node.data.status
+				this.configData.id = node.data.checkListID
+				this.configEventDialog = true
 			},
 			//编辑
-			configNode(){
+			configNode() {
 				//检查数据是否完整
-				if(!this.configData.checkListName){
+				if (!this.configData.checkListName) {
 					this.$message.error('检查项名称不能为空')
 					return
 				}
 				//组装更新的数据
-				this.updateData.checkListName= this.configData.checkListName,
-				this.updateData.checkListCode=this.configData.checkListCode
+				this.updateData.checkListName = this.configData.checkListName,
+					this.updateData.checkListCode = this.configData.checkListCode
 				//调用接口更新数据
-				updateCheckList(this.updateData).then(res=>{
-					if(res.code=='1000'){
+				updateCheckList(this.updateData).then(res => {
+					if (res.code == '1000') {
 						//调用接口重新加载数据，渲染界面
 						this.select()
 						this.$message.success('更新信息成功')
-					}
-					else{
+					} else {
 						this.$message.error('更新信息失败')
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
 				//关闭更新数据框
-				this.configEventDialog=false
+				this.configEventDialog = false
 			},
 			//更新节点状态
-			updateStatus(node){
+			updateStatus(node) {
 				//调用接口，传入节点id，更新状态
-				updateNodeStatus(node.data.checkListID).then(res=>{
-					if(res.code=='1000'){
+				updateNodeStatus(node.data.checkListID).then(res => {
+					if (res.code == '1000') {
 						//调用接口，重新加载数据，渲染界面
 						this.select()
 						this.$message.success('更新状态成功')
-					}else{
+					} else {
 						this.$message.error('更新状态失败')
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
 			},
 			//下载所有项
-			downloadAll(){
-				this.downloadData=[]
-				GetCheckListTree(1).then(res=>{
-					this.loading=true
-					if(res.code=='1000'){
+			downloadAll() {
+				this.downloadData = []
+				GetCheckListTree(1).then(res => {
+					this.loading = true
+					if (res.code == '1000') {
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(res.data)
-						var option={}
+						var option = {}
 						//设置文件名
-						option.fileName=name
+						option.fileName = name
 						//设置文件数据，数据格式
-						option.datas=[{
-							sheetData:"隐患排查检查表",
-							sheetHeader:["编码","名称","属性","父节点","是否子节点","状态"]
+						option.datas = [{
+							sheetData: "隐患排查检查表",
+							sheetHeader: ["编码", "名称", "属性", "父节点", "是否子节点", "状态"]
 						}]
 						var toExcel = new ExportJsonExcel(option);
 						toExcel.saveExcel();
+						this.loading = false
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
-				this.loading=false
-				this.downloadChoice=false
+				this.downloadChoice = false
 			},
-			downloadModle(){
+			downloadModle() {
 				GetCheckListTree(1).then((res) => {
-					this.loading=true
+					this.loading = true
 					this.parseTreeToModle(res.data)
-					if(this.downloadModleData.length>0){
-						this.downloadModleData.splice(0,1,['表名','项目','内容'])
+					if (this.downloadModleData.length > 0) {
+						this.downloadModleData.splice(0, 1, ['表名', '项目', '内容'])
 						//将table型数据转换为sheet
 						var sheet = xlsx.utils.aoa_to_sheet(this.downloadModleData)
 						//将合并数组引入sheet中
@@ -446,28 +462,28 @@
 						xlsx.utils.book_append_sheet(wb, sheet, sheetName)
 						//生成文件
 						xlsx.writeFile(wb, fileName)
+						this.loading = false
 					}
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
-				this.loading=false
-				this.downloadChoice=false
-				
+				this.downloadChoice = false
+
 			},
 			//将树形数据转换为table型数据，递归实现
-			parseTreeToTable(node){
-				for(var i=0;i<node.length;i++){
-					if(node[i]){
+			parseTreeToTable(node) {
+				for (var i = 0; i < node.length; i++) {
+					if (node[i]) {
 						this.downloadData.push({
-							checkListCode:node[i].checkListCode,
-							checkListName:node[i].checkListName,
-							attribute:node[i].attribute,
-							parentName:node[i].parentName,
-							isChildNode:node[i].isChildNode,
-							status:node[i].status
+							checkListCode: node[i].checkListCode,
+							checkListName: node[i].checkListName,
+							attribute: node[i].attribute,
+							parentName: node[i].parentName,
+							isChildNode: node[i].isChildNode,
+							status: node[i].status
 						})
 					}
-					if(node[i].children){
+					if (node[i].children) {
 						this.parseTreeToTable(node[i].children)
 					}
 				}
@@ -488,13 +504,15 @@
 		text-overflow: ellipsis;
 		width: 100%;
 	}
-	.em-tree-text{
+
+	.em-tree-text {
 		display: inline-block;
 		overflow: hidden;
 		white-space: nowrap;
-		width:100%;
+		width: 100%;
 		text-overflow: ellipsis;
 	}
+
 	.grid-content {
 		border-radius: 4px;
 		min-height: 36px;
