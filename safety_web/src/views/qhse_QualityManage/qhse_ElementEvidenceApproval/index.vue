@@ -209,7 +209,6 @@ export default {
     },
     deepTree1 (treedata) {
             let _this = this
-            _this.total1=0;
             console.log('啊这',treedata)
             
             treedata.forEach(item => {
@@ -224,7 +223,6 @@ export default {
       },
       deepTree2 (treedata) {
       let _this = this
-            _this.total2=0;
             console.log('啊这',treedata)
             
             treedata.forEach(item => {
@@ -265,6 +263,7 @@ export default {
          query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.total1=0;
           this.deepTree1(this.treeData);
         })
         .catch(err => {
@@ -275,6 +274,7 @@ export default {
         show_approve_check(this.filterQuery)
         .then(res => {
           this.hasData = res.data;
+          this.total2=0;
           this.deepTree2(this.hasData);
         })
         .catch(err => {
@@ -294,6 +294,7 @@ export default {
          query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.total1=0;
           this.deepTree1(this.treeData);
           // this.companyName = res.data.name;
           // this.year = res.data.year;
@@ -306,6 +307,7 @@ export default {
         show_approve_check(this.filterQuery)
         .then(res => {
           this.hasData = res.data;
+          this.total2=0;
           this.deepTree2(this.hasData);
         })
         .catch(err => {
@@ -356,6 +358,7 @@ export default {
          query_elementReviewers(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.total1=0;
           console.log(this.filterQuery.compayCode)
           this.deepTree1(this.treeData);
         })
@@ -367,6 +370,7 @@ export default {
         show_approve_check(this.filterQuery)
         .then(res => {
           this.hasData = res.data;
+          this.total2=0;
           this.deepTree2(this.hasData);
         })
         .catch(err => {
