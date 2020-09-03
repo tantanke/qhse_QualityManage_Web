@@ -31,6 +31,7 @@
 
 
 
+
 <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
    <div style="margin:15px 0px">
       <span style="margin-right:15px">请选择录入方式:</span>
@@ -60,7 +61,7 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='不通过')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过')"
               >录入</el-button>
             </template>
           </el-table-column>
@@ -89,7 +90,7 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未审核' || scope.row.status==='未提供'|| scope.row.status==='不通过')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过')"
               >录入</el-button>
             </template>
           </el-table-column>
@@ -99,11 +100,13 @@
       <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px">
          <el-form label-width="120px" style="width:100%;" >
            <el-row>
-            <el-col :span="24">
+            <el-col :span="24" style="border:1px solid gray; ">
               <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
                 <el-input type="text"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
               </el-form-item>
+               </el-col>
+                <el-col :span="24" style="border:1px solid gray; ">
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
@@ -152,6 +155,7 @@
                 clearable
                 ref="upload"
                 :on-success="handleAvatarSuccess"
+                accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF"
                 >
                   <i slot="default" class="el-icon-plus"></i>
                   <div slot="file" slot-scope="{file}" >
@@ -310,8 +314,12 @@ export default {
       this.form.uploadTime=year+'-'+month+'-'+date;
       this.form.attach+=this.attach;//加上图片attach
       this.form.attach+=this.fileattach;//加上文件attach
-      
-      this.$refs.upload.clearFiles();//清空数据
+      if(this.form.attach==''||this.form.attachDescrption==''||this.form.evidenceDescription=='')
+      {
+        this.$message.error('请录入完全')
+      }
+      else{
+        this.$refs.upload.clearFiles();//清空数据
       this.$refs.uploads.clearFiles();//清空数据
       //上传接口
       await addAll_evidence_attach(this.form).then(res => {
@@ -321,6 +329,7 @@ export default {
          this.dialogVisible3=false;
         }).catch(err => {
           this.$message.error(err.message);
+          console.log('',this.form)
         });
       await querryYearElement(this.filterQuery)//获取到叶子节点信息
         .then(res => {
@@ -334,6 +343,8 @@ export default {
       await this.deepTree(this.treeData);
         this.$message.success('添加成功');
         
+      }
+      
     },
     async updateScore(data){
       this.show=false;
@@ -352,7 +363,7 @@ export default {
         this.form.evidenceDescription='';//初始化证据
         this.form.evidenceID='';//初始化
         this.form.attachID='';//初始化
-        this.form.attachDescrption=null;//初始化附件描述
+        this.form.attachDescrption='';//初始化附件描述
         this.form.code=data.code;//赋值要素编码
         this.form.id=data.id;//附件id
         this.form.attach='';

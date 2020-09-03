@@ -221,7 +221,6 @@ export default {
     },
     deepTree1 (treedata) {
             let _this = this
-            _this.total1=0;
             console.log('啊这',treedata)
             
             treedata.forEach(item => {
@@ -236,9 +235,7 @@ export default {
       },
       deepTree2 (treedata) {
       let _this = this
-            _this.total2=0;
-            console.log('啊这',treedata)
-            
+            console.log('啊这2',treedata)
             treedata.forEach(item => {
                 if (item.childNode.length === 0) {
                     _this.total2++;
@@ -259,6 +256,7 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.total1=0;
           this.deepTree1(this.treeData);
         })
         .catch(err => {
@@ -270,6 +268,7 @@ export default {
         .then(res => {
           this.hasData = res.data;
           console.log('啊',this.hasData)
+           this.total2=0;
            this.deepTree2(this.hasData);
         })
         .catch(err => {
@@ -288,15 +287,18 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+          this.total1=0;
           this.deepTree1(this.treeData);
         })
         .catch(err => {
           console.log(err);
+          
           this.message.error(err.message);
         });
 
         show_approve_check(this.filterQuery)
         .then(res => {
+          this.total2=0;
           this.hasData = res.data;
            this.deepTree2(this.hasData);
         })
@@ -346,7 +348,9 @@ export default {
          query_elementReviewer(this.filterQuery)//获取到叶子节点信息
         .then(res => {
           this.treeData = res.data;
+           this.total1=0;
           this.deepTree1(this.treeData);
+          console.log('查询的时候查询1')
         })
         .catch(err => {
           console.log(err);
@@ -357,7 +361,9 @@ export default {
         .then(res => {
           this.hasData = res.data;
           console.log('已审核数据源1',this.hasData)
+           this.total2=0;
            this.deepTree2(this.hasData);
+           console.log('查询的时候查询2')
         })
         .catch(err => {
           console.log(err);

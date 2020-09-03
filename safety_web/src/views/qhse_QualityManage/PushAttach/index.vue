@@ -17,7 +17,7 @@
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table :data="filterQuery.selected" style="width: 100%" max-height="560" border v-loading="loading">
-					<el-table-column type="index" label="序号" width="100%" align="center"></el-table-column>
+					<el-table-column type="index" label="序号" width="100%" align="center" ></el-table-column>
 					<el-table-column prop="companyName" label="单位名称" width="250%" align="center"></el-table-column>
 					<el-table-column prop="year" label="年度" width="100%" align="center"></el-table-column>
 					<el-table-column prop="elementTableName" label="检查表名称" width="340%" align="center"></el-table-column>
