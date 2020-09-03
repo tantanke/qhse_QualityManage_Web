@@ -21,7 +21,7 @@ export const queryFileaduit2 = (data) => {
 }
 
 export const querryQhseElement = (data) => {
-  return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
+  return request(`/api/queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
       method: 'GET',
       data
     })
