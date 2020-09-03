@@ -5,3 +5,6 @@ export const GetNaviByUserRole = () => {
       method: 'get'
     })
   }
+  export const logout=()=>{
+  	return request('/api/logout',{method:'post'})
+  } 

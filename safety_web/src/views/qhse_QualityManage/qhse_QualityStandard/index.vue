@@ -20,7 +20,7 @@
 				<el-form-item>
 					<el-upload ref="upload" :action="'/api/managesyselements_excel_upload'" :on-preview="handlePreview" :on-remove="handleRemove"
 					 :on-success="handleSuccess" :file-list="fileList" :headers="{Authorization:currentUser.token}" :show-file-list="false"
-					accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
+					 accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
 						<el-button icon="el-icon-upload" type="success" @click="submitUpload">上传文件</el-button>
 					</el-upload>
 				</el-form-item>
@@ -105,24 +105,24 @@
 			<!--新增事件节点分类弹窗-->
 			<el-dialog title="新增要素" :visible.sync="addEventdialogVisible" width="40%">
 				<el-form :model="addEventForm" label-width="20%" :label-position="left">
-						<el-form-item prop="categoryName" label="主题:" v-if="level===0">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
-						<el-form-item prop="categoryName" label="项目:" v-else-if="level===1">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
-						<el-form-item prop="categoryName" label="内容:" v-else-if="level===2">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
-						<el-form-item prop="categoryName" label="管理及运行要求:" v-else-if="level===3">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
-						<el-form-item prop="categoryName" label="量化说明:" v-else-if="level===4">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
-						<el-form-item prop="categoryName" label="量化项:" v-else-if="level===5">
-							<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
-						</el-form-item>
+					<el-form-item prop="categoryName" label="主题:" v-if="level===0">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+					<el-form-item prop="categoryName" label="项目:" v-else-if="level===1">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+					<el-form-item prop="categoryName" label="内容:" v-else-if="level===2">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+					<el-form-item prop="categoryName" label="管理及运行要求:" v-else-if="level===3">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+					<el-form-item prop="categoryName" label="量化说明:" v-else-if="level===4">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
+					<el-form-item prop="categoryName" label="量化项:" v-else-if="level===5">
+						<el-input v-model="addEventForm.name" style="width: 90%;" type="textarea" autosize='true'></el-input>
+					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="addEventdialogVisible=false">取 消</el-button>
@@ -264,7 +264,7 @@
 					status: '启用'
 				},
 				problemDescription: '',
-				mergeTable: []
+				mergeTable: [],
 			};
 		},
 		watch: {
@@ -384,10 +384,14 @@
 					//当访问到最后一级节点时将储存的节点树导出，从而得到一个一维的数据
 					if (node[i].childNode.length == 0) {
 						//将临时储存器中的数据序列化，并且保存到待合并的数组中
+						this.downloadDataItem.push(node[i].auditMode)
+						this.downloadDataItem.push(node[i].initialScore)
+						this.downloadDataItem.push(node[i].formula)
 						this.downloadDataItem.push(node[i].problemDescription)
 						this.downloadData.push(JSON.parse(JSON.stringify(this.downloadDataItem)))
-						this.downloadDataItem.pop()
-						this.downloadDataItem.pop()
+						for (var j = 0; j < 5; j++) {
+							this.downloadDataItem.pop()
+						}
 					} else {
 						//递归访问
 						this.parseTreeToModleTable(node[i].childNode)
@@ -402,7 +406,7 @@
 			//获取要素树
 			getDate() {
 				//根据选择的状态构造参数查询要素
-				this.loading=true
+				this.loading = true
 				if (this.filterStatus == '启用') {
 					this.queryStatus = 0
 				} else {
@@ -413,7 +417,7 @@
 					queryStatus: this.queryStatus
 				}).then(res => {
 					this.selectedData = res.data
-					this.loading=false
+					this.loading = false
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
@@ -431,7 +435,7 @@
 					}
 					start.r = 0
 					start.c = i
-					//第二层循环遍历一列的所有行
+					//第二层循环遍历一列
 					for (var j = 1; j < this.downloadData.length; j++) {
 						//处理空单元格，避免空单元格合并
 						if (!this.downloadData[j][i] && !this.downloadData[j - 1][i]) {
@@ -462,6 +466,24 @@
 							//将不相同的后一个坐标写入，开始下一次循环
 							start.r = j
 							start.c = i
+						} else if (j == this.downloadData.length - 1) {
+							var e = {
+								r: null,
+								c: null
+							}
+							e.r = j
+							e.c = i
+							var s = {
+								r: null,
+								c: null
+							}
+							s.r = start.r
+							s.c = start.c
+							//保存合并信息
+							mergeTable.push({
+								s,
+								e
+							})
 						}
 					}
 				}
@@ -469,26 +491,36 @@
 			},
 			//下载模板文件
 			downloadmodel() {
+				this.loading = true
 				//调用转换方法，得到table型数据
-				this.parseTreeToModleTable(this.selectedData)
-				if (this.downloadData.length > 0) {
-					//在待下载数据中加入表头
-					this.downloadData.splice(0, 1, ["主题", "项目", "内容", "管理及运行要求", "量化说明", "量化项", "问题描述"])
-					//将table型数据转换为sheet
-					var sheet = xlsx.utils.aoa_to_sheet(this.downloadData)
-					//将合并数组引入sheet中
-					sheet['!merges'] = this.mergeData()
-					//定义文件名
-					const fileName = 'QHSE体系要素模板文件表.xlsx'
-					//定义表名
-					const sheetName = 'sheet1'
-					//定义新的book用来存储sheet
-					const wb = xlsx.utils.book_new()
-					//将sheet加入book中
-					xlsx.utils.book_append_sheet(wb, sheet, sheetName)
-					//生成文件
-					xlsx.writeFile(wb, fileName)
-				}
+				querryQhseElement({
+					queryStatus: 1
+				}).then(res => {
+					this.parseTreeToModleTable(res.data)
+					console.log("table", this.downloadData)
+					console.log("merge", this.mergeData())
+					if (this.downloadData.length > 0) {
+						//在待下载数据中加入表头
+						this.downloadData.splice(0, 1, ["主题", "项目", "内容", "管理及运行要求", "量化说明", "量化项", "审核方式", "分数", "计算公式", "问题描述"])
+						//将table型数据转换为sheet
+						var sheet = xlsx.utils.aoa_to_sheet(this.downloadData)
+						//将合并数组引入sheet中
+						sheet['!merges'] = this.mergeData()
+						//定义文件名
+						const fileName = 'QHSE体系要素模板文件表.xlsx'
+						//定义表名
+						const sheetName = 'sheet1'
+						//定义新的book用来存储sheet
+						const wb = xlsx.utils.book_new()
+						//将sheet加入book中
+						xlsx.utils.book_append_sheet(wb, sheet, sheetName)
+						//生成文件
+						xlsx.writeFile(wb, fileName)
+						this.loading = false
+					}
+				}).catch((err) => {
+					this.$message.error(err.message)
+				})
 				this.downloadChoice = false
 			},
 			submitUpload() {
@@ -530,10 +562,10 @@
 				this.insertDate.code = val.code
 				this.addEventForm.name = ''
 				//显示新增节点框
-				if(!val){
-					this.lavel=0
-				}else{
-					this.level=val.code.length/3
+				if (!val) {
+					this.lavel = 0
+				} else {
+					this.level = val.code.length / 3
 				}
 				console.log(this.level)
 				this.addEventdialogVisible = true;
@@ -545,7 +577,7 @@
 				//保存当前节点的层级
 				this.level = node.level;
 				//根据层级选择显示的编辑框
-				this.editDialog=true
+				this.editDialog = true
 			},
 			//保存选中节点的数据
 			saveChosenData(data) {
@@ -583,7 +615,7 @@
 					this.$message.error(err.message)
 				})
 				//根据保存的层级信息关闭对应对话框
-				this.editDialog=false
+				this.editDialog = false
 			},
 			//更改当前节点的启用状态
 			onStopUse(val) {
@@ -739,11 +771,12 @@
 		text-overflow: ellipsis;
 		width: 100%;
 	}
-	.em-tree-text{
+
+	.em-tree-text {
 		display: inline-block;
 		overflow: hidden;
 		white-space: nowrap;
-		width:100%;
+		width: 100%;
 		text-overflow: ellipsis;
 	}
 

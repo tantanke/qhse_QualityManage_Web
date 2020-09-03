@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<div class="page-title" style="width: 100%">要素配置管理</div>
-		<div class="page-content" v-loading="loading">
-			<el-form label-width="130px" :inline="true">
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
+			<el-form :inline="true">
 				<el-form-item label="选择公司:">
 					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 					 v-model="companyId"></treeselect>
@@ -11,14 +11,15 @@
 					<el-date-picker type="year" placeholder="请选择年份" style="width:200px" v-model="year">
 					</el-date-picker>
 				</el-form-item>
-				&nbsp;&nbsp;&nbsp;
 				<el-form-item>
-					<el-button type="primary" icon='el-icon-search' @click="handleSelect">查询</el-button>
+					<el-button type="primary" icon='el-icon-search' @click="handleSelect" style="margin-right: 15px;">查询</el-button>
+				</el-form-item>
+				<el-form-item>
 					<el-button type="primary" icon='el-icon-plus' @click="insertCheckListDialog=true">新增</el-button>
 				</el-form-item>
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-				<el-table :data="filterQuery.selected" style="width: 100%" max-height="560" border v-loading="loading">
+				<el-table :data="selected" style="width: 100%" max-height="560" border>
 					<el-table-column type="expand">
 						<template slot-scope="props">
 							<el-form label-width="150px" :label-position="left" inline='true' class="demo-table-expand">
@@ -54,6 +55,7 @@
 						</template>
 					</el-table-column>
 				</el-table>
+
 				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="30%">
 					<el-form :inline="true" label-width="90px" :label-postion="left">
 						<el-form-item label="请选择公司:">
@@ -75,7 +77,7 @@
 					</div>
 				</el-dialog>
 				<el-dialog title="要素配置" :visible.sync="annCheckListDialog" width="50%" align="left">
-					<div width="70%" align="left">
+					<div width="70%" align="left" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 						<el-row>
 							<el-form :inline="true">
 								<el-form-item label="单位:"></el-form-item>
@@ -88,7 +90,8 @@
 									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
 								</el-form-item>
 								&nbsp;
-								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement">保存</el-button>
+								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement" v-if="!chosenReceiveID()">保存</el-button>
+								<el-button type="success" icon="el-icon-check" ref="button" @click="annCheckListDialog=false" v-else>已下达任务</el-button>
 							</el-form>
 						</el-row>
 						<el-row style="padding:10px; border-top: 2px dashed #dddddd;">
@@ -127,7 +130,17 @@
 						<el-button icon="el-icon-bottom" type="primary" @click="assignTask()">下达任务</el-button>
 					</span>
 				</el-dialog>
-				<el-dialog title="任务统计" :visible.sync="statisticsDialog" align="left" width="70%">
+				<el-dialog title="任务统计" :visible.sync="statisticsDialog" align="left" width="40%">
+					<el-row>
+						<el-table align="center" :data="statisticsData" border v-loading="loading">
+							<el-table-column prop="total" label="总要素" align="center"></el-table-column>
+							<el-table-column prop="input" label="要素证据录入" align="center"></el-table-column>
+							<el-table-column prop="check" label="要素证据审核" align="center"></el-table-column>
+							<el-table-column prop="approve" label="要素证据批准" align="center"></el-table-column>
+						</el-table>
+						<br />
+						<div id="bar-containerFir" style="border: 1px solid black;width:100%;height:300px;aligin:center"></div>
+					</el-row>
 					<span slot="footer" class="dialog-footer">
 						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导出</el-button>
 						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关闭</el-button>
@@ -158,19 +171,23 @@
 	import {
 		GetCurrentUser
 	} from '../../../store/CurrentUser'
+	import echarts from 'echarts'
+	require('echarts/lib/chart/bar')
 	const DefaultQuery = {
 
 		chosenCompany: null,
 		chosenYear: '',
 		elementTree: [],
 		//从后端得到的列表数据应当存入tableData，再经过筛选后在前端呈现出筛选后的selected
-		selected: [],
+
 		tableData: []
 	}
 	export default {
 		data() {
 			return {
+				loading: false,
 				filterQuery: {},
+				selected: [],
 				companyId: null,
 				companyName: '',
 				companyCode: '',
@@ -182,7 +199,6 @@
 				insertElementTableName: '',
 				isChild: true,
 				companyList: [],
-				loading: false,
 				treeNodeList: [],
 				insertCheckListDialog: false,
 				annCheckListDialog: false,
@@ -209,7 +225,8 @@
 					qhse_CompanyYearManagerSysElementTable_ID: '',
 					companyCode: '',
 					conpanyName: '',
-					year: ''
+					year: '',
+					receiveID: ''
 				},
 				task: {
 					companyCode: '',
@@ -239,8 +256,18 @@
 					trueDate: ''
 				},
 				emploee: [],
-				tableDataList:[],
-				taskList: []
+				tableDataList: [],
+				taskList: [],
+				statisticsData: [],
+				chartDataFir: [],
+				chartDatsec: [],
+				statisticsDataItem: {
+					total: '',
+					input: '',
+					check: '',
+					approve: '',
+					fileCheck: ''
+				}
 			}
 		},
 		watch: {
@@ -275,62 +302,230 @@
 			}
 		},
 		mounted() {
+			this.GetCompany()
 			this.loadParams()
-			this.handleGetCompany()
-			this.handleGetQhseChildElement()
 		},
 		methods: {
 			//加载初始数据
 			loadParams() {
-				this.loading = true
 				this.filterQuery = { ...DefaultQuery,
 					...this.$route.query
 				};
 				this.filterQuery = {
 					...this.filterQuery
 				};
+				this.loading=true
 				GetQhseTable().then(res => {
-					console.log("table", res.data)
 					this.tableDataList = res.data
+					getOrderedTask().then(res => {
+						this.taskList = res.data
+						var selected=[]
+						for (var i = 0; i < this.tableDataList.length; i++) {
+							var tempData = this.taskList.filter(item => {
+								return item.tableID == this.tableDataList[i].qhse_CompanyYearManagerSysElementTable_ID
+							})
+							var tableItem = {
+								elementTableName: '',
+								status: '',
+								year: '',
+								companyCode: '',
+								companyName: '',
+								taskName: '',
+								receiveID: '',
+								receiveName: '',
+								planDate: '',
+								tableID: '',
+								issuedDate: '',
+								planDate: '',
+								receiveDate: '',
+								trueDate: ''
+							}
+							//一下任务来自要素配置管理表
+							tableItem.elementTableName = this.tableDataList[i].elementTableName
+							tableItem.companyCode = this.tableDataList[i].companyCode
+							tableItem.companyName = this.tableDataList[i].companyName
+							tableItem.tableID = this.tableDataList[i].qhse_CompanyYearManagerSysElementTable_ID
+							tableItem.year = this.tableDataList[i].year
+							//以下部分来自任务表
+							if (tempData.length > 0) {
+								tableItem.taskName = tempData[0].taskName
+								tableItem.receiveID = tempData[0].receiveID
+								tableItem.receiveName = tempData[0].receiveName
+								tableItem.planDate = tempData[0].planDate
+								tableItem.issuedDate = tempData[0].issuedDate
+								tableItem.receiveDate = tempData[0].receiveDate
+								tableItem.trueDate = tempData[0].trueDate
+								tableItem.status = tempData[0].status
+							}
+							//装入数据
+							selected.push(tableItem)
+						}
+						this.selected=selected
+						this.filterQuery.tableData = this.selected
+						console.log(this.selected)
+						this.loading=false
+					}).catch(err => {
+						this.$message.error(err.message)
+					})
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
-				getOrderedTask().then(res => {
-					this.taskList = res.data
-					console.log("orderedTask", res.data)
-				})
-				this.loading = false
 			},
+			chosenReceiveID() {
+				return this.chosenConlumn.receiveID
+			},
+			GetQhseTable() {
+
+			},
+			GetCompany() {
+				GetCompany().then(res => {
+					this.companyList = res.data
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
+			},
+			getOrderedTask() {
+
+			},
+			//绘制柱状图
+			initChartFir(id) {
+				this.chart = echarts.init(document.getElementById(id));
+				this.chart.setOption({
+					//标题组件
+					title: {
+						text: '录入统计',
+						textStyle: {
+							fontWeight: 'bold',
+						}
+					},
+					//工具栏
+					toolbox: {
+						//显示工具栏
+						show: true,
+						feature: {
+							dataView: {
+								show: true,
+								readOnly: false
+							}, //数据列表展示
+							restore: {
+								show: true
+							}, //重置表格
+							saveAsImage: {
+								show: true
+							} //保存为图片
+						}
+					},
+					//提示框组件
+					tooltip: {
+						//触发类型，axis：坐标轴触发；item：数据项图形触发
+						trigger: 'axis'
+					},
+					//横坐标，type：value，数值轴，适用于连续数据；category：类目轴，适用于离散的类目数据，可通过data设置数据；
+					//time：时间轴，适用于连续的时序数据；log：对数轴，适用于对数数据
+					xAxis: [{
+						type: 'category',
+						data: ['总要素', '证据录入', '证据审核', '证据审批']
+					}],
+					//纵坐标，type类型同横坐标
+					yAxis: [{
+						type: 'value'
+					}],
+					series: [{
+						name: 'ceshi', //名字
+						barMaxWidth: 25,
+						type: 'bar', //图的类型，bar表示柱状图；line表示折线图；pie表示饼状图；
+						data: this.chartDataFir //数据源
+					}]
+				})
+			},
+
+			//打开任务统计框
 			openStatisticsDialog(row) {
-				var queryData={
-					tableID:'',
-					status:''
+				//初始化保存查询信息的对象
+				var queryData = {
+					tableID: '',
+					status: ''
 				}
-				queryData.tableID=row.tableID
-				queryData.status=row.status
-				getTaskDetails(queryData).then(res=>{
-					
+				//延迟绘制两个柱状图
+				setTimeout(() => {
+					this.initChartFir('bar-containerFir')
+				}, 1000)
+				//保存查询信息
+				queryData.tableID = row.tableID
+				queryData.status = row.status
+				//调用接口查询统计信息
+				console.log(queryData)
+				getTaskDetails(queryData).then(res => {
+					var data = {
+						total: '',
+						finished: ''
+					}
+					console.log(res.data)
+					data.total = res.data.total
+					data.finished = res.data.finishedNum
+					this.statisticsData = []
+					switch (row.status) {
+						case '未接收':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = 0
+							this.statisticsDataItem.check = 0
+							this.statisticsDataItem.approve = 0
+							this.chartDataFir = [data.total, 0, 0, 0]
+							break
+						case '录入证据中':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = data.finished
+							this.statisticsDataItem.check = 0
+							this.statisticsDataItem.approve = 0
+							this.chartDataFir = [data.total, data.finished, 0, 0]
+							break
+						case '审核中':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = data.total
+							this.statisticsDataItem.check = data.finished
+							this.statisticsDataItem.approve = 0
+							this.chartDataFir = [data.total, data.total, data.finished, 0]
+							break
+						case '批准中':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = data.total
+							this.statisticsDataItem.check = data.total
+							this.statisticsDataItem.approve = data.finished
+							this.chartDataFir = [data.total, data.total, data.total, data.finished]
+							break
+					}
+					this.statisticsData.push(this.statisticsDataItem)
 				})
 				this.statisticsDialog = true
 			},
 			downloadData() {
 				this.statisticsDialog = false
 			},
+			//获得员工信息
 			getEmploee(companyName) {
 				GetEmployee().then(res => {
+					//调用接口返回员工表，并对员工表进行筛选，只返回属于该行公司的员工信息
 					this.emploee = res.data.filter(item => {
 						return item.companyName == companyName
 					})
 				})
 			},
+			//打开新增任务对话框
 			openAssignTaskDialog(row) {
+				if (row.receiveID) {
+					this.$message.error('请勿重复发布任务')
+					return
+				}
+				//保存该行数据
 				this.QhseElement.companyCode = row.companyCode
 				this.QhseElement.year = row.year
 				//将已勾选的要素展示
 				querryQhseElement(this.QhseElement).then(res => {
+					//检查是否已经配置要素
 					if (res.data.length > 0) {
-						console.log(row)
+						//装填员工信息
 						this.getEmploee(row.companyName)
+						//初始化新增任务列表
 						this.task.companyCode = row.companyCode
 						this.task.companyName = row.companyName
 						this.task.tableID = row.tableID
@@ -342,28 +537,36 @@
 						this.task.receiveID = ''
 						this.task.receiveName = ''
 						this.task.planDate = ''
-						console.log(this.task)
+						//打开新增任务对话框
 						this.assignTaskoDialog = true
 					} else {
+						//提示配置要素
 						this.$message.error('要素未配置，请配置后再配置任务')
 					}
 				})
 			},
+			//新增任务
 			assignTask() {
+				//获得当前日期，ISOString：yyyy-MM-dd hh:mm:ss,取前10位就可以获得yyyy-MM-dd类型数据
 				var newDate = new Date().toISOString().substr(0, 10)
+				//检查数据完整性，必须的有公司信息，发布人信息，任务名，接收人信息，备案计划截止时间
 				if (this.task.companyName && this.task.issuedName && this.task.taskName && this.task.receiveID && this.task.planDate) {
+					//备案计划截止时间不能小于当前时间，即不能在当前日期之前截止任务
 					if (this.task.planDate < newDate) {
 						this.task.planDate = ''
 						this.$message.error('任务截止日期选择错误')
 						return
 					}
+					//关闭新增任务对话框
 					this.assignTaskoDialog = false
+					//通过员工id获得员工姓名，因为对话框里选择的时候只能选择到员工id
 					this.task.receiveName = this.emploee.filter(item => {
 						return item.employeeID == this.task.receiveID
 					})[0].name
-					console.log(this.task)
+					//调用接口新增任务
 					createNewTask(this.task).then(res => {
 						if (res.code == '1000') {
+							//调用加载数据和搜索方法重新渲染界面
 							this.loadParams()
 							this.handleSelect()
 							this.$message.success('任务下达成功')
@@ -381,71 +584,26 @@
 			GetCurrentUser() {
 				return GetCurrentUser()
 			},
-			//加载选择公司的树形列表
-			handleGetCompany() {
-				GetCompany().then(res => {
-					this.companyList = res.data
-				}).catch(err => {
-					this.$message.error(err.message)
-				})
-			},
+			//组合数据
 			combineData(tableData, taskList) {
-				for (var i = 0; i < tableData.length; i++) {
-					var tempData = taskList.filter(item => {
-						return item.tableID == tableData[i].qhse_CompanyYearManagerSysElementTable_ID
-					})
-					var tableItem = {
-						elementTableName: '',
-						status: '',
-						year: '',
-						companyCode: '',
-						companyName: '',
-						taskName: '',
-						receiveID: '',
-						receiveName: '',
-						planDate: '',
-						tableID: '',
-						issuedDate: '',
-						planDate: '',
-						receiveDate: '',
-						trueDate: ''
-					}
-					tableItem.elementTableName=tableData[i].elementTableName
-					tableItem.companyCode=tableData[i].companyCode
-					tableItem.companyName=tableData[i].companyName
-					tableItem.tableID=tableData[i].qhse_CompanyYearManagerSysElementTable_ID
-					tableItem.year=tableData[i].year
-					tableItem.taskName=tempData.taskName
-					tableItem.receiveID=tempData.receiveID
-					tableItem.receiveName=tempData.receiveName
-					tableItem.planDate=tempData.planDate
-					tableItem.issuedDate=tempData.issuedDate
-					tableItem.receiveDate=tempData.receiveDate
-					tableItem.trueDate=tempData.trueDate
-					this.filterQuery.tableData.push(tableItem)
-				}
+
 			},
 			//实现查询按钮，根据公司名和年度查询对应记录
 			handleSelect() {
-				var selected = []
-				if (this.tableDataList.length > 0 && this.taskList.length > 0) {
-					this.combineData(this.tableDataList,this.taskList)
-				}
-				if (this.year == '' && this.companyName == '') {
-					selected = this.filterQuery.tableData
-				}
-				//获取到年度的yyyy格式数据
+				var select=this.filterQuery.tableData
+				//当年度框有数据时筛选数据
 				if (this.year != '') {
-					selected = this.filterQuery.tableData.filter(item => {
+					select = select.filter(item => {
 						return item.year == this.year
 					})
 				}
+				//当公司框有数据时筛选数据
 				if (this.companyName != '') {
-					selected = this.filterQuery.tableData.filter(item => {
+					select = select.filter(item => {
 						return item.companyName == this.companyName
 					})
 				}
-				this.filterQuery.selected = selected
+				this.selected=select
 			},
 			//将从filterQuery.companyCode获取的公司id转换为公司名称，递归实现
 			changeCompanyIdTocompanyName(val, companyId) {
@@ -463,19 +621,31 @@
 			},
 			//点击列表中的某一列加载勾选要素表一二级节点
 			handlChosen(val) {
+				this.loading = true
+				console.log(val)
 				//记录选中的该行数据
 				this.chosenConlumn.companyCode = val.companyCode
 				this.chosenConlumn.conpanyName = val.companyName
 				this.chosenConlumn.year = val.year
-				this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID = parseInt(val.qhse_CompanyYearManagerSysElementTable_ID)
+				this.chosenConlumn.qhse_CompanyYearManagerSysElementTable_ID = val.tableID
+				this.chosenConlumn.receiveID = val.receiveID
 				//将选中行数据的公司名和年度显示
-				this.filterQuery.chosenCompany = String(val.companyName);
-				this.filterQuery.chosenYear = String(val.year)
+				this.filterQuery.chosenCompany = val.companyName;
+				this.filterQuery.chosenYear = val.year
 				//组装要素查询数组
 				this.QhseElement.companyCode = val.companyCode
 				this.QhseElement.year = val.year
-				//构建要素树
-				this.handleGetQhseChildElement()
+
+				//从后端接口中获取对应的要素表的树，并构建出符合el-tree的数据组
+				GetQhseChildElement().then(res => {
+					var temp = []
+					this.creatTree(res.data, temp)
+					this.filterQuery.elementTree = temp
+					console.log(this.filterQuery.elementTree)
+					this.loading = false
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
 				//将已勾选的要素展示
 				querryQhseElement(this.QhseElement).then(res => {
 					console.log(res)
@@ -484,17 +654,9 @@
 						code.push(res.data[i].code)
 					}
 					this.$refs.tree.setCheckedKeys(code, true)
+					this.loading = false
 				})
 				this.annCheckListDialog = true
-			},
-			//加载要素表的一二级节点
-			handleGetQhseChildElement() {
-				//从后端接口中获取对应的要素表的树，并构建出符合el-tree的数据组
-				GetQhseChildElement().then(res => {
-					this.creatTree(res.data, this.filterQuery.elementTree)
-				}).catch(err => {
-					this.$message.error(err.message)
-				})
 			},
 			//构建要素表一二级节点树，由于el-tree所能显示的数据类型为{label:'',children:[]}，
 			//而从接口中返回的数据类型为data，所以需要对数据进行转换，使得能够呈现
@@ -570,10 +732,7 @@
 						insertQhseTable(this.addData).then(res => {
 							if (res.code == '1000') {
 								//重新获取tableData，重新渲染前端界面
-								GetQhseTable().then(res => {
-									this.filterQuery.tableData = res.data
-									this.handleSelect()
-								})
+								this.loadParams()
 								this.$message({
 									message: "添加成功",
 									type: "success"
@@ -652,6 +811,7 @@
 				console.log(this.addQhseElementData)
 				addQHSEYearElement(this.addQhseElementData).then(res => {
 					if (res.code == '1000') {
+						this.loadParams()
 						this.$message({
 							message: '保存成功',
 							type: 'success'
@@ -670,14 +830,10 @@
 					cancelButtonText: '取消',
 					type: "warning"
 				}).then(() => {
-					deleteQhseTable(val.qhse_CompanyYearManagerSysElementTable_ID.toString()).then(res => {
+					deleteQhseTable(val.tableID).then(res => {
 						if (res.code == '1000') {
 							//重新渲染tableData，显示操作结果
-							GetQhseTable().then(res => {
-								console.log(res)
-								this.filterQuery.tableData = res.data
-								this.handleSelect()
-							})
+							this.loadParams()
 							this.$message({
 								message: '删除成功',
 								type: 'success'
