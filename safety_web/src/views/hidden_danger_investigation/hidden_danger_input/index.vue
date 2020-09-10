@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-title">隐患基本信息</div>
-    <div class="page-content">
+    <div class="page-content" v-loading='adding' style="height:660px">
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
           <el-row>
@@ -20,35 +20,33 @@
               <el-form-item label="位置区域">
                 <el-input v-model="form.location" placeholder="请填写" />
               </el-form-item>
+              <el-form-item label="所属专业">
+                <el-input v-model="form.profession" placeholder="请填写" />
+              </el-form-item>
               <el-form-item label="隐患类别">
-                <el-select
-                  v-model="form.checkType"
-                  placeholder="请选择"
-                  clearable
-                  filterable
-                  loading-text="查询中..."
-                >
-                  <el-option
-                    v-for="item in checkTypes"
-                    :key="item.factorID"
-                    :label="item.name"
-                    :value="item.id"
-                  />
-                </el-select>
+               <el-cascader
+                v-model="type"
+                :options="checkTypes"
+                :props="{ expandTrigger: 'hover',value: 'factorCode',children: 'childNode',label:'name'}"
+                :disable-branch-nodes='true'
+                ref="dangerType"
+                :show-all-levels="false"
+                @change="handleChange"></el-cascader>
               </el-form-item>
               <el-form-item label="原因分析">
                 <el-select
+                :disabled='select3'
                   v-model="form.factorSource"
-                  placeholder="请选择"
+                  placeholder="请选择隐患类别"
                   clearable
                   filterable
                   loading-text="查询中..."
                 >
                   <el-option
-                    v-for="item in factoSources"
-                    :key="item.factorObserverCode2"
-                    :label="item.factorObserverName2"
-                    :value="item.factorObserverName2"
+                    v-for="item in factorSources"
+                    :key="item.id"
+                    :label="item.factorSourceName"
+                    :value="item.factorSourceName"
                   />
                 </el-select>
               </el-form-item>
@@ -81,7 +79,7 @@
               </el-form-item>
               <el-form-item label="整改负责人">
                 <el-select
-                  v-model="form.reformPerson"
+                  v-model="person"
                   placeholder="请选择"
                   clearable
                   filterable
@@ -91,7 +89,7 @@
                     v-for="item in employees"
                     :key="item.employeeID"
                     :label="`${item.name}(${item.companyName})`"
-                    :value="item.employeeID"
+                    :value="`${item.employeeID} ${item.name}`"
                   />
                 </el-select>
               </el-form-item>
@@ -114,7 +112,7 @@
                 <el-date-picker
                   v-model="form.supervisionDate"
                   type="date"
-                  placeholder="选择日期时间"
+                  placeholder="选择检查时间"
                   value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
@@ -134,10 +132,14 @@
                   />
                 </el-select>
               </el-form-item>
+              <el-form-item label="产生的后果">
+                <el-input v-model="form.consequence" placeholder="请填写" />
+              </el-form-item>
               <el-form-item label="对应体系要素">
                 <el-select
+                  :disabled='select1'
                   v-model="form.factorHSE"
-                  placeholder="请选择"
+                  placeholder="请选择隐患类别"
                   clearable
                   filterable
                   loading-text="查询中..."
@@ -152,8 +154,9 @@
               </el-form-item>
               <el-form-item label="归属职能部门">
                 <el-select
+                :disabled='select1'
                   v-model="form.factorDepartment"
-                  placeholder="请选择"
+                  placeholder="请选择隐患类别"
                   clearable
                   filterable
                   loading-text="查询中..."
@@ -186,11 +189,11 @@
 import { GetCurrentUser } from '@/store/CurrentUser'
 import {
   addDangerRecord,
+  QueryFactorReason,
   QueryCompany,
   QueryFactor,
   QueryFactorDepartment,
-  QueryFactorHSE,
-  QueryFactorObserver
+  QueryFactorHSECode
 } from '@/services/hidden_danger_investigation/dangerRecord'
 import { GetEmployees } from '../../../services/employee'
 import { GetDictionary } from '../../../services/dictionary'
@@ -199,51 +202,114 @@ export default {
   data() {
     return {
       form: {
-        checkId: '',
-        workItem: '',
-        companyId: '',
-        description: '',
-        reformPerson: null,
-        limitDate: '',
-        ok: false,
-        consequenceID: null,
-        checkType: null,
-        affixName: '',
+        checkID: null,
+        workItem: '', //作业项目
+        SafeStaff_ID: '', // 检查人员
+        companyId: '', //施工队伍id
+        supervisionDate: '',//检查时间
+        description: '',//隐患描述
+        reformPerson: null,//整改负责人
+        reformPersonID: null,//整改负责人ID
+        limitDate: '',//限制时间
+        ok: '', //提交状态
+        status: 0,
+        consequenceID: '',//可能后果
         recordDate: '',
         rank: '',
         factorSource: '',
-        factorHSE: '',
+        profession:'', // 所属专业
+        factorHSE: '',      
         factorDepartment: '',
+        consequence:'',//产生的后果
         location: '',
-        qHSE_FileAudit_ID: '', //文件审核id
-        supervisionDate: ''
+        /* qHSE_FileAudit_ID: '', 
+        QHSE_FileAuditRecord_ID: '',
+        code: '', 
+        QHSE_CheckCategory: '' //后续判断之后填入
+        */
+        dangerSource: '',
+        Affix1:  null,
+        Affix2:  null,
+        
       },
+      person: '',
       header: { Authorization: GetCurrentUser().token },
       companys: [], // 公司
       employees: [], // 员工
       checkTypes: [], // 隐患类别
+      type: '',
       consequences: [], //可能后果
-      factoSources: [], //原因分析
+      factorSources: [], //原因分析
       factorHSEs: [], //对应体系要素
       factorDepartments: [], //归属职能部门
-      ranks: [] //隐患级别
+      ranks: [], //隐患级别
+      // 控制禁用选项
+      select1:true,
+      select2:true,
+      select3:true,
+      adding:false
     }
   },
   created() {
+    this.getSource()
     this.getCompany()
     this.getEmployees()
     this.getCheckTypes()
     this.getConsequences()
-    this.getFactoSources()
-    this.getFactorHSEs()
-    this.getFactorDepartments()
     this.getRanks()
     this.getfileAuditId()
+    this.getrecordDate()
   },
   methods: {
-    getfileAuditId () {
-      const initData = JSON.parse(localStorage.getItem('data'))
-      this.form.qHSE_FileAudit_ID = initData.fileAuditId
+    // 获取级联菜单
+    handleChange(value){
+      let typeNode = value[value.length - 1]
+      let _this = this
+      // 进度随便跑把 谁先到无所谓
+      // 查询归属职能部门
+      QueryFactorDepartment(typeNode).then(res => {
+        _this.factorDepartments = res.data
+        _this.form.factorDepartment = res.data[0].factorDepartmentName
+        _this.select2 = false
+        _this.form.type = _this.$refs['dangerType'].inputValue
+      }).catch(() => {
+          this.$message.error('获取数据失败！')
+        })
+      
+      // 查询原因
+      QueryFactorReason(typeNode).then(res => {
+        this.factorSources = res.data
+        _this.form.factorSource = res.data[0].factorSourceName
+        _this.select3 = false
+      }).catch(() => {
+          this.$message.error('获取数据失败！')
+        })
+      
+      // 查询对应体系要素
+      QueryFactorHSECode(typeNode)
+        .then(res => {
+          console.log(res)
+           this.factorHSEs = res.data
+           _this.form.factorHSE = res.data[0].factorHseName
+           _this.select1 = false
+        })
+        .catch(err => {
+          this.$message.error(err.message)
+        })
+    },
+    getSource() {
+      let source, _this = this
+      _this.form.dangerSource = localStorage.getItem('dangerSource')
+      this.form.SafeStaff_ID = GetCurrentUser().employeeId
+      source = _this.form.dangerSource
+      if (source === '体系运行'){
+      const initData = JSON.parse(localStorage.getItem('sourcedata'))
+      _this.form.qHSE_FileAudit_ID = initData.fileAuditId
+      _this.form.QHSE_FileAuditRecord_ID = initData.QHSE_FileAuditRecord_ID
+      _this.form.code = initData.code
+      } else if (source === '隐患排查') {
+      _this.form.QHSE_CheckCategory = _this.$route.params.type
+      }
     },
     // 获取数据方法
     getCompany() {
@@ -282,33 +348,6 @@ export default {
           this.$message.error(err.message)
         })
     },
-    getFactoSources() {
-      QueryFactorObserver()
-        .then(res => {
-          this.factoSources = res.data
-        })
-        .catch(err => {
-          this.$message.error(err.message)
-        })
-    },
-    getFactorHSEs() {
-      QueryFactorHSE()
-        .then(res => {
-          this.factorHSEs = res.data
-        })
-        .catch(err => {
-          this.$message.error(err.message)
-        })
-    },
-    getFactorDepartments() {
-      QueryFactorDepartment()
-        .then(res => {
-          this.factorDepartments = res.data
-        })
-        .catch(err => {
-          this.$message.error(err.message)
-        })
-    },
     getRanks() {
       GetDictionary({ name: '隐患级别' })
         .then(res => {
@@ -318,12 +357,44 @@ export default {
           this.$message.error(err.message)
         })
     },
+    getrecordDate(){
+      let nowDate = new Date()
+      let month  = Number(nowDate.getMonth() + 1)
+      let date = Number(nowDate.getDate())
+      if(month >= 10) {
+        month = String(month)
+      } else {
+        month = String('0' + month)
+      }
+      if(date >= 10) {
+        date = String(date)
+      } else {
+        date = String('0' + date)
+      }
+      this.form.recordDate = `${nowDate.getFullYear()}-${month}-${date}`
+    },
+    formatForm() {    
+      let arrs = this.person.split(' ')    
+      this.form.status = 0
+      this.form.reformPerson = arrs[1]
+      this.form.reformPersonID = arrs[0]
+    },
     // 确认提交方法
     onSubmit() {
-      this.form.checkId = '0001'
-      this.form.ok = this.form.ok ? '1' : '0'
-      this.form.companyName = this.$refs['companyChoose'].inputValue
-      this.form.recordDate  = this.form.supervisionDate
+      let noFill = false
+      this.form.ok === true ? this.form.ok = '1' : this.form.ok = '0'
+      Object.keys(this.form).forEach((value) => {
+        if(this.form[value] === '' ){
+           noFill = true
+        }
+      })
+      if(noFill || this.person === '') {
+        console.log(this.form)
+        this.$message.warning('请把表单填写完整！')
+        return
+      }
+      this.formatForm()  
+      this.adding = true
       addDangerRecord(this.form)
         .then(res => {
           console.log(res)
@@ -332,6 +403,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
+          this.adding = false
           this.$message.error(err.message)
         })
     },
@@ -346,7 +418,16 @@ export default {
      
   },
   beforeRouteEnter (to, from, next) {
-    next()
+    let fronRouter = from.name
+    if(fronRouter === "QHSETroubleCheckTable" ){
+      localStorage.setItem('dangerSource','隐患排查');
+      next()
+    } else if (fronRouter === "FileCheckIndex") {
+      localStorage.setItem('dangerSource','体系运行');
+      next()
+    } else{
+      next('/index')
+    }
   }
 }
 </script>

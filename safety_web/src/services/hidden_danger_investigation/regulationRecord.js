@@ -17,18 +17,21 @@ export const QueryFactor = (name) =>{
 }
 
 
-export const QueryFactorHSE = () =>{
-    return request(`/api/factorhse_getall`)
+//查询归属职能部门
+export const QueryFactorDepartment = (data) =>{
+    return request(`/api/factor_department_bycode/${data}`)
 }
 
-export const QueryFactorObserver = () =>{
-    return request(`/api/factorobserver_getall`)
+// 查询对应体系要素
+export const QueryFactorHseCode = (data) =>{
+    return request(`/api/factor_hse_bycode/${data}`)
 }
 
-export const QueryFactorSource = () =>{
-    return request(`/api/factorsource_getall`)
+// 查询原因
+export const QueryFactorReason = (data) =>{
+    return request(`/api/factor_source_bycode/${data}`)
 }
-
-export const QueryFactorDepartment = () =>{
-    return request(`/api/factor_department`)
+// 查询安全沟通类型
+export const QueryfactorObserverCode = (data) =>{
+    return request(`/api/factor_observer_bycode/${data}`)
 }

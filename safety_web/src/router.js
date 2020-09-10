@@ -11,8 +11,10 @@ export default new Router({
     {
       path: '/',
       name:'mainPath',
+      redirect: 'firstPage',
       component:  resolve => require(['./components/DashLayout.vue'],resolve),
       children: [
+        { path: '/index', name: 'firstPage', component: resolve => require(['./views/index.vue'],resolve)},
         { path: '/components/index', name: 'index', component: resolve => require(['./components/index.vue'],resolve)},
         { path: '/controlPanel/index', name: 'ControlPanel', component: resolve => require(['./views/controlPanel/index.vue'],resolve)},
         //nave1
@@ -164,6 +166,8 @@ export default new Router({
         { path: '/hidden_danger/QHSETroubleCheckTable', name: 'QHSETroubleCheckTable', component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/checkList.vue'],resolve)},
         //检查表配置
         { path: '/hidden_danger/check_list_item', name: 'QHSEChecklistConfig', component: resolve => require(['./views/hidden_danger_investigation/check_list_item/index.vue'],resolve)},
+        // 404 not find
+        { path: '*', name: 'notfound', component: resolve => require(['./views/NotFound'],resolve)}, 
       ]
     },
 

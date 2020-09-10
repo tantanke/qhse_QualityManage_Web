@@ -359,7 +359,9 @@ export default {
       hasTotal: 0,
       noTotal: 0,
       allTotal: 0,
-      finishAudit: false
+      finishAudit: false,
+      // 跳转到隐患违章页面所需要的数据
+      goHidden:{code:'',qHSE_FileAudit_ID:'',qHSE_FileAuditRecord_ID:''}
     };
   },
   methods: {
@@ -401,6 +403,7 @@ export default {
       let _this = this
       _this.$route.params.data && localStorage.setItem('data',JSON.stringify(_this.$route.params.data));
       const initData = JSON.parse(localStorage.getItem('data'));
+      _this.goHidden.qHSE_FileAudit_ID = initData.fileAuditId
       const user = CurrentUser.get()
       initData.additor = user.userName
       _this.filterQuery.year = initData.year
@@ -613,6 +616,8 @@ export default {
        queryRecordId({fileAuditId:_this.addQuestionForm.qHSE_FileAudit_ID,code:_this.addQuestionForm.code})
        .then(res => {
          _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.data[0].qHSE_FileAudit_RecordID
+         _this.goHidden.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
+         localStorage.setItem('sourcedata',JSON.stringify(_this.goHidden))
          return addProblemDescription(_this.addQuestionForm)
        }).then(() => {     
          _this.questionLoading = false
@@ -637,6 +642,7 @@ export default {
         }
       _this.status = _this.fileRecord.pass
       updateCheckstatus(_this.updateCheckForm).then(() => {
+        _this.goHidden.code = _this.fileRecord.code
         return addFileaduitrecord(_this.fileRecord)
       }).then(() => {
         // 这里应该返回文件审核记录的recordID

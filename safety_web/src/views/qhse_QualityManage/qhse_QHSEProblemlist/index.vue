@@ -3,9 +3,8 @@
           <div class="page-title" style="width:100%">QHSE问题清单</div>
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE隐患清单">QHSE隐患清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单">QHSE问题清单</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单" style="margin-bottom:20px">QHSE问题清单</el-radio>
       <el-row v-show="listcate === 'QHSE违章清单'">
-          <p style="width:100%">QHSE违章清单</p>
           <el-row>
           <el-form :inline="true">
                   <el-form-item label='组件机构：' >
@@ -30,12 +29,13 @@
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd"                       
+                        value-format="yyyy-MM-dd"  
+                        :clearable='false'                     
                         >
                         </el-date-picker>
                   </el-form-item>
                   <el-form-item>
-                <el-button type="primary" @click="searchRegulation">开始查询</el-button>   
+                <el-button type="primary" @click="searchRegulation">查询</el-button>   
                 </el-form-item>     
           </el-form>
           </el-row>
@@ -68,7 +68,7 @@
                 <el-form-item label="对应体系要素:">
                     <span>{{ props.row.factorHSE }}</span>
                 </el-form-item>
-                <el-form-item label="对应安全沟通类型:">
+                <el-form-item label="对应安全沟通类型:" width='100px'>
                     <span>{{ props.row.factorObserver }}</span>
                 </el-form-item>
                 <el-form-item label="原因:">
@@ -121,10 +121,9 @@
           <el-table-column prop='recordDate' label='检查时间'></el-table-column>
           <el-table-column prop='workItem' label='作业项目'></el-table-column>
           <el-table-column prop='consequenceID' label='违章类别'></el-table-column>
-          <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>        
+          <el-table-column prop='factorHSE' label='对应体系要素' width='110px'></el-table-column>        
           <el-table-column prop='factorDepartment' label='归属部门'></el-table-column>
           <el-table-column prop='consequenceID' label='可能后果'></el-table-column>
-          <el-table-column prop='punish' label='整改负责人'></el-table-column>
           <el-table-column prop='employeeCharacter' label='用工性质'></el-table-column>
           <el-table-column prop='profession' label='监督人员'></el-table-column>
           <el-table-column prop='workSeniority' label='工种年龄'></el-table-column>
@@ -138,7 +137,6 @@
           </el-row>
       </el-row>
       <el-row v-show="listcate === 'QHSE隐患清单'"> 
-          <p  style="width:100%">QHSE隐患清单</p>
           <el-row>
           <el-form :inline="true">
                   <el-form-item label='组件机构：' >
@@ -154,7 +152,7 @@
                   </el-form-item>
                   <el-form-item label='时间范围：' labelWidth='120px'>
                       <el-date-picker
-                        v-model="date"
+                        v-model="dateH"
                         type="daterange"
                         align="right"
                         unlink-panels
@@ -162,11 +160,12 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd"
+                        :clearable='false'  
                         >
                         </el-date-picker>
                   </el-form-item>
                   <el-form-item>
-                <el-button type="primary" @click="searchDanger">开始查询</el-button>   
+                <el-button type="primary" @click="searchDanger">查询</el-button>   
                 </el-form-item>     
           </el-form>
           </el-row>
@@ -247,14 +246,11 @@
           <el-table-column prop='factorSource' label='原因分析'></el-table-column>
           <el-table-column prop='limitDate' label='限期整改时间'></el-table-column>        
           <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='profession' label='监督人员'></el-table-column>
-          <el-table-column prop='description' label='隐患描述'></el-table-column>
-          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>    
+          <el-table-column prop='description' label='隐患描述'></el-table-column>    
           </el-table>
           </el-row>
       </el-row>
       <el-row v-show="listcate === 'QHSE问题清单'">
-          <p  style="width:100%">QHSE问题清单</p>
           <el-form>
               <el-row>
           <el-form :inline="true">
@@ -265,13 +261,14 @@
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"           
+                        ref="cascaderAddr"    
+
                         >             
                       </el-cascader>
                   </el-form-item>
                   <el-form-item label='时间范围：' labelWidth='120px'>
                       <el-date-picker
-                        v-model="date"
+                        v-model="dateQ"
                         type="daterange"
                         align="right"
                         unlink-panels
@@ -279,18 +276,19 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd"
+                        :clearable='false'  
                         >
                         </el-date-picker>
                   </el-form-item>
                   <el-form-item>
-                <el-button type="primary" @click="getProblemDescription">开始查询</el-button>   
+                <el-button type="primary" @click="getProblemDescription">查询</el-button>   
                 </el-form-item>     
           </el-form>
           </el-row>      
           </el-form>
           <el-row style="height:370px">
               <el-table
-              v-loading='questionLoading'
+              
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
@@ -332,7 +330,9 @@ export default {
            regulationrecordLoading: false,
            problemLoading: false,
            dangerLoading: false,
-           date: '',
+           date: [],
+           dateQ:[],
+           dateH:[],
            regulationrecord: [],
            problemrecord: [],
            dangerrecord: [],
@@ -343,10 +343,23 @@ export default {
                 startDate: null,
                 endDate: null
             },
-           listcate: 'QHSE违章清单'
+           listcate: 'QHSE违章清单',
+           date30:[]
        }
    },
    methods: {
+       getRecentTime() {
+          let date = new Date().getTime()
+          console.log(new Date())
+          let near = date + 60*60*1000*24*30
+          let day = new Date(date).toISOString()
+          let nearday = new Date(near).toISOString()
+          this.date30.push(day.split('T')[0])
+          this.date30.push(nearday.split('T')[0])    
+          this.date = [...this.date30]
+          this.dateQ = [...this.date30]
+          this.dateH = [...this.date30]
+       },
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
             let baseurl 
@@ -355,11 +368,14 @@ export default {
             let _this = this
             _this.dangerLoading = true        
             if (_this.date) {
-               start = _this.date[0]
-               end = _this.date[1]
+               start = _this.dateH[0]
+               end = _this.dateH[1]
                form.startDate = start
                form.endDate = end
-            } 
+            } else{
+               form.startDate = _this.date30[0]
+               form.endDate = _this.date30[1]
+            }
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
@@ -367,7 +383,6 @@ export default {
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
                _this.checkForm.companyId = []
-                  _this.date = null
                   _this.dangerLoading = false
            }).catch(err => {
               this.$message.error(err)
@@ -385,7 +400,10 @@ export default {
                end = _this.date[1]
                form.startDate = start
                form.endDate = end
-            } 
+            } else{
+               form.startDate = _this.date30[0]
+               form.endDate = _this.date30[1]
+            }
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
@@ -393,7 +411,6 @@ export default {
            queryRegulationrecord(baseurl,form).then(res => {
                _this.regulationrecord = res.data.list
                _this.checkForm.companyId = []
-                  _this.date = null
                   _this.regulationrecordLoading = false
            }).catch(err => {
               this.$message.error(err)
@@ -425,11 +442,14 @@ export default {
             let _this = this
             _this.problemLoading = true
             if (_this.date) {
-               start = _this.date[0]
-               end = _this.date[1]
+               start = _this.dateQ[0]
+               end = _this.dateQ[1]
                form.startDate = start
                form.endDate = end
-            } 
+            }  else{
+               form.startDate = _this.date30[0]
+               form.endDate = _this.date30[1]
+            }
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
@@ -437,7 +457,6 @@ export default {
            queryProblemDescription(baseurl,form).then(res => {
                _this.problemrecord = res.data
                _this.checkForm.companyId = []
-                _this.date = null
                 _this.problemLoading = false
            }).catch(err => {
               this.$message.error(err)
@@ -454,10 +473,12 @@ export default {
         },
    },
    mounted() {     
+       this.getRecentTime()
        this.getCompanyList()
        this.searchDanger()
        this.searchRegulation()
        this.getProblemDescription()
+
    },
 }
 </script>
