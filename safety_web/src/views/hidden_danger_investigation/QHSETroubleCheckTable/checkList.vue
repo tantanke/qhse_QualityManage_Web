@@ -247,13 +247,17 @@ export default {
             console.log(1)
         },
         addHidden() {
+            console.log(this.checkForm.checkContent)
           this.$router.push({
-            path: '/hidden_danger/input',
+            name: 'input',
+            query: {type:this.checkForm.checkContent}
           })
         },
         addRegulation() {
+            console.log(this.checkForm.checkContent)
           this.$router.push({
-                    path: '/hidden_danger/illegal_entry',
+                    name: 'illegal_entry',
+                    params: {type:this.checkForm.checkContent}
                 })
         },
         // 获取检查类别
@@ -273,11 +277,13 @@ export default {
            } 
           else if (_this.reason === '隐患'){
            _this.$router.push({
-            path: '/hidden_danger/input',
+            path: 'input',
+            params: {type:this.checkForm.checkContent}
           })
             } else {
                     _this.$router.push({
-                    path: '/hidden_danger/illegal_entry',
+                    path: 'illegal_entry',
+                    params: {type:this.checkForm.checkContent}
                 })
             }
         },

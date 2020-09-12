@@ -3,7 +3,7 @@
     .login-base
       .title
         //- img.logo(:src='imgs.Logo')
-        font 某某管理系统
+        font QHSE管理系统
       br
       el-form(:model='formData', @submit.native.prevent="handleSignIn")
         el-form-item(prop='userName', :rules="{required: true, message: '必填', trigger: 'blur'}")
@@ -53,7 +53,7 @@ export default {
       console.log(JSON.stringify(this.formData))
       SignIn(this.formData).then((res) => {
         CurrentUser.set(res.data)
-        this.$router.push({name: 'mainPath'})
+        this.$router.push({name: 'firstPage'})
         console.log('进入页面')
       }).catch((err) => {
         this.$message.error(err.message)

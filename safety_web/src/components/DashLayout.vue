@@ -26,7 +26,7 @@
         </el-col>
         <el-col :span="24" style="padding-left:10px">
           //- font 川庆钻探安全检查系统
-          font 某某管理系统
+          font  QHSE管理系统
         </el-col>
       el-menu.layout-menu( :headers="{Authorization:currentUser.token}" @open="handleOpen" @close="handleClose" ,background-color="#545c64", text-color="#fff", active-text-color="#ffd04b", :router="true", :unique-opened="true")
         div(v-for='(nav, idx) in navs', :key='idx')

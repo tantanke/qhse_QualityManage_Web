@@ -317,7 +317,9 @@
 				this.loading=true
 				GetQhseTable().then(res => {
 					this.tableDataList = res.data
+					console.log("table",res.data)
 					getOrderedTask().then(res => {
+						console.log("task",res.data)
 						this.taskList = res.data
 						var selected=[]
 						for (var i = 0; i < this.tableDataList.length; i++) {
@@ -446,10 +448,6 @@
 					tableID: '',
 					status: ''
 				}
-				//延迟绘制两个柱状图
-				setTimeout(() => {
-					this.initChartFir('bar-containerFir')
-				}, 1000)
 				//保存查询信息
 				queryData.tableID = row.tableID
 				queryData.status = row.status
@@ -462,7 +460,12 @@
 					}
 					console.log(res.data)
 					data.total = res.data.total
-					data.finished = res.data.finishedNum
+					if(res.data.finishedNum){
+						data.finished = res.data.finishedNum
+					}else{
+						data.finished=0
+					}
+					
 					this.statisticsData = []
 					switch (row.status) {
 						case '未接收':
@@ -493,8 +496,19 @@
 							this.statisticsDataItem.approve = data.finished
 							this.chartDataFir = [data.total, data.total, data.total, data.finished]
 							break
+						case '任务完成':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = data.total
+							this.statisticsDataItem.check = data.total
+							this.statisticsDataItem.approve = data.total
+							this.chartDataFir = [data.total, data.total, data.total, data.total]
+							break
 					}
 					this.statisticsData.push(this.statisticsDataItem)
+					//延迟绘制两个柱状图
+					setTimeout(() => {
+						this.initChartFir('bar-containerFir')
+					}, 1000)
 				})
 				this.statisticsDialog = true
 			},
@@ -564,6 +578,7 @@
 						return item.employeeID == this.task.receiveID
 					})[0].name
 					//调用接口新增任务
+					console.log(this.task)
 					createNewTask(this.task).then(res => {
 						if (res.code == '1000') {
 							//调用加载数据和搜索方法重新渲染界面
@@ -731,6 +746,10 @@
 						//调用接口将新增的记录返回后端，并重新渲染tabledata
 						insertQhseTable(this.addData).then(res => {
 							if (res.code == '1000') {
+								this.insertCompanyId = null
+								this.insertCompanyCode = ''
+								this.insertYear = ''
+								this.insertElementTableName = ''
 								//重新获取tableData，重新渲染前端界面
 								this.loadParams()
 								this.$message({
