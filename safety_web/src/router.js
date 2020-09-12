@@ -179,6 +179,8 @@ export default new Router({
         // 404 not find
         { path: '*', name: 'notfound', component: resolve => require(['./views/NotFound'],resolve)}, 
 >>>>>>> b78d218a08cec329fc9377d9c2fe129173590b19
+//质量体系运行
+		{ path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
       ]
     },
 
