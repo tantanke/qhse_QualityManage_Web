@@ -175,6 +175,9 @@ export default new Router({
         { path: '/remote_Moniter/RemotePlanCheckIn/compoments', name: 'Rcompoments2', component: resolve => require(['./views/remote_Moniter/RemotePlanCheckIn/compoments.vue'],resolve)},
         { path: '/remote_Moniter/RemotePlanStatistics', name: 'RemotePlanStatistics', component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/index.vue'],resolve)},
         { path: '/remote_Moniter/RemotePlanStatistics/count', name: 'Rcompoments4', component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/countlist.vue'],resolve)},
+//质量体系运行
+		{ path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
+
       ]
     },
 
