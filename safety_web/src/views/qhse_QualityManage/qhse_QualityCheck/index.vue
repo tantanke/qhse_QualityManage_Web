@@ -102,6 +102,7 @@
            <el-row>
             <el-col :span="24" style="border:1px solid gray; ">
               <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
+              <el-form-item v-if="!unpass" label="驳回原因：" style="margin-bottom:1px">{{form.negativeOpinion}}</el-form-item>
               <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
                 <el-input type="text"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
               </el-form-item>
@@ -231,6 +232,7 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      unpass:false,
       show:false,
       headers:newOptions.headers,
       strings:null,
@@ -347,6 +349,10 @@ export default {
       
     },
     async updateScore(data){
+      if(data.status=='不通过')
+      this.unpass=false;
+      else this.unpass=true;
+
       this.show=false;
       if(this.$refs.uploads!=undefined){this.$refs.uploads.clearFiles();}
       if(this.$refs.upload!=undefined)
@@ -378,6 +384,7 @@ export default {
             this.form.evidenceID=res.data.evidenceID;//赋值证据id
             this.form.attachDescrption=res.data.attachDescrption;//赋值附件描述
             this.form.evidenceDescription=res.data.evidenceDescription;//赋值证据描述
+            this.form.negativeOpinion=res.data.negativeOpinion;
             console.log(this.form.attach);
             //辨析图片
             this.node=data;

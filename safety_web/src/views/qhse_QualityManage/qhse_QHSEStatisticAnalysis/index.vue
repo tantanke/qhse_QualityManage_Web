@@ -106,6 +106,8 @@
                 </el-switch>
                 <el-button type="primary"  @click="passornot" >确认审核</el-button>
               </el-form-item>
+              <el-form-item v-if="!upstatus" label="驳回意见：" style="margin-bottom:1px">
+                <el-input ype="text"   label="驳回意见 ："  class="resizeNone" v-model="unpasstext" placeholder="请输入内容"></el-input></el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDsecription}}</el-form-item>
               </el-col>
@@ -159,7 +161,7 @@ const DefaultQuery = {
 };
 export default {
   data() {
-    return {
+    return {unpasstext:'',
       total:'',
       total1:'',
       total2:'',
@@ -249,7 +251,7 @@ export default {
     passornot(){
       
       if(this.upstatus==true){//当按钮选择通过
-      
+        this.nodeData.negativeOpinion=''
         pass_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
           this.$message.success(res.message);
@@ -281,6 +283,7 @@ export default {
         })
       }
       else{
+        this.nodeData.negativeOpinion=this.unpasstext;
        no_elementReviewer(this.nodeData).then(res => {
          console.log(res.message);
           this.$message.success(res.message);

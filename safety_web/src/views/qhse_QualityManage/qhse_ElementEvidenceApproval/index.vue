@@ -106,6 +106,8 @@
                 </el-switch>
                 <el-button type="primary"  @click="passornot" >确认批准</el-button>
               </el-form-item>
+              <el-form-item v-if="!upstatus" label="驳回意见：" style="margin-bottom:1px">
+                <el-input ype="text"   label="驳回意见 ："  class="resizeNone" v-model="unpasstext" placeholder="请输入内容"></el-input></el-form-item>
               <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <!-- <el-form-item label="内容：" style="margin-bottom:1px">{{detailData.content}}</el-form-item>
               <el-form-item label="依据：" style="margin-bottom:1px">{{detailData.basis}}</el-form-item>
@@ -169,6 +171,7 @@ const DefaultQuery = {
 export default {
   data() {
     return {
+      unpasstext:'',
       checkType:'未批准',
       filelength:'',
       strings:null,
@@ -288,6 +291,7 @@ export default {
         })
       }
       else{
+        this.nodeData.negativeOpinion=this.unpasstext;
        no_elementReviewer(this.nodeData).then(res => {
           console.log(res.message);
           this.$message.success(res.message);

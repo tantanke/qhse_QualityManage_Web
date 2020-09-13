@@ -76,3 +76,29 @@ export const getCheckDetail = (data) => {
     data
   })
 }
+//统计页面
+//获取所有统计日期信息
+export const getAllSumDate = () => {
+  return request(`/api/getAllSumDate`)
+}
+//统计批量上传
+export const uploadMesSumDataExcel= (data) => {
+  return request(`/api/uploadMesSumDataExcel`, {
+    method:'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data:data
+  })
+}
+//获取当天信息
+export const getStaticsInfoByDate = (data) => {
+  return request(`/api/getStaticsInfoByDate`,{data})
+}
+//删除
+export const deleteSumData = (data) => {
+  return request(`/api/deleteSumData`,{
+    method:"delete",
+    data
+  })
+}

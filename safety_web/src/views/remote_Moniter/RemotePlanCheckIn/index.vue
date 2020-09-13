@@ -73,7 +73,7 @@ export default {
    },
    methods:{
       handleClick(){//查询
-        this.listData=[{"status":"备用","monitorPlanID":5,"startDate":"2020-8-31","endDate":"2020-9-3","uploadTime":"2020-09-12","planName":"GKD!GKD!!","planPersonID":"发布该任务用户的ID","planPersonName":"发布该任务用户的姓名"}]
+        this.listData=[{"status":"备用","monitorPlanID":7,"startDate":"2020-8-31","endDate":"2020-9-3","uploadTime":"2020-09-12","planName":"GKD!GKD!!","planPersonID":"发布该任务用户的ID","planPersonName":"发布该任务用户的姓名"}]
       },
       readfile(data){//详情
       this.$router.push({
