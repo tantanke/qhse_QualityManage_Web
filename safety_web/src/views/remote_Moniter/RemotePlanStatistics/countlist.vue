@@ -5,14 +5,11 @@
         <el-row>
         <el-form label-width="130px" :inline="true">
           <el-form-item >
-              <el-button type="primary" icon="el-icon-upload "  @click="newSubmitForm()">确认</el-button>
+              <el-button type="warning" icon="el-icon-upload "  @click="output()">导出</el-button>
           </el-form-item>
           <el-form-item style="float:right">
             <el-button type="danger" @click="handleCancel">返回</el-button>
           </el-form-item>
-          <!-- <el-form-item style="float:right">
-            <el-button  type="primary" @click="handlePost">保存</el-button>
-          </el-form-item> -->
         </el-form>
       </el-row>
         <!-- 计划列表 -->
@@ -34,11 +31,6 @@
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button 
-              type="primary"
-              size="mini"
-              @click="handelcelChange(scope.row)"
-              >编辑</el-button>
-              <el-button 
               type="danger"
               size="mini"
               @click="handelcelDelete(scope.row)"
@@ -48,42 +40,11 @@
             
         </el-table> 
       </el-row>
-
-       <!-- 编辑细节项目  -->
-      <el-dialog title="新增计划" :visible.sync="ifchange" center width="700px">
-          <el-form label-width="120px" style="width:100%;" >
-           <el-row>
-            <el-col :span="24">
-              <el-form-item label="设备编号:"  prop="deviceNo" style="margin-bottom:1px">
-                <el-input type="text"   label="设备编号:"  class="resizeNone" v-model="resData.deviceNo" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="自编号:"  prop="myNo" style="margin-bottom:1px">
-                <el-input type="text"   label="自编号:"  class="resizeNone" v-model="resData.myNo" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="项目名称:"  prop="projectName" style="margin-bottom:1px">
-                <el-input type="text"   label="项目名称: "  class="resizeNone" v-model="resData.projectName" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="负责人:"  prop="charger" style="margin-bottom:1px">
-                <el-input type="text"   label="负责人:"  class="resizeNone" v-model="resData.charger" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="电话:"  prop="tel" style="margin-bottom:1px">
-                <el-input type="text"   label="电话:"  class="resizeNone" v-model="resData.tel" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24" >
-            <el-form-item>
-            <el-button type="" style="margin-top:20px;margin-left:100px" @click="ifchange=false">取消</el-button>
-            <el-button type="primary" style="margin-top:20px;" @click="changeres">确定修改</el-button>
-            </el-form-item>
-             </el-col>
-           </el-row>
-          </el-form>
-      </el-dialog>
     </div>
 </div>
 </template>
 <script>
-import { getStaticsInfoByDate } from "../../../services/remote";//查询细节
+import { getStatisticsInfoByDate } from "../../../services/remote";//查询细节
 import { deletePlanDetail } from "../../../services/remote";//删除细节
 export default {
    name:'',
@@ -111,11 +72,9 @@ export default {
        newSubmitForm () {
          this.$refs.upload.submit()
      },
-       handlePost(){//确定   
-       },
        handleCancel(){//返回
          this.$router.go(-1)
-       },
+       },output(){},
        handelcelDelete(data){//删除
          this.resData=data;
          deletePlanDetail(this.resData).then(res=>{
@@ -127,26 +86,13 @@ export default {
            this.$message.error('删除失败',err)
          })
        },
-       handelcelChange(data){//修改
-         this.resData=data
-         this.ifchange=true
-       },
-       changeres(){//确认修改
-         updateMonitorPlanDetail(this.resData).then(res=>{
-           console.log('修改成功',res)
-           this.ifchange=false
-           getDetails(this.$route.params).then(res=>{
-             this.listData=res.data;
-           })
-         }).catch(err=>{
-           console.log('修改失败',err)
-         })
-       }
    },
    mounted(){
-       console.log('细节页面报错',this.$route.params)
+       console.log('细节页面报错',JSON.stringify(this.$route.params.time))
     //    this.id={"planId":this.$route.params.monitorPlanID}
-       getStaticsInfoByDate(this.$route.params.time).then(res=>{
+       var data={time:''};
+       data.time=this.$route.params.time
+       getStatisticsInfoByDate(data).then(res=>{
            this.listData=res.data; })
    }
 }

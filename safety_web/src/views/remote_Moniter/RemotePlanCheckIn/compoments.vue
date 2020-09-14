@@ -105,7 +105,7 @@
 </div>
 </template>
 <script>
-import { getDetails } from "../../../services/remote";//查询细节
+import { getCheckDetail } from "../../../services/remote";//查询细节
 import { getInputDetailInfo } from "../../../services/remote";//查询细节
 import { inputDetail } from "../../../services/remote";//录入当天细节
 import { updateInputtedDetailInfo } from "../../../services/remote";//录入当天细节
@@ -118,10 +118,26 @@ export default {
            resData:{condition:'在用',closeIn:'是',description:'',picNo:'',disposeIn:''},
            ifchange:false,
            ifnew:0,
-           table:false
+           table:false,
+           nowdate:''
        }
    },
    methods:{
+      getNowFormatDate(){
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    },
        handleCancel(){//返回
          this.$router.go(-1)
        },
@@ -139,14 +155,14 @@ export default {
        },
        handelcelDelete(data){//删除
          this.resData=data;
-         deletePlanDetail(this.resData).then(res=>{
-           this.$message.success('删除成功',res)
-           getDetails(this.$route.params).then(res=>{
-             this.listData=res.data;
-            })
-         }).catch(err=>{
-           this.$message.error('删除失败',err)
-         })
+        //  deletePlanDetail(this.resData).then(res=>{
+        //    this.$message.success('删除成功',res)
+        //    getCheckDetail(this.$route.params).then(res=>{
+        //      this.listData=res.data;
+        //     })
+        //  }).catch(err=>{
+        //    this.$message.error('删除失败',err)
+        //  })
        },
        addDetail(){//录入细节
          if(this.resData.description==''||this.resData.picNo==''||this.resData.disposeIn==''){
@@ -180,7 +196,11 @@ export default {
    mounted(){
        console.log('细节页面报错')
        this.id={"planId":this.$route.params.monitorPlanID}
-       getDetails(this.$route.params).then(res=>{
+       this.nowdate=this.getNowFormatDate();
+       var data;
+       data={planId:this.$route.params.monitorPlanID,date:this.nowdate}
+       console.log(data)
+       getCheckDetail(data).then(res=>{
            this.listData=res.data; })
        }
 }

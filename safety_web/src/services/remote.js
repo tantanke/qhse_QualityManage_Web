@@ -72,11 +72,10 @@ export const updateInputtedDetailInfo = (data) => {
 }
 //获取核查详情
 export const getCheckDetail = (data) => {
-  return request(`/api/getCheckDetail/${data.monitorPlanID}`, {
+  return request(`/api/getCheckDetail`, {
     data
   })
 }
-//统计页面
 //获取所有统计日期信息
 export const getAllSumDate = () => {
   return request(`/api/getAllSumDate`)
@@ -92,8 +91,8 @@ export const uploadMesSumDataExcel= (data) => {
   })
 }
 //获取当天信息
-export const getStaticsInfoByDate = (data) => {
-  return request(`/api/getStaticsInfoByDate`,{data})
+export const getStatisticsInfoByDate = (data) => {
+  return request(`/api/getStatisticsInfoByDate`,{data})
 }
 //删除
 export const deleteSumData = (data) => {

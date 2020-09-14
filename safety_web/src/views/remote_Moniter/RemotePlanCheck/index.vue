@@ -4,13 +4,18 @@
     <div class="page-content">
        <el-row>
         <el-form label-width="130px" :inline="true">
-          <el-form-item label="录入时间：">
+           <el-form-item label='时间范围：' labelWidth='120px'>
             <el-date-picker
-              v-model="selecttime"
-              type="date"
-              placeholder="选择时间"
-              style="width:200px">
-              </el-date-picker>
+                v-model="selectdate"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"                       
+                >
+            </el-date-picker>
           </el-form-item>
           &nbsp;&nbsp;&nbsp;
           <el-form-item>
@@ -31,15 +36,20 @@
           border>
           <el-table-column  type="index" label="序号" width="120" align="center"></el-table-column>
           <el-table-column prop="planName" label="计划名称" align="center"> </el-table-column>
-          <el-table-column prop="uploadTime" label="录入时间" width="200" align="center"> </el-table-column>
-          <el-table-column prop="status" label="记录仪使用情况" width="200" align="center"> </el-table-column>
-           <el-table-column label="操作" width="300" align="center">
+          <el-table-column prop="startDate" label="开始时间" width="200" align="center"> </el-table-column>
+          <el-table-column prop="endDate" label="结束时间" width="200" align="center"> </el-table-column>
+           <el-table-column label="编辑" width="100" align="center">
             <template slot-scope="scope">
               <el-button 
+              v-if="ifcanwrite(scope.row)"
               type="primary"
               size="mini"
               @click="readfile(scope.row)"
-              >详情</el-button>
+              >核查</el-button>
+            </template>
+          </el-table-column> 
+          <el-table-column label="操作" width="200" align="center">
+            <template slot-scope="scope">
               <el-button 
               type="danger"
               size="mini"
@@ -50,7 +60,7 @@
               size="mini"
               @click="pushfile(scope.row)"
               >导出</el-button>
-            </template>
+              </template>
           </el-table-column> 
         </el-table> 
       </el-row>
@@ -60,18 +70,64 @@
 </template>
 <script>
 import { getCheckDetail } from "../../../services/remote";//查询当天录入情况
+import { getMonitorPlanList } from "../../../services/remote";//查询
+import { deletePlan } from "../../../services/remote";//删除
 
 export default {
    name:'',
    data(){
       return{
-         selecttime:'',
+         selectdate:'',
          listData:[],
+         nowdate:''
       }
    },
    methods:{
+     getNowFormatDate(){
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    },
+     ifcanwrite(data){
+      var data1=new Date(Date.parse(data.startDate.replace(/-/g,"/")));
+      var data2=new Date(Date.parse(data.endDate.replace(/-/g,"/")));
+      var nd=new Date(Date.parse(this.nowdate.replace(/-/g,"/")));
+      if(nd<=data2 && nd>=data1) return true;
+      else return false;
+    },
       handleClick(){//查询
-        this.listData=[{"status":"备用","monitorPlanID":5,"startDate":"2020-8-31","endDate":"2020-9-3","uploadTime":"2020-09-12","planName":"GKD!GKD!!","planPersonID":"发布该任务用户的ID","planPersonName":"发布该任务用户的姓名"}]
+        getMonitorPlanList().then(res=>{
+        console.log('查询结果',res)
+        this.listData=res.data;
+        if(this.selectdate.length!=0){
+          var datas = this.listData;
+          var length=datas.length;
+          this.listData=[]//清空列表数据
+          var datemin = new Date(Date.parse(this.selectdate[0].replace(/-/g,"/")));
+          var datemax = new Date(Date.parse(this.selectdate[1].replace(/-/g,"/")));
+          //循环遍历
+          for(var i=0;i<length ;i++){
+            var date1 = new Date(Date.parse(datas[i].startDate.replace(/-/g,"/")));
+            var date2 = new Date(Date.parse(datas[i].endDate.replace(/-/g,"/")));
+            if(date1>=datemin && date2<=datemax){
+              this.listData.push(datas[i])
+            }
+          }
+        }
+        })
+        .catch(err=>{
+          console.log('查询失败',err)
+        })
       },
       readfile(data){//详情
       this.$router.push({
@@ -140,6 +196,9 @@ export default {
 					}
 				}
 			},
+   },
+   mounted(){
+     this.nowdate=this.getNowFormatDate();
    }
 }
 </script>

@@ -180,12 +180,12 @@ export default {
    mounted(){
        console.log('细节页面报错')
        this.id={"planId":this.$route.params.monitorPlanID}
-       getCheckDetail(this.$route.params).then(res=>{
+       this.nowdate=this.getNowFormatDate();
+       var data;
+       data={planId:this.$route.params.monitorPlanID,date:this.nowdate}
+       getCheckDetail(data).then(res=>{
            this.listData=res.data; })
        }
-      //  getInputDetailInfo(this.$route.params).then(res=>{
-      //      this.listData=res.data; })
-      //  }
 }
 </script>
 <style lang='scss'>
