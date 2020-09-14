@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="overflow:hidden">
     <div class="page-title">违章录入</div>
-    <div class="page-content" v-loading='adding'>
+    <div class="page-content" v-loading='adding' >
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
           <el-row>
@@ -138,21 +138,20 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="上传图片">
+              <el-form-item label="违章图片上传">
                 <el-upload
-                  action="/api/accident_upload"
+                  action="/api/uploadregulation"
                   :on-success="handleAvatarSuccess"
                   :headers="header"
-                  :limit="4"
+                  :limit="2"             
+                  :on-exceed="handleExceed"
                 >
-                  <el-button size="small" type="primary">浏览文件</el-button>
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span> 最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
               </el-form-item>
               <br />
-              <el-form-item>
-                <el-button type="primary" style="width:100px" @click="onSubmit">确认</el-button>
-                <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>
-              </el-form-item>
+              
             </el-col>
             <el-col :xl="8" :lg="10" :sm="12">
               <el-form-item label="用工性质">
@@ -192,7 +191,7 @@
               </el-form-item>
               <el-form-item label="岗位分类">
                 <el-select
-                  v-model="form.Position"
+                  v-model="form.position"
                   placeholder="请选择"
                   clearable
                   filterable
@@ -208,7 +207,7 @@
               </el-form-item>
               <el-form-item label="违章性质">
                 <el-select
-                  v-model="form.RegulationCharacter"
+                  v-model="form.regulationCharacter"
                   placeholder="请选择"
                   clearable
                   filterable
@@ -230,6 +229,10 @@
               </el-form-item>
               <el-form-item label="罚款（元）" style="margin-top:1px">
                 <el-input v-model="form.punish" placeholder="请填写" />
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" style="width:100px" @click="onSubmit">确认</el-button>
+                <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -266,6 +269,7 @@ export default {
         consequenceID: '',
         type: '',
         ok:1,
+        position:'',
         score:'',
         recordDate: '',
         factorSource: '',
@@ -276,7 +280,7 @@ export default {
         workSeniority: '',
         punish: '',
         factorObserver:'',
-        RegulationCharacter:'',
+        regulationCharacter:'',
         affix1:null,
         affix2:null,
         regulationSource: null,
@@ -310,6 +314,7 @@ export default {
       isSelect2:true,
       isSelect3:true,
       isSelect4:true,
+      fileNum:0
     }
   },
   created() {
@@ -324,8 +329,20 @@ export default {
     _this.getRegulationCharacters()
     _this.getConsequences()
     _this.getrecordDate()
+    // 设置检查类型
+    !_this.$route.params.type || localStorage.setItem('checkType',_this.$route.params.type)
   },
   methods: {
+    // 给附件命名
+    handleAvatarSuccess(res) {
+      this.fileNum++
+      let key = 'affix' + this.fileNum
+      this.form[key] = res.data
+    },
+    // 限制文件数量
+    handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
     handleChange (value) {
       let code = value[value.length-1]
       let _this = this
@@ -469,8 +486,14 @@ export default {
       _this.form.QHSE_FileAuditRecord_ID = initData.qHSE_FileAuditRecord_ID
       _this.form.code = initData.code
       } else if (source === '隐患排查') {
-      _this.form.QHSE_CheckCategory = _this.$route.params.type
+      _this.form.QHSE_CheckCategory = _this.$route.params.type || localStorage.getItem('checkType')
       }
+    },
+    deleteLocal() {
+      // 去除本地数据
+       localStorage.moveItem('checkType')
+       localStorage.moveItem('sourcedata')
+       localStorage.moveItem('regulationSource')
     },
     // 确认提交
     onSubmit() {
@@ -508,16 +531,13 @@ export default {
       this.form.companyId = value[value.length - 1]
       console.log()
     },
-    handleAvatarSuccess(res) {
-      this.form.affixName = res.data
-    }
   },
  beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
-    if(fronRouter === "QHSETroubleCheckTable" ){
+    if(fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('regulationSource','隐患排查')){
       localStorage.setItem('regulationSource','隐患排查');
       next()
-    } else if (fronRouter === "FileCheckIndex") {
+    } else if (fronRouter === "FileCheckIndex" || localStorage.getItem('regulationSource','体系运行')) {
       localStorage.setItem('regulationSource','体系运行');
       next()
     } else{

@@ -250,7 +250,7 @@ export default {
             console.log(this.checkForm.checkContent)
           this.$router.push({
             name: 'input',
-            query: {type:this.checkForm.checkContent}
+            params: {type:this.checkForm.checkContent}
           })
         },
         addRegulation() {
@@ -277,12 +277,12 @@ export default {
            } 
           else if (_this.reason === '隐患'){
            _this.$router.push({
-            path: 'input',
+            name: 'input',
             params: {type:this.checkForm.checkContent}
           })
             } else {
                     _this.$router.push({
-                    path: 'illegal_entry',
+                    name: 'illegal_entry',
                     params: {type:this.checkForm.checkContent}
                 })
             }

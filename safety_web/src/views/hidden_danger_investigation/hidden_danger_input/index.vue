@@ -93,14 +93,16 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="上传附件">
-                <el-upload
-                  action="/api/accident_upload"
+              <el-form-item label="隐患文件上传">
+               <el-upload
+                  action="/api/uploaddanger"
                   :on-success="handleAvatarSuccess"
                   :headers="header"
-                  :limit="1"
+                  :limit="2"            
+                  :on-exceed="handleExceed"
                 >
-                  <el-button size="small" type="primary">浏览文件</el-button>
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span> 最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
               </el-form-item>
             </el-col>
@@ -247,7 +249,8 @@ export default {
       select1:true,
       select2:true,
       select3:true,
-      adding:false
+      adding:false,
+      fileNum:0
     }
   },
   created() {
@@ -257,10 +260,21 @@ export default {
     this.getCheckTypes()
     this.getConsequences()
     this.getRanks()
-    this.getfileAuditId()
     this.getrecordDate()
+    // 设置检查类型
+    !this.$route.params.type || localStorage.setItem('checkType',this.$route.params.type)
   },
   methods: {
+    // 给附件命名
+    handleAvatarSuccess(res) {
+      this.fileNum++
+      let key = 'affix' + this.fileNum
+      this.form[key] = res.data
+    },
+    // 限制文件数量
+    handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
     // 获取级联菜单
     handleChange(value){
       let typeNode = value[value.length - 1]
@@ -308,7 +322,7 @@ export default {
       _this.form.QHSE_FileAuditRecord_ID = initData.QHSE_FileAuditRecord_ID
       _this.form.code = initData.code
       } else if (source === '隐患排查') {
-      _this.form.QHSE_CheckCategory = _this.$route.params.type
+      _this.form.QHSE_CheckCategory = _this.$route.params.type || localStorage.getItem('checkType')
       }
     },
     // 获取数据方法
@@ -342,6 +356,7 @@ export default {
     getConsequences() {
       GetDictionary({ name: '后果' })
         .then(res => {
+          console.log(res.data)
           this.consequences = res.data
         })
         .catch(err => {
@@ -379,32 +394,43 @@ export default {
       this.form.reformPerson = arrs[1]
       this.form.reformPersonID = arrs[0]
     },
+    // 限制路由进入
+    limitRouter(){
+       // 在取消或者确定添加的时候删除暂存的item
+       // 利用这个来判断路由是刷新还是直接输入路由的地址进入
+       localStorage.removeItem('dangerSource')
+       localStorage.moveItem('checkType')
+       localStorage.moveItem('sourcedata')
+    },
     // 确认提交方法
     onSubmit() {
       let noFill = false
-      this.form.ok === true ? this.form.ok = '1' : this.form.ok = '0'
-      Object.keys(this.form).forEach((value) => {
-        if(this.form[value] === '' ){
+      let _this = this
+      _this.form.ok === true ? _this.form.ok = '1' : _this.form.ok = '0'
+      Object.keys(_this.form).forEach((value) => {
+        if(_this.form[value] === '' ){
            noFill = true
         }
       })
-      if(noFill || this.person === '') {
-        console.log(this.form)
-        this.$message.warning('请把表单填写完整！')
+      if(noFill || _this.person === '') {
+        console.log(_this.form)
+        _this.$message.warning('请把表单填写完整！')
         return
       }
-      this.formatForm()  
-      this.adding = true
-      addDangerRecord(this.form)
+      _this.formatForm()  
+      console.log(this.form)
+      _this.adding = true
+      addDangerRecord(_this.form)
         .then(res => {
           console.log(res)
-          this.$message.success(res.message)
-          this.$router.go(-1)
+          _this.$message.success(res.message)
+          _this.limitRouter()
+          _this.$router.go(-1)
         })
         .catch(err => {
           console.log(err)
-          this.adding = false
-          this.$message.error(err.message)
+          _this.adding = false
+          _this.$message.error(err.message)
         })
     },
 
@@ -419,15 +445,16 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
-    if(fronRouter === "QHSETroubleCheckTable" ){
+    if(fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')){
       localStorage.setItem('dangerSource','隐患排查');
       next()
-    } else if (fronRouter === "FileCheckIndex") {
+    } else if (fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','隐患排查')) {
       localStorage.setItem('dangerSource','体系运行');
       next()
     } else{
       next('/index')
     }
+    next()
   }
 }
 </script>

@@ -35,3 +35,4 @@ export const QueryFactorReason = (data) =>{
 export const QueryfactorObserverCode = (data) =>{
     return request(`/api/factor_observer_bycode/${data}`)
 }
+// 违章图片上传
