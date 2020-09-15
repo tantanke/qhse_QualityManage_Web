@@ -580,6 +580,7 @@ export default {
       // 获取单位年度审核表
       querryQhseElement(_this.querryTree).then(res => {
         _this.treeData = res.data;
+        console.log(_this.treeData)
         _this.treeList = res.data;
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){

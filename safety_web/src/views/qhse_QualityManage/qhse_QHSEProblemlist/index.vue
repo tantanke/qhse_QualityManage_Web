@@ -111,10 +111,10 @@
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                    <a :href="props.row.affix1" class="imgUrl" target='_blank'>证据图片1</a>
+                     <a :download="props.row.affix1"  target='_blank' :href="`/api/downloadRegulationFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a :href="props.row.affix1" class="imgUrl" target='_blank'>证据图片2</a>
+                    <a :download="props.row.affix2"  target='_blank' :href="`/api/downloadRegulationFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
                 </el-form-item>
              </el-form>
              </template>
@@ -228,6 +228,12 @@
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
+                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
+                     <a :download="props.row.affix1"  target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix2" label="证据图片2:">
+                    <a :download="props.row.affix2"  target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
+                </el-form-item>
            </el-form>
            </template>
           </el-table-column>
@@ -319,7 +325,7 @@
 <script> 
 import {queryDangerrecord,
         queryRegulationrecord,
-        queryProblemDescription
+        queryProblemDescription,
 } from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
 import ExportJsonExcel from "js-export-excel";
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
@@ -488,7 +494,6 @@ export default {
 
                }
                _this.regulationrecord = res.data.list
-               console.log(res.data.list)
                _this.checkForm.companyId = []
                   _this.regulationrecordLoading = false
                    _this.regulationBtn = false
@@ -508,7 +513,6 @@ export default {
         handleChange(value) {
         console.log(value);
         },
-        
         getProblemDescription() {
             let baseurl 
             let form = {}
@@ -582,6 +586,7 @@ export default {
    }
    .imgUrl{
        cursor: pointer;
+       color:blue
    }
   }
 }

@@ -46,6 +46,12 @@ export default {
       }
     }
   },
+  mounted() {
+       localStorage.removeItem('dangerSource')
+       localStorage.removeItem('regulationSource')
+       localStorage.removeItem('checkType')
+       localStorage.removeItem('sourcedata')
+    },
   methods: {
     handleSignIn () {
       // CurrentUser.set({userName: 'amanager'})

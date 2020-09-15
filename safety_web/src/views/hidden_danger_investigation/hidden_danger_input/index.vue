@@ -230,8 +230,8 @@ export default {
         QHSE_CheckCategory: '' //后续判断之后填入
         */
         dangerSource: '',
-        Affix1:  null,
-        Affix2:  null,
+        affix1:  null,
+        affix2:  null,
         
       },
       person: '',
@@ -318,7 +318,7 @@ export default {
       source = _this.form.dangerSource
       if (source === '体系运行'){
       const initData = JSON.parse(localStorage.getItem('sourcedata'))
-      _this.form.qHSE_FileAudit_ID = initData.fileAuditId
+      _this.form.qHSE_FileAudit_ID = initData.qHSE_FileAudit_ID
       _this.form.QHSE_FileAuditRecord_ID = initData.QHSE_FileAuditRecord_ID
       _this.form.code = initData.code
       } else if (source === '隐患排查') {
@@ -399,8 +399,8 @@ export default {
        // 在取消或者确定添加的时候删除暂存的item
        // 利用这个来判断路由是刷新还是直接输入路由的地址进入
        localStorage.removeItem('dangerSource')
-       localStorage.moveItem('checkType')
-       localStorage.moveItem('sourcedata')
+       localStorage.removeItem('checkType')
+       localStorage.removeItem('sourcedata')
     },
     // 确认提交方法
     onSubmit() {
@@ -424,7 +424,6 @@ export default {
         .then(res => {
           console.log(res)
           _this.$message.success(res.message)
-          _this.limitRouter()
           _this.$router.go(-1)
         })
         .catch(err => {
@@ -437,9 +436,6 @@ export default {
     // 一些事件
     changeCompany(value) {
       this.form.companyId = value[value.length - 1]
-    },
-    handleAvatarSuccess(res) {
-      this.form.affixName = res.data
     },
      
   },

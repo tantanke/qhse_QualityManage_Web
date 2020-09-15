@@ -20,3 +20,16 @@ export const queryProblemDescription = (url,data) => {
       data
   })
 }
+
+// 违章图片获取
+export const getRegulationImgUrls = (data) =>{
+  return request(`/api/downloadRegulationFile?filename=${data}`, {
+    method: 'get'
+})
+}
+
+export const getDangerImgUrls = (data) =>{
+  return request(`/api/downloadDangerFile?filename=${data}`, {
+    method: 'get'
+})
+}
