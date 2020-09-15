@@ -75,6 +75,12 @@ export const getInputtedRecordDetailByDate = (data) => {
     data
   })
 }
+//获取日期
+export const getInputDates = (data) => {
+  return request(`/api/getInputDates/${data.monitorPlanID}`, {
+    data
+  })
+}
 //统计界面接口如下
 //获取核查详情
 export const getCheckDetail = (data) => {
