@@ -90,6 +90,7 @@
 </div>
 </template>
 <script>
+import {GetCurrentUser} from "../../../store/CurrentUser.js"
 import { getDetails } from "../../../services/remote";//查询细节
 import { updateInputtedDetailInfo } from "../../../services/remote";//录入当天细节
 import { deletePlanDetail } from "../../../services/remote";//录入当天细节
@@ -103,17 +104,34 @@ export default {
            resData:{closeCheck:'是',disposeCheck:'',check:''},
            ifchange:false,
            ifnew:0,
-           table:false
+           table:false,
+           nowdate:''
        }
    },
    methods:{
+     getNowFormatDate(){
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate()-1;
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    },
+     
        handleCancel(){//返回
          this.$router.go(-1)
        },
        handelcelChange(data){
          this.resData.monitorPlanID=data.monitorPlanID
          this.resData.monitorPlanDetailID=data.monitorPlanDetailID
-         getInputtedDetailInfo(data).then(res=>{
+         getInputtedDetailInfo({monitorPlanDetailID:data.monitorPlanDetailID,date:this.nowdate}).then(res=>{
            this.resData=res.data;
            this.table=true
          })
@@ -137,6 +155,8 @@ export default {
            if(this.resData.closeCheck==false)this.resData.closeCheck='是'
            if(this.resData.closeCheck==true)this.resData.closeCheck='否'
          }
+         this.resData.checkPersonId=GetCurrentUser().PersonId;
+         this.resData.checkPersonName=GetCurrentUser().PersonName;
          console.log(this.resData)
          updateInputtedDetailInfo(this.resData).then(res=>{
            console.log('审核成功',res)
@@ -150,6 +170,7 @@ export default {
        }
    },
    mounted(){
+     this.nowdate=this.getNowFormatDate();
        console.log('细节页面报错')
        getDetails(this.$route.params).then(res=>{
          for(var i=0,j=0;i<res.data.length;i++)
