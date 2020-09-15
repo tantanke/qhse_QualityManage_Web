@@ -186,7 +186,6 @@ export default {
            {
              this.selecttime=res.data[0]
            }
-        this.resData.monitorPlanID=data.monitorPlanID
          this.monitorPlanDetailID=data.monitorPlanDetailID
          getInputtedRecordDetailByDate({monitorPlanDetailID:this.monitorPlanDetailID,date:this.selecttime}).then(res=>{
            
