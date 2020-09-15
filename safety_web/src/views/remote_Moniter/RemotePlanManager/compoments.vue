@@ -93,8 +93,6 @@
 </div>
 </template>
 <script>
-// :action="'/api/uploadMonitorPlanExcel'"
-//                 :on-success="handleSuccess"
 import { getDetails } from "../../../services/remote";//查询细节
 import { uploadMonitorPlanExcel } from "../../../services/remote";//上传excel
 import { updateMonitorPlanDetail } from "../../../services/remote";//修改细节

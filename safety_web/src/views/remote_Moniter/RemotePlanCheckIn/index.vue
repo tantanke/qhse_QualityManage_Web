@@ -160,11 +160,11 @@ export default {
 						this.parseTreeToTable(this.listData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.projectName+'录入表';
+						option.fileName = data.plantName+'录入表';
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
-							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况","是否关闭"]
+							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况(录入)","是否关闭(录入)"]
 						}];
 						//导出
 						var toExcel = new ExportJsonExcel(option);
@@ -179,6 +179,7 @@ export default {
 				for (var i = 0; i < node.length; i++) {
 					//如果当前节点存在，装填数据
 					if (node[i]) {
+            this.downloadDataItem = {}
 						this.downloadDataItem.deviceNo = node[i].deviceNo
 						this.downloadDataItem.myNo = node[i].myNo
 						this.downloadDataItem.projectName = node[i].projectName

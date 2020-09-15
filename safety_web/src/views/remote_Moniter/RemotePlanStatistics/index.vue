@@ -9,6 +9,7 @@
               v-model="selecttime"
               type="date"
               placeholder="选择时间"
+              value-format="yyyy-MM-dd"
               style="width:200px">
               </el-date-picker>
           </el-form-item>
@@ -72,7 +73,8 @@
 import ExportJsonExcel from "js-export-excel";
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 //查询当天录入情况//excel上传
-import { getAllSumDate,uploadMesSumDataExcel,deleteSumData } from "../../../services/remote";
+import { getAllSumDate,uploadMesSumDataExcel,deleteSumData,deleteSumDataByDate } from "../../../services/remote";
+import { getStatisticsInfoByDate } from "../../../services/remote";//查询细节
 
 export default {
    name:'',
@@ -87,7 +89,14 @@ export default {
         getAllSumDate().then(res=>{
           this.listData=[];
           for(var i=0;i<res.data.length;i++)
-           this.listData.push({"time":res.data[i]})
+          {
+            if(this.selecttime!=''&&this.selecttime!=null){
+             if(res.data[i]==this.selecttime) 
+                this.listData.push({"time":res.data[i]})
+            }
+            else
+            this.listData.push({"time":res.data[i]})
+          }
            console.log(this.listData)
         })
        },
@@ -115,34 +124,37 @@ export default {
         })
       },
       deletefile(data){
-        console.log(data.datatime)
-      //   deleteSumData(data).then(res=>{
-      //    console.log('删除结果',res);
-      //    //再次查询
-      //    getAllSumDate().then(res=>{
-      //       console.log('查询结果',res)
-      //       this.listData=res.data
-      //     }).catch(err=>{
-      //       console.log('查询失败',err)
-      //     })
-      //  })
-      },
-      pushfile(data){//下载excel
+        deleteSumDataByDate({date:data.time}).then(res=>{
+          this.$message.success('删除成功')
+         console.log('删除结果',res);
+         //再次查询
          getAllSumDate().then(res=>{
+           this.listData=[];
+          for(var i=0;i<res.data.length;i++)
+           this.listData.push({"time":res.data[i]})
+           console.log(this.listData)
+          }).catch(err=>{
+            console.log('查询失败',err)
+          })
+       })
+       },
+      pushfile(data){//下载excel
+         var data1={date:data.time};
+         getStatisticsInfoByDate(data1).then(res=>{
           this.downloadData=[];
            this.resData=res.data;
           // this.resData=[{"monitorPlanDetailID":'125105',"deviceNo":'adasd',"myNo":'adasddddd',"projectName":'mock测试',"charger":'adasda',"tel":'asdasdasd'}]
           if (res.code == '1000') {
 						//将树形数据转换为table型数据
-						this.parseTreeToTable(this.listData)
+						this.parseTreeToTable(this.resData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.projectName+'录入表';
+						option.fileName = data.time+'统计表';
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
-							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况","是否关闭"]
-						}];
+							sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
+            }];
 						//导出
 						var toExcel = new ExportJsonExcel(option);
 						toExcel.saveExcel();
@@ -156,22 +168,18 @@ export default {
 				for (var i = 0; i < node.length; i++) {
 					//如果当前节点存在，装填数据
 					if (node[i]) {
-						this.downloadDataItem.deviceNo = node[i].deviceNo
-						this.downloadDataItem.myNo = node[i].myNo
-						this.downloadDataItem.projectName = node[i].projectName
-						this.downloadDataItem.charger = node[i].charger
-            this.downloadDataItem.tel = node[i].tel
-            this.downloadDataItem.condition = node[i].condition
-            this.downloadDataItem.description = node[i].description
-            this.downloadDataItem.picNo = node[i].picNo
-            this.downloadDataItem.disposeIn = node[i].disposeIn
-            this.downloadDataItem.closeIn = node[i].closeIn
-						//将数据项对象装入下载数据数组，保存
-						this.downloadData.push(this.downloadDataItem)
-					}
-					//递归装填子节点
-					if (node[i].childNode) {
-						this.parseTreeToTable(node[i].childNode)
+           this.downloadDataItem = {}
+						this.downloadDataItem.companyName = node[i].companyName
+						this.downloadDataItem.workNum = node[i].workNum
+						this.downloadDataItem.dayReportNum = node[i].dayReportNum
+						this.downloadDataItem.recordDeviceNum = node[i].recordDeviceNum
+            this.downloadDataItem.outStockNum = node[i].outStockNum
+            this.downloadDataItem.powerOnNum = node[i].powerOnNum
+            this.downloadDataItem.backNum = node[i].backNum
+            this.downloadDataItem.coverageRate = node[i].coverageRate
+            this.downloadDataItem.availableRate = node[i].availableRate
+            this.downloadDataItem.useRate = node[i].useRate
+            this.downloadData[i]=this.downloadDataItem
 					}
 				}
 			},

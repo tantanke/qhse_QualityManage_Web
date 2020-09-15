@@ -49,10 +49,9 @@ export const deletePlanDetail = (data) => {
     data
   })
 }
-//获取当天详情
-//获取详情
-export const getInputDetailInfo = (data) => {
-  return request(`/api/getInputDetailInfo/${data.monitorPlanID}`, {
+//获取详情t
+export const getInputtedDetailInfo = (data) => {
+  return request(`/api/getInputtedDetailInfo/${data.monitorPlanDetailID}`, {
     data
   })
 }
@@ -70,9 +69,22 @@ export const updateInputtedDetailInfo = (data) => {
     data
   })
 }
+//核查细节
+export const getInputtedRecordDetailByDate = (data) => {
+  return request(`/api/getInputtedRecordDetailByDate?detailId=${data.monitorPlanDetailID}&date=${data.date}`, {
+    data
+  })
+}
+//获取日期
+export const getInputDates = (data) => {
+  return request(`/api/getInputDates/${data.monitorPlanID}`, {
+    data
+  })
+}
+//统计界面接口如下
 //获取核查详情
 export const getCheckDetail = (data) => {
-  return request(`/api/getCheckDetail`, {
+  return request(`/api/getCheckDetail?planId=${data.planId}&date=${data.date}`, {
     data
   })
 }
@@ -92,11 +104,18 @@ export const uploadMesSumDataExcel= (data) => {
 }
 //获取当天信息
 export const getStatisticsInfoByDate = (data) => {
-  return request(`/api/getStatisticsInfoByDate`,{data})
+  return request(`/api/getStatisticsInfoByDate?date=${data.date}`,{data})
 }
 //删除
 export const deleteSumData = (data) => {
-  return request(`/api/deleteSumData`,{
+  return request(`/api/deleteSumData?sumDataId=${data.sumDataId}`,{
+    method:"delete",
+    data
+  })
+}
+//批量删除
+export const deleteSumDataByDate = (data) => {
+  return request(`/api/deleteSumDataByDate?date=${data.date}`,{
     method:"delete",
     data
   })

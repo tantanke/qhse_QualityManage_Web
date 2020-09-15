@@ -69,6 +69,9 @@
 </div>
 </template>
 <script>
+
+import ExportJsonExcel from "js-export-excel";
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getCheckDetail } from "../../../services/remote";//查询当天录入情况
 import { getMonitorPlanList } from "../../../services/remote";//查询
 import { deletePlan } from "../../../services/remote";//删除
@@ -149,20 +152,20 @@ export default {
        })
       },
       pushfile(data){
-         getCheckDetail(data).then(res=>{
+         getCheckDetail({planId:data.monitorPlanID,date:this.nowdate}).then(res=>{
           this.downloadData=[];
-          //  this.resData=res.data;
-          this.resData=[{"monitorPlanDetailID":'125105',"deviceNo":'adasd',"myNo":'adasddddd',"projectName":'mock测试',"charger":'adasda',"tel":'asdasdasd'}]
+           this.resData=res.data;
+          // this.resData=[{"monitorPlanDetailID":'125105',"deviceNo":'adasd',"myNo":'adasddddd',"projectName":'mock测试',"charger":'adasda',"tel":'asdasdasd'}]
           if (res.code == '1000') {
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(this.listData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.projectName+'录入表';
+						option.fileName = data.plan录入表;
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
-							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况","是否关闭"]
+							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况(录入)","是否关闭(录入)","核查情况描述","处置情况(核查)","是否关闭(核查)"]
 						}];
 						//导出
 						var toExcel = new ExportJsonExcel(option);
@@ -177,6 +180,7 @@ export default {
 				for (var i = 0; i < node.length; i++) {
 					//如果当前节点存在，装填数据
 					if (node[i]) {
+            this.downloadDataItem = {}
 						this.downloadDataItem.deviceNo = node[i].deviceNo
 						this.downloadDataItem.myNo = node[i].myNo
 						this.downloadDataItem.projectName = node[i].projectName
@@ -187,6 +191,9 @@ export default {
             this.downloadDataItem.picNo = node[i].picNo
             this.downloadDataItem.disposeIn = node[i].disposeIn
             this.downloadDataItem.closeIn = node[i].closeIn
+            this.downloadDataItem.picNo = node[i].check
+            this.downloadDataItem.disposeIn = node[i].disposeCheck
+            this.downloadDataItem.closeIn = node[i].closeCheck
 						//将数据项对象装入下载数据数组，保存
 						this.downloadData.push(this.downloadDataItem)
 					}
