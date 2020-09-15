@@ -74,7 +74,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getDetails } from "../../../services/remote";//查询当天录入情况
 import { getMonitorPlanList } from "../../../services/remote";//查询
 import { getCheckDetail } from "../../../services/remote";//查询
-import { deletePlan } from "../../../services/remote";//删除
+import { deletePlan,getNeedToCheckedDetails } from "../../../services/remote";//删除
 
 
 export default {
@@ -83,6 +83,7 @@ export default {
       return{
          selectdate:'',
          listData:[],
+         nowdate:''
       }
    },
    methods:{
@@ -152,15 +153,15 @@ export default {
        })
       },
       pushfile(data){
-         getDetails(data).then(res=>{
+         getNeedToCheckedDetails({date:this.nowdate,monitorPlanID:data.monitorPlanID}).then(res=>{
           this.downloadData=[];
            this.resData=res.data;
            if (res.code == '1000') {
 						//将树形数据转换为table型数据
-						this.parseTreeToTable(this.listData)
+						this.parseTreeToTable(this.resData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.plantName+'录入表';
+						option.fileName = data.planName+this.nowdate+'录入表';
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,

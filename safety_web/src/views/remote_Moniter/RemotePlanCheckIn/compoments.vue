@@ -199,6 +199,7 @@ export default {
          if(this.ifnew=1){
            inputDetail(this.resData).then(res=>{
            console.log('录入成功',res)
+           this.$message.success('录入成功')
            this.table=false
          })
          .catch(err=>{
@@ -207,6 +208,7 @@ export default {
          }
          else{
            updateInputtedDetailInfo(this.resData).then(res=>{
+             this.$message.success('录入成功')
            console.log('录入成功',res)
            this.table=false
          })

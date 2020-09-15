@@ -4,7 +4,9 @@
     <div class="page-content">
         <el-row>
         <el-form label-width="130px" :inline="true">
-          
+          <el-form-item>
+            <el-button type="warning" @click="pushfile">导出excel</el-button>
+          </el-form-item>
           <el-form-item>
             <el-button type="danger" @click="handleCancel">返回</el-button>
           </el-form-item>
@@ -24,17 +26,22 @@
           highlight-current-row
           border>
           <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
-          <el-table-column prop="deviceNo" label="设备编号" width="150" align="center"> </el-table-column>
-          <el-table-column prop="myNo" label="自编号" width="150" align="center"> </el-table-column>
+          <el-table-column prop="deviceNo" label="设备编号" width="100" align="center"> </el-table-column>
+          <el-table-column prop="myNo" label="自编号" width="100" align="center"> </el-table-column>
           <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
-          <el-table-column prop="charger" label="负责人" width="150" align="center"> </el-table-column>
-          <el-table-column prop="tel" label="电话" width="150" align="center"> </el-table-column>
+          <el-table-column prop="charger" label="负责人" width="120" align="center"> </el-table-column>
+          <el-table-column prop="tel" label="电话" width="100" align="center"> </el-table-column>
+          <el-table-column label="视频监控描述:" width="100"  prop="description" style="margin-bottom:5px">{{resData.description}}</el-table-column>
+          <el-table-column label="截图编号:" width="100" prop="picNo" style="margin-bottom:5px">{{resData.picNo}}</el-table-column>
+          <el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-table-column>
+              
             <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
               <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
             </el-table-column> -->
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button 
+              v-if="$route.params.date==selectdate"
               type="primary"
               size="mini"
               @click="handelcelChange(scope.row)"
@@ -53,25 +60,8 @@
       <!-- 新增计划表  -->
       <el-dialog title="核查计划" :visible.sync="table" center width="700px">
           <el-form label-width="120px" style="width:100%;" >
-            <el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px" @change="handleSelect">
-              <el-option-group
-                  v-for="group in dates"
-                  :key="group.label"
-                  :label="group.label">
-                  <el-option
-                    v-for="item in group.options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-option-group>
-              </el-select>
            <el-row>
-            <el-col :span="24" v-if="cansee==true">
-              <el-form-item label="视频监控描述:"  prop="description" style="margin-bottom:5px">{{resData.description}}</el-form-item>
-              <el-form-item label="截图编号:"  prop="picNo" style="margin-bottom:5px">{{resData.picNo}}</el-form-item>
-              <el-form-item label="处置情况(录入):"  prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-form-item>
-              <el-form-item label="是否关闭(录入):"  prop="closeIn" style="margin-bottom:5px">{{resData.closeIn}}</el-form-item>
+            <el-col :span="24" >
               <el-form-item label="核查情况描述:"  prop="check" style="margin-bottom:5px" v-if="this.selecttime==this.selectdate">
                 <el-input type="text"   label="核查情况描述 ："  class="resizeNone" v-model="resData.check" placeholder="请输入内容"></el-input>
               </el-form-item>
@@ -89,15 +79,10 @@
                 </el-switch>
               </el-form-item>
             </el-col>
-            <el-col :span="24" v-if="cansee==true">
+            <el-col :span="24">
             <el-form-item>
             <el-button type="" style="margin-top:20px;margin-left:100px" @click="table=false">取消</el-button>
             <el-button type="primary" style="margin-top:20px;" @click="addDetail" >核查</el-button>
-            </el-form-item>
-             </el-col>
-             <el-col :span="24" v-if="!cansee">
-            <el-form-item>
-              <el-table-column prop="myNo" label="自编号" width="150" align="center">当前日期内容尚未录入不可查看</el-table-column>
             </el-form-item>
              </el-col>
            </el-row>
@@ -107,18 +92,20 @@
 </div>
 </template>
 <script>
+
+import ExportJsonExcel from "js-export-excel";
 import {GetCurrentUser} from "../../../store/CurrentUser.js"
 import { getDetails } from "../../../services/remote";//查询细节
 import { updateInputtedDetailInfo } from "../../../services/remote";//录入当天细节
 import { deletePlanDetail } from "../../../services/remote";//录入当天细节
-import { getInputtedRecordDetailByDate,getInputDates } from "../../../services/remote";//查看细节内容
+import { getInputtedRecordDetailByDate,getInputDates,getNeedToCheckedDetails } from "../../../services/remote";//查看细节内容
 
 export default {
    name:'',
    data(){
        return{
            listData:[],
-           resData:{closeCheck:'是',disposeCheck:'',check:'',description:'',picNo:'',disposeIn:'',closeIn:''},
+           resData:{closeCheck:'是',disposeCheck:'',check:'',description:'',picNo:'',condition:''},
            ifchange:false,
            ifnew:0,
            table:false,
@@ -131,19 +118,53 @@ export default {
        }
    },
    methods:{
-     selected(val){
-       this.selecttime=val
+     pushfile(){
+       this.downloadData=[];
+						//将树形数据转换为table型数据
+						this.parseTreeToTable(this.listData)
+						var option = {};
+						//下载文件名
+						option.fileName = this.$route.params.date+'核查表';
+						//设置数据来源和数据格式
+						option.datas = [{
+							sheetData: this.downloadData,
+							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况(录入)","是否关闭(录入)","核查情况描述","处置情况(核查)","是否关闭(核查)"]
+						}];
+						//导出
+						var toExcel = new ExportJsonExcel(option);
+            toExcel.saveExcel();
+          
      },
-     async handleSelect(){
-       await getInputtedRecordDetailByDate({monitorPlanDetailID:this.monitorPlanDetailID,date:this.selecttime}).then(res=>{
-           this.resData=res.data;
-           if(res.data==null){//已经录入但是不能查看
-             this.cansee=false
-           }
-           else if(res.data!=null){ this.cansee=true}
-         })
-       console.log(this.cansee,res.data)
-     },
+     parseTreeToTable(node) {//转换格式
+				//初始化下载数据项对象
+				this.downloadDataItem = {}
+				//遍历当前节点，装填数据
+				for (var i = 0; i < node.length; i++) {
+					//如果当前节点存在，装填数据
+					if (node[i]) {
+            this.downloadDataItem = {}
+						this.downloadDataItem.deviceNo = node[i].deviceNo
+						this.downloadDataItem.myNo = node[i].myNo
+						this.downloadDataItem.projectName = node[i].projectName
+						this.downloadDataItem.charger = node[i].charger
+            this.downloadDataItem.tel = node[i].tel
+            this.downloadDataItem.condition = node[i].condition
+            this.downloadDataItem.description = node[i].description
+            this.downloadDataItem.picNo = node[i].picNo
+            this.downloadDataItem.disposeIn = node[i].disposeIn
+            this.downloadDataItem.closeIn = node[i].closeIn
+            this.downloadDataItem.picNo = node[i].check
+            this.downloadDataItem.disposeIn = node[i].disposeCheck
+            this.downloadDataItem.closeIn = node[i].closeCheck
+						//将数据项对象装入下载数据数组，保存
+						this.downloadData.push(this.downloadDataItem)
+					}
+					//递归装填子节点
+					if (node[i].childNode) {
+						this.parseTreeToTable(node[i].childNode)
+					}
+				}
+			},
      getNowFormatDate(){
         var date = new Date();
         var seperator1 = "-";
@@ -178,30 +199,14 @@ export default {
          this.$router.go(-1)
        },
        handelcelChange(data){
-         this.selecttime=this.getNowFormatDate2();
-          getInputDates(this.$route.params).then(res=>{//获取选择日期
-           var cd= new Date(Date.parse(this.selectdate.replace(/-/g,"/")))
-           var d1 = new Date(Date.parse(res.data[0].replace(/-/g,"/")))
-           if(cd<d1)
-           {
-             this.selecttime=res.data[0]
-           }
-         this.monitorPlanDetailID=data.monitorPlanDetailID
-         getInputtedRecordDetailByDate({monitorPlanDetailID:this.monitorPlanDetailID,date:this.selecttime}).then(res=>{
-           
-           if(res.data==null){//已经录入但是不能查看
-           this.resData={closeCheck:'是',disposeCheck:'',check:'',description:'',picNo:'',disposeIn:'',closeIn:''},
-             this.cansee=false
-           }
-           else{ this.cansee=true
-           
-           this.resData=res.data;
-           }
-         })
-         
-           this.table=true
-         })
+         this.table=true
         
+         this.monitorPlanDetailID=data.monitorPlanDetailID
+          //  this.resData={closeCheck:'是',disposeCheck:'',check:'',description:'',picNo:'',condition:''},
+          this.resData=data;
+          if(this.resData.closeCheck=='否')this.resData.closeCheck=true
+          if(this.resData.closeCheck=='是')this.resData.closeCheck=false
+          
        },
        handelcelDelete(data){//删除
          this.resData=data;
@@ -234,6 +239,13 @@ export default {
          .catch(err=>{
            console.log('审核失败',err)
          })
+         this.listData=[];
+          getNeedToCheckedDetails(this.$route.params).then(res=>{
+           for(var i=0;i<res.data.length;i++)
+           {
+             this.listData.push(res.data[i]);
+           }
+          })
        }
    },
    mounted(){
@@ -241,54 +253,15 @@ export default {
       this.selectdate=this.getNowFormatDate2();
       this.selecttime=this.getNowFormatDate2();
        console.log('细节页面报错')
-       getDetails(this.$route.params).then(res=>{
-         for(var i=0,j=0;i<res.data.length;i++)
+       getNeedToCheckedDetails(this.$route.params).then(res=>{
+         for(var i=0;i<res.data.length;i++)
          {
-           if(res.data[i].condition==null)
-           {
              this.listData.push(res.data[i]);
-             j++;}
-         }
+        }
+         
          console.log(this.listData)
        })
-       getInputDates(this.$route.params).then(res=>{
-         this.dates=[{
-           label: '过去录入详情',
-           options: []},
-           {
-           label: '当天可核查日期',
-           options: []},
-           {
-           label: '未到核查时间',
-           options: []},
-          ];
-          
-           var cd= new Date(Date.parse(this.selectdate.replace(/-/g,"/")))
-           var d1 = new Date(Date.parse(res.data[0].replace(/-/g,"/")))
-           if(cd<d1)
-           {
-             console.log('why')
-             this.selecttime=res.data[0]
-             console.log(this.selecttime)
-           }
-         for(var i=0;i<res.data.length;i++){
-           var date1=new Date(Date.parse(this.selectdate.replace(/-/g,"/")));//当前日期
-           var date2=new Date(Date.parse(res.data[i].replace(/-/g,"/")));//列表中的日期
-
-           if(date2>date1)
-           {
-              this.dates[2].options.push({value:res.data[i],label:res.data[i]});
-           }
-             else if(date2<date1)
-             this.dates[0].options.push({value:res.data[i],label:res.data[i]});
-             else if(date2=date1){
-             this.dates[1].options.push({value:res.data[i],label:res.data[i]});
-             }
-           
-           
-         }
-         console.log(this.dates)
-       })
+       
   }
 }
 </script>
