@@ -34,17 +34,10 @@
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button 
-              v-if="scope.row.condition==null"
               type="primary"
               size="mini"
               @click="handelcelChange(scope.row)"
               >录入</el-button>
-              <el-button 
-              v-if="scope.row.condition!=null"
-              type="primary"
-              size="mini"
-              @click="handelcelChange(scope.row)"
-              >编辑</el-button>
                <el-button 
               type="danger"
               size="mini"
@@ -80,7 +73,7 @@
               <el-form-item label="处置情况:"  prop="disposeIn" style="margin-bottom:5px">
                 <el-input type="text"   label="处置情况 ："  class="resizeNone" v-model="resData.disposeIn" placeholder="请输入内容"></el-input>
               </el-form-item>
-              <el-form-item label="是否关闭:"  prop="disposeIn" style="margin-bottom:5px">
+              <el-form-item label="是否关闭:"  prop="closeIn" style="margin-bottom:5px">
                   <el-switch
                   style="margin-right:10px"
                   v-model="resData.closeIn"
@@ -105,17 +98,19 @@
 </div>
 </template>
 <script>
+import { getDetails } from "../../../services/remote";//查询细节
 import { getCheckDetail } from "../../../services/remote";//查询细节
-import { getInputDetailInfo } from "../../../services/remote";//查询细节
+import { getInputtedDetailInfo } from "../../../services/remote";//查询细节
 import { inputDetail } from "../../../services/remote";//录入当天细节
 import { updateInputtedDetailInfo } from "../../../services/remote";//录入当天细节
+import { deletePlanDetail } from "../../../services/remote";//录入当天细节
 
 export default {
    name:'',
    data(){
        return{
            listData:[],
-           resData:{condition:'在用',closeIn:'是',description:'',picNo:'',disposeIn:''},
+           resData:{monitorPlanDetailID:'',monitorPlanID:'',condition:'在用',closeIn:'是',description:'',picNo:'',disposeIn:''},
            ifchange:false,
            ifnew:0,
            table:false,
@@ -123,6 +118,23 @@ export default {
        }
    },
    methods:{
+     changeDetail(){
+           if(this.resData.condition==true)this.resData.condition='备用';
+           else if(this.resData.condition=false)this.resData.condition='在用';
+
+           if(this.resData.closeIn==false)this.resData.closeIn='是'
+           if(this.resData.closeIn==true)this.resData.closeIn='否'
+         console.log(this.resData)
+         updateInputtedDetailInfo(this.resData).then(res=>{
+           console.log('审核成功',res)
+           this.$message.success('核查成功')
+
+           this.table=false
+         })
+         .catch(err=>{
+           console.log('审核失败',err)
+         })
+     },
       getNowFormatDate(){
         var date = new Date();
         var seperator1 = "-";
@@ -142,27 +154,36 @@ export default {
          this.$router.go(-1)
        },
        handelcelChange(data){
-         this.resData.monitorPlanID=data.monitorPlanID
-         this.resData.monitorPlanDetailID=data.monitorPlanDetailID
-         if(data.condition==null){
+         this.resData={monitorPlanDetailID:'',monitorPlanID:'',condition:'在用',closeIn:'是',description:'',picNo:'',disposeIn:''},
+         this.resData.monitorPlanDetailID=data.monitorPlanDetailID;
+         this.resData.monitorPlanID=data.monitorPlanID;
+         console.log(data)
+         getInputtedDetailInfo(data).then(res=>{
+           if(res.data==null){
            this.ifnew=1;
-         }
+           }
          else{
            this.ifnew=0;
-           this.resData=data;
+           this.resData=res.data;
+           if(this.resData.condition=='备用')this.resData.condition=true;
+           else this.resData.condition=false;
+           if(this.resData.closeIn=='否')this.resData.closeIn=true;
+           else this.resData.closeIn=false;
+           console.log('获取数据',this.resData)
          }
          this.table=true
+         })
        },
        handelcelDelete(data){//删除
          this.resData=data;
-        //  deletePlanDetail(this.resData).then(res=>{
-        //    this.$message.success('删除成功',res)
-        //    getCheckDetail(this.$route.params).then(res=>{
-        //      this.listData=res.data;
-        //     })
-        //  }).catch(err=>{
-        //    this.$message.error('删除失败',err)
-        //  })
+         deletePlanDetail(this.resData).then(res=>{
+           this.$message.success('删除成功',res)
+           getDetails(this.$route.params).then(res=>{
+             this.listData=res.data;
+            })
+         }).catch(err=>{
+           this.$message.error('删除失败',err)
+         })
        },
        addDetail(){//录入细节
          if(this.resData.description==''||this.resData.picNo==''||this.resData.disposeIn==''){
@@ -175,32 +196,30 @@ export default {
            if(this.resData.closeIn==true)this.resData.closeIn='否'
          }
          console.log(this.resData)
-         inputDetail(this.resData).then(res=>{
+         if(this.ifnew=1){
+           inputDetail(this.resData).then(res=>{
            console.log('录入成功',res)
            this.table=false
          })
          .catch(err=>{
            console.log('录入失败',err)
          })
-       },
-       changeDetail(){//编辑细节
-          updateInputtedDetailInfo(this.resData).then(res=>{
-           console.log('编辑成功',res)
+         }
+         else{
+           updateInputtedDetailInfo(this.resData).then(res=>{
+           console.log('录入成功',res)
            this.table=false
-           })
+         })
          .catch(err=>{
-           console.log('编辑失败',err)
-          })
+           console.log('录入失败',err)
+         })
+         }
+         
        }
    },
    mounted(){
        console.log('细节页面报错')
-       this.id={"planId":this.$route.params.monitorPlanID}
-       this.nowdate=this.getNowFormatDate();
-       var data;
-       data={planId:this.$route.params.monitorPlanID,date:this.nowdate}
-       console.log(data)
-       getCheckDetail(data).then(res=>{
+       getDetails(this.$route.params).then(res=>{
            this.listData=res.data; })
        }
 }

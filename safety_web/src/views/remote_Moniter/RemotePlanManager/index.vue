@@ -207,14 +207,13 @@ methods:{
     pushfile(data){//导出
        getDetails(data).then(res=>{
           this.downloadData=[];
-          //  this.resData=res.data;
-          this.resData=[{"monitorPlanDetailID":'125105',"deviceNo":'adasd',"myNo":'adasddddd',"projectName":'mock测试',"charger":'adasda',"tel":'asdasdasd'}]
+          this.resData=res.data;
           if (res.code == '1000') {
 						//将树形数据转换为table型数据
-						this.parseTreeToTable(this.listData)
+						this.parseTreeToTable(this.resData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.projectName+'细节表';
+						option.fileName = data.planName+'细节表';
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
@@ -225,14 +224,15 @@ methods:{
 						toExcel.saveExcel();
 					}
        })
+       
     },
     parseTreeToTable(node) {//转换格式
 				//初始化下载数据项对象
-				this.downloadDataItem = {}
+				this.downloadDataItem = []
 				//遍历当前节点，装填数据
 				for (var i = 0; i < node.length; i++) {
-					//如果当前节点存在，装填数据
-					if (node[i]) {
+          //如果当前节点存在，装填数据
+          this.downloadDataItem = {}
 						this.downloadDataItem.deviceNo = node[i].deviceNo
 						this.downloadDataItem.myNo = node[i].myNo
 						this.downloadDataItem.projectName = node[i].projectName
@@ -241,11 +241,8 @@ methods:{
             this.downloadDataItem.condition = node[i].condition
 						//将数据项对象装入下载数据数组，保存
 						this.downloadData.push(this.downloadDataItem)
-					}
-					//递归装填子节点
-					if (node[i].childNode) {
-						this.parseTreeToTable(node[i].childNode)
-					}
+					
+					
 				}
 			},
 },

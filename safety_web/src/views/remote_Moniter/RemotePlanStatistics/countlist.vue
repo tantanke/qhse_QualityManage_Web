@@ -23,12 +23,17 @@
           highlight-current-row
           border>
           <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
-          <el-table-column prop="deviceNo" label="设备编号" width="150" align="center"> </el-table-column>
-          <el-table-column prop="myNo" label="自编号" width="150" align="center"> </el-table-column>
-          <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
-          <el-table-column prop="charger" label="负责人" width="200" align="center"> </el-table-column>
-          <el-table-column prop="tel" label="电话" width="200" align="center"> </el-table-column>
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column prop="companyName" label="基层单位" width="150" align="center"> </el-table-column>
+          <el-table-column prop="workNum" label="开工项目数量" width="100" align="center"> </el-table-column>
+          <el-table-column prop="dayReportNum" label="日报数量" align="center"> </el-table-column>
+          <el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="0" align="center"> </el-table-column>
+          <el-table-column prop="outStockNum" label="出库数量" width="100" align="center"> </el-table-column>
+          <el-table-column prop="powerOnNum" label="开机使用数量" align="center"> </el-table-column>
+          <el-table-column prop="backNum" label="备用数量" width="100" align="center"> </el-table-column>
+          <el-table-column prop="coverageRate" label="覆盖率" width="100" align="center"> </el-table-column>
+          <el-table-column prop="availableRate" label="利用率" width="100" align="center"> </el-table-column>
+          <el-table-column prop="useRate" label="使用率" width="100" align="center"> </el-table-column>
+          <el-table-column label="操作"  align="center">
             <template slot-scope="scope">
               <el-button 
               type="danger"
@@ -44,8 +49,10 @@
 </div>
 </template>
 <script>
+import ExportJsonExcel from "js-export-excel";
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getStatisticsInfoByDate } from "../../../services/remote";//查询细节
-import { deletePlanDetail } from "../../../services/remote";//删除细节
+import { deleteSumData } from "../../../services/remote";
 export default {
    name:'',
    data(){
@@ -56,32 +63,68 @@ export default {
        }
    },
    methods:{
-       handleClick(file){//导入
-         let fd = new FormData();
-         fd.append('file',file);//传文件
-         fd.append('planId',this.$route.params.monitorPlanID);//传文件
-         uploadMonitorPlanExcel(fd).then(res=>{
-             getDetails(this.$route.params).then(res=>{
-                this.listData=res.data;
-                this.$message.success('导入成功',res)
-             })
-         }).catch(err=>{
-             this.$message.error('批量导入失败',err)
-         })
-       },
-       newSubmitForm () {
-         this.$refs.upload.submit()
-     },
        handleCancel(){//返回
          this.$router.go(-1)
-       },output(){},
+       },
+       output(data){
+          var data={date:''};
+       data.date=this.$route.params.time
+       getStatisticsInfoByDate(data).then(res=>{
+           this.listData=res.data; 
+           this.downloadData=[];
+          // this.resData=[{"monitorPlanDetailID":'125105',"deviceNo":'adasd',"myNo":'adasddddd',"projectName":'mock测试',"charger":'adasda',"tel":'asdasdasd'}]
+          
+						//将树形数据转换为table型数据
+						this.parseTreeToTable(this.listData)
+						var option = {};
+						//下载文件名
+						option.fileName =this.$route.params.time+'统计表';
+						//设置数据来源和数据格式
+						option.datas = [{
+							sheetData: this.downloadData,
+							sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
+            }];
+						// //导出
+						var toExcel = new ExportJsonExcel(option);
+						toExcel.saveExcel();
+           })
+         
+       },
+       parseTreeToTable(node) {//转换格式
+        //初始化下载数据项对象
+        this.downloadData=[]
+				//遍历当前节点，装填数据
+				for (var i = 0; i < node.length; i++) {
+					//如果当前节点存在，装填数据
+					if (node[i]) {
+				   this.downloadDataItem = {}
+						this.downloadDataItem.companyName = node[i].companyName
+						this.downloadDataItem.workNum = node[i].workNum
+						this.downloadDataItem.dayReportNum = node[i].dayReportNum
+						this.downloadDataItem.recordDeviceNum = node[i].recordDeviceNum
+            this.downloadDataItem.outStockNum = node[i].outStockNum
+            this.downloadDataItem.powerOnNum = node[i].powerOnNum
+            this.downloadDataItem.backNum = node[i].backNum
+            this.downloadDataItem.coverageRate = node[i].coverageRate
+            this.downloadDataItem.availableRate = node[i].availableRate
+            this.downloadDataItem.useRate = node[i].useRate
+            this.downloadData[i]=this.downloadDataItem
+            
+            console.log(this.downloadDataItem)
+            console.log(this.downloadData[i])
+            console.log(this.downloadData)
+					}
+				}
+			},
        handelcelDelete(data){//删除
          this.resData=data;
-         deletePlanDetail(this.resData).then(res=>{
+         var data1={sumDataId:data.mesCheckSumDataID};
+         deleteSumData(data1).then(res=>{
            this.$message.success('删除成功',res)
-           getDetails(this.$route.params).then(res=>{
-             this.listData=res.data;
-            })
+           var data={date:''};
+           data.date=this.$route.params.time
+           getStatisticsInfoByDate(data).then(res=>{
+           this.listData=res.data; })
          }).catch(err=>{
            this.$message.error('删除失败',err)
          })
@@ -90,8 +133,8 @@ export default {
    mounted(){
        console.log('细节页面报错',JSON.stringify(this.$route.params.time))
     //    this.id={"planId":this.$route.params.monitorPlanID}
-       var data={time:''};
-       data.time=this.$route.params.time
+       var data={date:''};
+       data.date=this.$route.params.time
        getStatisticsInfoByDate(data).then(res=>{
            this.listData=res.data; })
    }
