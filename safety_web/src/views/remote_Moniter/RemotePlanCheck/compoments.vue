@@ -4,15 +4,26 @@
     <div class="page-content">
         <el-row>
         <el-form label-width="130px" :inline="true">
-          <el-form-item>
-            <el-button type="warning" @click="pushfile">导出excel</el-button>
+          <el-form-item label="选择自编号：">
+            <el-select v-model="myNovalue" placeholder="请选择" clearable>
+              <el-option
+                 v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="choosemyNo">查询</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="warning" @click="pushfile">导出
+            </el-button>
+,          </el-form-item>
           <el-form-item>
             <el-button type="danger" @click="handleCancel">返回</el-button>
           </el-form-item>
-          <!-- <el-form-item style="float:right">
-            <el-button  type="primary" @click="handlePost">保存</el-button>
-          </el-form-item> -->
         </el-form>
       </el-row>
         <!-- 计划列表 -->
@@ -33,9 +44,9 @@
           <el-table-column prop="tel" label="电话" width="100" align="center"> </el-table-column>
           <el-table-column label="视频监控描述:" width="100"  prop="description" style="margin-bottom:5px">{{resData.description}}</el-table-column>
           <el-table-column label="截图编号:" width="100" prop="picNo" style="margin-bottom:5px">{{resData.picNo}}</el-table-column>
-          <el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-table-column>
+          <el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-table-column> -->
               
-            <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
+            <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
               <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
             </el-table-column> -->
           <el-table-column label="操作" width="150" align="center">
@@ -53,12 +64,11 @@
               >删除</el-button>
             </template>
           </el-table-column>
-            
         </el-table> 
       </el-row>
 
       <!-- 新增计划表  -->
-      <el-dialog title="核查计划" :visible.sync="table" center width="700px">
+      <el-dialog title="核查计划" :visible.sync="table" center width="700px"> -->
           <el-form label-width="120px" style="width:100%;" >
            <el-row>
             <el-col :span="24" >
@@ -87,7 +97,7 @@
              </el-col>
            </el-row>
           </el-form>
-      </el-dialog>
+      </el-dialog> 
     </div>
 </div>
 </template>
@@ -114,10 +124,37 @@ export default {
            selecttime:'',
            selectdate:'',
            cansee:true,
-           monitorPlanDetailID:''
+           monitorPlanDetailID:'',
+           options:[],
+           myNovalue:'',
+           lists:[]
        }
    },
    methods:{
+     choosemyNo(){
+       if(this.myNovalue==null || this.myNovalue=='')
+       {
+         this.listData=[];
+         getNeedToCheckedDetails(this.$route.params).then(res=>{
+         for(var i=0;i<res.data.length;i++)
+         {
+             this.listData.push(res.data[i]);
+         }
+       })
+       }
+
+       else{
+         this.listData=[];
+         for(var i=0;i<this.lists.length;i++)
+       {
+         if(this.lists[i].myNo==this.myNovalue)
+         {
+           this.listData.push(this.lists[i]);
+         }
+       }
+       }
+       
+     },
      pushfile(){
        this.downloadData=[];
 						//将树形数据转换为table型数据
@@ -252,14 +289,17 @@ export default {
       this.nowdate=this.getNowFormatDate();
       this.selectdate=this.getNowFormatDate2();
       this.selecttime=this.getNowFormatDate2();
-       console.log('细节页面报错')
+       console.log('核查细节页面报错')
        getNeedToCheckedDetails(this.$route.params).then(res=>{
          for(var i=0;i<res.data.length;i++)
          {
              this.listData.push(res.data[i]);
+             this.options.push({value:res.data[i].myNo,label:res.data[i].myNo});
+             console.log(this.options)
         }
          
          console.log(this.listData)
+         this.lists=this.listData
        })
        
   }

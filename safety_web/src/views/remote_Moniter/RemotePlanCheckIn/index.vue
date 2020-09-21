@@ -38,7 +38,7 @@
           <el-table-column prop="planName" label="计划名称" align="center"> </el-table-column>
           <el-table-column prop="startDate" label="开始时间" width="200" align="center"> </el-table-column>
           <el-table-column prop="endDate" label="结束时间" width="200" align="center"> </el-table-column>
-           <el-table-column label="编辑" width="100" align="center">
+           <el-table-column label="编辑" width="200" align="center">
             <template slot-scope="scope">
               <el-button 
               v-if="ifcanwrite(scope.row)"
@@ -46,20 +46,21 @@
               size="mini"
               @click="readfile(scope.row)"
               >录入</el-button>
+              <el-button 
+              v-if="ifcanwrite(scope.row)"
+              type="success"
+              size="mini"
+              @click="pushfile(scope.row)"
+              >导出当天数据</el-button>
             </template>
           </el-table-column> 
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column label="操作" width="100" align="center">
             <template slot-scope="scope">
               <el-button 
               type="danger"
               size="mini"
               @click="deletefile(scope.row)"
               >删除</el-button>
-               <el-button 
-              type="success"
-              size="mini"
-              @click="pushfile(scope.row)"
-              >导出</el-button>
               </template>
           </el-table-column> 
         </el-table> 

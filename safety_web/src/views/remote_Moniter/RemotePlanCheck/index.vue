@@ -185,11 +185,11 @@ export default {
       this.selectdate=this.getNowFormatDate2();
       this.table=true;
       getInputDates(data).then(res=>{
-         this.dates=[{
-           label: '过去录入详情',
-           options: []},
+         this.dates=[
            {
            label: '当天可核查日期',
+           options: []},{
+           label: '过去录入详情',
            options: []},
            {
            label: '未到核查时间',
@@ -209,9 +209,9 @@ export default {
            var date2=new Date(Date.parse(res.data[i].replace(/-/g,"/")));//列表中的日期
 
              if(date2<date1)
-             this.dates[0].options.push({value:res.data[i],label:res.data[i]});
-             else if(date2=date1){
              this.dates[1].options.push({value:res.data[i],label:res.data[i]});
+             else if(date2=date1){
+             this.dates[0].options.push({value:res.data[i],label:res.data[i]});
              break;
              }
            
