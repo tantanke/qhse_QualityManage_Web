@@ -63,14 +63,14 @@
           </el-table-column>
           <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
           <el-table-column prop="deviceNo" label="设备编号" width="150" align="center"> </el-table-column>
-          <el-table-column prop="myNo" label="自编号" width="150" align="center"> </el-table-column>
+          <el-table-column prop="myNo" label="自编号" width="130" align="center"> </el-table-column>
           <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
-          <el-table-column prop="charger" label="负责人" width="150" align="center"> </el-table-column>
-          <el-table-column prop="tel" label="电话" width="150" align="center"> </el-table-column>
+          <el-table-column prop="charger" label="负责人" width="120" align="center"> </el-table-column>
+          <el-table-column prop="tel" label="电话" width="140" align="center"> </el-table-column>
             <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
               <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
             </el-table-column> -->
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column label="操作" width="180" align="center">
             <template slot-scope="scope">
               <el-button 
               type="primary"
@@ -188,19 +188,15 @@ export default {
         })
        }
        else{
-         console.log('选择数据',this.lists);
          
            this.listData=[];
          
          for(var i=0;i<this.lists.length;i++)
          {
-           console.log(i,this.myNovalue)
            if(this.lists[i].myNo==this.myNovalue)
            {
-             console.log('yes',this.myNovalue,this.lists[i])
              var data=this.lists[i];
              this.listData.push(data);
-             console.log('匹配后结果',this.listData);
            }
           }
        }

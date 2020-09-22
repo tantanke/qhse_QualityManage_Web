@@ -20,7 +20,7 @@
           <el-form-item>
             <el-button type="warning" @click="pushfile">导出
             </el-button>
-,          </el-form-item>
+          </el-form-item>
           <el-form-item>
             <el-button type="danger" @click="handleCancel">返回</el-button>
           </el-form-item>
@@ -68,7 +68,7 @@
       </el-row>
 
       <!-- 新增计划表  -->
-      <el-dialog title="核查计划" :visible.sync="table" center width="700px"> -->
+      <el-dialog title="核查计划" :visible.sync="table" center width="700px"> 
           <el-form label-width="120px" style="width:100%;" >
            <el-row>
             <el-col :span="24" >

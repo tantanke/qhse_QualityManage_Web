@@ -18,5 +18,8 @@ export const downloadMonitorDetailExcelTemplate = () => {
     return request(`/api/getSumDataInTimePeriod?startTime=${data.startTime}&endTime=${data.endTime}`)
   }
   export const updateMesData = (data) => {
-    return request(`/api/updateMesData`,data)
+    return request(`/api/updateMesData`,{method:'put',data})
+  }
+  export const getDayReport   = (data) => {
+    return request(`/api/getDayReport?planId=${data.monitorPlanID}&date=${data.date}`,{data})
   }

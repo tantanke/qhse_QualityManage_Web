@@ -109,7 +109,7 @@ export default {
      changeres(){
        updateMesData(this.resData).then(res=>{
          this.$message.success('修改成功');
-         tochange=false;
+         this.tochange=false;
           getStatisticsInfoByDate(data).then(res=>{
            this.listData=res.data; })
        })

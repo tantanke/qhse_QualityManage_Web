@@ -65,6 +65,33 @@
           </el-table-column> 
         </el-table> 
       </el-row>
+
+       <el-dialog title="录入计划" :visible.sync="table" center width="500px">
+          <el-form label-width="120px" style="width:100%;" >
+            <el-form-item label='选择时间：' labelWidth='120px'>
+            <el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px" >
+              <el-option-group
+                  v-for="group in dates"
+                  :key="group.label"
+                  :label="group.label">
+                  <el-option
+                    v-for="item in group.options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled">
+                  </el-option>
+                </el-option-group>
+              </el-select>
+              
+                <el-button 
+              type="primary"
+              size="mini"
+              @click="choosetime"
+              >进入录入</el-button>
+            </el-form-item>
+          </el-form>
+      </el-dialog>
        
     </div>
 </div>
@@ -74,7 +101,7 @@ import ExportJsonExcel from "js-export-excel";
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getDetails } from "../../../services/remote";//查询当天录入情况
 import { getMonitorPlanList } from "../../../services/remote";//查询
-import { getCheckDetail } from "../../../services/remote";//查询
+import { getCheckDetail,getInputDates } from "../../../services/remote";//查询
 import { deletePlan,getNeedToCheckedDetails } from "../../../services/remote";//删除
 
 
@@ -84,7 +111,11 @@ export default {
       return{
          selectdate:'',
          listData:[],
-         nowdate:''
+         nowdate:'',
+         table:false,
+         dates:[],
+         routedata:'',
+         selecttime:''
       }
    },
    methods:{
@@ -135,9 +166,55 @@ export default {
         })
        },
       readfile(data){//详情
+      this.table=true;
+      this.routedata=data;
+      this.selecttime=this.getNowFormatDate();
+      this.selectdate=this.getNowFormatDate();
+       getInputDates(data).then(res=>{
+         this.dates=[
+           {
+           label: '当天可录入日期',
+           options: []},{
+           label: '已过录入时间',
+           options: [],
+           },
+           {
+           label: '未到录入时间',
+           options: [],
+           },
+          ];
+          
+           var cd= new Date(Date.parse(this.selectdate.replace(/-/g,"/")))
+           var d1 = new Date(Date.parse(res.data[0].replace(/-/g,"/")))
+           if(cd<d1)
+           {
+             console.log('why')
+             this.selecttime=res.data[0]
+             console.log(this.selecttime)
+           }
+         for(var i=0;i<res.data.length;i++){
+           var date1=new Date(Date.parse(this.selectdate.replace(/-/g,"/")));//当前日期
+           var date2=new Date(Date.parse(res.data[i].replace(/-/g,"/")));//列表中的日期
+           
+             if(date2>date1){
+             this.dates[2].options.push({value:res.data[i],label:res.data[i],disabled: true});
+             }
+             else if(date2<date1)
+             this.dates[1].options.push({value:res.data[i],label:res.data[i],disabled: true});
+             else if(date2=date1){
+             this.dates[0].options.push({value:res.data[i],label:res.data[i]});
+             }
+           
+           
+         }
+         console.log(this.dates)
+       })
+      },
+      choosetime(){
+        
       this.$router.push({
           name: 'Rcompoments2',
-          params:data
+          params:this.routedata
         })
       },
       deletefile(data){
