@@ -176,8 +176,8 @@ export default {
 			},
      
      inputfile(data){
-       this.selecttime=this.getNowFormatDate();
-      this.selectdate=this.getNowFormatDate();
+       this.selecttime=this.getNowFormatDate2();
+      this.selectdate=this.getNowFormatDate2();
        this.monitorPlanID=data.monitorPlanID
        this.table=true;
       this.choose='ribao';
