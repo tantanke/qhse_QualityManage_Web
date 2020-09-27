@@ -4,6 +4,10 @@
     <div class="page-content">
         <el-row>
         <el-form label-width="130px" :inline="true">
+          <el-form-item >
+              <a ref="download"></a>
+              <el-button type="primary" icon="el-icon-upload "  @click="cilckFile()" >Excel模板下载</el-button>
+          </el-form-item>
           <el-form-item>
               <el-upload
                 action="/"
@@ -11,7 +15,8 @@
                 :data="this.id"
                 ref="upload"
                 :auto-upload="false">
-                <el-button type="warning" icon="el-icon-upload " size="medium">excel导入</el-button>
+                <el-button type="warning" icon="el-icon-upload " size="medium">excel导入
+                </el-button>
               </el-upload>
           </el-form-item>
           <el-form-item >
@@ -93,10 +98,13 @@
 </div>
 </template>
 <script>
+import ExportJsonExcel from "js-export-excel";
 import { getDetails } from "../../../services/remote";//查询细节
 import { uploadMonitorPlanExcel } from "../../../services/remote";//上传excel
 import { updateMonitorPlanDetail } from "../../../services/remote";//修改细节
 import { deletePlanDetail } from "../../../services/remote";//删除细节
+import { downloadMonitorDetailExcelTemplate}from "../../../services/remotenew";
+
 export default {
    name:'',
    data(){
@@ -107,6 +115,20 @@ export default {
        }
    },
    methods:{
+     cilckFile(){
+         this.downloadData=[];
+						var option = {};
+						option.fileName = '远程计划模板';
+						//设置数据来源和数据格式
+						option.datas = [{
+							sheetData: this.downloadData,
+							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "电话"]
+						}];
+						//导出
+						var toExcel = new ExportJsonExcel(option);
+						toExcel.saveExcel();
+					
+     },
        handleClick(file){//导入
          let fd = new FormData();
          fd.append('file',file);//传文件

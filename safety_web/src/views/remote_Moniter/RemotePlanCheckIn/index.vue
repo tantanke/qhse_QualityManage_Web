@@ -38,7 +38,7 @@
           <el-table-column prop="planName" label="计划名称" align="center"> </el-table-column>
           <el-table-column prop="startDate" label="开始时间" width="200" align="center"> </el-table-column>
           <el-table-column prop="endDate" label="结束时间" width="200" align="center"> </el-table-column>
-           <el-table-column label="编辑" width="100" align="center">
+           <el-table-column label="编辑" width="200" align="center">
             <template slot-scope="scope">
               <el-button 
               v-if="ifcanwrite(scope.row)"
@@ -46,24 +46,52 @@
               size="mini"
               @click="readfile(scope.row)"
               >录入</el-button>
+              <el-button 
+              v-if="ifcanwrite(scope.row)"
+              type="success"
+              size="mini"
+              @click="pushfile(scope.row)"
+              >导出当天数据</el-button>
             </template>
           </el-table-column> 
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column label="操作" width="100" align="center">
             <template slot-scope="scope">
               <el-button 
               type="danger"
               size="mini"
               @click="deletefile(scope.row)"
               >删除</el-button>
-               <el-button 
-              type="success"
-              size="mini"
-              @click="pushfile(scope.row)"
-              >导出</el-button>
               </template>
           </el-table-column> 
         </el-table> 
       </el-row>
+
+       <el-dialog title="录入计划" :visible.sync="table" center width="500px">
+          <el-form label-width="120px" style="width:100%;" >
+            <el-form-item label='选择时间：' labelWidth='120px'>
+            <el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px" >
+              <el-option-group
+                  v-for="group in dates"
+                  :key="group.label"
+                  :label="group.label">
+                  <el-option
+                    v-for="item in group.options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled">
+                  </el-option>
+                </el-option-group>
+              </el-select>
+              
+                <el-button 
+              type="primary"
+              size="mini"
+              @click="choosetime"
+              >进入录入</el-button>
+            </el-form-item>
+          </el-form>
+      </el-dialog>
        
     </div>
 </div>
@@ -73,8 +101,8 @@ import ExportJsonExcel from "js-export-excel";
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getDetails } from "../../../services/remote";//查询当天录入情况
 import { getMonitorPlanList } from "../../../services/remote";//查询
-import { getCheckDetail } from "../../../services/remote";//查询
-import { deletePlan } from "../../../services/remote";//删除
+import { getCheckDetail,getInputDates } from "../../../services/remote";//查询
+import { deletePlan,getNeedToCheckedDetails } from "../../../services/remote";//删除
 
 
 export default {
@@ -83,6 +111,11 @@ export default {
       return{
          selectdate:'',
          listData:[],
+         nowdate:'',
+         table:false,
+         dates:[],
+         routedata:'',
+         selecttime:''
       }
    },
    methods:{
@@ -133,9 +166,55 @@ export default {
         })
        },
       readfile(data){//详情
+      this.table=true;
+      this.routedata=data;
+      this.selecttime=this.getNowFormatDate();
+      this.selectdate=this.getNowFormatDate();
+       getInputDates(data).then(res=>{
+         this.dates=[
+           {
+           label: '当天可录入日期',
+           options: []},{
+           label: '已过录入时间',
+           options: [],
+           },
+           {
+           label: '未到录入时间',
+           options: [],
+           },
+          ];
+          
+           var cd= new Date(Date.parse(this.selectdate.replace(/-/g,"/")))
+           var d1 = new Date(Date.parse(res.data[0].replace(/-/g,"/")))
+           if(cd<d1)
+           {
+             console.log('why')
+             this.selecttime=res.data[0]
+             console.log(this.selecttime)
+           }
+         for(var i=0;i<res.data.length;i++){
+           var date1=new Date(Date.parse(this.selectdate.replace(/-/g,"/")));//当前日期
+           var date2=new Date(Date.parse(res.data[i].replace(/-/g,"/")));//列表中的日期
+           
+             if(date2>date1){
+             this.dates[2].options.push({value:res.data[i],label:res.data[i],disabled: true});
+             }
+             else if(date2<date1)
+             this.dates[1].options.push({value:res.data[i],label:res.data[i],disabled: true});
+             else if(date2=date1){
+             this.dates[0].options.push({value:res.data[i],label:res.data[i]});
+             }
+           
+           
+         }
+         console.log(this.dates)
+       })
+      },
+      choosetime(){
+        
       this.$router.push({
           name: 'Rcompoments2',
-          params:data
+          params:this.routedata
         })
       },
       deletefile(data){
@@ -152,15 +231,15 @@ export default {
        })
       },
       pushfile(data){
-         getDetails(data).then(res=>{
+         getNeedToCheckedDetails({date:this.nowdate,monitorPlanID:data.monitorPlanID}).then(res=>{
           this.downloadData=[];
            this.resData=res.data;
            if (res.code == '1000') {
 						//将树形数据转换为table型数据
-						this.parseTreeToTable(this.listData)
+						this.parseTreeToTable(this.resData)
 						var option = {};
 						//下载文件名
-						option.fileName = data.plantName+'录入表';
+						option.fileName = data.planName+this.nowdate+'录入表';
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,

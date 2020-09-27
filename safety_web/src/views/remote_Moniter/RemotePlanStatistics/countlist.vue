@@ -23,7 +23,7 @@
           highlight-current-row
           border>
           <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
-          <el-table-column prop="companyName" label="基层单位" width="150" align="center"> </el-table-column>
+          <el-table-column prop="companyName" label="基层单位" align="center"> </el-table-column>
           <el-table-column prop="workNum" label="开工项目数量" width="100" align="center"> </el-table-column>
           <el-table-column prop="dayReportNum" label="日报数量" align="center"> </el-table-column>
           <el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="0" align="center"> </el-table-column>
@@ -33,18 +33,58 @@
           <el-table-column prop="coverageRate" label="覆盖率" width="100" align="center"> </el-table-column>
           <el-table-column prop="availableRate" label="利用率" width="100" align="center"> </el-table-column>
           <el-table-column prop="useRate" label="使用率" width="100" align="center"> </el-table-column>
-          <el-table-column label="操作"  align="center">
+          <el-table-column label="操作"  align="center" width="180">
             <template slot-scope="scope">
               <el-button 
               type="danger"
               size="mini"
               @click="handelcelDelete(scope.row)"
               >删除</el-button>
+              <el-button 
+              type="primary"
+              size="mini"
+              @click="handelcelchange(scope.row)"
+              >编辑</el-button>
             </template>
           </el-table-column>
             
         </el-table> 
       </el-row>
+       <el-dialog title="新增计划" :visible.sync="tochange" center width="700px">
+          <el-form label-width="120px" style="width:100%;" >
+           <el-row>
+            <el-col :span="24">
+              <el-form-item label="基层单位:"  prop="companyName" style="margin-bottom:1px">
+                <el-input type="text"   label="基层单位:"  class="resizeNone" v-model="resData.companyName" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="开工项目数量:"  prop="workNum" style="margin-bottom:1px">
+                <el-input type="text"   label="开工项目数量:"  class="resizeNone" v-model="resData.workNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="日报数量:"  prop="dayReportNum" style="margin-bottom:1px">
+                <el-input type="text"   label="日报数量: "  class="resizeNone" v-model="resData.dayReportNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="配备记录仪数量:"  prop="recordDeviceNum" style="margin-bottom:1px">
+                <el-input type="text"   label="配备记录仪数量:"  class="resizeNone" v-model="resData.recordDeviceNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="出库数量:"  prop="outStockNum" style="margin-bottom:1px">
+                <el-input type="text"   label="出库数量:"  class="resizeNone" v-model="resData.outStockNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="开机使用数量:"  prop="powerOnNum" style="margin-bottom:1px">
+                <el-input type="text"   label="开机使用数量:"  class="resizeNone" v-model="resData.powerOnNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+              <el-form-item label="备用数量:"  prop="backNum" style="margin-bottom:1px">
+                <el-input type="text"   label="备用数量:"  class="resizeNone" v-model="resData.backNum" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24" >
+            <el-form-item>
+            <el-button type="" style="margin-top:20px;margin-left:100px" @click="tochange=false">取消</el-button>
+            <el-button type="primary" style="margin-top:20px;" @click="changeres">确定修改</el-button>
+            </el-form-item>
+             </el-col>
+           </el-row>
+          </el-form>
+      </el-dialog>
     </div>
 </div>
 </template>
@@ -53,16 +93,31 @@ import ExportJsonExcel from "js-export-excel";
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getStatisticsInfoByDate } from "../../../services/remote";//查询细节
 import { deleteSumData } from "../../../services/remote";
+import { updateMesData } from "../../../services/remotenew";
 export default {
    name:'',
    data(){
        return{
            listData:[],
            resData:'',
-           ifchange:false
+           ifchange:false,
+           tochange:false,
+           resData:[]
        }
    },
    methods:{
+     changeres(){
+       updateMesData(this.resData).then(res=>{
+         this.$message.success('修改成功');
+         this.tochange=false;
+          getStatisticsInfoByDate(data).then(res=>{
+           this.listData=res.data; })
+       })
+     },
+       handelcelchange(data){
+         this.tochange=true;
+         this.resData=data
+       },
        handleCancel(){//返回
          this.$router.go(-1)
        },

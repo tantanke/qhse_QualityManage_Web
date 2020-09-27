@@ -25,6 +25,13 @@ export const getDetails = (data) => {
     data
   })
 }
+//获取核查细节
+export const getNeedToCheckedDetails = (data) => {
+  return request(`/api/getNeedToCheckedDetails?planId=${data.monitorPlanID}&date=${data.date}`, {
+    method:'get',
+    data
+  })
+}
 //批量上传
 export const uploadMonitorPlanExcel= (data) => {
   return request(`/api/uploadMonitorPlanExcel`, {

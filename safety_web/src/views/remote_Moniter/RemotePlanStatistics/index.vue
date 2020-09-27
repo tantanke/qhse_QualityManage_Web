@@ -17,8 +17,11 @@
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
           </el-form-item>
+          <el-form-item>
+            <el-button type="warning" @click="choosetime=true">时间段导出</el-button>
+          </el-form-item>
            <el-form-item style="float:right">
-              <el-button type="primary" icon="el-icon-upload "  @click="newSubmitForm()">确认导入</el-button>
+              <el-button type="success" @click="newSubmitForm">确认上传</el-button>
           </el-form-item>
           <el-form-item style="float:right">
               <el-upload
@@ -29,8 +32,31 @@
                 <el-button type="warning" icon="el-icon-upload " size="medium">excel上传</el-button>
               </el-upload>
           </el-form-item>
+          <el-form-item style="float:right">
+              <el-button type="primary" icon="el-icon-download "  @click="download()">下载Excel模板</el-button>
+          </el-form-item>
         </el-form>
       </el-row>
+      <el-dialog title="录入数据" :visible.sync="choosetime" center width="700px">
+        <el-form label-width="130px" :inline="true">
+          <el-form-item label='时间范围：' labelWidth='120px'>
+            <el-date-picker
+                v-model="selectdates"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"                       
+                >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item >
+              <el-button type="primary" icon="el-icon-download "  @click="timeupload()">下载</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
       <!-- 计划列表 -->
         <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
           <el-table
@@ -75,6 +101,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 //查询当天录入情况//excel上传
 import { getAllSumDate,uploadMesSumDataExcel,deleteSumData,deleteSumDataByDate } from "../../../services/remote";
 import { getStatisticsInfoByDate } from "../../../services/remote";//查询细节
+import { getSumDataInTimePeriod } from "../../../services/remotenew";//查询细节
 
 export default {
    name:'',
@@ -82,9 +109,40 @@ export default {
       return{
          selecttime:'',
          listData:[],
+         choosetime:false,
+         selectdates:[]
       }
    },
    methods:{
+     timeupload(){
+       getSumDataInTimePeriod({startTime:this.selectdates[0].toString(),endTime:this.selectdates[1].toString()}).then(res=>{
+         console.log('时间段数据',res.data)
+            var option = {};
+            option.fileName = '远程计划统计模板';
+            this.downloadData=[];
+            this.parseTreeToTable(res.data)
+						//设置数据来源和数据格式
+						option.datas = [{
+							sheetData:this.downloadData ,
+							sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
+						}];
+						//导出
+						var toExcel = new ExportJsonExcel(option);
+						toExcel.saveExcel();
+       })
+     },
+     download(){
+						var option = {};
+						option.fileName = '远程计划统计模板';
+						//设置数据来源和数据格式
+						option.datas = [{
+							sheetData: [],
+							sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
+						}];
+						//导出
+						var toExcel = new ExportJsonExcel(option);
+						toExcel.saveExcel();
+     },
       handleClick(){//查询
         getAllSumDate().then(res=>{
           this.listData=[];
