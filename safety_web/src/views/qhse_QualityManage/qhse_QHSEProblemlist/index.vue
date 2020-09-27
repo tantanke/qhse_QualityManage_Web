@@ -111,10 +111,10 @@
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a :download="props.row.affix1"  target='_blank' :href="`/api/downloadRegulationFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
+                     <a :download="props.row.affix1"  target='_blank' :href="`/downloadRegulationFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a :download="props.row.affix2"  target='_blank' :href="`/api/downloadRegulationFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
+                    <a :download="props.row.affix2"  target='_blank' :href="`/downloadRegulationFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
                 </el-form-item>
              </el-form>
              </template>
@@ -229,10 +229,10 @@
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a :download="props.row.affix1"  target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
+                     <a   target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a :download="props.row.affix2"  target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
+                    <a   target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
                 </el-form-item>
            </el-form>
            </template>
@@ -438,7 +438,6 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               console.log(res.data.list)
                _this.checkForm.companyId = []
                if(res.data.list.length === 0) {
                    this.$notify({
@@ -484,6 +483,7 @@ export default {
             _this.regulationBtn = true
            baseurl  = _this.getUrl('/api/query_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
+               console.log(res.data.list)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
