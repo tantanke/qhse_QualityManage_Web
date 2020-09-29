@@ -309,7 +309,8 @@ export default {
            inputDetail(this.resData).then(res=>{
            console.log('录入成功',res)
            this.$message.success('录入成功')
-           this.table=false
+           this.table=false;
+           this.showlinedatas();
          })
          .catch(err=>{
            console.log('录入失败',err)

@@ -75,8 +75,11 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityFill/index', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityFill/addmuch', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/addsome.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/index', name:'QHSEQualityCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityCheck/index.vue'],resolve)},
-
+        { path: '/qhse_QualityManage/StatisticAnalysis', name:'QHSEStatisticAnalysis', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
+        { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
+        { path: '/qhse_QualityManage/taskList', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
+        
         //报告管理  report_management
         { path: '/report_management/report_plan/index', name:'ReportPlanIndex', component: resolve => require(['./views/report_management/report_plan/index.vue'],resolve)},
         { path: '/report_management/report_complete/index', name:'ReportCompleteIndex', component: resolve => require(['./views/report_management/report_complete/index.vue'],resolve)},
@@ -171,14 +174,14 @@ export default new Router({
         { path: '/remote_Moniter/RemotePlanStatistics', name: 'RemotePlanStatistics', component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/index.vue'],resolve)},
         { path: '/remote_Moniter/RemotePlanStatistics/count', name: 'Rcompoments4', component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/countlist.vue'],resolve)},
         //质量体系运行
-  { path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
-  { path: '/qualitySystem/StatisticAnalysis', name:'Quality_', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
-  { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-  { path: '/qualitySystem/ProblemVerify', name:'QualityProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
-  { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
-  { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
-  { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
-
+        { path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
+        { path: '/qualitySystem/StatisticAnalysis', name:'Quality_', component: resolve => require(['./views/qualitySystem/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
+        { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
+        { path: '/qualitySystem/ProblemVerify', name:'QualityProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
+        { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qualitySystem/qhse_ElementEvidenceApproval/index.vue'],resolve)},
+        { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
+        { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
+        
       ]
     },
 

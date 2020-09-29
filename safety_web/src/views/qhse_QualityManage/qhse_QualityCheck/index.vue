@@ -4,7 +4,7 @@
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true" :model="filterQuery">
-          <el-form-item label="选择公司：" prop="companyCode">
+          <el-form-item label="选择公司：" prop="companyCode" >
             <treeselect
               :disable-branch-nodes="true"
               :multiple="false"
@@ -61,7 +61,7 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
               >录入</el-button>
             </template>
           </el-table-column>
@@ -90,14 +90,14 @@
               type="primary"
               size="mini"
               @click="updateScore(scope.row)"
-              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过')"
+              v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
               >录入</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
 
-      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px">
+      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px" :close-on-click-modal=false>
          <el-form label-width="120px" style="width:100%;" >
            <el-row>
             <el-col :span="24" style="border:1px solid gray; ">
@@ -111,16 +111,16 @@
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
-              <div  v-for="(item,index) in attachs" :key="index">
-                <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left; margin:10px" >
-                  <span v-if="!item">无图片文件记录！</span>
-                  <el-popover placement="right" title trigger="click" v-else>
+              <div  v-for="(item,index) in attachs" :key="index" style="width:100px;height:140px;text-align:center;float:left; margin:10px">
+                <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left; margin:10px" >        
+                  <el-popover placement="right" title trigger="click">
                     <div style="max-width:600px;height:auto">
                       <img :src="item" style="max-width:600px;height:auto" />
                     </div>
                     <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
                   </el-popover>
                 </el-card>
+                <el-button @click="deletepic(index)" size="mini">删除</el-button>
               </div >
               </el-form-item>
               <el-form-item label="证据文件：" 
@@ -128,6 +128,7 @@
               >
                 <div v-for="(item,index) in files" :key="index">
                     <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
+                    <el-button @click="deletefile(index)" size="mini">删除</el-button>
                 </div>
               </el-form-item>
             </el-col>
@@ -234,14 +235,14 @@ export default {
     return {
       unpass:false,
       show:false,
-      headers:newOptions.headers,
+      headers:newOptions.headers,//上传文件时候的请求头 不需要理会用处不大
       strings:null,
       filterQuery: {},
-      checkType:'树形录入',
+      checkType:'树形录入',//匹配哪一种录入方式
       companyList: [],//公司列表
       peopleList:[],//职员列表
-      disabled1:false,
-      download:[],
+      disabled1:false,//显示框是否可见
+      download:[],//
       dialogFormVisible: false,
       loading: true,
       detailData: {},//存储查询到的employe信息
@@ -251,7 +252,7 @@ export default {
       node:[],
       nodeData:[],
       dialogImageUrl: '',
-      dialogVisible2: false,
+      dialogVisible2: false,//下面几个都是显示框是否可见的判断
       uploadDisabled: false,
       disabled: false,
       buttonVisible:false,
@@ -260,8 +261,8 @@ export default {
       hideUpload: false,//隐藏上传按钮
       attach:'',//存储新增的图片id
       fileattach:'',//存储新增文件的id
-      attachs:[],//将attach按照分号转化为数组
-      files:[],//保存的文本文件
+      attachs:[],//将attach按照分号转化为数组，是已经上传了的图片文件
+      files:[],//保存已经上传的文本文件
       form:{//保存上传的文件
         evidenceID:'',//证据id
         id:'',//年度要素id,
@@ -269,12 +270,56 @@ export default {
         evidenceDescription:'',//证据描述
         attachID:'',//附件id
         attachDescrption:'',//附件描述
-        attach:'',//附件
+        attach:'',//最终上传的列表 
         uploadTime:''//上传时间
         }
     };
   },
   methods: {
+    deletepic(data){//删除图片
+      //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是图片文件
+      this.form.attach='';//先删除证据录入项存储的attach
+      var pics=[];
+      for(var i=0;i<this.attachs.length;i++)
+      {
+        
+        if(i!=data){
+          console.log('循环中的',pics);
+          pics.push(this.attachs[i]);//把存留的图片添加到pics与form的attach里面
+          this.form.attach+=this.attachs[i];
+          this.form.attach+=';';
+          }
+      }
+      for(var i=0;i<this.files.length;i++)
+      {
+        this.form.attach+=this.attachs[i];
+        this.form.attach+=';';
+      }
+      this.attachs=pics;
+      console.log('最终的',pics)
+    },
+    deletefile(data){//删除文件  逻辑和上面一样的
+    //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是文件
+      this.form.attach='';//先删除证据录入项存储的attach
+      var pics=[];
+      for(var i=0;i<this.files.length;i++)
+      {
+        
+        if(i!=data){
+          console.log('循环中的',pics);
+          pics.push(this.attachs[i]);//把存留的图片添加到pics与form的attach里面
+          this.form.attach+=this.attachs[i];
+          this.form.attach+=';';
+          }
+      }
+      for(var i=0;i<this.attachs.length;i++)
+      {
+        this.form.attach+=this.attachs[i];
+        this.form.attach+=';';
+      }
+      this.files=pics;
+      console.log('最终的',pics)
+    },
     cellStyle(row,column,rowIndex,columnIndex){//根据报警级别显示颜色
         // console.log(row);
         // console.log(row.column);
@@ -316,12 +361,13 @@ export default {
       this.form.uploadTime=year+'-'+month+'-'+date;
       this.form.attach+=this.attach;//加上图片attach
       this.form.attach+=this.fileattach;//加上文件attach
+      console.log(this.form);
       if(this.form.attach==''||this.form.attachDescrption==''||this.form.evidenceDescription=='')
       {
         this.$message.error('请录入完全')
       }
       else{
-        this.$refs.upload.clearFiles();//清空数据
+      this.$refs.upload.clearFiles();//清空数据
       this.$refs.uploads.clearFiles();//清空数据
       //上传接口
       await addAll_evidence_attach(this.form).then(res => {
@@ -362,8 +408,8 @@ export default {
         this.form.fileID='';
         this.attach='';
         this.fileattach='';
-        this.attachs={};
-        this.files={};
+        this.attachs=[];
+        this.files=[];
         this.download=[];
         this.detailData.name = data.name    
         this.form.evidenceDescription='';//初始化证据
@@ -389,7 +435,7 @@ export default {
             //辨析图片
             this.node=data;
             //展示attachs图片数组url
-            this.attachs={};//初始化图片数组
+            this.attachs=[];//初始化图片数组
             
             var attach = this.form.attach;//获取地址字符串
               if(attach!=null){
@@ -437,6 +483,7 @@ export default {
       this.show=true
        if (res.code === 1000){ 
                     this.fileattach += res.data;
+                    this.$message.success('上传成功');
                     this.fileattach+=';';
                 }
                 else {
@@ -446,6 +493,7 @@ export default {
     },
     handleAvatarSuccess(res) {
                 if (res.code === 1000){ 
+                  this.$message.success('上传成功');
                     this.attach += res.data;
                     this.attach+=';';
                 }

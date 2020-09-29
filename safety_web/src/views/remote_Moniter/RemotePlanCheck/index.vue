@@ -176,8 +176,8 @@ export default {
 			},
      
      inputfile(data){
-       this.selecttime=this.getNowFormatDate2();
-      this.selectdate=this.getNowFormatDate2();
+       this.selecttime=this.getNowFormatDate1();
+      this.selectdate=this.getNowFormatDate1();
        this.monitorPlanID=data.monitorPlanID
        this.table=true;
       this.choose='ribao';
@@ -289,8 +289,8 @@ export default {
       },
       readfile(data){//详情
       this.monitorPlanID=data.monitorPlanID
-      this.selecttime=this.getNowFormatDate2();
-      this.selectdate=this.getNowFormatDate2();
+      this.selecttime=this.getNowFormatDate1();
+      this.selectdate=this.getNowFormatDate1();
       this.table=true;
       this.choose='hecha'
       getInputDates(data).then(res=>{
