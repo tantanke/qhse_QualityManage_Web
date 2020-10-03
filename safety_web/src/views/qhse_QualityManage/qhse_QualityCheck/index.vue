@@ -100,27 +100,27 @@
       <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px" :close-on-click-modal=false>
          <el-form label-width="120px" style="width:100%;" >
            <el-row>
-            <el-col :span="24" style="border:1px solid gray; ">
+            <el-col :span="24" class="col_border">
               <el-form-item label="量化名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
               <el-form-item v-if="!unpass" label="驳回原因：" style="margin-bottom:1px">{{form.negativeOpinion}}</el-form-item>
               <el-form-item label="证据描述："  prop="desc" style="margin-bottom:1px">
                 <el-input type="text"   label="证据描述  ："  class="resizeNone" v-model="form.evidenceDescription" placeholder="请输入内容"></el-input>
               </el-form-item>
                </el-col>
-                <el-col :span="24" style="border:1px solid gray; ">
+                <el-col :span="24" class="col_border">
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
-              <div  v-for="(item,index) in attachs" :key="index" style="width:100px;height:140px;text-align:center;float:left; margin:10px">
+              <div  v-for="(item,index) in attachs" :key="index" style="position: relative;width:100px;height:140px;text-align:center;float:left; margin:10px">
                 <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left; margin:10px" >        
-                  <el-popover placement="right" title trigger="click">
-                    <div style="max-width:600px;height:auto">
-                      <img :src="item" style="max-width:600px;height:auto" />
+                  <el-popover placement="none" title trigger="click" class="hidbg">
+                    <div style="position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%);">
+                      <img :src="item" style="max-width:1400px;height:auto" />
                     </div>
-                    <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px" />
+                    <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px; width: 100%; height: 80px;" @click="hidBg()"/>
                   </el-popover>
                 </el-card>
-                <el-button @click="deletepic(index)" size="mini">删除</el-button>
+                <el-button @click="deletepic(index)" size="mini" style="position: absolute; bottom: -10px; left: 32px;">删除</el-button>
               </div >
               </el-form-item>
               <el-form-item label="证据文件：" 
@@ -128,11 +128,11 @@
               >
                 <div v-for="(item,index) in files" :key="index">
                     <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
-                    <el-button @click="deletefile(index)" size="mini">删除</el-button>
+                    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除</el-button>
                 </div>
               </el-form-item>
             </el-col>
-            <el-col :span="24" style="border:1px solid gray; ">
+            <el-col :span="24"  class="col_border">
 
               <el-form-item label="上传文件">
                 <el-upload
@@ -583,6 +583,13 @@ export default {
     },
     handleGetInitialData() {
       this.loading = true;
+    },
+    // 预览图移动到中间后，提示框背景还在原位置，需要将其隐藏
+    hidBg() {
+        let x = document.getElementsByClassName("el-popover el-popper")
+        for (let i=0; i<x.length; i++) {
+            x[i].classList.add('hidbg');
+        }
     }
     
   },
@@ -608,6 +615,14 @@ export default {
   margin-top: 10px;
   opacity: 0;
   //   position: absolute;
+}
+.col_border {
+    border: 1px solid gray;
+    margin-top: -1px;
+    padding: 10px;
+}
+.hidbg {
+    left: -1000px !important;
 }
 .span1{
   margin-top: 10px;;
