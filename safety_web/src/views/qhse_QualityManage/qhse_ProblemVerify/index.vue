@@ -129,7 +129,9 @@
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"             
+                        ref="cascaderAddr"    
+                         clearable
+                        filterable           
                         >             
                       </el-cascader>
                   </el-form-item>
@@ -233,13 +235,35 @@
             align='center'
             width="200">
             <template slot-scope="scope">
-                <el-button type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">验收</el-button>
-                <el-button type="warning" icon="el-icon-edit" plain size="small" @click="editInfo">整改</el-button>
+                <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">验收</el-button>
+                <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEdit(scope.row)">整改</el-button>
+                <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
             </template>
             </el-table-column>
           </el-table>
           </el-row>
       </el-row>
+      <el-dialog
+            title="问题验收"
+            :visible.sync="editShow"
+            :close-on-click-modal='false'
+            width="30%">
+            <p>请提交证据图片：</p>
+            <el-upload
+                  action="/api/uploaddanger"
+                  :on-success="handleAvatarSuccess"
+                  :limit="2"    
+                  :headers="header"        
+                  :on-exceed="handleExceed"
+                >
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span> 最多两张，格式为jpg,png,bmp</span>
+                </el-upload>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editShow = false">取 消</el-button>
+                <el-button type="primary" @click="editInfo">确 定</el-button>
+            </span>
+            </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
               <el-row>
@@ -252,7 +276,8 @@
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"    
-
+                        clearable
+                        filterable  
                         >             
                       </el-cascader>
                   </el-form-item>
@@ -298,44 +323,39 @@
                     prop="problemDescription"
                     label="问题描述">
                 </el-table-column>
-                      
+                <el-table-column
+                    fixed="right"
+                    label="操作"
+                    align='center'
+                    width="200">
+                    <template slot-scope="scope">
+                        <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">验收</el-button>
+                        <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">整改</el-button>
+                        <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
+                    </template>
+                    </el-table-column>       
             </el-table>
           </el-row>
       </el-row>
-      <el-dialog
-        title="验收情况"
-        :close-on-click-modal='false'
-        :visible.sync="reciveAble"
-        width="30%">
-        <span>这是一段信息</span>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="reciveAble = false">取 消</el-button>
-            <el-button type="primary" @click="reciveAble = false">确 定</el-button>
-        </span>
-        </el-dialog>
-        <el-dialog
-        title="整改情况"
-        :visible.sync="editAble"
-        :close-on-click-modal='false'
-        width="30%">
-        <span>这是一段信息</span>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="editAble= false">取 消</el-button>
-            <el-button type="primary" @click="editAble = false">确 定</el-button>
-        </span>
-        </el-dialog>
   </div>
 </template>
 
 <script> 
+import { GetCurrentUser } from '@/store/CurrentUser'
 import {queryDangerrecord,
         queryRegulationrecord,
         queryProblemDescription
 } from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
+import {problemVerification,
+        updateDangerrecord,
+        updateProblemDescription
+} from '../../../services/hidden_danger_investigation/problemVerify'
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
    data() {
        return {
+           header: { Authorization: GetCurrentUser().token },
+           editId:'',
            // 控制加载
            regulationrecordLoading: false,
            problemLoading: false,
@@ -353,28 +373,33 @@ export default {
                 startDate: null,
                 endDate: null
             },
+            reformForm:{
+               receptionDate:'',
+               reformCase: ''
+            },
            listcate: 'QHSE违章清单',
            date30:[],
            // 控制按钮 防止一直点击
            regulationBtn:false,
            proBtn:false,
            dangerBtn:false,
-           // 控制验收和整改
-           reciveAble:false,
-           editAble:false
+           editShow: false,
+           fileNum:2,
+           form:{}
 
        }
    },
    methods: {
-       downloadPro() {
-          console.log(1)
-       },
-       dowmloadDanger() {
-           console.log(1)
-       },
-       downloadRegulation() {
-            console.log(1)
-       },
+       // 给附件命名
+    handleAvatarSuccess(res) {
+      this.fileNum++
+      let key = 'affix' + this.fileNum
+      this.form[key] = res.data
+    },
+    // 限制文件数量
+    handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
        getRecentTime() {
           let date = new Date().getTime()
           console.log(new Date())
@@ -383,19 +408,90 @@ export default {
           let nearday = new Date(near).toISOString()
           this.date30.push(day.split('T')[0])
           this.date30.push(nearday.split('T')[0])    
+          this.reformForm.receptionDate = this.date30[0]
           this.date = [...this.date30]
           this.dateQ = [...this.date30]
           this.dateH = [...this.date30]
        },
        reciveInfo (data) {
-          console.log(data)
-          let _this = this
-          _this.reciveAble = true
+          this.reformForm.reformCase = '已验收'
+          this.$confirm('确认提交验收情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+        .then(()=>{
+            problemVerification(data.id,this.reformForm).then(res => {
+                console.log(res)
+                this.searchDanger()
+            }).catch(err => {
+                this.$message.error(err)
+                this.dangerLoading = false
+                this.dangerBtn = false
+            })
+        })
+       },
+       goEdit(data){
+          this.editId = data.id
+          this.editShow = true
+          this.form = {...data}
        },
        editInfo() {
-        console.log(111)
-        let _this = this
-        _this.editAble = true
+           let _this = this
+           if(_this.fileNum === 2){
+               _this.$message.warning('请至少提交一个证明附件！')
+               return
+           } 
+           
+          _this.reformForm.reformCase = '已整改'
+          _this.$confirm('确认提交整改情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+        .then(()=>{
+        problemVerification(_this.editId,_this.reformForm).then(() => {
+                return updateDangerrecord(_this.editId,_this.form)          
+            })
+        }).then((res) => {
+            // 推送新状态
+            if(res.code === 1000) 
+            this.searchDanger()
+        }).catch(err => {
+                this.$message.error(err)
+            })
+          
+       },
+       // 问题验证
+       // 验收
+       recivePro(data){
+          this.$confirm('确认提交验收情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(()=> {
+           updateProblemDescription(data.qHSE_FileAuditRecord_ID,{situation:'已验收'}).then(res => {
+               console.log(res)
+           })
+        })
+        .catch(err => {
+                this.$message.error(err)
+            })
+       },
+       // 整改
+       goEditPro(data){
+           this.$confirm('确认提交整改情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(()=> {
+           updateProblemDescription(data.qHSE_FileAuditRecord_ID,{situation:'已整改'}).then(res => {
+               console.log(res)
+           })
+        })
+        .catch(err => {
+                this.$message.error(err)
+            })
        },
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
@@ -420,7 +516,7 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               _this.checkForm.companyId = []
+               console.log(res.data)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
@@ -476,7 +572,6 @@ export default {
 
                }
                _this.regulationrecord = res.data.list
-               _this.checkForm.companyId = []
                   _this.regulationrecordLoading = false
                    _this.regulationBtn = false
            }).catch(err => {
@@ -527,7 +622,6 @@ export default {
 
                }
                _this.problemrecord = res.data
-               _this.checkForm.companyId = []
                 _this.problemLoading = false
                 _this.proBtn = false
            }).catch(err => {

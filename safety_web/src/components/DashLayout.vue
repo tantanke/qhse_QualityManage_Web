@@ -18,7 +18,7 @@
       el-main
         router-view
   </el-container>
-  <el-container class="layout-base" v-else >
+  <el-container class="layout-base" v-else v-loading='changeS' element-loading-text="切换中">
     <el-aside style="width:200px" class="layout-aside">
       el-header.menu-header(height='60px')
         <el-col :span="6" style="padding-top:8px">
@@ -26,9 +26,11 @@
         </el-col>
         <el-col :span="24" style="padding-left:10px">
           //- font 川庆钻探安全检查系统
-          font  QHSE管理系统
+          font  {{qhse}}
         </el-col>
+        
       el-menu.layout-menu( :headers="{Authorization:currentUser.token}" @open="handleOpen" @close="handleClose" ,background-color="#545c64", text-color="#fff", active-text-color="#ffd04b", :router="true", :unique-opened="true")
+      
         div(v-for='(nav, idx) in navs', :key='idx')
           el-submenu(v-if='nav.children && nav.children.length > 0', :index='nav.routeName')
             template(slot='title')
@@ -79,16 +81,14 @@
             el-dropdown-menu(slot='dropdown')
               el-dropdown-item(command='handleLogout')
                 font 安全退出
+              el-dropdown-item(command='changeSys')
+                div 切换系统
       el-main
         <router-view/>
-        <el-dialog title="新消息"  :visible.sync="addEventdialogVisible">
-          <el-form label-width="150px" :model="information">
-            <el-form-item label="消息内容:" >{{messageText}}</el-form-item>
-            <el-form-item label="发送时间:" >{{messageDate}}</el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer" >
-              <el-button type="primary"  @click="handleSubmit()">确 定</el-button>
-          </span>
+        <el-dialog :visible.sync="dialogTableVisible" :close-on-click-modal='false' :close-on-press-escape='false' :show-close='false'>
+          span 请选择对应的系统：
+          <el-button style="width:40%" type='primary' @click='goSafe'>QHSE安全系统</el-button> 
+          <el-button style="width:40%" @click='goQuality'>QHSE质量系统</el-button> 
         </el-dialog>
   </el-container>
 </template>
@@ -100,7 +100,7 @@ import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
-import {GetNaviByUserRole,logout} from '../services/navisBar'
+import {GetNaviByUserRole,logout,getModule} from '../services/navisBar'
 // import IconDashBoard from '../assets/icons/dashboard.svg'
 // import IconSystem from '../assets/icons/system.svg'
 // import IconConfig from '../assets/icons/config.svg'
@@ -118,6 +118,12 @@ Vue.use(VueCookies)
 export default {
   data() {
     return {
+      qhse:'QHSE管理系统',
+      close1:false,
+      changeS:false,
+      close2:false,
+      close3:false,
+      dialogTableVisible:false,
       client:VueCookies.get("client"),
       // isCollapse: true,
       navs: [],
@@ -133,6 +139,7 @@ export default {
       value1:'',
       value2:'',
       timer:'',
+      nav:''
 
     }
   },
@@ -140,7 +147,16 @@ export default {
     this.checkUser()
   },
   mounted () {
-    this.getNavigation()
+    let sysCate = localStorage.getItem('sysCate')
+    if(sysCate){
+      if(sysCate === '安全'){
+        this.goSafe()
+      } else {
+        this.goQuality()
+      }
+    } else{
+      this.dialogTableVisible = true
+    }
     //定时刷新消息数量
     if(this.timer){
       clearInterval(this.timer)
@@ -166,22 +182,79 @@ export default {
     }
   },
   methods: {
-    // getMessageCount () {
-    //     this.loading = true
-    //     notReadMessage().then((res) => {
-    //      this.value2=res.data
-    //      if(this.value2>0){
-    //       this.value1=""
-    //       //  this.value1='New'
-    //      }else{
-    //         this.value1=""
-    //      }
-    //      this.loading = false
-    //   }).catch((err) => {
-    //     this.$message.error(err.message)
-    //     this.loading = false
-    //   })
-    // },
+    changeSys() {
+      let _this = this
+      if(_this.qhse == 'QHSE质量系统') {
+        _this.$confirm("确定切换到QHSE安全系统吗?", '提示', {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type:"warning"
+              })
+              .then(() => {
+              _this.goSafe()
+              })
+              }
+          else {
+           _this.$confirm("确定切换到QHSE质量系统吗?", '提示', {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type:"warning"
+              })
+              .then(() => {
+               _this.goQuality()
+              })
+      }
+    },
+    goSafe() {
+       let _this = this
+      _this.changeS = true
+      GetNaviByUserRole().then(res => {
+         this.nav = res.data
+         return getModule({type:0})
+      })
+      .then(res => {
+        _this.navs = []      
+        res.data.forEach(value => {
+          for(let i = 0;i< _this.nav.length;i++){
+              if(value === _this.nav[i].code) {
+                _this.navs.push(_this.nav[i])
+                break
+              }
+          }
+        })
+        localStorage.setItem('sysCate','安全')
+        _this.qhse = 'QHSE安全系统'
+        _this.dialogTableVisible = false
+        _this.changeS = false
+      }).catch(err=>{
+			this.$message.error(err.message)
+		})
+    },
+    goQuality() {
+      let _this = this
+      _this.changeS = true
+      GetNaviByUserRole().then(res => {
+         this.nav = res.data
+         return getModule({type:1})
+      })
+     .then(res => {
+        _this.navs = []
+        res.data.forEach(value => {
+          for(let i = 0;i< _this.nav.length;i++){
+              if(value === _this.nav[i].code) {
+                _this.navs.push(_this.nav[i])
+                break
+              }
+          }
+        })
+        localStorage.setItem('sysCate','质量')
+        _this.qhse = 'QHSE质量系统'
+        _this.changeS = false
+        _this.dialogTableVisible = false
+      }).catch(err=>{
+			this.$message.error(err.message)
+		})
+    },
     initWebSocket() {
       //初始化weosocket
       let user = GetCurrentUser();
@@ -242,31 +315,21 @@ export default {
     },
     handleLogout () {
       CurrentUser.clear()
-	  logout().then(res=>{
-		 console.log(res)
-	  }).catch(err=>{
-		  this.$message.error(err.message)
-	  })
+      logout().then(res=>{
+      console.log(res)
+      }).catch(err=>{
+        this.$message.error(err.message)
+      })
       this.$router.push({name: 'Login'})
     },
     //提交信息状态
     handleSubmit () {
-      // alert(JSON.stringify(this.messageId))
-      /* updateMessage(this.messageId).then(() => {
-        // alert("成功！")
-        this.$message.success('操作成功')
-        // this.getMessageCount()
-        this.addEventdialogVisible = false;
-      }, (err) => {
-        this.$message.error(err.message)
-      }) */
+      
     },
     getNavigation(){
         GetNaviByUserRole().then((res) => {
-            console.log(res.data)
             if (res.code === 1000)
-                this.navs = res.data
-                console.log(this.navs)
+                this.nav = res.data
         })
     }
   },
@@ -301,7 +364,9 @@ export default {
 .layout-base {
   background: #F4F4F4;
   height: 100vh;
-
+   .changeSys{
+     font-size:5px;color:gray;cursor:pointer
+   }
   .layout-aside {
     overflow: hidden;
     background: #F4F4F4;

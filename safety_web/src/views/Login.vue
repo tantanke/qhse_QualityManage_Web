@@ -51,6 +51,7 @@ export default {
        localStorage.removeItem('regulationSource')
        localStorage.removeItem('checkType')
        localStorage.removeItem('sourcedata')
+       
     },
   methods: {
     handleSignIn () {
@@ -59,6 +60,7 @@ export default {
       console.log(JSON.stringify(this.formData))
       SignIn(this.formData).then((res) => {
         CurrentUser.set(res.data)
+        localStorage.removeItem('sysCate')
         this.$router.push({name: 'mainPath'})
         console.log('进入页面')
       }).catch((err) => {
