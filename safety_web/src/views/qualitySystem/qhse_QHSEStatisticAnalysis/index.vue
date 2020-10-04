@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title" style="width:100%">要素证据审核</div>
+    <div class="page-title" style="width:100%">质量-要素证据审核</div>
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true" :model="filterQuery">

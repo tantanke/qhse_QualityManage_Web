@@ -91,7 +91,7 @@
           <!-- </el-table-column> -->
         </el-table>
       </el-row>
-      <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px">
+      <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px" :close-on-click-modal=false>
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
             <el-col :span="24">
