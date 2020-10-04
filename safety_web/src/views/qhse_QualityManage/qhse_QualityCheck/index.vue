@@ -114,7 +114,7 @@
               <div  v-for="(item,index) in attachs" :key="index" style="position: relative;width:100px;height:140px;text-align:center;float:left; margin:10px">
                 <el-card :body-style="{ padding: '10px' }" style="width:100px;height:100px;text-align:center;float:left; margin:10px" >        
                   <el-popover placement="none" title trigger="click" class="hidbg">
-                    <div style="position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%);">
+                    <div style="position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%); box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);">
                       <img :src="item" style="max-width:1400px;height:auto" />
                     </div>
                     <img slot="reference" :src="item" :alt="detailData.pictureFile" style="max-height: 180px; width: 100%; height: 80px;" @click="hidBg()"/>
@@ -166,12 +166,12 @@
                     :src="file.url" alt=""
                     >
                     <span class="el-upload-list__item-actions"
-                    style="width:100px">
+                    style="width:100%;">
                       <span
                       class="el-upload-list__item-preview"
                       @click="handlePictureCardPreview(file)"
                       >
-                      <i class="el-icon-zoom-in"></i>
+                      <i class="el-icon-zoom-in" @click="closeMask()"></i>
                       </span>
                      <span
                      v-if="!disabled"
@@ -589,6 +589,21 @@ export default {
         let x = document.getElementsByClassName("el-popover el-popper")
         for (let i=0; i<x.length; i++) {
             x[i].classList.add('hidbg');
+        }
+    },
+    // 点击放大按钮后，黑色的遮罩也放大了，导致整个页面被覆盖，因此需要将其隐藏掉
+    closeMask() {
+        let x = document.getElementsByClassName("v-modal");
+        console.log(x);
+        for (let i=0; i<x.length; i++) {
+            // 因为下面执行的display: none 比较晚（更早没效果），会导致出现黑影一闪而过
+            // 所以，第一步将黑色遮罩颜色改为透明，从视觉上隐藏
+            // 第二步再从DOM中真正隐藏。
+            x[i].style.backgroundColor = "transparent";
+            setTimeout(()=>{
+                x[i].style.display = 'none';
+            }, 0)
+
         }
     }
     
