@@ -32,7 +32,7 @@ export const accidentOrEventUploadAddress=()=> {
 }
 
 export const submitInputResult = (data) => {
-    return request(`/api/v3/submitInputResult?tableId=${data}`,{
+    return request(`/api/submitInputResult?tableId=${data}`,{
         method: 'post',
     })
 }
