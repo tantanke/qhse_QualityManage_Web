@@ -1,5 +1,6 @@
 <template>
   <div class="problemList">
+
           <div class="page-title" style="width:100%">QHSE问题清单</div>
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
       <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患清单</el-radio>
@@ -111,10 +112,10 @@
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a :download="props.row.affix1"  target='_blank' :href="`/downloadRegulationFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
+                     <a target='_blank'  :href="'/api'+props.row.affix1">证据图片1</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a :download="props.row.affix2"  target='_blank' :href="`/downloadRegulationFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
+                    <a target='_blank'  :href="'/api'+props.row.affix2">证据图片2</a>
                 </el-form-item>
              </el-form>
              </template>
@@ -147,7 +148,9 @@
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"             
+                        ref="cascaderAddr"
+                         clearable
+                        filterable               
                         >             
                       </el-cascader>
                   </el-form-item>
@@ -229,10 +232,10 @@
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a   target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix1}` ">{{props.row.affix1}}</a>
+                     <a target='_blank'  :href="'/api'+props.row.affix1">证据图片1</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a   target='_blank' :href="`/api/downloadDangerFile?filename=${props.row.affix2}` ">{{props.row.affix2}}</a>
+                    <a   target='_blank' :href="'/api'+props.row.affix2">证据图片2</a>
                 </el-form-item>
            </el-form>
            </template>
@@ -266,7 +269,8 @@
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"    
-
+                         clearable
+                        filterable  
                         >             
                       </el-cascader>
                   </el-form-item>
@@ -438,7 +442,6 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               _this.checkForm.companyId = []
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
@@ -494,7 +497,6 @@ export default {
 
                }
                _this.regulationrecord = res.data.list
-               _this.checkForm.companyId = []
                   _this.regulationrecordLoading = false
                    _this.regulationBtn = false
            }).catch(err => {
@@ -544,7 +546,6 @@ export default {
 
                }
                _this.problemrecord = res.data
-               _this.checkForm.companyId = []
                 _this.problemLoading = false
                 _this.proBtn = false
            }).catch(err => {

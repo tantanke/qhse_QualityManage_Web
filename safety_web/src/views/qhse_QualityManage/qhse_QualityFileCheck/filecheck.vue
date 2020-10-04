@@ -232,7 +232,7 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item" target='_blank' style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a   style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -289,7 +289,7 @@ export default {
         companyCode: '',
         year: ''
       },
-      // 更新文件深恨状态
+      // 更新文件审核状态
       updateCheckForm: {
         qhseCompanyYearManagerSysElementTableID: '',
         code: '',
@@ -320,7 +320,8 @@ export default {
         problemDescription: '',
         companyCode: '',
         companyName: '',
-        auditTime: ''
+        auditTime: '',
+        additor:''
       },
       nowcode: null,
       // 控制弹出页面
@@ -435,6 +436,9 @@ export default {
         }
       }
     },
+    editFileRecord(data) {
+       console.log(data)
+    },
     cancelInput() {
       this.$confirm('确认不录入隐患违章吗？','提示',{
         confirmButtonText: '确定',
@@ -496,7 +500,11 @@ export default {
         if(res.data.length > 0){
         _this.detailData.codeScore = res.data[0].codeScore
         _this.detailData.pass = res.data[0].pass
-        }
+        _this.detaildialogVisible = true
+        }/*  else{
+          // 如果前面获取状态失败 直接重新审核
+          _this.editFileRecord(data)
+        } */
          _this.eviLoaind = false
          _this.addLoading = false
          
@@ -642,8 +650,10 @@ export default {
           return
         }
       _this.status = _this.fileRecord.pass
+      // 先更新状态
       updateCheckstatus(_this.updateCheckForm).then(() => {
         _this.goHidden.code = _this.fileRecord.code
+        // 再添加文件审核记录
         return addFileaduitrecord(_this.fileRecord)
       }).then(() => {
         // 这里应该返回文件审核记录的recordID
