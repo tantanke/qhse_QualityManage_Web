@@ -30,6 +30,12 @@ export const employees = () => {
 export const accidentOrEventUploadAddress=()=> {
     return request('/api/evidence_upload')
 }
+
+export const submitInputResult = (data) => {
+    return request(`/api/v3/submitInputResult?tableId=${data}`,{
+        method: 'post',
+    })
+}
 // export const UpdateComSysEleStatus = (data) => {
 //     return request(`/api/updateComSysEleStatus`, {
 //         method: 'put',

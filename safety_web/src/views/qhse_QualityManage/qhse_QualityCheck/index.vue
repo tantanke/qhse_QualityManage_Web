@@ -26,6 +26,9 @@
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
+                    <el-form-item style="float: right;">
+                        <el-button type="primary" icon="el-icon-s-promotion" @click="confirmSubmit">确认提交</el-button>
+                    </el-form-item>
                 </el-form>
             </el-row>
 
@@ -51,7 +54,6 @@
                         v-loading="loading"
                         :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
                     <el-table-column prop="name" label="内容"></el-table-column>
-                    <el-table-column prop="schedule" label="进度" width="80" align="center"></el-table-column>
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
@@ -64,6 +66,7 @@
                             </el-button>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="schedule" label="进度" width="80" align="center"></el-table-column>
                 </el-table>
 
                 <el-table
@@ -151,14 +154,14 @@
                                         :on-remove="removeFile"
                                         v-model="form.fileID"
                                         :headers="headers"
-                                        :limit="1"
+                                        multiple
                                         ref="uploads"
                                         style="float:left"
                                         :on-success="handleFilerSuccess"
                                         :action="accidentOrEventUploadAddress">
                                     <div class="span1">浏览附件</div>
                                 </el-upload>
-                                <div style="float:left;margin-left:10px;line-height:60px">限制上传数量为1</div>
+                                <!--<div style="float:left;margin-left:10px;line-height:60px">限制上传数量为1</div>-->
                             </el-form-item>
                             <el-form-item label="上传图片">
                                 <el-upload
@@ -226,6 +229,7 @@
     import {query_evidence_attach} from "../../../services/qhse_QualityCheck";//显示证据项内容
     import {employees} from "../../../services/qhse_QualityCheck";//显示成员
     import {addAll_evidence_attach} from "../../../services/qhse_QualityCheck";//添加所有的信息
+    import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认提交
     import {GetCurrentUser} from '../../../store/CurrentUser';
     import {downloadElementFile} from "../../../services/qhse_EvidenceCheck";
     // import {querryYearElement}from"../../../services/qhse_EvidenceCheck"
@@ -287,7 +291,8 @@
                     attachDescrption: '',//附件描述
                     attach: '',//最终上传的列表
                     uploadTime: ''//上传时间
-                }
+                },
+                tableID: null,
             };
         },
         methods: {
@@ -399,6 +404,7 @@
                         });
                     this.listData = [];
                     await this.deepTree(this.treeData);
+
                     this.$message.success('添加成功');
 
                 }
@@ -577,6 +583,10 @@
                     querryYearElement(this.filterQuery)//获取到叶子节点信息
                         .then(res => {
                             this.treeData = res.data;
+
+                            // 将查询时获取到的tableID保存下来
+                            this.tableID = this.treeData[0].tableID
+
                             this.deepTree(this.treeData)
                         })
                         .catch(err => {
@@ -586,6 +596,12 @@
                     this.loading = false;
                 }
 
+            },
+            // 确认提交
+            confirmSubmit() {
+                if (this.tableID) {
+                    submitInputResult(this.tableID);
+                }
             },
             //转换年份
             handleGetDate(date) {
