@@ -112,10 +112,10 @@
           </el-table-column>
           <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
           <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>
-          <el-table-column prop='workItem' label='作业项目'></el-table-column>
-          <el-table-column prop='consequenceID' label='违章类别'></el-table-column>
-          <el-table-column prop='factorDepartment' label='归属部门'></el-table-column>
+          <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
+          <el-table-column prop='regulationName' label='违章人员'></el-table-column>
+          <el-table-column prop='regulationSource' label='隐患来源'></el-table-column>
+          <el-table-column prop='punish' label='罚款'></el-table-column>
         </el-table>
           </el-row>
       </el-row>
@@ -215,12 +215,12 @@
            </el-form>
            </template>
           </el-table-column>
-          <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
+         <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
           <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='location' label='位置区域'></el-table-column>
-          <el-table-column prop='type' label='隐患类别'></el-table-column>
-          <el-table-column prop='workItem' label='作业项目'></el-table-column>    
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>    
+          <el-table-column prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
+          <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
+          <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
           <!-- <el-table-column prop='consequenceID' label='可能后果'></el-table-column>    
           <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>    
           <el-table-column prop='factorDepartment' label='归属职能部门'></el-table-column>   
@@ -307,18 +307,15 @@
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
-             <el-table-column
-                    prop="recordDate"
-                    label="检查时间">
-                </el-table-column>
                     <el-table-column
                     prop="companyName"
+                    width='250'
                     label="公司名称">
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                     prop="safeStaffName"
                     label="检查人">
-                </el-table-column>
+                </el-table-column> -->
                   <el-table-column
                     prop="problemDescription"
                     label="问题描述">
@@ -329,9 +326,9 @@
                     align='center'
                     width="200">
                     <template slot-scope="scope">
-                        <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">验收</el-button>
-                        <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">整改</el-button>
-                        <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
+                        <el-button v-show="!scope.row.situation" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">验收</el-button>
+                        <el-button v-show="scope.row.situation === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">整改</el-button>
+                        <span v-show="scope.row.situation === '已整改'"  >已整改</span>
                     </template>
                     </el-table-column>       
             </el-table>
@@ -470,8 +467,9 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(()=> {
-           updateProblemDescription(data.qHSE_FileAuditRecord_ID,{situation:'已验收'}).then(res => {
+           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已验收'}).then(res => {
                console.log(res)
+               this.getProblemDescription()
            })
         })
         .catch(err => {
@@ -485,8 +483,9 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(()=> {
-           updateProblemDescription(data.qHSE_FileAuditRecord_ID,{situation:'已整改'}).then(res => {
+           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已整改'}).then(res => {
                console.log(res)
+               this.getProblemDescription()
            })
         })
         .catch(err => {
@@ -607,7 +606,7 @@ export default {
                form.endDate = _this.date30[1]
             }
             if (_this.checkForm.companyId.length !== 0) {
-                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+                form.companyCode = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
             _this.proBtn = true
            baseurl  = _this.getUrl('/api/query_problemDescription',form)

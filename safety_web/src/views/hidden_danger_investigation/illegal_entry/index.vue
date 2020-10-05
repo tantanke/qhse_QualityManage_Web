@@ -534,16 +534,18 @@ export default {
   },
  beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
-    if(fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('regulationSource','隐患排查')){
-      localStorage.setItem('regulationSource','隐患排查');
+    if((fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')) && fronRouter !== "FileCheckIndex"){
+      localStorage.setItem('dangerSource','隐患排查');
       next()
-    } else if (fronRouter === "FileCheckIndex" || localStorage.getItem('regulationSource','体系运行')) {
-      localStorage.setItem('regulationSource','体系运行');
+    }  
+    else if ((fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','体系运行')) && fronRouter !== "QHSETroubleCheckTable") {
+      localStorage.setItem('dangerSource','体系运行');
       next()
     } else{
       next('/index')
     }
- }
+    next()
+  }
 
 }
 </script>
