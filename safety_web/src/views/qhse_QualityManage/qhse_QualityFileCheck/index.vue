@@ -286,6 +286,7 @@ export default {
          }
        }).then((res) => {
             if(res.code === 1000) {
+            _this.filterQuery.year = _this.addForm.year
             _this.handleGetInitialData();
             _this.dialogFormVisible = false
             _this.reloadForm() 
