@@ -61,8 +61,8 @@
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
-                            >录入
+                                    v-if="scope.row.childNode.length === 0"
+                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -92,8 +92,8 @@
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
-                            >录入
+                                    v-if="scope.row.childNode.length === 0"
+                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -121,9 +121,10 @@
                                     <el-card :body-style="{ padding: '10px' }"
                                              style="width:100px;height:100px;text-align:center;float:left; margin:10px">
                                         <el-popover placement="none" title trigger="click" class="hidbg">
-                                            <div style="position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%); box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);">
+                                            <div style="box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);"
+                                                 class="picPosition">
                                                 <img :src="item"
-                                                     style="max-width:1400px;height:auto; vertical-align: bottom;"/>
+                                                     class="picSize"/>
                                             </div>
                                             <img slot="reference" :src="item" :alt="detailData.pictureFile"
                                                  style="max-height: 180px; width: 100%; height: 80px;"
@@ -211,7 +212,7 @@
                                 <el-button type="" style="margin-top:10px;margin-left:380px;float:left"
                                            @click="dialogVisible3=false">取消
                                 </el-button>
-                                <el-button type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+                                <el-button :disabled="['备案待查', '未批准'].includes(curStatus)" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                                 </el-button>
                             </el-form-item>
                         </el-col>
@@ -293,6 +294,7 @@
                     uploadTime: ''//上传时间
                 },
                 tableID: null,
+                curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
             };
         },
         methods: {
@@ -340,13 +342,13 @@
                 // console.log(row);
                 // console.log(row.column);
                 if (row.column.label === "状态" && row.row.status === "备案待查") {
-                    return 'color:red'
+                    return 'color:pink'
                 } else if (row.column.label === "状态" && row.row.status === "未提供") {
                     return 'color:orange'
                 } else if (row.column.label === "状态" && row.row.status === "未批准") {
                     return 'color:blue'
                 } else if (row.column.label === "状态" && row.row.status === "未审核") {
-                    return 'color:pink'
+                    return 'color:red'
                 }
             },
             gotoEvidence() {
@@ -411,6 +413,9 @@
 
             },
             async updateScore(data) {
+                // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+                this.curStatus = data.status
+
                 if (data.status == '不通过')
                     this.unpass = false;
                 else this.unpass = true;
@@ -683,6 +688,19 @@
 
     .hidbg {
         left: -1000px !important;
+    }
+
+    .picSize {
+        max-width: 1400px;
+        max-height: 750px;
+        vertical-align: bottom;
+    }
+
+    .picPosition {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
     div.el-dialog__wrapper#preview {
