@@ -108,7 +108,15 @@
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
+              @click="detaileFile(scope.row)" icon="el-icon-search"
+              >
+              查看详情  
+              </el-button>
+               <el-button
+              type="danger"
+              size="mini"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -150,7 +158,7 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a :href="item"  target='_blank' style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                    <a   target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -205,8 +213,7 @@
               <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item> 
-              <el-form-item label="操作：" style="margin-bottom:1px">
-                <el-button @click="resetEvidence" size='mini'>确 定</el-button>
+              <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
                 <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
                 </el-form-item>      
@@ -232,7 +239,7 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a   style="max-width:600px;height:auto" :download="download[index]">{{download[index]}}</a>
+                     <a   target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -293,7 +300,7 @@ export default {
       updateCheckForm: {
         qhseCompanyYearManagerSysElementTableID: '',
         code: '',
-        fileCheckStatus:'已审核'
+        fileCheckStatus:''
       },
       addformVisible: false,
       // 添加文件审核记录
@@ -385,11 +392,11 @@ export default {
             treedata.forEach(item => {
                 if (item.childNode.length === 0) {
                      _this.allTotal++
-                   if (item.status === '备案待查' && item.fileCheckStatus === '已审核'){
+                   if (item.status === '备案待查' && item.fileCheckStatus){
                       _this.fileList.push(item)
                       _this.hasTotal++
                       return
-                   } else if (item.status === '备案待查' && item.fileCheckStatus === '未审核') {
+                   } else if (item.status === '备案待查' && !item.fileCheckStatus ) {
                       _this.fileList.push(item)                     
 
                    }                    
@@ -486,6 +493,7 @@ export default {
         }
       _this.detailData.status = data.status 
       _this.detailData.auditMode = data.auditMode
+       _this.detailData.code = data.code
       _this.detailData.initialScore = data.initialScore
       _this.inputPlace = `请输入0-${data.initialScore}之间的分数`
       _this.detailData.formula = data.formula
@@ -590,6 +598,7 @@ export default {
         _this.treeData = res.data;
         console.log(_this.treeData)
         _this.treeList = res.data;
+        console.log(_this.treeList)
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
           _this.$message.warning('请检查要素证据审批是否完成！')
@@ -599,6 +608,7 @@ export default {
         return _this.deepTree(_this.treeData)
       })  
       .then(() => {
+        console.log(_this.fileList)
         _this.noTotal = _this.allTotal - _this.hasTotal
         if(_this.hasTotal  === _this.allTotal){
            _this.finishAudit = true
@@ -650,6 +660,7 @@ export default {
           return
         }
       _this.status = _this.fileRecord.pass
+      _this.updateCheckForm.fileCheckStatus = _this.fileRecord.pass
       // 先更新状态
       updateCheckstatus(_this.updateCheckForm).then(() => {
         _this.goHidden.code = _this.fileRecord.code
