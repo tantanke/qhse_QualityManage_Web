@@ -61,8 +61,8 @@
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
-                            >录入
+                                    v-if="scope.row.childNode.length === 0"
+                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -92,8 +92,8 @@
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')"
-                            >录入
+                                    v-if="scope.row.childNode.length === 0"
+                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -121,9 +121,10 @@
                                     <el-card :body-style="{ padding: '10px' }"
                                              style="width:100px;height:100px;text-align:center;float:left; margin:10px">
                                         <el-popover placement="none" title trigger="click" class="hidbg">
-                                            <div style="position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%); box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);">
+                                            <div style="box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);"
+                                                 class="picPosition">
                                                 <img :src="item"
-                                                     style="max-width:1400px;height:auto; vertical-align: bottom;"/>
+                                                     class="picSize"/>
                                             </div>
                                             <img slot="reference" :src="item" :alt="detailData.pictureFile"
                                                  style="max-height: 180px; width: 100%; height: 80px;"
@@ -141,7 +142,7 @@
                                 <div v-for="(item,index) in files" :key="index">
                                     <a :href="item" style="max-width:600px;height:auto"
                                        :download="strings[index]">{{strings[index]}}</a>
-                                    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除
+                                    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除11
                                     </el-button>
                                 </div>
                             </el-form-item>
@@ -171,6 +172,7 @@
                                         clearable
                                         ref="upload"
                                         :on-success="handleAvatarSuccess"
+                                        :file-list="fileList"
                                         accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF"
                                 >
                                     <i slot="default" class="el-icon-plus"></i>
@@ -211,7 +213,7 @@
                                 <el-button type="" style="margin-top:10px;margin-left:380px;float:left"
                                            @click="dialogVisible3=false">取消
                                 </el-button>
-                                <el-button type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+                                <el-button :disabled="['备案待查', '未批准'].includes(curStatus)" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                                 </el-button>
                             </el-form-item>
                         </el-col>
@@ -293,10 +295,15 @@
                     uploadTime: ''//上传时间
                 },
                 tableID: null,
+                curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
+                fileList: [],
             };
         },
         methods: {
             deletepic(data) {//删除图片
+                console.log(this.form.attach, 111111111)
+                console.log(this.files, 22222222)
+                console.log(this.attachs, 33333)
                 //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是图片文件
                 this.form.attach = '';//先删除证据录入项存储的attach
                 var pics = [];
@@ -318,6 +325,10 @@
             },
             deletefile(data) {//删除文件  逻辑和上面一样的
                 //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是文件
+
+                console.log(this.form.attach, 111111111)
+                console.log(this.files, 22222222)
+                console.log(this.attachs, 33333)
                 this.form.attach = '';//先删除证据录入项存储的attach
                 var pics = [];
                 for (var i = 0; i < this.files.length; i++) {
@@ -340,13 +351,13 @@
                 // console.log(row);
                 // console.log(row.column);
                 if (row.column.label === "状态" && row.row.status === "备案待查") {
-                    return 'color:red'
+                    return 'color:pink'
                 } else if (row.column.label === "状态" && row.row.status === "未提供") {
                     return 'color:orange'
                 } else if (row.column.label === "状态" && row.row.status === "未批准") {
                     return 'color:blue'
                 } else if (row.column.label === "状态" && row.row.status === "未审核") {
-                    return 'color:pink'
+                    return 'color:red'
                 }
             },
             gotoEvidence() {
@@ -411,6 +422,9 @@
 
             },
             async updateScore(data) {
+                // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+                this.curStatus = data.status
+
                 if (data.status == '不通过')
                     this.unpass = false;
                 else this.unpass = true;
@@ -522,7 +536,7 @@
             removeFile() {
                 this.fileattach = '';
             },
-            handleRemove() {
+            handleRemove(file) {
                 this.$refs.upload.clearFiles();
                 this.attach = '';
             },
@@ -683,6 +697,19 @@
 
     .hidbg {
         left: -1000px !important;
+    }
+
+    .picSize {
+        max-width: 1400px;
+        max-height: 750px;
+        vertical-align: bottom;
+    }
+
+    .picPosition {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
     div.el-dialog__wrapper#preview {

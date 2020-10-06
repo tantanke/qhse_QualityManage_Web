@@ -50,11 +50,12 @@
           </el-table-column> 
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
-              <el-button 
-              type="danger"
-              size="mini"
-              @click="deletefile(scope.row)"
-              >删除</el-button>
+                <!--取消删除按钮-->
+              <!--<el-button -->
+              <!--type="danger"-->
+              <!--size="mini"-->
+              <!--@click="deletefile(scope.row)"-->
+              <!--&gt;删除</el-button>-->
               <el-button 
               type="warning"
               size="mini"
