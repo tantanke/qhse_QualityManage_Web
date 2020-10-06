@@ -62,7 +62,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{['备案待查'].includes(scope.row.status) ? '查看' : '进入审核'}}
+                            >{{['备案待查', '未批准'].includes(scope.row.status) ? '查看' : '进入审核'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -91,7 +91,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{['备案待查'].includes(scope.row.status) ? '查看' : '进入审核'}}
+                            >{{['备案待查', '未批准'].includes(scope.row.status) ? '查看' : '进入审核'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -111,7 +111,7 @@
                                         active-text="通过"
                                         inactive-text="不通过">
                                 </el-switch>
-                                <el-button :disabled="['备案待查'].includes(curStatus)" type="primary" @click="passornot">确认审核</el-button>
+                                <el-button :disabled="['备案待查', '未批准'].includes(curStatus)" type="primary" @click="passornot">确认审核</el-button>
                             </el-form-item>
                             <el-form-item v-if="!upstatus" label="驳回意见：" style="margin-bottom:1px">
                                 <el-input ype="text" label="驳回意见 ：" class="resizeNone" v-model="unpasstext"

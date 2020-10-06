@@ -53,16 +53,17 @@
               @click="pushfile(scope.row)"
               >导出当天数据</el-button>
             </template>
-          </el-table-column> 
-          <el-table-column label="操作" width="100" align="center">
-            <template slot-scope="scope">
-              <el-button 
-              type="danger"
-              size="mini"
-              @click="deletefile(scope.row)"
-              >删除</el-button>
-              </template>
-          </el-table-column> 
+          </el-table-column>
+              <!--取消操作栏-->
+          <!--<el-table-column label="操作" width="100" align="center">-->
+            <!--<template slot-scope="scope">-->
+              <!--<el-button -->
+              <!--type="danger"-->
+              <!--size="mini"-->
+              <!--@click="deletefile(scope.row)"-->
+              <!--&gt;删除</el-button>-->
+              <!--</template>-->
+          <!--</el-table-column> -->
         </el-table> 
       </el-row>
 

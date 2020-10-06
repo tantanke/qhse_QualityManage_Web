@@ -142,7 +142,7 @@
                                 <div v-for="(item,index) in files" :key="index">
                                     <a :href="item" style="max-width:600px;height:auto"
                                        :download="strings[index]">{{strings[index]}}</a>
-                                    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除
+                                    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除11
                                     </el-button>
                                 </div>
                             </el-form-item>
@@ -172,6 +172,7 @@
                                         clearable
                                         ref="upload"
                                         :on-success="handleAvatarSuccess"
+                                        :file-list="fileList"
                                         accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF"
                                 >
                                     <i slot="default" class="el-icon-plus"></i>
@@ -295,10 +296,14 @@
                 },
                 tableID: null,
                 curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
+                fileList: [],
             };
         },
         methods: {
             deletepic(data) {//删除图片
+                console.log(this.form.attach, 111111111)
+                console.log(this.files, 22222222)
+                console.log(this.attachs, 33333)
                 //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是图片文件
                 this.form.attach = '';//先删除证据录入项存储的attach
                 var pics = [];
@@ -320,6 +325,10 @@
             },
             deletefile(data) {//删除文件  逻辑和上面一样的
                 //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是文件
+
+                console.log(this.form.attach, 111111111)
+                console.log(this.files, 22222222)
+                console.log(this.attachs, 33333)
                 this.form.attach = '';//先删除证据录入项存储的attach
                 var pics = [];
                 for (var i = 0; i < this.files.length; i++) {
@@ -527,7 +536,7 @@
             removeFile() {
                 this.fileattach = '';
             },
-            handleRemove() {
+            handleRemove(file) {
                 this.$refs.upload.clearFiles();
                 this.attach = '';
             },
