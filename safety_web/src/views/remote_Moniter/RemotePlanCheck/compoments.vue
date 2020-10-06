@@ -287,8 +287,8 @@ export default {
    },
    mounted(){
       this.nowdate=this.getNowFormatDate();
-      this.selectdate=this.getNowFormatDate2();
-      this.selecttime=this.getNowFormatDate2();
+      this.selectdate=this.getNowFormatDate1();
+      this.selecttime=this.getNowFormatDate1();
        console.log('核查细节页面报错')
        getNeedToCheckedDetails(this.$route.params).then(res=>{
          for(var i=0;i<res.data.length;i++)
