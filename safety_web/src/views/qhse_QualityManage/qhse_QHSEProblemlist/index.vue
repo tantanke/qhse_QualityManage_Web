@@ -112,10 +112,10 @@
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a target='_blank'  :href="'/api'+props.row.affix1">证据图片1</a>
+                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a target='_blank'  :href="'/api'+props.row.affix2">证据图片2</a>
+                    <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
                 </el-form-item>
              </el-form>
              </template>
@@ -126,15 +126,15 @@
           <el-table-column prop='regulationName' label='违章人员'></el-table-column>
           <el-table-column prop='regulationSource' label='隐患来源'></el-table-column>
           <el-table-column prop='punish' label='罚款'></el-table-column>
-         <!--  <el-table-column prop='consequenceID' label='可能后果'></el-table-column>
-          <el-table-column prop='employeeCharacter' label='用工性质'></el-table-column>
-          <el-table-column prop='profession' label='监督人员'></el-table-column>
-          <el-table-column prop='workSeniority' label='工种年龄'></el-table-column>
-          <el-table-column prop='position' label='岗位分类'></el-table-column>
-          <el-table-column prop='regulationCharacter' label='违章性质'></el-table-column>
-          <el-table-column prop='type' label='违章类别'></el-table-column>
-          <el-table-column prop='workItem' label='作业项目'></el-table-column>
-          <el-table-column prop='description' label='违章描述'></el-table-column> -->
+<!--           <el-table-column
+            fixed="right"
+            label="操作"
+            align='center'
+            width="200">
+            <template slot-scope="scope">
+                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteRegulation(scope.row)">删除</el-button>
+            </template>
+            </el-table-column> -->
         </el-table>
           </el-row>
       </el-row>
@@ -246,14 +246,15 @@
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
           <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
           <el-table-column prop='recordDate' label='检查时间'></el-table-column>    
-          <!-- <el-table-column prop='consequenceID' label='可能后果'></el-table-column>    
-          <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>    
-          <el-table-column prop='factorDepartment' label='归属职能部门'></el-table-column>   
-          <el-table-column prop='ok' label='是否立即验收'></el-table-column>     
-          <el-table-column prop='factorSource' label='原因分析'></el-table-column>
-          <el-table-column prop='limitDate' label='限期整改时间'></el-table-column>        
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='description' label='隐患描述'></el-table-column>     -->
+<!--           <el-table-column
+            fixed="right"
+            label="操作"
+            align='center'
+            width="200">
+            <template slot-scope="scope">
+                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteDanger(scope.row)">删除</el-button>
+            </template>
+            </el-table-column> -->
           </el-table>
           </el-row>
       </el-row>
@@ -303,23 +304,32 @@
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
-             <el-table-column
+             <!-- <el-table-column
                     prop="recordDate"
                     label="检查时间">
-                </el-table-column>
+                </el-table-column> -->
                     <el-table-column
                     prop="companyName"
+                    width='250'
                     label="公司名称">
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                     prop="safeStaffName"
                     label="检查人">
-                </el-table-column>
+                </el-table-column> -->
                   <el-table-column
                     prop="problemDescription"
                     label="问题描述">
                 </el-table-column>
-                      
+                <!-- <el-table-column
+                fixed="right"
+                label="操作"
+                align='center'
+                width="200">
+                <template slot-scope="scope">
+                    <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteProblem(scope.row)">删除</el-button>
+                </template>
+                </el-table-column>       -->
             </el-table>
           </el-row>
       </el-row>
@@ -364,13 +374,23 @@ export default {
        }
    },
    methods: {
+       //删除对应的问题/违章/隐患
+       deleteRegulation(data){
+         console.log(data)
+       },
+       deleteDanger(data){
+          console.log(data)
+       },
+       deleteProblem(data){
+          console.log(data)
+       },
+       // 下载模板文件
        downloadRegulation() {
            let _this = this
            if(_this.regulationrecord.length > 0) {
                let option = {}
                const priData = _this.regulationrecord
                option.filename = 'QHSE违章清单'
-               console.log(priData)
                option.datas = [{
 							sheetData: priData,
                             sheetHeader: ['公司id','公司名称','可能后果','违章描述','用工性质','归属部门','对应体系要素'
@@ -390,7 +410,6 @@ export default {
                         let option = {}                 
                         const priData = _this.dangerrecord
                         option.filename = 'QHSE违章清单'
-                        console.log(priData)
                         option.datas = [{
                                         sheetData: priData,
                                         sheetHeader: ['公司id','公司名称','可能后果','可能后果id','隐患来源','隐患描述','归属部门'
@@ -409,7 +428,6 @@ export default {
        },
        getRecentTime() {
           let date = new Date().getTime()
-          console.log(new Date())
           let near = date + 60*60*1000*24*30
           let day = new Date(date).toISOString()
           let nearday = new Date(near).toISOString()
@@ -486,7 +504,6 @@ export default {
             _this.regulationBtn = true
            baseurl  = _this.getUrl('/api/query_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
-               console.log(res.data.list)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',

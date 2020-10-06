@@ -158,7 +158,7 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a   target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
+                    <a  :download="download[index]" target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -239,7 +239,7 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                     <a   target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
+                     <a  :download="download[index]" target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
                 </div>
               </el-form-item>
             </el-col>
@@ -392,11 +392,11 @@ export default {
             treedata.forEach(item => {
                 if (item.childNode.length === 0) {
                      _this.allTotal++
-                   if (item.status === '备案待查' && item.fileCheckStatus){
+                   if (item.status === '备案待查' && (item.fileCheckStatus === '通过' || item.fileCheckStatus === '不通过')){
                       _this.fileList.push(item)
                       _this.hasTotal++
                       return
-                   } else if (item.status === '备案待查' && !item.fileCheckStatus ) {
+                   } else if (item.status === '备案待查' && item.fileCheckStatus ) {
                       _this.fileList.push(item)                     
 
                    }                    
@@ -632,8 +632,9 @@ export default {
        })
        _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
        // 先获取到id之后再进行添加问题
+       console.log(_this.addQuestionForm.qHSE_FileAudit_ID,_this.addQuestionForm.code)
        queryRecordId({fileAuditId:_this.addQuestionForm.qHSE_FileAudit_ID,code:_this.addQuestionForm.code})
-       .then(res => {
+       .then((res) => {
          _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.data[0].qHSE_FileAudit_RecordID
          _this.goHidden.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
          localStorage.setItem('sourcedata',JSON.stringify(_this.goHidden))
@@ -641,7 +642,7 @@ export default {
        }).then(() => {     
          _this.questionLoading = false
        }).catch(err => {
-        _this.$message.error(err)
+        this.$message.error(err)
         _this.noinnerVisible = false
       })
     },

@@ -33,3 +33,20 @@ export const getDangerImgUrls = (data) =>{
     method: 'get'
 })
 }
+
+// 删除记录
+/* export const deleteDangerrecord = (data) =>{
+  return request(`/api/downloadDangerFile?filename=${data}`, {
+    method: 'get'
+})
+}
+export const getDangerImgUrls = (data) =>{
+  return request(`/api/downloadDangerFile?filename=${data}`, {
+    method: 'get'
+})
+}
+export const getDangerImgUrls = (data) =>{
+  return request(`/api/downloadDangerFile?filename=${data}`, {
+    method: 'get'
+})
+} */

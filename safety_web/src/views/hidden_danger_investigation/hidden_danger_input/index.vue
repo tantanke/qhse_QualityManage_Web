@@ -319,6 +319,7 @@ export default {
       if (source === '体系运行'){
       const initData = JSON.parse(localStorage.getItem('sourcedata'))
       _this.form.qHSE_FileAudit_ID = initData.qHSE_FileAudit_ID
+      console.log(initData)
       _this.form.QHSE_FileAuditRecord_ID = initData.QHSE_FileAuditRecord_ID
       _this.form.code = initData.code
       } else if (source === '隐患排查') {
@@ -404,7 +405,8 @@ export default {
     },
     // 确认提交方法
     onSubmit() {
-      let noFill = false
+      console.log(this.form)
+      /* let noFill = false
       let _this = this
       _this.form.ok === true ? _this.form.ok = '1' : _this.form.ok = '0'
       Object.keys(_this.form).forEach((value) => {
@@ -430,7 +432,7 @@ export default {
           console.log(err)
           _this.adding = false
           _this.$message.error(err.message)
-        })
+        }) */
     },
 
     // 一些事件
@@ -441,10 +443,11 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
-    if(fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')){
+    if((fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')) && fronRouter !== "FileCheckIndex"){
       localStorage.setItem('dangerSource','隐患排查');
       next()
-    } else if (fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','隐患排查')) {
+    }  
+    else if ((fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','体系运行')) && fronRouter !== "QHSETroubleCheckTable") {
       localStorage.setItem('dangerSource','体系运行');
       next()
     } else{
