@@ -26,6 +26,9 @@
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
+                    <el-form-item style="float: right;">
+                        <el-button type="primary" icon="el-icon-s-promotion" @click="confirmAnalysis">确认审核</el-button>
+                    </el-form-item>
                 </el-form>
             </el-row>
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
@@ -62,7 +65,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{['备案待查', '未批准'].includes(scope.row.status) ? '查看' : '进入审核'}}
+                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -91,7 +94,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{['备案待查', '未批准'].includes(scope.row.status) ? '查看' : '进入审核'}}
+                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -111,7 +114,7 @@
                                         active-text="通过"
                                         inactive-text="不通过">
                                 </el-switch>
-                                <el-button :disabled="['备案待查', '未批准'].includes(curStatus)" type="primary" @click="passornot">确认审核</el-button>
+                                <el-button :disabled="curCheckStatus !== 1" type="primary" @click="passornot">确认审核</el-button>
                             </el-form-item>
                             <el-form-item v-if="!upstatus" label="驳回意见：" style="margin-bottom:1px">
                                 <el-input ype="text" label="驳回意见 ：" class="resizeNone" v-model="unpasstext"
@@ -166,6 +169,7 @@
     import {downloadElementFile} from "../../../services/qhse_EvidenceCheck"
     import {show_approve_check} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
     import {showAllElement} from "../../../services/qhse_EvidenceCheck";
+    import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认审核
 
     const DefaultQuery = {
         year: "",
@@ -209,7 +213,9 @@
                         label: "未批准",
                         status: "未批准"
                     }],
+                tableID: null,
                 curStatus: '', // 通过进入审核或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
+                curCheckStatus: 0 //  通过进入审核或查看按钮进入录入页面时，保存具体某个要素的状态(0, 1, 2等一系列状态)
             };
         },
         methods: {
@@ -365,6 +371,14 @@
                     query_elementReviewer(this.filterQuery)//获取到叶子节点信息
                         .then(res => {
                             this.treeData = res.data;
+                            console.log(res.data, 'query_elementReviewer')
+
+                            // 如果长度大于0，从其中取出tableID属性
+                            if (this.treeData.length) {
+                                this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                            }
+
+
                             this.total1 = 0;
                             this.deepTree1(this.treeData);
                             console.log('查询的时候查询1')
@@ -378,6 +392,12 @@
                         .then(res => {
                             this.hasData = res.data;
                             console.log('已审核数据源1', this.hasData)
+
+                            // 如果长度大于0，从其中取出tableID属性
+                            if (this.hasData.length) {
+                                this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                            }
+
                             this.total2 = 0;
                             this.deepTree2(this.hasData);
                             console.log('查询的时候查询2')
@@ -407,6 +427,10 @@
             async updateScore(data) {//显示出证据项的内容
                 // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
                 this.curStatus = data.status
+
+                // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
+                this.curCheckStatus = data.checkStatus
+                alert(this.curCheckStatus)
 
                 console.log(this.userId)
                 this.attachs = {};
@@ -492,6 +516,17 @@
                     return 'color:blue'
                 } else if (row.column.label === "状态" && row.row.status === "未审核") {
                     return 'color:red'
+                }
+            },
+            // 确认审核
+            confirmAnalysis() {
+                alert(this.tableID)
+                if (this.tableID) {
+                    submitInputResult({
+                        tableID: this.tableID,
+                        tag: 1
+                    });
+                    this.$message.success("提交成功")
                 }
             },
         },
