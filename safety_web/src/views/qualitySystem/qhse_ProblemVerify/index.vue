@@ -1,10 +1,9 @@
 <template>
   <div class="problemList">
-
-          <div class="page-title" style="width:100%">QHSE问题清单</div>
-      <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题清单</el-radio>
+          <div class="page-title" style="width:100%">质量-问题验证</div>
+      <el-radio v-model="listcate" label="QHSE违章清单">质量-违章清单</el-radio>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">质量-隐患清单</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">质量-问题清单</el-radio>
       <el-row v-show="listcate === 'QHSE违章清单'">
           <el-row>
           <el-form :inline="true">
@@ -37,9 +36,6 @@
                   </el-form-item>
                   <el-form-item>
                 <el-button type="primary" :disabled='regulationBtn' icon="el-icon-search" @click="searchRegulation">查询</el-button>   
-                </el-form-item>   
-                <el-form-item>
-                <el-button type="info" :disabled='regulationBtn' icon='el-icon-download'  @click="downloadRegulation">下载</el-button>   
                 </el-form-item>     
           </el-form>
           </el-row>
@@ -111,12 +107,6 @@
                 <el-form-item label="罚款:">
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
-                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
-                </el-form-item>
-                <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
-                </el-form-item>
              </el-form>
              </template>
           </el-table-column>
@@ -126,15 +116,6 @@
           <el-table-column prop='regulationName' label='违章人员'></el-table-column>
           <el-table-column prop='regulationSource' label='隐患来源'></el-table-column>
           <el-table-column prop='punish' label='罚款'></el-table-column>
-<!--           <el-table-column
-            fixed="right"
-            label="操作"
-            align='center'
-            width="200">
-            <template slot-scope="scope">
-                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteRegulation(scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
         </el-table>
           </el-row>
       </el-row>
@@ -148,9 +129,9 @@
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
                         @change="handleChange"
-                        ref="cascaderAddr"
+                        ref="cascaderAddr"    
                          clearable
-                        filterable               
+                        filterable           
                         >             
                       </el-cascader>
                   </el-form-item>
@@ -170,10 +151,7 @@
                   </el-form-item>
                   <el-form-item>
                 <el-button type="primary" :disabled='dangerBtn' icon="el-icon-search" @click="searchDanger">查询</el-button>   
-                </el-form-item>    
-                <el-form-item>
-                <el-button type="info" :disabled='dangerBtn' icon='el-icon-download'  @click="dowmloadDanger">下载</el-button>   
-                </el-form-item>  
+                </el-form-item>     
           </el-form>
           </el-row>
           <el-row style="height:350px">
@@ -225,39 +203,67 @@
                 <el-form-item label="限期整改时间:">
                     <span>{{ props.row.limitDate }}</span>
                 </el-form-item>
+                <el-form-item label="是否立即验收:">
+                    <span>{{ props.row.ok }}</span>
+                </el-form-item>
                 <el-form-item label="隐患级别:">
                     <span>{{ props.row.rank }}</span>
                 </el-form-item>
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
-                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
-                </el-form-item>
-                <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a   target='_blank' :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
-                </el-form-item>
            </el-form>
            </template>
           </el-table-column>
-          <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
+         <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
           <el-table-column prop='companyName' label='施工队伍'></el-table-column>
           <el-table-column prop='rank' label='隐患级别'></el-table-column>
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
           <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>    
-<!--           <el-table-column
+          <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
+          <!-- <el-table-column prop='consequenceID' label='可能后果'></el-table-column>    
+          <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>    
+          <el-table-column prop='factorDepartment' label='归属职能部门'></el-table-column>   
+          <el-table-column prop='ok' label='是否立即验收'></el-table-column>     
+          <el-table-column prop='factorSource' label='原因分析'></el-table-column>
+          <el-table-column prop='limitDate' label='限期整改时间'></el-table-column>        
+          <el-table-column prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column prop='description' label='隐患描述'></el-table-column>     -->
+          <el-table-column
             fixed="right"
             label="操作"
             align='center'
             width="200">
             <template slot-scope="scope">
-                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteDanger(scope.row)">删除</el-button>
+                <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">验收</el-button>
+                <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEdit(scope.row)">整改</el-button>
+                <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
             </template>
-            </el-table-column> -->
+            </el-table-column>
           </el-table>
           </el-row>
       </el-row>
+      <el-dialog
+            title="问题验收"
+            :visible.sync="editShow"
+            :close-on-click-modal='false'
+            width="30%">
+            <p>请提交证据图片：</p>
+            <el-upload
+                  action="/api/uploaddanger"
+                  :on-success="handleAvatarSuccess"
+                  :limit="2"    
+                  :headers="header"        
+                  :on-exceed="handleExceed"
+                >
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span> 最多两张，格式为jpg,png,bmp</span>
+                </el-upload>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editShow = false">取 消</el-button>
+                <el-button type="primary" @click="editInfo">确 定</el-button>
+            </span>
+            </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
               <el-row>
@@ -270,7 +276,7 @@
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"    
-                         clearable
+                        clearable
                         filterable  
                         >             
                       </el-cascader>
@@ -290,11 +296,8 @@
                         </el-date-picker>
                   </el-form-item>
                   <el-form-item>
-                <el-button type="primary" @click="getProblemDescription" icon='el-icon-search' :disabled='proBtn'>查询</el-button>   
-                </el-form-item>   
-                 <el-form-item>
-                <el-button type="info" :disabled='proBtn' icon='el-icon-download'  @click="downloadPro">下载</el-button>   
-                </el-form-item>  
+                <el-button type="primary" icon="el-icon-search" @click="getProblemDescription" :disabled='proBtn'>查询</el-button>   
+                </el-form-item>     
           </el-form>
           </el-row>      
           </el-form>
@@ -304,10 +307,6 @@
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
-             <!-- <el-table-column
-                    prop="recordDate"
-                    label="检查时间">
-                </el-table-column> -->
                     <el-table-column
                     prop="companyName"
                     width='250'
@@ -321,15 +320,17 @@
                     prop="problemDescription"
                     label="问题描述">
                 </el-table-column>
-                <!-- <el-table-column
-                fixed="right"
-                label="操作"
-                align='center'
-                width="200">
-                <template slot-scope="scope">
-                    <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteProblem(scope.row)">删除</el-button>
-                </template>
-                </el-table-column>       -->
+                <el-table-column
+                    fixed="right"
+                    label="状态"
+                    align='center'
+                    width="200">
+                    <template slot-scope="scope">
+                        <el-button v-show="!scope.row.situation" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">待验收</el-button>
+                        <el-button v-show="scope.row.situation === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">待整改</el-button>
+                        <span v-show="scope.row.situation === '已整改'"  >已整改</span>
+                    </template>
+                    </el-table-column>       
             </el-table>
           </el-row>
       </el-row>
@@ -337,15 +338,21 @@
 </template>
 
 <script> 
+import { GetCurrentUser } from '@/store/CurrentUser'
 import {queryDangerrecord,
         queryRegulationrecord,
-        queryProblemDescription,
+        queryProblemDescription
 } from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
-import ExportJsonExcel from "js-export-excel";
+import {problemVerification,
+        updateDangerrecord,
+        updateProblemDescription
+} from '../../../services/hidden_danger_investigation/problemVerify'
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
    data() {
        return {
+           header: { Authorization: GetCurrentUser().token },
+           editId:'',
            // 控制加载
            regulationrecordLoading: false,
            problemLoading: false,
@@ -363,79 +370,127 @@ export default {
                 startDate: null,
                 endDate: null
             },
+            reformForm:{
+               receptionDate:'',
+               reformCase: ''
+            },
            listcate: 'QHSE违章清单',
            date30:[],
            // 控制按钮 防止一直点击
            regulationBtn:false,
            proBtn:false,
-           dangerBtn:false
-           // 控制频率
+           dangerBtn:false,
+           editShow: false,
+           fileNum:2,
+           form:{}
 
        }
    },
    methods: {
-       //删除对应的问题/违章/隐患
-       deleteRegulation(data){
-         console.log(data)
-       },
-       deleteDanger(data){
-          console.log(data)
-       },
-       deleteProblem(data){
-          console.log(data)
-       },
-       // 下载模板文件
-       downloadRegulation() {
-           let _this = this
-           if(_this.regulationrecord.length > 0) {
-               let option = {}
-               const priData = _this.regulationrecord
-               option.filename = 'QHSE违章清单'
-               option.datas = [{
-							sheetData: priData,
-                            sheetHeader: ['公司id','公司名称','可能后果','违章描述','用工性质','归属部门','对应体系要素'
-                            ,'原因','违章id','验收情况','岗位分类','所属专业','罚款','记录时间','违章性质','违章人员id','违章人员',
-                            '违章来源','检查人员id','检查人','分数','提交时间','违章类别','作业项目','工种年龄']
-                        }];
-                // 导出数据
-                var toExcel = new ExportJsonExcel(option);
-				toExcel.saveExcel();
-           } else {
-               _this.$message.warning('无记录可下载！')
-           }
-       },
-       dowmloadDanger() {
-            let _this = this
-                    if(_this.dangerrecord.length > 0) {
-                        let option = {}                 
-                        const priData = _this.dangerrecord
-                        option.filename = 'QHSE违章清单'
-                        option.datas = [{
-                                        sheetData: priData,
-                                        sheetHeader: ['公司id','公司名称','可能后果','可能后果id','隐患来源','隐患描述','归属部门'
-                                        ,'对应体系要素','原因分析','隐患id','限期整改时间','位置区域','所属专业','隐患级别','提交时间','整改负责人','整改负责人id','检查人员id',
-                                        '检查人员','检查时间','隐患类别','作业项目']
-                                    }];
-                            // 导出数据
-                            var toExcel = new ExportJsonExcel(option);
-                            toExcel.saveExcel();
-                    } else {
-                        _this.$message.warning('无记录可下载！')
-                    }
-       },
-       downloadPro () {
-
-       },
+       // 给附件命名
+    handleAvatarSuccess(res) {
+      this.fileNum++
+      let key = 'affix' + this.fileNum
+      this.form[key] = res.data
+    },
+    // 限制文件数量
+    handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
        getRecentTime() {
           let date = new Date().getTime()
+          console.log(new Date())
           let near = date + 60*60*1000*24*30
           let day = new Date(date).toISOString()
           let nearday = new Date(near).toISOString()
           this.date30.push(day.split('T')[0])
           this.date30.push(nearday.split('T')[0])    
+          this.reformForm.receptionDate = this.date30[0]
           this.date = [...this.date30]
           this.dateQ = [...this.date30]
           this.dateH = [...this.date30]
+       },
+       reciveInfo (data) {
+          this.reformForm.reformCase = '已验收'
+          this.$confirm('确认提交验收情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+        .then(()=>{
+            problemVerification(data.id,this.reformForm).then(res => {
+                console.log(res)
+                this.searchDanger()
+            }).catch(err => {
+                this.$message.error(err)
+                this.dangerLoading = false
+                this.dangerBtn = false
+            })
+        })
+       },
+       goEdit(data){
+          this.editId = data.id
+          this.editShow = true
+          this.form = {...data}
+       },
+       editInfo() {
+           let _this = this
+           if(_this.fileNum === 2){
+               _this.$message.warning('请至少提交一个证明附件！')
+               return
+           } 
+           
+          _this.reformForm.reformCase = '已整改'
+          _this.$confirm('确认提交整改情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+        .then(()=>{
+        problemVerification(_this.editId,_this.reformForm).then(() => {
+                return updateDangerrecord(_this.editId,_this.form)          
+            })
+        }).then((res) => {
+            // 推送新状态
+            if(res.code === 1000) 
+            this.searchDanger()
+        }).catch(err => {
+                this.$message.error(err)
+            })
+          
+       },
+       // 问题验证
+       // 验收
+       recivePro(data){
+          this.$confirm('确认提交验收情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(()=> {
+           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已验收'}).then(res => {
+               console.log(res)
+               this.getProblemDescription()
+           })
+        })
+        .catch(err => {
+                this.$message.error(err)
+            })
+       },
+       // 整改
+       goEditPro(data){
+           this.$confirm('确认提交整改情况吗？','提示',{
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(()=> {
+           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已整改'}).then(res => {
+               console.log(res)
+               this.getProblemDescription()
+           })
+        })
+        .catch(err => {
+                this.$message.error(err)
+            })
        },
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
@@ -460,6 +515,7 @@ export default {
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
+               console.log(res.data)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
@@ -511,6 +567,7 @@ export default {
                     type: 'warning',
                     duration:1200
                     });
+                    console.log(1)
 
                }
                _this.regulationrecord = res.data.list
@@ -532,6 +589,7 @@ export default {
         handleChange(value) {
         console.log(value);
         },
+        
         getProblemDescription() {
             let baseurl 
             let form = {}
@@ -548,7 +606,7 @@ export default {
                form.endDate = _this.date30[1]
             }
             if (_this.checkForm.companyId.length !== 0) {
-                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+                form.companyCode = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
             _this.proBtn = true
            baseurl  = _this.getUrl('/api/query_problemDescription',form)
@@ -590,7 +648,6 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
 .el-table{
     height: 590px;
     .table-expand {
@@ -601,10 +658,6 @@ export default {
     margin-bottom: 0;
     width: 30%;
     color: #99a9bf;
-   }
-   .imgUrl{
-       cursor: pointer;
-       color:blue
    }
   }
 }

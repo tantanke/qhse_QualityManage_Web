@@ -183,10 +183,10 @@ export default new Router({
         { path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
         { path: '/qualitySystem/StatisticAnalysis', name:'Quality_', component: resolve => require(['./views/qualitySystem/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
         { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-        { path: '/qualitySystem/ProblemVerify', name:'QualityProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
+        { path: '/qualitySystem/ProblemVerify', name:'QualityProblemVerify', component: resolve => require(['./views/qualitySystem/qhse_ProblemVerify/index.vue'],resolve)},
         { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qualitySystem/qhse_ElementEvidenceApproval/index.vue'],resolve)},
-        { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
-        { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
+        { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
+        { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
         
       ]
     },

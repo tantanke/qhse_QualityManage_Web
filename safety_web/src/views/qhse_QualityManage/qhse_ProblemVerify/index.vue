@@ -107,6 +107,12 @@
                 <el-form-item label="罚款:">
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
+                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
+                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix2" label="证据图片2:">
+                    <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
+                </el-form-item>
              </el-form>
              </template>
           </el-table-column>
@@ -212,6 +218,12 @@
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
+                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
+                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix2" label="证据图片2:">
+                    <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
+                </el-form-item>
            </el-form>
            </template>
           </el-table-column>
@@ -221,23 +233,14 @@
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
           <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
           <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
-          <!-- <el-table-column prop='consequenceID' label='可能后果'></el-table-column>    
-          <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>    
-          <el-table-column prop='factorDepartment' label='归属职能部门'></el-table-column>   
-          <el-table-column prop='ok' label='是否立即验收'></el-table-column>     
-          <el-table-column prop='factorSource' label='原因分析'></el-table-column>
-          <el-table-column prop='limitDate' label='限期整改时间'></el-table-column>        
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='description' label='隐患描述'></el-table-column>     -->
           <el-table-column
-            fixed="right"
-            label="操作"
-            align='center'
-            width="200">
+            label="状态"
+            align='center'>
             <template slot-scope="scope">
-                <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">验收</el-button>
-                <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEdit(scope.row)">整改</el-button>
-                <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
+                <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
+                <el-button v-show="scope.row.reformCase === '已整改'" type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">待验收</el-button>
+                <el-button v-show="!scope.row.reformCase" type="warning" icon="el-icon-edit" plain size="small" @click="goEdit(scope.row)">待整改</el-button>
+                <span v-show="scope.row.reformCase === '已验收'"  >已验收</span>
             </template>
             </el-table-column>
           </el-table>
@@ -322,13 +325,13 @@
                 </el-table-column>
                 <el-table-column
                     fixed="right"
-                    label="操作"
+                    label="状态"
                     align='center'
                     width="200">
                     <template slot-scope="scope">
-                        <el-button v-show="!scope.row.situation" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">验收</el-button>
-                        <el-button v-show="scope.row.situation === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">整改</el-button>
-                        <span v-show="scope.row.situation === '已整改'"  >已整改</span>
+                        <el-button v-show="scope.row.situation" type="primary" icon="el-icon-search" plain size="small"@click="goEditPro(scope.row)" >待整改</el-button>
+                        <el-button v-show="!scope.row.situation === '已整改'" type="warning" icon="el-icon-edit" plain size="small" @click="recivePro(scope.row)">待验收</el-button>
+                        <span v-show="scope.row.situation === '已验收'"  >已验收</span>
                     </template>
                     </el-table-column>       
             </el-table>
@@ -387,6 +390,13 @@ export default {
        }
    },
    methods: {
+        /* testedit(data) {
+          updateDangerrecord(data.id,data).then(res => {
+              console.log(res)
+          }).catch(err => {
+                this.$message.error(err)
+            })
+       }, */
        // 给附件命名
     handleAvatarSuccess(res) {
       this.fileNum++
