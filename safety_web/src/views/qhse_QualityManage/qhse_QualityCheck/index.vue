@@ -27,7 +27,7 @@
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
                     <el-form-item style="float: right;">
-                        <el-button type="primary" icon="el-icon-s-promotion" @click="confirmSubmit">确认提交</el-button>
+                        <el-button type="primary" icon="el-icon-s-promotion" @click="confirmCheck">确认录入</el-button>
                     </el-form-item>
                 </el-form>
             </el-row>
@@ -62,7 +62,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0"
-                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
+                            >{{scope.row.checkStatus === 0 ? '录入' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -93,7 +93,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0"
-                            >{{['备案待查', '未批准'].includes(scope.row.status)? '查看' : '录入'}}
+                            >{{scope.row.checkStatus === 0 ? '录入' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -172,7 +172,6 @@
                                         clearable
                                         ref="upload"
                                         :on-success="handleAvatarSuccess"
-                                        :file-list="fileList"
                                         accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF"
                                 >
                                     <i slot="default" class="el-icon-plus"></i>
@@ -213,7 +212,7 @@
                                 <el-button type="" style="margin-top:10px;margin-left:380px;float:left"
                                            @click="dialogVisible3=false">取消
                                 </el-button>
-                                <el-button :disabled="['备案待查', '未批准'].includes(curStatus)" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+                                <el-button :disabled="curCheckStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                                 </el-button>
                             </el-form-item>
                         </el-col>
@@ -296,7 +295,7 @@
                 },
                 tableID: null,
                 curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
-                fileList: [],
+                curCheckStatus: 0 // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(0, 1, 2等一系列状态)
             };
         },
         methods: {
@@ -424,6 +423,10 @@
             async updateScore(data) {
                 // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
                 this.curStatus = data.status
+                // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+                this.curCheckStatus = data.checkStatus
+                alert(this.curCheckStatus)
+
 
                 if (data.status == '不通过')
                     this.unpass = false;
@@ -611,10 +614,14 @@
                 }
 
             },
-            // 确认提交
-            confirmSubmit() {
+            // 确认录入
+            confirmCheck() {
                 if (this.tableID) {
-                    submitInputResult(this.tableID);
+                    submitInputResult({
+                        tableID: this.tableID,
+                        tag: 0
+                    });
+                    this.$message.success("提交成功")
                 }
             },
             //转换年份
