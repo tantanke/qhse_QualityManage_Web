@@ -410,8 +410,8 @@ export default {
           checkBasis: [
                { required: true, message: '请输入监督检查依据', trigger: 'blur' }
           ],
-          checkListName: [
-               { required: true, message: '请输入检查表名称', trigger: 'blur' }
+          checkListCode: [
+               { required: true, message: '请选择检查表', trigger: 'blur' }
           ],
           checkDate: [
                { required: true, message: '请选择审核日期', trigger: 'blur' }   
