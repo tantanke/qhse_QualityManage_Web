@@ -111,18 +111,18 @@
                 <el-form-item label="罚款:">
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
-                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
+               <el-form-item v-if="props.row.affix1" label="证据图片1:" >
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix1" target="_blank">证据图片1</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix2" target="_blank" >证据图片2</a>
                 </el-form-item>
              </el-form>
              </template>
           </el-table-column>
           <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
           <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
+          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column prop='regulationName' label='违章人员'></el-table-column>
           <el-table-column prop='regulationSource' label='隐患来源'></el-table-column>
           <el-table-column prop='punish' label='罚款'></el-table-column>
@@ -232,10 +232,16 @@
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
-                     <a target='_blank'  :href="'http://39.98.173.131:7000'+props.row.affix1">证据图片1</a>
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix1" target="_blank">证据图片1</a>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix2" label="证据图片2:">
-                    <a   target='_blank' :href="'http://39.98.173.131:7000'+props.row.affix2">证据图片2</a>
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix2" target="_blank" >证据图片2</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix3" label="整改图片1:" >
+                     <a  :href="'http://39.98.173.131:9000/api' + props.row.affix3" target="_blank" >整改图片1</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix4" label="整改图片2:">
+                   <a :href="'http://39.98.173.131:9000/api' + props.row.affix4" target="_blank">整改图片2</a>
                 </el-form-item>
            </el-form>
            </template>
@@ -245,19 +251,13 @@
           <el-table-column prop='rank' label='隐患级别'></el-table-column>
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
           <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>    
-<!--           <el-table-column
-            fixed="right"
-            label="操作"
-            align='center'
-            width="200">
-            <template slot-scope="scope">
-                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteDanger(scope.row)">删除</el-button>
-            </template>
-            </el-table-column> -->
+          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>    
           </el-table>
           </el-row>
       </el-row>
+      <el-dialog :visible.sync="dialogVisible2">
+        <img width="100%" :src="dialogImageUrl" alt="暂时没有">
+      </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
               <el-row>
@@ -368,12 +368,18 @@ export default {
            // 控制按钮 防止一直点击
            regulationBtn:false,
            proBtn:false,
-           dangerBtn:false
+           dangerBtn:false,
            // 控制频率
-
+           dialogVisible2: false,
+           dialogImageUrl:''
        }
    },
    methods: {
+       watchImg(data) {
+          this.dialogImageUrl = "http://39.98.173.131:9000/api" + data
+          this.dialogVisible2 = true
+          console.log(this.dialogImageUrl)
+       },
        //删除对应的问题/违章/隐患
        deleteRegulation(data){
          console.log(data)
@@ -469,6 +475,7 @@ export default {
                     });
 
                }
+               console.log(res.data.list)
                   _this.dangerLoading = false
                   _this.dangerBtn = false
            }).catch(err => {
@@ -513,6 +520,7 @@ export default {
                     });
 
                }
+               
                _this.regulationrecord = res.data.list
                   _this.regulationrecordLoading = false
                    _this.regulationBtn = false
