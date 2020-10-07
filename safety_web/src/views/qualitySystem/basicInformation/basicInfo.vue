@@ -3,10 +3,10 @@
         <div class="page-title" style="width: 100%">基本信息生成</div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
                 <el-form :model="selectInfoForm" label-width="100px" :inline="true">
-				<el-form-item label="请选择公司:">
+				<el-form-item label="公司:">
 				<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList" v-model="selectCheckedCompanyId"></treeselect>
 				</el-form-item>
-				<el-form-item label="选择审核日期：">
+				<el-form-item label="审核日期：">
 					<el-date-picker
                         v-model="selectCheckDate"
                         type="daterange"

@@ -266,11 +266,14 @@ export default {
             console.log(this.rectifyForm.correctPic)
             console.log('更新整改表单')
             console.log(this.rectifyForm)
-            for(let i in this.flagRecifyArray){
-                if(this.flagRecifyArray[i] !== qualityRecordId){
+            if(this.flagRecifyArray.length !== 0){
+                const flag = this.findOnly(this.flagRecifyArray, qualityRecordId)
+                if(flag !== 1){
+                   this.flagRecifyArray.push(qualityRecordId) 
+                }
+            }else{
                     this.flagRecifyArray.push(qualityRecordId)
                 }
-            }
             console.log(this.flagRecifyArray)
             updateQualityCheckRecord(qualityRecordId,this.rectifyForm).then((res) => {
                 console.log(res.data)
@@ -351,6 +354,17 @@ export default {
             this.fileList.push(picInfo)
             console.log(this.fileList)
         },
+        findOnly: function (arr, recordId) {
+            // 查找标志数组有无相同元素
+            var flagOnly = 0
+            for(let i in arr) {
+                if(arr[i] === recordId){
+                    flagOnly = 1
+                    break
+                }
+            }
+            return flagOnly
+        }
     },
     watch: {
 
