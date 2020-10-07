@@ -6,7 +6,7 @@
         </el-breadcrumb>
         <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         </el-row>
-        <div class="page-title" style="width: 100%">问题整改  <el-button type="success" style="float:right; margin-right:80px; font-size: 16px" @click="pushRectify">推送</el-button></div>
+        <div class="page-title" style="width: 100%">问题整改  <span class="boxNew"><span class="progressData">{{progress}}</span><el-button type="success" style="font-size: 16px" @click="pushRectify">整改完成</el-button></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
         <!-- 问题接收列表区域 -->
             <el-table :data="problemRectifyList" border stripe>
@@ -283,9 +283,19 @@ export default {
                 this.$message(err.message)
             })
         },
-        pushRectify: function () {
+        pushRectify: async function () {
             // 全部整改完成推送
-            if(this.flagRecifyArray.length === this.rectifyForm.length){
+            console.log(this.flagRecifyArray.length)
+            console.log(this.problemRectifyList.length)
+            if(this.flagRecifyArray.length === this.problemRectifyList.length){
+                const confirmResult = await this.$confirm('整改已完成，可以进行推送操作，是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).catch(err => err)
+                    if (confirmResult !== 'confirm') {
+                        return this.$message.info('已取消')
+                    }
                 modifyPush(this.acceptRow.qualityCheckID).then((res) => {
                     console.log(res.data)
                     return this.$message.success('推送成功')
@@ -299,6 +309,8 @@ export default {
             this.activeIndex = '0'
             this.imageList = []
             this.fileProblemList = []
+            this.file = []
+            this.fileList = []
         },
         handlePreview: function (file) {
             // 图片已上传，图片预览
@@ -369,6 +381,13 @@ export default {
     watch: {
 
     },
+    computed: {
+        progress: function () {
+            const length1 = this.problemRectifyList.length
+            const length2 = this.flagRecifyArray.length
+            return length2 + '/' + length1
+        }
+    },
     created: function () {
         this.getAcceptRow()
     }
@@ -386,5 +405,15 @@ export default {
     text-decoration: underline;
     color: #0099ff;
     margin: 0 15px;
+}
+.boxNew {
+    display: inline-block;
+    float: left;
+    margin-right: 40px;
+}
+.progressData {
+    color: red;
+    font-size: 22px;
+    margin-right: 20px;
 }
 </style>
