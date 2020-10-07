@@ -1,0 +1,199 @@
+<template>
+    <div>
+        <div class="page-title" style="width: 100%">问题接收</div>
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
+		<!-- 查询区域 -->
+         <el-form :model="inquireForm" label-width="100px" :inline="true">
+			<el-form-item label="受审单位">
+                <treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
+					v-model="inquireCompanyId"></treeselect>
+            </el-form-item>
+            <el-form-item label="审核日期">
+			<el-date-picker
+                v-model="inquireCheckDate"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+            </el-date-picker>
+				</el-form-item>
+			<el-form-item>
+				<el-button type="primary" icon='el-icon-search' @click="handleInquire" style="margin-right: 15px;">查询</el-button>
+			</el-form-item>
+         </el-form>
+        <!-- 问题接收列表区域 -->
+            <el-table :data="problemList" border stripe>
+                <el-table-column type="expand" label="详情" width="60px">
+                    <template slot-scope="scope">
+                        <el-row>
+                            <el-col :span="8">
+                                <div class="detail">受审核单位:{{scope.row.checkedCompanyName}}</div>
+                                <div class="detail">受审核部门:{{scope.row.group}}</div>
+                                <div class="detail">责任部门:{{scope.row.responsiCompanyName}}</div>
+                                <div class="detail">责任部门负责人:{{scope.row.responsePersonName}}</div>
+                                <div class="detail">检查方式:{{scope.row.taskType}}</div>
+                            </el-col>
+                            <el-col :span="8">
+                                <div class="detail">审核日期:{{scope.row.checkDate}}</div>
+                                <div class="detail">检查表名称:{{scope.row.checkListName}}</div>
+                                <div class="detail">监督人员:{{scope.row.checkPerson}}</div>
+                                <div class="detail">监督检查依据:{{scope.row. checkBasis}}</div>
+                                <div class="detail">执行标准:{{scope.row.execStd}}</div>
+                            </el-col>
+                            <el-col :span="8">
+                                 <div class="detail">业主:{{scope.row.owner}}</div>
+                                <div class="detail">承包商:{{scope.row.contractor}}</div>
+                                <div class="detail">作业项目:{{scope.row.workProject}}</div>
+                                <div class="detail">项目组名称:{{scope.row.projectName}}</div>
+                                <div class="detail">检测项目:{{scope.row.checkProject}}</div>
+                            </el-col>
+                           
+                        </el-row>
+                    </template>
+                </el-table-column>
+                <el-table-column type="index" label="序号" width="60px"></el-table-column>
+                <el-table-column label="单位名称" prop="checkedCompanyName"></el-table-column>
+                <el-table-column label="受审核部门" prop="group"></el-table-column>
+                <el-table-column label="检查表名称" prop="checkListName" width="190px"></el-table-column>
+                <el-table-column label="责任部门" prop="responsiCompanyName"></el-table-column>
+                <el-table-column label="责任人" prop="responsePersonName"></el-table-column>
+                <el-table-column label="审核日期" prop="checkDate"></el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemRectify(scope.row)">问题整改</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+</template>
+
+<script>
+import { GetCompany } from "../../../services/gettreedata"
+import { inquireProblemForm } from "../../../services/qualitySystem/problemAccept"
+export default {
+    data () {
+        return {
+            loading: false,
+            activeIndex: '0',
+            // 公司ID
+            companyId: null,
+            // 公司code
+            companyCode: '',
+            // 公司列表数据
+            companyList: [],
+            // 查询公司id
+            inquireCompanyId: null,
+            // 查询审核日期范围
+            inquireCheckDate: [],
+            // 问题接收表格数据
+            problemList: [],
+            // 查询表格部分数据
+            inquireForm: {
+                checkedCompanyCode: null,
+                checkDate: ''
+            },
+            // 显示隐藏对话框
+            problemRectifyDialogVisible: false,
+            // 问题整改表单
+            rectifyForm: {
+
+            }
+        }
+    },
+    methods: {
+        handleInquire: function () {
+            // 查询表格部分数据
+            const x = []
+            for(let i in this.inquireCheckDate) {
+                x.push(this.formatDate(this.inquireCheckDate[i]))
+            }
+            console.log(x)
+            this.inquireForm.checkDate = x.join(';')
+            console.log(this.inquireForm.checkDate)
+            console.log(this.inquireForm)
+            if(this.inquireForm.checkedCompanyCode == null || this.inquireForm.checkDate == '') {
+                return this.$message.error('请同时选择公司以及审核日期')
+            }
+            inquireProblemForm(this.inquireForm).then((res) => {
+                console.log('查询问题接收主表表单的信息')
+                console.log(res.data)
+                this.problemList = res.data
+            }).catch((err) => {
+                this.$message.error(err.message)
+            })
+        },
+        inquireCompanyIdChanged: function (val) {
+            // 监听查询公司id
+            if(val) {
+                this.changeCompanyIdToName(this.companyList, this.inquireCompanyId)
+                this.inquireForm.checkedCompanyCode = this.companyCode
+            }else {
+                this.inquireForm.checkedCompanyCode = null
+                this.companyCode = ''
+            }
+        },
+        jumpProblemRectify: function (row) {
+            // 跳转问题整改页面
+            this.$router.push({
+                path: '/qualitySystem/problemAccept/problemRectify',
+                query: row
+            })
+        },
+        // 获取公司表
+        getCompany: function () {
+            GetCompany().then(res => {
+                this.companyList = res.data
+                console.log('公司表')
+                console.log(this.companyList)
+            }).catch(err => {
+                this.$message.error(err.message)
+                })
+            
+        },
+        // 将公司Id转化为公司名称，并且保存nodeCode
+        changeCompanyIdToName: function (val,companyId) {
+            for (var j = 0; j < val.length; j++) {
+		        if (val[j]) {
+		            if (val[j].id == companyId) {
+                        this.companyCode = val[j].nodeCode
+                        console.log('公司nodeCode:'+this.companyCode)
+                        this.companyName = val[j].label
+                        console.log('公司名称:' + val[j].label)
+                        break
+			        } else if (val[j].children) {
+				        this.changeCompanyIdToName(val[j].children, companyId)
+			        }
+		        }
+	        }
+        },
+        // 时间格式化
+        formatDate: function (time) {
+            const timer = time.getTime()
+            console.log(timer)
+            const date = new Date(timer)
+            const y = date.getFullYear()
+            const m = date.getMonth() + 1
+            const mm = m < 10 ? '0' + m : m
+            const d = date.getDate()
+            const dd = d < 10 ? '0' + d : d
+            return y + '-' + mm + '-' + dd
+        }
+    },
+    created: function () {
+        // 获取公司表
+        this.getCompany()
+    },
+    watch: {
+        // 监听查询公司id
+        'inquireCompanyId':'inquireCompanyIdChanged'
+    }
+}
+</script>
+
+<style  scoped>
+.detail {
+    margin: 20px 0;
+    color: #999;
+}
+</style>
