@@ -187,6 +187,8 @@ export default new Router({
         { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qualitySystem/qhse_ElementEvidenceApproval/index.vue'],resolve)},
         { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
+{ path: '/qualitySystem/IssuesList/index', name:'IssuesList', component: resolve => require(['./views/qualitySystem/IssuesList/index.vue'],resolve)},
+{ path: 'qualitySystem/IssuesList/showIndex', name:'showIndex', component: resolve => require(['./views/qualitySystem/IssuesList/showIndex.vue'],resolve)},
       ]
     },
 
