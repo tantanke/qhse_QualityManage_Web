@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title">隐患基本信息</div>
+    <div class="page-title">{{form.dangerSource}}-隐患基本信息</div>
     <div class="page-content" v-loading='adding' style="height:660px">
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
@@ -95,7 +95,7 @@
               </el-form-item>
               <el-form-item label="隐患文件上传">
                <el-upload
-                  action="/api/uploaddanger"
+                  action="/api/uploadScreenShot"
                   :on-success="handleAvatarSuccess"
                   :headers="header"
                   :limit="2"            
@@ -174,13 +174,13 @@
               <el-form-item label="是否立即验收" style="margin-top:114px">
                 <el-switch v-model="form.ok"></el-switch>
               </el-form-item>
-            </el-col>
-          </el-row>
-          <br />
-          <el-form-item>
+               <br />
+          <el-form-item label="操作" >
             <el-button type="primary" style="width:100px" @click="onSubmit">确认</el-button>
             <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>
           </el-form-item>
+            </el-col>
+          </el-row> 
         </el-form>
       </el-row>
     </div>
@@ -214,7 +214,7 @@ export default {
         reformPersonID: null,//整改负责人ID
         limitDate: '',//限制时间
         ok: '', //提交状态
-        status: 0,
+        status: 1,
         consequenceID: '',//可能后果
         recordDate: '',
         rank: '',
@@ -318,12 +318,12 @@ export default {
       source = _this.form.dangerSource
       if (source === '体系运行'){
       const initData = JSON.parse(localStorage.getItem('sourcedata'))
-      _this.form.qHSE_FileAudit_ID = initData.qHSE_FileAudit_ID
       console.log(initData)
-      _this.form.QHSE_FileAuditRecord_ID = initData.QHSE_FileAuditRecord_ID
+      _this.form.qHSE_FileAudit_ID = initData.qHSE_FileAudit_ID
+      _this.form.qHSE_FileAuditRecord_ID = initData.qHSE_FileAuditRecord_ID
       _this.form.code = initData.code
       } else if (source === '隐患排查') {
-      _this.form.QHSE_CheckCategory = _this.$route.params.type || localStorage.getItem('checkType')
+      _this.form.qHSE_CheckCategory = _this.$route.params.type || localStorage.getItem('checkType')
       }
     },
     // 获取数据方法
@@ -391,7 +391,6 @@ export default {
     },
     formatForm() {    
       let arrs = this.person.split(' ')    
-      this.form.status = 0
       this.form.reformPerson = arrs[1]
       this.form.reformPersonID = arrs[0]
     },
@@ -406,9 +405,9 @@ export default {
     // 确认提交方法
     onSubmit() {
       console.log(this.form)
-      /* let noFill = false
+      let noFill = false
       let _this = this
-      _this.form.ok === true ? _this.form.ok = '1' : _this.form.ok = '0'
+      _this.form.ok === true ? _this.form.ok = 1 : _this.form.ok = 0
       Object.keys(_this.form).forEach((value) => {
         if(_this.form[value] === '' ){
            noFill = true
@@ -432,7 +431,7 @@ export default {
           console.log(err)
           _this.adding = false
           _this.$message.error(err.message)
-        }) */
+        })
     },
 
     // 一些事件
@@ -442,18 +441,21 @@ export default {
      
   },
   beforeRouteEnter (to, from, next) {
-    let fronRouter = from.name
-    if((fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')) && fronRouter !== "FileCheckIndex"){
+     let fronRouter = from.name
+    if((fronRouter === "QHSETroubleCheckTable" ) ){
       localStorage.setItem('dangerSource','隐患排查');
-      next()
+       next()
     }  
-    else if ((fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','体系运行')) && fronRouter !== "QHSETroubleCheckTable") {
+    if(localStorage.getItem('dangerSource','隐患排查')){
+       next()
+    }
+    if (fronRouter === "FileCheckIndex" ) {
       localStorage.setItem('dangerSource','体系运行');
       next()
-    } else{
-      next('/index')
+    } 
+    if(localStorage.getItem('dangerSource','体系运行')) {
+      next()
     }
-    next()
   }
 }
 </script>

@@ -260,18 +260,17 @@ export default {
         if (this.resData.condition == true) this.resData.condition = '备用'
         if (this.resData.closeIn == false) this.resData.closeIn = '是'
         if (this.resData.closeIn == true) this.resData.closeIn = '否'
-        inputDetail(this.resData).then(res => {
-          console.log('录入成功', res)
-          this.$message.success('录入成功')
-          this.table = false;
-          this.showlinedatas();
-        })
-          .catch(err => {
-            console.log('录入失败', err)
-          })
       }
       console.log(this.resData)
-
+      inputDetail(this.resData).then(res => {
+        console.log('录入成功', res)
+        this.$message.success('录入成功')
+        this.table = false;
+        this.showlinedatas();
+      })
+        .catch(err => {
+          console.log('录入失败', err)
+        })
 
 
     }
