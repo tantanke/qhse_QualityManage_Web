@@ -699,8 +699,7 @@ export default new Router({
          // 问题整改
          { path: '/qualitySystem/problemAccept/problemRectify', name: 'problemRectify', component: resolve => require(['./views/qualitySystem/problemAccept/problemRectify.vue'],resolve)}, 
          // 问题复审
-         { path: '/qualitySystem/problemCheck/problemReview', name: 'problemReview', component: resolve => require(['./views/qualitySystem/problemCheck/problemReview.vue'],resolve)}, 
->>>>>>> e29e2633d29c8f25dd8116cfd1a610e0da8fe10d
+         { path: '/qualitySystem/problemCheck/problemReview', name: 'problemReview', component: resolve => require(['./views/qualitySystem/problemCheck/problemReview.vue'],resolve)},
       ]
     },
 
