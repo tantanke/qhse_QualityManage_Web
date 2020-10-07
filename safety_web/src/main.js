@@ -4,7 +4,7 @@ import router from './router'
 
 // import VueRouter from 'vue-router'
 import ElementUI from 'element-ui'
-import './assets/font_icon/iconfont.css'  //引入控制面板四个图标央视
+import './assets/font_icon/iconfont.css' //引入控制面板四个图标央视
 import Treeselect from '@riophae/vue-treeselect'
 
 import 'element-ui/lib/theme-chalk/index.css'
@@ -19,7 +19,9 @@ import VueAxios from 'vue-axios'
 import plugins from './plugins';
 // Vue.use(AMap)
 Vue.config.productionTip = false
-Vue.use(ElementUI, {size: 'medium'})
+Vue.use(ElementUI, {
+  size: 'medium'
+})
 Vue.component('treeselect', Treeselect)
 Vue.use(VueAxios, axios)
 Vue.use(plugins);
