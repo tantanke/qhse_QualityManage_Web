@@ -144,7 +144,6 @@
               <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
               <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
               <el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
-                <el-button size='mini'  @click="addquestion">录入问题</el-button>
                 <el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
                 <el-button size='mini' type="danger" @click="addRegulation">录入违章</el-button>
               </el-form-item>

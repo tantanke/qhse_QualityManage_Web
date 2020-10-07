@@ -1,6 +1,6 @@
 <template>
   <div style="overflow:hidden">
-    <div class="page-title">违章录入</div>
+    <div class="page-title">{{form.regulationSource}}-违章录入</div>
     <div class="page-content" v-loading='adding' >
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
@@ -140,7 +140,7 @@
               </el-form-item>
               <el-form-item label="违章图片上传">
                 <el-upload
-                  action="/api/uploadregulation"
+                  action="/api/uploadScreenShot"
                   :on-success="handleAvatarSuccess"
                   :headers="header"
                   :limit="2"             
@@ -230,7 +230,7 @@
               <el-form-item label="罚款（元）" style="margin-top:1px">
                 <el-input v-model="form.punish" placeholder="请填写" />
               </el-form-item>
-              <el-form-item>
+              <el-form-item  label="操作">
                 <el-button type="primary" style="width:100px" @click="onSubmit">确认</el-button>
                 <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>
               </el-form-item>
@@ -497,6 +497,7 @@ export default {
     },
     // 确认提交
     onSubmit() {
+
       let noFill = false
       let _this = this
       _this.form.safeStaff_ID = GetCurrentUser().employeeId   
@@ -534,17 +535,20 @@ export default {
   },
  beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
-    if((fronRouter === "QHSETroubleCheckTable" || localStorage.getItem('dangerSource','隐患排查')) && fronRouter !== "FileCheckIndex"){
-      localStorage.setItem('dangerSource','隐患排查');
-      next()
+    if((fronRouter === "QHSETroubleCheckTable" ) ){
+      localStorage.setItem('regulationSource','隐患排查');
+       next()
     }  
-    else if ((fronRouter === "FileCheckIndex" || localStorage.getItem('dangerSource','体系运行')) && fronRouter !== "QHSETroubleCheckTable") {
-      localStorage.setItem('dangerSource','体系运行');
-      next()
-    } else{
-      next('/index')
+    if(localStorage.getItem('regulationSource','隐患排查')){
+       next()
     }
-    next()
+    if (fronRouter === "FileCheckIndex" ) {
+      localStorage.setItem('regulationSource','体系运行');
+      next()
+    } 
+    if(localStorage.getItem('regulationSource','体系运行')) {
+      next()
+    }
   }
 
 }

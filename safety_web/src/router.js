@@ -81,6 +81,7 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheck', name:'FileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemVerify', name:'ProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemEdit', name:'Problem', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemEdit/index.vue'],resolve)},
         { path: '/qhse_QualityManage/taskList/index', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
         { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
@@ -187,6 +188,7 @@ export default new Router({
         { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qualitySystem/qhse_ElementEvidenceApproval/index.vue'],resolve)},
         { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
+        
         
       ]
     },
