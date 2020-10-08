@@ -2,7 +2,7 @@
   <div>
     <div class="page-title" style="width:100%">
         <el-breadcrumb separator="/">
-            <el-breadcrumb-item><a @click="$router.go(-1)">质量-文件审核</a></el-breadcrumb-item>
+            <el-breadcrumb-item><a @click="$router.go(-1)">QHSE文件审核</a></el-breadcrumb-item>
             <el-breadcrumb-item>详情查看</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
@@ -129,7 +129,7 @@
       </el-row>
 
       <!--文件审核的具体页面 -->
-      <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="55%">
+      <el-dialog title="文件审核" :visible.sync="dialogVisible" center width="55%" :close-on-click-modal='false'>
         <div v-loading='addLoading'>
         <el-form label-width="140px" :model="detailData" style="width:100%;" >
           <el-row>
@@ -142,16 +142,20 @@
               style="margin-bottom:10px"
               >
               <span v-show="attachs.length === 0">无图片附件记录！</span>
-              <div  v-for="(item,index) in attachs" :key="index">
-                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                  <el-popover placement="right" title trigger="click">
-                    <div style="max-width:600px;height:auto">
-                      <img :src="item" style="max-width:600px;height:auto" />
-                    </div>
-                    <img slot="reference" :src="item"  style="max-height: 180px" />
-                  </el-popover>
-                </el-card>
-              </div >
+             <div v-for="(item,index) in attachs" :key="index">
+                                    <el-card :body-style="{ padding: '10px' }"
+                                             style="width:100px;height:60px;text-align:center;float:left;margin:05px">
+                                        <span v-if="!item">无图片文件记录！</span>
+                                        <el-popover placement="right" title trigger="click" v-else>
+                                            <div style="box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);"
+                                                 class="picPosition">
+                                                <img :src="item" class="picSize"/>
+                                            </div>
+                                            <img slot="reference" :src="item" :alt="detailData.pictureFile"
+                                                 style="width: 100%; height: 100%;"/>
+                                        </el-popover>
+                                    </el-card>
+                                </div>
               </el-form-item>
               <el-form-item label="证据文件：" 
               style="margin-bottom:10px"
@@ -202,7 +206,7 @@
           </div>
       </el-dialog>
       <!-- 查看文件审核详情 -->
-      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center style="height:850px" >
+      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center style="height:850px" :close-on-click-modal='false'>
         <div v-loading='eviLoaind'>
         <el-form   label-width="140px" :model="detailData" style="width:100%;" >
           <el-row >
@@ -223,16 +227,20 @@
               style="margin-bottom:10px"
               >
               <span v-show="attachs.length === 0">无图片文件记录！</span>
-              <div  v-for="(item,index) in attachs" :key="index">
-                <el-card :body-style="{ padding: '10px' }" style="width:100%;height:200px;text-align:center" >
-                  <el-popover placement="right" title trigger="click">
-                    <div style="max-width:600px;height:auto">
-                      <img :src="item" style="max-width:600px;height:auto" />
-                    </div>
-                    <img slot="reference" :src="item"  style="max-height: 180px" />
-                  </el-popover>
-                </el-card>
-              </div >
+              <div v-for="(item,index) in attachs" :key="index">
+                                    <el-card :body-style="{ padding: '10px' }"
+                                             style="width:100px;height:60px;text-align:center;float:left;margin:05px">
+                                        <span v-if="!item">无图片文件记录！</span>
+                                        <el-popover placement="right" title trigger="click" v-else>
+                                            <div style="box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);"
+                                                 class="picPosition">
+                                                <img :src="item" class="picSize"/>
+                                            </div>
+                                            <img slot="reference" :src="item" :alt="detailData.pictureFile"
+                                                 style="width: 100%; height: 100%;"/>
+                                        </el-popover>
+                                    </el-card>
+                                </div>
               </el-form-item>
               <el-form-item label="证据文件：" 
               style="margin-bottom:10px"
@@ -373,6 +381,23 @@ export default {
     };
   },
   methods: {
+    async downloadRes(url, name) {
+    let response = await fetch(url)
+    // 内容转变成blob地址
+    let blob = await response.blob()
+    // 创建隐藏的可下载链接
+    let objectUrl = window.URL.createObjectURL(blob)
+    let a = document.createElement('a')
+    //地址
+    a.href = objectUrl
+    //修改文件名
+    a.download = name
+    // 触发点击
+    document.body.appendChild(a)
+    a.click()
+    //移除
+    setTimeout(() => document.body.removeChild(a), 1000)
+},
     // 获取当前时间
     getTime() {
       let nowDate = new Date()
@@ -543,20 +568,44 @@ export default {
        this.detaildialogVisible = false
     },
     goRegulation() {
-       this.$router.push({
+      let localData = {}
+      let _this  = this
+      localData.code = _this.detailData.code
+      localData.qHSE_FileAudit_ID = _this.fileRecord.fileAuditId
+      _this.eviLoaind = true
+      queryRecordId({fileAuditId:_this.fileRecord.fileAuditId,code:_this.detailData.code}).then(res => {  
+        localData.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
+        localStorage.setItem('sourcedata',JSON.stringify(localData))
+         this.$router.push({
             path: '/hidden_danger/illegal_entry',
             params: {
             data: this.editdata
             }
             })
+      }).catch(err => {
+        this.$message.error(err)
+      })
+      
     },
     goDanger() {
-      this.$router.push({
+     let localData = {}
+      let _this  = this
+      localData.code = _this.detailData.code
+      localData.qHSE_FileAudit_ID = _this.fileRecord.fileAuditId
+      _this.eviLoaind = true
+      queryRecordId({fileAuditId:_this.fileRecord.fileAuditId,code:_this.detailData.code}).then(res => {  
+        localData.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
+        localStorage.setItem('sourcedata',JSON.stringify(localData))
+          this.$router.push({
             path: '/hidden_danger/input',
             params: {
             data: this.editdata
             }
             })
+      }).catch(err => {
+        this.$message.error(err)
+      })
+     
     },
     // 填充文件审核页面
     goUpdateFile(data){
@@ -705,14 +754,14 @@ export default {
       if (_this.reason === '不录入') _this.noinnerVisible = false
       else if (_this.reason === '隐患'){
            _this.$router.push({
-            path: '/hidden_danger/input',
+            path: '/qualitySystem/hiddenDangerInput',
             params: {
             data: rowdata
             }
           })
       } else {
             _this.$router.push({
-            path: '/hidden_danger/illegal_entry',
+            path: '/qualitySystem/regulationInput',
             params: {
             data: rowdata
             }
@@ -740,4 +789,16 @@ export default {
     color: red;
   }
 }
+    .picSize {
+        max-width: 1400px;
+        max-height: 750px;
+        vertical-align: bottom;
+    }
+
+    .picPosition {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
 </style>

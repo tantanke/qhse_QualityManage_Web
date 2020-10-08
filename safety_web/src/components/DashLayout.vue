@@ -224,6 +224,7 @@ export default {
         })
         localStorage.setItem('sysCate','安全')
         _this.qhse = 'QHSE安全系统'
+         this.$router.push({name: 'mainPath'})
         _this.dialogTableVisible = false
         _this.changeS = false
       }).catch(err=>{
@@ -249,6 +250,7 @@ export default {
         })
         localStorage.setItem('sysCate','质量')
         _this.qhse = 'QHSE质量系统'
+         this.$router.push({name: 'mainPath'})
         _this.changeS = false
         _this.dialogTableVisible = false
       }).catch(err=>{

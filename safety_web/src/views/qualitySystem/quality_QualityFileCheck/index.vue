@@ -100,7 +100,8 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import { addFileaduit,querryQhseElement,queryFileaduit,queryFileaduit2 } from "../../../services/qualitySystem/quality_Filecheck"
+import { addFileaduit } from "../../../services/qualitySystem/quality_Filecheck"
+import { querryQhseElement,queryFileaduit,queryFileaduit2 } from "../../../services/qualitySystem/quality_Filecheck"
 import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
 const DefaultQuery = {
@@ -213,7 +214,7 @@ export default {
     // 删除文件审核记录
     deleteFile(data) {
       let _this = this
-      let url ='/api/delete_qualityfileaduit/' +  data.fileAuditId.toString()
+      let url ='/api/delete_fileaduit/' +  data.fileAuditId.toString()
       _this.$confirm('确认删除该条审核记录吗？','提示',{
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -320,8 +321,11 @@ export default {
       console.log(node)
       this.searchForm.companyName = 	node.label
     }
+    
   },
   mounted() {
+    
+    
     this.getUserName();
     this.handleGetCompany();
     this.loadFilterParams();

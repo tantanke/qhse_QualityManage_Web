@@ -340,7 +340,7 @@
 import {queryDangerrecord,
         queryRegulationrecord,
         queryProblemDescription,
-} from '../../../services/qualitySystem/quality_ProblemList'
+} from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
 import ExportJsonExcel from "js-export-excel";
 import {GetqhseCompanytree} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 export default {
@@ -509,7 +509,7 @@ export default {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
             _this.regulationBtn = true
-           baseurl  = _this.getUrl('/api/query_regulationrecord',form)
+           baseurl  = _this.getUrl('/api/query_quality_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
                if(res.data.list.length === 0) {
                    this.$notify({
@@ -559,7 +559,7 @@ export default {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
             _this.proBtn = true
-           baseurl  = _this.getUrl('/api/query_problemDescription',form)
+           baseurl  = _this.getUrl('/api/query_quality_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
                if(res.data.length === 0) {
                    this.$notify({

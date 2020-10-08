@@ -154,24 +154,12 @@
   </div>
 </template>
 <script>
-<<<<<<< HEAD
-//质量系统接口
-import { quality_query_elementReviewer } from "../../../services/qualitySystem/QualityEvidenceInput.js";//查询公司
-//安全系统接口
-import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
-import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示公司所有的证据项节点
-import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
-import { employees } from "../../../services/qhse_QualityCheck";//显示成员
-import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
-import { submitInputResult } from "../../../services/qhse_QualityCheck";// 确认提交
-=======
 import { qhse_company_tree } from "../../../services/qualitySystem/quality_EvidenceCheck";//获取公司tree
 import { querryYearElement } from "../../../services/qualitySystem/quality_QualityCheck";//显示公司所有的证据项节点
 import { query_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//显示证据项内容
 import { employees } from "../../../services/qualitySystem/quality_QualityCheck";//显示成员
 import { addAll_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//添加所有的信息
 import { submitInputResult } from "../../../services/qualitySystem/quality_QualityCheck";// 确认提交
->>>>>>> baa6ba96fdaa1e9ff76864f2b9f0d1b8d46dd730
 import { GetCurrentUser } from '../../../store/CurrentUser';
 import { downloadElementFile } from "../../../services/qualitySystem/quality_EvidenceCheck";
 // import {querryYearElement}from"../../../services/qhse_EvidenceCheck"

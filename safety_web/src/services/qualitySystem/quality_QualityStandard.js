@@ -49,14 +49,14 @@ export const querryQhseElements=(param)=>{
   }
 
   export const querryQHSEproblemDiscription = (data) => {
-    return request(`/api/querryQHSEproblemDiscription/${data.code}`, {
+    return request(`/api/queryQualityProDis/${data.code}`, {
       method: 'get', 
       data
     })
   }
 // 增加问题描述
   export const addQHSEproblemDiscription = (data) => {
-    return request('/api/addQHSEproblemDiscription', {
+    return request('/api/addQualityProDis', {
       method: 'post', 
       data
     })
@@ -64,14 +64,14 @@ export const querryQhseElements=(param)=>{
 
 // 编辑问题描述
 export const deleteQHSEproblemDiscription = (data) => {
-  return request(`/api/deleteQHSEproblemDiscription/${data.id}`, {
+  return request(`/api/updateQualityProDis/${data.id}`, {
     method: 'delete', 
     data
   })
 }
 // 删除问题描述
 export const updateQHSEproblemDiscription = (data) => {
-  return request(`/api/updateQHSEproblemDiscription`, {
+  return request(`/api/deleteQualityProDis`, {
     method: 'put', 
     data
   })

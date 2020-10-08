@@ -264,7 +264,7 @@
 import { GetCurrentUser } from '@/store/CurrentUser'
 import {queryDangerrecord,
         queryProblemDescription
-} from '../../../services/qualitySystem/quality_ProblemList'
+} from '../../../services/hidden_danger_investigation/QHSETroubleCheckList'
 import {problemVerification,
         updateDangerrecord,
         updateProblemDescription
@@ -514,7 +514,7 @@ export default {
                 form.companyCode = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
             _this.proBtn = true
-           baseurl  = _this.getUrl('/api/query_problemDescription',form)
+           baseurl  = _this.getUrl('/api/query_quality_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
                if(res.data.length === 0) {
                    this.$notify({
