@@ -257,7 +257,6 @@ export default new Router({
         }, //批量导入问题
 
         //QHSE 量化标准
-<<<<<<< HEAD
         {
           path: '/qhse_QualityManage/qhse_QualityStandard/index',
           name: 'QHSEQualityStandardIndex',
@@ -329,24 +328,6 @@ export default new Router({
           component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'], resolve)
         },
 
-=======
-        { path: '/qhse_QualityManage/qhse_QualityStandard/index', name:'QHSEQualityStandardIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityStandard/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityFill/index', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityFill/addmuch', name:'QHSEQualityFillIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFill/addsome.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/index', name:'QHSEQualityCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityCheck/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index', name:'QHSEStatisticAnalysis', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_ElementEvidenceApproval/index', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/PushAttach/index', name:'PushAttach', component: resolve => require(['./views/qhse_QualityManage/PushAttach/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/filecheck', name:'FileCheck', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qhse_QualityManage/qhse_QualityFileCheck/filecheck.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemVerify', name:'ProblemVerify', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemVerify/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemEdit', name:'Problem', component: resolve => require(['./views/qhse_QualityManage/qhse_ProblemEdit/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/taskList/index', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
-        { path: '/qhse_QualityManage/taskList', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-        
->>>>>>> b521732afa1c8d7845cdd68f7744657076b276c5
         //报告管理  report_management
         {
           path: '/report_management/report_plan/index',
@@ -753,7 +734,6 @@ export default new Router({
           component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/countlist.vue'], resolve)
         },
         //质量体系运行
-<<<<<<< HEAD
         {
           path: '/qualitySystem/checkListConfig/index',
           name: 'QualityChecklistConfig',
@@ -776,7 +756,7 @@ export default new Router({
         },
         { //要素证据录入
           path: '/qualitySystem/StasticApprove',
-          name: 'Factor quality input',
+          name: 'QualityEvidenceInput',
           component: resolve => require(['./views/qualitySystem/qhse_QualityCheck/index.vue'], resolve)
         },
         { //要素证据审核
@@ -800,17 +780,6 @@ export default new Router({
           component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'], resolve)
         },
 
-=======
-        { path: '/qualitySystem/checkListConfig/index', name:'QualityChecklistConfig', component: resolve => require(['./views/qualitySystem/checkListConfig/index.vue'],resolve)},
-        { path: '/qualitySystem/StatisticAnalysis', name:'Quality_', component: resolve => require(['./views/qualitySystem/qhse_QHSEStatisticAnalysis/index.vue'],resolve)},
-        { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-        { path: '/qualitySystem/ProblemVerify', name:'QualityProblemVerify', component: resolve => require(['./views/qualitySystem/qhse_ProblemVerify/index.vue'],resolve)},
-        { path: '/qualitySystem/StasticApprove', name:'QualityStasticApprove', component: resolve => require(['./views/qualitySystem/qhse_ElementEvidenceApproval/index.vue'],resolve)},
-        { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
-        { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
-        { path: '/qualitySystem/FieldInformEntry/index', name:'FieldInformEntry', component: resolve => require(['./views/qualitySystem/FieldInformEntry/index.vue'],resolve)},
-	      { path: 'qualitySystem/FieldInformEntry/auditIndex', name:'auditIndex', component: resolve => require(['./views/qualitySystem/FieldInformEntry/auditIndex.vue'],resolve)},
->>>>>>> b521732afa1c8d7845cdd68f7744657076b276c5
       ]
     },
 

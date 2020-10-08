@@ -154,6 +154,9 @@
   </div>
 </template>
 <script>
+//质量系统接口
+import { quality_query_elementReviewer } from "../../../services/qualitySystem/QualityEvidenceInput.js";//查询公司
+//安全系统接口
 import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
 import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示公司所有的证据项节点
 import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
@@ -239,7 +242,7 @@ export default {
           this.form.attach += ';';
         }
       }
-      for (var i = 0; i < this.files.length; i++) {
+      for (i = 0; i < this.files.length; i++) {
         this.form.attach += this.attachs[i];
         this.form.attach += ';';
       }
@@ -259,14 +262,14 @@ export default {
           this.form.attach += ';';
         }
       }
-      for (var i = 0; i < this.attachs.length; i++) {
+      for (i = 0; i < this.attachs.length; i++) {
         this.form.attach += this.attachs[i];
         this.form.attach += ';';
       }
       this.files = pics;
       console.log('最终的', pics)
     },
-    cellStyle (row, column, rowIndex, columnIndex) {//根据报警级别显示颜色
+    cellStyle (row) {//根据报警级别显示颜色
       // console.log(row);
       // console.log(row.column);
       if (row.column.label === "状态" && row.row.status === "备案待查") {
@@ -300,6 +303,7 @@ export default {
     },
     //添加附件，与下面整合
     async addEvidenceFile () {
+      console.log(this.form);
       var datetime = new Date();
       var year = datetime.getFullYear();
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
@@ -510,7 +514,7 @@ export default {
         this.$message.error('请选择公司')
       else {
         this.handleGetInitialData();//更改loading状态
-        querryYearElement(this.filterQuery)//获取到叶子节点信息
+        quality_query_elementReviewer(this.filterQuery)//获取到叶子节点信息
           .then(res => {
             this.treeData = res.data;
 
@@ -530,6 +534,13 @@ export default {
     // 确认提交
     confirmSubmit () {
       if (this.tableID) {
+        var flag=0;
+        for(var i=0;i<this.listData.length;i++)
+      {
+        if(this.listData[i].status!='未审核')
+        flag=1;
+      }
+      if(flag==0)
         submitInputResult(this.tableID);
       }
     },

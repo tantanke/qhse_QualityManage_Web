@@ -558,6 +558,13 @@ export default {
     // 确认提交
     confirmSubmit () {
       if (this.tableID) {
+        var flag=0;
+        for(var i=0;i<this.listData.length;i++)
+      {
+        if(this.listData[i].status!='未审核')
+        flag=1;
+      }
+      if(flag==0)
         submitInputResult(this.tableID);
       }
     },
