@@ -687,7 +687,19 @@ export default new Router({
         { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
         { path: '/qualitySystem/FieldInformEntry/index', name:'FieldInformEntry', component: resolve => require(['./views/qualitySystem/FieldInformEntry/index.vue'],resolve)},
-        { path: 'qualitySystem/FieldInformEntry/auditIndex', name:'auditIndex', component: resolve => require(['./views/qualitySystem/FieldInformEntry/auditIndex.vue'],resolve)},
+	{ path: '/qualitySystem/IssuesList/index', name:'IssuesList', component: resolve => require(['./views/qualitySystem/IssuesList/index.vue'],resolve)},
+		{ path: 'qualitySystem/IssuesList/showIndex', name:'showIndex', component: resolve => require(['./views/qualitySystem/IssuesList/showIndex.vue'],resolve)},
+	{ path: 'qualitySystem/FieldInformEntry/auditIndex', name:'auditIndex', component: resolve => require(['./views/qualitySystem/FieldInformEntry/auditIndex.vue'],resolve)},
+        // 基本信息生成 
+        { path: '/qualitySystem/basicInformation/basicInfo', name: 'BasicInformGeneration', component: resolve => require(['./views/qualitySystem/basicInformation/basicInfo.vue'],resolve)}, 
+         // 问题接收 
+         { path: '/qualitySystem/problemAccept/problemAccept', name: 'ProblemReceive', component: resolve => require(['./views/qualitySystem/problemAccept/problemAccept.vue'],resolve)}, 
+         // 问题审核
+         { path: '/qualitySystem/problemCheck/problemCheck', name: 'ProblemsAudit', component: resolve => require(['./views/qualitySystem/problemCheck/problemCheck.vue'],resolve)}, 
+         // 问题整改
+         { path: '/qualitySystem/problemAccept/problemRectify', name: 'problemRectify', component: resolve => require(['./views/qualitySystem/problemAccept/problemRectify.vue'],resolve)}, 
+         // 问题复审
+         { path: '/qualitySystem/problemCheck/problemReview', name: 'problemReview', component: resolve => require(['./views/qualitySystem/problemCheck/problemReview.vue'],resolve)},
       ]
     },
 
