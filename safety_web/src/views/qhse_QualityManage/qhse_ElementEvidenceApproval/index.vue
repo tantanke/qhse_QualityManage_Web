@@ -523,7 +523,6 @@
             confirmApproval() {
                 if (this.tableID) {
                     if(this.total1==this.total2){
-                        
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 2
