@@ -1,24 +1,25 @@
-import request from '../utils/request'
+import request from '../../utils/request'
 
 export const addFileaduit = (data) => {
-    return request('/api/add_fileaduit', {
+    return request('/api/add_qualityfileaduit', {
         method: 'post',
         data
       })
   }
 
 export const queryFileaduit = (data) => {
-  return request('/api/query_fileaduit?year='+data.year/* +'&companyName='+data.companyName */, {
+  return request('/api/query_qualityfileaduit?year='+data.year/* +'&companyName='+data.companyName */, {
       method: 'get',
       data
     })
 }
 export const queryFileaduit2 = (data) => {
-  return request(`/api/query_fileaduit?companyName=${data.companyName}&year=${data.year}`, {
+  return request(`/api/query_qualityfileaduit?companyName=${data.companyName}&year=${data.year}`, {
       method: 'get',
       data
     })
 }
+// 待修改
 
 export const querryQhseElement = (data) => {
   return request(`/api/queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
@@ -28,35 +29,35 @@ export const querryQhseElement = (data) => {
 }
 
 export const addFileaduitrecord = (data) => {
-  return request('/api/add_fileaduitrecord',{
+  return request('/api/add_qualityfileaduitrecord',{
       method: 'post',
       data
     })
 }
 
 export const getStatus = (data) => {
-  return request(`/api/get_status?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
+  return request(`/api/quality_get_status?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
       method: 'GET',
       data
     })
 }
 
 export const updateCheckstatus = (data) => {
-  return request('/api/update_checkstatus',{
+  return request('/api/quality_update_status',{
       method: 'put',
       data
     })
 }
 
 export const addProblemDescription = (data) => {
-  return request('/api/add_problemDescription',{
+  return request('/api/add_quality_problemDescription',{
       method: 'post',
       data
     })
 }
 
 export const queryRecordId = (data) => {
-  return request(`/api/queryRecordId?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
+  return request(`/api/queryqualityrecordId?fileAuditId=${data.fileAuditId}&code=${data.code}`,{
       method: 'get',
       data
     })

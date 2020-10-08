@@ -276,9 +276,9 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus,queryRecordId} from "../../../services/qhse_Filecheck"; // 文件审核相关
-import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
-import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus,queryRecordId} from "../../../services/qualitySystem/quality_Filecheck"; // 文件审核相关
+import {querryQHSEproblemDiscription} from '../../../services/qualitySystem/quality_QualityStandard'
+import { show_elementReviewer,downloadElementFile } from"../../../services/qualitySystem/quality_EvidenceCheck"//显示要素证据信息
 export default {
   data() {
     return {

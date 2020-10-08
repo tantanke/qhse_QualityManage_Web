@@ -145,14 +145,14 @@
 
 <script>
 
-import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司及诶单数
-import { query_elementReviewer } from"../../../services/qhse_EvidenceCheck"//证据项
-import { pass_elementReviewer } from"../../../services/qhse_EvidenceCheck"//通过审核
-import { no_elementReviewer } from"../../../services/qhse_EvidenceCheck"//不通过审核
-import { show_elementReviewer } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
-import { downloadElementFile } from"../../../services/qhse_EvidenceCheck"
-import { show_approve_check} from"../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
-import { showAllElement } from"../../../services/qhse_EvidenceCheck";
+import { qhse_company_tree } from "../../../services/qualitySystem/quality_EvidenceCheck";//获取公司及诶单数
+import { query_elementReviewer } from"../../../services/qualitySystem/quality_EvidenceCheck"//证据项
+import { pass_elementReviewer } from"../../../services/qualitySystem/quality_EvidenceCheck"//通过审核
+import { no_elementReviewer } from"../../../services/qualitySystem/quality_EvidenceCheck"//不通过审核
+import { show_elementReviewer } from"../../../services/qualitySystem/quality_EvidenceCheck"//显示要素证据信息
+import { downloadElementFile } from"../../../services/qualitySystem/quality_EvidenceCheck"
+import { show_approve_check} from"../../../services/qualitySystem/quality_EvidenceCheck"//显示已经审核或者批准的信息
+import { showAllElement } from"../../../services/qualitySystem/quality_EvidenceCheck";
 
 const DefaultQuery = {
   year: "",
