@@ -522,12 +522,17 @@
             // 确认批准
             confirmApproval() {
                 if (this.tableID) {
+                    if(this.total1==this.total2){
+                        
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 2
                     });
                     this.$message.success("提交成功")
                 }
+                    }
+                    else
+                    this.$message.error("未审核完成")
             },
         },
         mounted() {
