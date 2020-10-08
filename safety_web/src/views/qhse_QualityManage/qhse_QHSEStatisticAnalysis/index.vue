@@ -522,11 +522,16 @@
             confirmAnalysis() {
                 alert(this.tableID)
                 if (this.tableID) {
+                    if(this.total1==this.total2){
+                        
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 1
                     });
                     this.$message.success("提交成功")
+                    }
+                    else
+                    this.$message.error("未审核完成")
                 }
             },
         },
