@@ -1,8 +1,8 @@
 <template>
   <div class="problemList">
-          <div class="page-title" style="width:100%">质量-问题验证</div>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">质量-隐患清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">质量-问题清单</el-radio>
+          <div class="page-title" style="width:100%">QHSE问题整改</div>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患整改</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题整改</el-radio>
       <el-row v-show="listcate === 'QHSE隐患清单'"> 
           <el-row>
           <el-form :inline="true">
@@ -87,14 +87,23 @@
                 <el-form-item label="限期整改时间:">
                     <span>{{ props.row.limitDate }}</span>
                 </el-form-item>
-                <el-form-item label="是否立即验收:">
-                    <span>{{ props.row.ok }}</span>
-                </el-form-item>
                 <el-form-item label="隐患级别:">
                     <span>{{ props.row.rank }}</span>
                 </el-form-item>
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix1" target="_blank">证据图片1</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix2" label="证据图片2:">
+                    <a  :href="'http://39.98.173.131:9000/api' + props.row.affix2" target="_blank" >证据图片2</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix3" label="整改图片1:" >
+                     <a  :href="'http://39.98.173.131:9000/api' + props.row.affix3" target="_blank" >整改图片1</a>
+                </el-form-item>
+                <el-form-item v-if="props.row.affix4" label="整改图片2:">
+                   <a :href="'http://39.98.173.131:9000/api' + props.row.affix4" target="_blank">整改图片2</a>
                 </el-form-item>
            </el-form>
            </template>
@@ -104,49 +113,49 @@
           <el-table-column prop='rank' label='隐患级别'></el-table-column>
           <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
           <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='recordDate' label='检查时间'></el-table-column>        
-          <!-- <el-table-column prop='consequenceID' label='可能后果'></el-table-column>    
-          <el-table-column prop='factorHSE' label='对应体系要素'></el-table-column>    
-          <el-table-column prop='factorDepartment' label='归属职能部门'></el-table-column>   
-          <el-table-column prop='ok' label='是否立即验收'></el-table-column>     
-          <el-table-column prop='factorSource' label='原因分析'></el-table-column>
-          <el-table-column prop='limitDate' label='限期整改时间'></el-table-column>        
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='description' label='隐患描述'></el-table-column>     -->
+          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column
-            fixed="right"
-            label="操作"
-            align='center'
-            width="200">
+            label="状态"
+            align='center'>
             <template slot-scope="scope">
-                <el-button v-show="!scope.row.reformCase" type="primary" icon="el-icon-search" plain size="small" @click="reciveInfo(scope.row)">验收</el-button>
-                <el-button v-show="scope.row.reformCase === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEdit(scope.row)">整改</el-button>
-                <span v-show="scope.row.reformCase === '已整改'"  >已整改</span>
+                <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
+                <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small" @click="goEdit(scope.row)">待整改</el-button>
+                <el-button v-show="scope.row.status === 3"  type="warning" icon="el-icon-edit" plain size="small" >验收中</el-button>
+                <span v-show="scope.row.status === 5"  >已验收</span>
             </template>
             </el-table-column>
           </el-table>
           </el-row>
       </el-row>
       <el-dialog
-            title="问题验收"
+            title="隐患整改"
             :visible.sync="editShow"
             :close-on-click-modal='false'
-            width="30%">
-            <p>请提交证据图片：</p>
-            <el-upload
-                  action="/api/uploaddanger"
+            width="35%">
+            <div v-loading='addLoading'>
+            <el-form v-model="reformForm">
+            <el-form-item label='整改情况:'>
+               <el-input v-model="reformForm.reformCase" style="width:55%"></el-input>
+            </el-form-item>
+            <el-form-item label='整改文件:'>
+               <el-upload
+                 ref="upload"
+                  action="/api/uploadScreenShot"
                   :on-success="handleAvatarSuccess"
                   :limit="2"    
                   :headers="header"        
                   :on-exceed="handleExceed"
                 >
                 <el-button size="small" type="primary">浏览文件</el-button>
-                <span> 最多两张，格式为jpg,png,bmp</span>
+                <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
-            <span slot="footer" class="dialog-footer">
+            </el-form-item>
+            <el-form-item style="margin-left:70%;margin-top:40px">
                 <el-button @click="editShow = false">取 消</el-button>
                 <el-button type="primary" @click="editInfo">确 定</el-button>
-            </span>
+            </el-form-item>
+            </el-form>
+            </div>
             </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
@@ -210,14 +219,44 @@
                     align='center'
                     width="200">
                     <template slot-scope="scope">
-                        <el-button v-show="!scope.row.situation" type="primary" icon="el-icon-search" plain size="small" @click="recivePro(scope.row)">待验收</el-button>
-                        <el-button v-show="scope.row.situation === '已验收'" type="warning" icon="el-icon-edit" plain size="small" @click="goEditPro(scope.row)">待整改</el-button>
-                        <span v-show="scope.row.situation === '已整改'"  >已整改</span>
+                        <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  @click="goEditPage(scope.row)" >待整改</el-button>
+                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
+                        <span v-show="scope.row.status === '已整改'"  >已验收</span>
                     </template>
                     </el-table-column>       
-            </el-table>
+            </el-table>        
           </el-row>
       </el-row>
+      <el-dialog
+            title="问题整改"
+            :visible.sync="editProShow"
+            :close-on-click-modal='false'
+            width="30%">
+            <div v-loading='addLoading2'>
+            <el-form>
+            <el-form-item label='整改情况:'>
+               <el-input v-model="proForm.situation" style="width:70%"></el-input>
+            </el-form-item>
+           <!--  <el-form-item label='整改文件:'>
+               <el-upload
+                 ref="upload2"
+                  action="/api/uploadScreenShot"
+                  :on-success="handleAvatarSuccessPro"
+                  :limit="2"    
+                  :headers="header"        
+                  :on-exceed="handleExceedPro"
+                >
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
+                </el-upload>
+            </el-form-item> -->
+            <el-form-item style="margin-left:50%;margin-top:40px">
+                <el-button @click="editProShow= false">取 消</el-button>
+                <el-button type="primary" @click="goEditPro">确 定</el-button>
+            </el-form-item>
+            </el-form>
+            </div>
+            </el-dialog>
   </div>
 </template>
 
@@ -253,9 +292,13 @@ export default {
                 startDate: null,
                 endDate: null
             },
+            // 问题整改
+           situation:'',
+            // 隐患整改
             reformForm:{
                receptionDate:'',
-               reformCase: ''
+               reformCase: '',
+               status: 3
             },
            listcate: 'QHSE隐患清单',
            date30:[],
@@ -265,13 +308,32 @@ export default {
            dangerBtn:false,
            editShow: false,
            fileNum:2,
-           form:{}
+           fileNumPro:0,
+           form:{},
+           addLoading:false,
+           addLoading2:false,
+           editProShow:false,
+           qHSE_AuditProblemRecord_ID:'',
+           proForm:{
+              situation:'',
+              status:'验收中'
+           },
 
        }
    },
    methods: {
+      handleAvatarSuccessPro(res) {
+      this.fileNumPro++
+      let key = 'affix' + this.fileNumPro
+      this.proForm[key] = res.data
+    },
+    // 限制文件数量
+    handleExceedPro(files, fileList) {
+        this.$message.warning(`当前限制选择 2 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
        // 给附件命名
     handleAvatarSuccess(res) {
+        console.log(res.data)
       this.fileNum++
       let key = 'affix' + this.fileNum
       this.form[key] = res.data
@@ -293,87 +355,87 @@ export default {
           this.dateQ = [...this.date30]
           this.dateH = [...this.date30]
        },
-       reciveInfo (data) {
-          this.reformForm.reformCase = '已验收'
-          this.$confirm('确认提交验收情况吗？','提示',{
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-        })
-        .then(()=>{
-            problemVerification(data.id,this.reformForm).then(res => {
-                console.log(res)
-                this.searchDanger()
-            }).catch(err => {
-                this.$message.error(err)
-                this.dangerLoading = false
-                this.dangerBtn = false
-            })
-        })
-       },
-       goEdit(data){
-          this.editId = data.id
-          this.editShow = true
-          this.form = {...data}
+        goEdit(data){
+           let _this = this
+          _this.editId = data.id
+          _this.editShow = true
+          _this.form = {...data}
+          _this.form.status = 3
+          _this.$refs['upload'].clearFiles()
+          _this.reformForm.reformCase = ''
+          _this.fileNum = 2
        },
        editInfo() {
            let _this = this
            if(_this.fileNum === 2){
                _this.$message.warning('请至少提交一个证明附件！')
                return
-           } 
-           
-          _this.reformForm.reformCase = '已整改'
+           }  
+           if(_this.reformForm.reformCase === ''){
+                _this.$message.warning('请输入整改情况！')
+               return
+           }     
           _this.$confirm('确认提交整改情况吗？','提示',{
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
         })
         .then(()=>{
-        problemVerification(_this.editId,_this.reformForm).then(() => {
+            _this.addLoading = true
+            _this.form.reformCase = _this.reformForm.reformCase
+        problemVerification(_this.editId,_this.reformForm).then(() => {       
                 return updateDangerrecord(_this.editId,_this.form)          
             })
-        }).then((res) => {
-            // 推送新状态
-            if(res.code === 1000) 
-            this.searchDanger()
-        }).catch(err => {
-                this.$message.error(err)
+        }).then(() => {
+            // 推送新状态    
+            _this.$refs['upload'].clearFiles()
+            _this.reformForm.reformCase = ''
+            _this.fileNum = 2
+            _this.editShow = false
+            _this.addLoading = false
+            _this.$message.success('上传成功')
+            _this.searchDanger()
+        }).catch((err) => {      
+                _this.$message.error(err)         
+                _this.addLoading = false
             })
           
        },
+       goEditPage(data){
+           this.qHSE_AuditProblemRecord_ID = data.qHSE_AuditProblemRecord_ID
+           this.editProShow = true
+            this.proForm.situation = ''
+       }, 
        // 问题验证
-       // 验收
-       recivePro(data){
-          this.$confirm('确认提交验收情况吗？','提示',{
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-        }).then(()=> {
-           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已验收'}).then(res => {
-               console.log(res)
-               this.getProblemDescription()
-           })
-        })
-        .catch(err => {
-                this.$message.error(err)
-            })
-       },
        // 整改
-       goEditPro(data){
-           this.$confirm('确认提交整改情况吗？','提示',{
+       goEditPro(){
+           let _this = this
+           if(_this.proForm.situation === ''){
+               _this.$message.warning('请输入整改情况')
+               return
+           }
+           /* if(_this.fileNumPro === 0){
+               _this.$message.warning('请至少提交一个证明附件！')
+               return
+           }   */
+           _this.$confirm('确认提交整改情况吗？','提示',{
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
         }).then(()=> {
-           updateProblemDescription(data.qHSE_AuditProblemRecord_ID,{situation:'已整改'}).then(res => {
+            _this.addLoading2 = true
+           updateProblemDescription(this.qHSE_AuditProblemRecord_ID,_this.proForm).then(res => {
                console.log(res)
-               this.getProblemDescription()
+               _this.addLoading2 = false
+               this.editProShow = false
+                this.proForm.situation = ''
+               _this.$message.success('上传成功')
+               _this.getProblemDescription()
+               
+           }).catch(err => {
+                this.$message.error(err)
            })
         })
-        .catch(err => {
-                this.$message.error(err)
-            })
        },
        searchDanger () {
          // 根据参数的不同选择不同的拼接方式
@@ -398,7 +460,7 @@ export default {
            baseurl  = _this.getUrl('/api/query_quality_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               console.log(res.data)
+               console.log(res.data.list)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
@@ -463,6 +525,7 @@ export default {
                     });
 
                }
+               console.log(res.data)
                _this.problemrecord = res.data
                 _this.problemLoading = false
                 _this.proBtn = false
@@ -485,7 +548,6 @@ export default {
        this.getRecentTime()
        this.getCompanyList()
        this.searchDanger()
-
    },
 }
 </script>

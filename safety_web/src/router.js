@@ -687,7 +687,7 @@ export default new Router({
         { path: '/qualitySystem/filecheck', name:'QualityFileCheck', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/index.vue'],resolve)},
         { path: '/qualitySystem/filecheckindex', name:'FileCheckIndex', component: resolve => require(['./views/qualitySystem/qhse_QualityFileCheck/filecheck.vue'],resolve)},
         { path: '/qualitySystem/FieldInformEntry/index', name:'FieldInformEntry', component: resolve => require(['./views/qualitySystem/FieldInformEntry/index.vue'],resolve)},
-	      { path: 'qualitySystem/FieldInformEntry/auditIndex', name:'auditIndex', component: resolve => require(['./views/qualitySystem/FieldInformEntry/auditIndex.vue'],resolve)},
+        { path: 'qualitySystem/FieldInformEntry/auditIndex', name:'auditIndex', component: resolve => require(['./views/qualitySystem/FieldInformEntry/auditIndex.vue'],resolve)},
       ]
     },
 

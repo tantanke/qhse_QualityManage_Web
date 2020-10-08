@@ -179,7 +179,7 @@
 		addQHSEElement,
 		updateQHSEElementStatus,
 		querryQhseElements
-	} from '../../../services/qhse_QualityStandard'
+	} from '../../../services/qualitySystem/quality_QualityStandard'
 	import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 	import xlsx from 'xlsx'
 	import {

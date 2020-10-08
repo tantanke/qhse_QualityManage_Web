@@ -154,14 +154,14 @@
   </div>
 </template>
 <script>
-import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
-import { querryYearElement } from "../../../services/qhse_QualityCheck";//显示公司所有的证据项节点
-import { query_evidence_attach } from "../../../services/qhse_QualityCheck";//显示证据项内容
-import { employees } from "../../../services/qhse_QualityCheck";//显示成员
-import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck";//添加所有的信息
-import { submitInputResult } from "../../../services/qhse_QualityCheck";// 确认提交
+import { qhse_company_tree } from "../../../services/qualitySystem/quality_EvidenceCheck";//获取公司tree
+import { querryYearElement } from "../../../services/qualitySystem/quality_QualityCheck";//显示公司所有的证据项节点
+import { query_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//显示证据项内容
+import { employees } from "../../../services/qualitySystem/quality_QualityCheck";//显示成员
+import { addAll_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//添加所有的信息
+import { submitInputResult } from "../../../services/qualitySystem/quality_QualityCheck";// 确认提交
 import { GetCurrentUser } from '../../../store/CurrentUser';
-import { downloadElementFile } from "../../../services/qhse_EvidenceCheck";
+import { downloadElementFile } from "../../../services/qualitySystem/quality_EvidenceCheck";
 // import {querryYearElement}from"../../../services/qhse_EvidenceCheck"
 
 
