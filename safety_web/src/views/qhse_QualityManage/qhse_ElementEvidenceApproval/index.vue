@@ -314,7 +314,10 @@
                     })
                 }
                 else {
-                    this.nodeData.negativeOpinion = this.unpasstext;
+                    if(this.unpasstext==''||this.unpasstext==null)
+                    this.$message.error('请输入驳回意见')
+                    else{
+                        this.nodeData.negativeOpinion = this.unpasstext;
                     no_elementReviewer(this.nodeData).then(res => {
                         console.log(res.message);
                         this.$message.success(res.message);
@@ -346,6 +349,8 @@
                     }).catch(err => {
                         this.$message.error(err.message);
                     })
+                    }
+                    
                 }
             },
             loadFilterParams() {//获取年份
@@ -435,7 +440,6 @@
                 this.curStatus = data.status
                 // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
                 this.curCheckStatus = data.checkStatus
-                alert(this.curCheckStatus)
 
                 console.log(this.userId)
                 this.attachs = {};
@@ -522,7 +526,7 @@
             // 确认批准
             confirmApproval() {
                 if (this.tableID) {
-                    if(this.total1==this.total2){
+                    if(this.total==this.total2){
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 2

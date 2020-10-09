@@ -36,7 +36,7 @@
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')">
+                v-if="scope.row.childNode.length === 0">
                 录入
               </el-button>
             </template>
@@ -53,7 +53,7 @@
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')">
+                v-if="scope.row.childNode.length === 0">
                 录入
               </el-button>
             </template>
@@ -142,7 +142,7 @@
               <el-form-item>
                 <el-button type="" style="margin-top:10px;margin-left:380px;float:left" @click="dialogVisible3=false">取消
                 </el-button>
-                <el-button type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+                <el-button :disabled="curStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                 </el-button>
               </el-form-item>
             </el-col>
@@ -154,15 +154,15 @@
   </div>
 </template>
 <script>
-import { qhse_company_tree } from "../../../services/qualitySystem/quality_EvidenceCheck";//获取公司tree
+import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
 import { querryYearElement } from "../../../services/qualitySystem/quality_QualityCheck";//显示公司所有的证据项节点
 import { query_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//显示证据项内容
-import { employees } from "../../../services/qualitySystem/quality_QualityCheck";//显示成员
 import { addAll_evidence_attach } from "../../../services/qualitySystem/quality_QualityCheck";//添加所有的信息
+//未更新
 import { submitInputResult } from "../../../services/qualitySystem/quality_QualityCheck";// 确认提交
 import { GetCurrentUser } from '../../../store/CurrentUser';
+//未更新
 import { downloadElementFile } from "../../../services/qualitySystem/quality_EvidenceCheck";
-// import {querryYearElement}from"../../../services/qhse_EvidenceCheck"
 
 
 const headers1 = {
@@ -223,60 +223,86 @@ export default {
         uploadTime: ''//上传时间
       },
       tableID: null,
+      checkstatus:'',
+      curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
     };
   },
   methods: {
     deletepic (data) {//删除图片
+
+      console.log('最开始的', this.form.attach, 111111111)
+      console.log(this.files, 22222222)
+      console.log(this.attachs, 33333)
       //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是图片文件
       this.form.attach = '';//先删除证据录入项存储的attach
       var pics = [];
-      for (var i = 0; i < this.attachs.length; i++) {
+      for (var i = 0; i < this.attachs.length; i++) {//循环图片数组
 
         if (i != data) {
           console.log('循环中的', pics);
           pics.push(this.attachs[i]);//把存留的图片添加到pics与form的attach里面
-          this.form.attach += this.attachs[i];
+          this.form.attach += this.attachs[i].substring(49, this.attachs[i].length);
           this.form.attach += ';';
         }
       }
       for (i = 0; i < this.files.length; i++) {
-        this.form.attach += this.attachs[i];
+        this.form.attach += this.files[i].substring(49, this.files[i].length);
         this.form.attach += ';';
       }
       this.attachs = pics;
-      console.log('最终的', pics)
+      console.log('最后的', this.form.attach, 111111111)
+      console.log(this.files, 22222222)
+      console.log(this.attachs, 33333)
     },
-    deletefile (data) {//删除文件  逻辑和上面一样的
+    async deletefile (data) {//删除文件  逻辑和上面一样的
       //由于要删除原有的文件，于是要对文件进行重新拼接，此处删除的是文件
+
+      console.log('最初的文件名', this.strings);
+      console.log(this.form.attach, 111111111)
+      console.log(this.files, 22222222)
+      console.log(this.attachs, 33333)
       this.form.attach = '';//先删除证据录入项存储的attach
       var pics = [];
-      for (var i = 0; i < this.files.length; i++) {
+      this.download = [];
+      for (var i = 0; i < this.files.length; i++) {//循环出最终的文件循环
 
         if (i != data) {
-          console.log('循环中的', pics);
-          pics.push(this.attachs[i]);//把存留的图片添加到pics与form的attach里面
-          this.form.attach += this.attachs[i];
+          await downloadElementFile(this.files[i].substring(49, this.files[i].length))//循环生成名字
+            .then(res => {
+              this.download.push(JSON.parse(JSON.stringify(res.data)));
+            })
+          console.log('循环中的文件列表', pics);
+          pics.push(this.files[i]);//把存留的图片添加到pics与form的attach里面
+          this.form.attach += this.files[i].substring(49, this.files[i].length);
           this.form.attach += ';';
         }
-      }
-      for (i = 0; i < this.attachs.length; i++) {
-        this.form.attach += this.attachs[i];
-        this.form.attach += ';';
+        this.form.filelength = i;
       }
       this.files = pics;
-      console.log('最终的', pics)
+
+      var strings = JSON.parse(JSON.stringify(this.download))
+      this.strings = strings;
+      console.log(this.strings);
+
+      for (i = 0; i < this.attachs.length; i++) {
+        this.form.attach += this.attachs[i].substring(49, this.attachs[i].length);
+        this.form.attach += ';';
+      }
+      console.log('最后的', this.form.attach, 111111111)
+      console.log(this.files, 22222222)
+      console.log(this.attachs, 33333)
     },
     cellStyle (row) {//根据报警级别显示颜色
       // console.log(row);
       // console.log(row.column);
       if (row.column.label === "状态" && row.row.status === "备案待查") {
-        return 'color:red'
+        return 'color:pink'
       } else if (row.column.label === "状态" && row.row.status === "未提供") {
         return 'color:orange'
       } else if (row.column.label === "状态" && row.row.status === "未批准") {
         return 'color:blue'
       } else if (row.column.label === "状态" && row.row.status === "未审核") {
-        return 'color:pink'
+        return 'color:red'
       }
     },
     gotoEvidence () {
@@ -300,7 +326,6 @@ export default {
     },
     //添加附件，与下面整合
     async addEvidenceFile () {
-      console.log(this.form);
       var datetime = new Date();
       var year = datetime.getFullYear();
       var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
@@ -342,6 +367,9 @@ export default {
 
     },
     async updateScore (data) {
+      // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+      this.curStatus = data.checkStatus
+
       if (data.status == '不通过')
         this.unpass = false;
       else this.unpass = true;
@@ -473,13 +501,6 @@ export default {
         this.$message.error(err.message);
       });
     },
-    handleGetPeople () {//获取到成员的名字 即在选择页面显示
-      employees().then(res => {
-        this.peopleList = JSON.parse(JSON.stringify(res.data));
-      }).catch(err => {
-        this.$message.error(err.message);
-      });
-    },
     //缓存年份
     loadFilterParams () {
       this.filterQuery = { ...DefaultQuery, ...this.$route.query };
@@ -511,12 +532,14 @@ export default {
         this.$message.error('请选择公司')
       else {
         this.handleGetInitialData();//更改loading状态
-        quality_query_elementReviewer(this.filterQuery)//获取到叶子节点信息
+        querryYearElement(this.filterQuery)//获取到叶子节点信息
           .then(res => {
             this.treeData = res.data;
 
             // 将查询时获取到的tableID保存下来
             this.tableID = this.treeData[0].tableID
+            this.checkstatus=this.treeData[0].checkstatus
+
 
             this.deepTree(this.treeData)
           })
@@ -534,11 +557,33 @@ export default {
         var flag=0;
         for(var i=0;i<this.listData.length;i++)
       {
-        if(this.listData[i].status!='未审核')
+        if(this.listData[i].status=='未提供')
         flag=1;
+        
       }
-      if(flag==0)
-        submitInputResult(this.tableID);
+      if(flag==1)
+        this.$message.error('无法推送')
+      if(flag==0){
+        submitInputResult({
+                        tableID:this.tableID,
+                        tag:0
+                    });
+        querryYearElement(this.filterQuery)//获取到叶子节点信息
+          .then(res => {
+            this.treeData = res.data;
+            
+            // 将查询时获取到的tableID保存下来
+            this.tableID = this.treeData[0].tableID
+            this.checkstatus=this.treeData[0].checkstatus
+          })
+          .catch(err => {
+            console.log(err);
+            this.message.error(err.message);
+          });
+        this.listData = [];
+        this.deepTree(this.treeData);
+        this.$message.success('推送成功')
+      }
       }
     },
     //转换年份
@@ -584,7 +629,7 @@ export default {
   computed: {
 
     accidentOrEventUploadAddress: function () {
-      return '/api/evidence_upload'
+      return '/api/Quality_evidence_upload'
     }
   }
 };
@@ -622,6 +667,19 @@ export default {
 
 .hidbg {
   left: -1000px !important;
+}
+
+.picSize {
+  max-width: 1400px;
+  max-height: 750px;
+  vertical-align: bottom;
+}
+
+.picPosition {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 div.el-dialog__wrapper#preview {
