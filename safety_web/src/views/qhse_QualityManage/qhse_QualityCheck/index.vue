@@ -564,7 +564,7 @@ export default {
         var flag=0;
         for(var i=0;i<this.listData.length;i++)
       {
-        if(this.listData[i].status=='未提供')
+        if(this.listData[i].status=='未提供'||this.listData[i].status=='不通过')
         flag=1;
         
       }

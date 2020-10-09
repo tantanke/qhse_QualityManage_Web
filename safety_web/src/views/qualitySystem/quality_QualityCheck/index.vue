@@ -422,12 +422,12 @@ export default {
                 //j代表图片数量，k代表文件数量
                 var houzhui = arr[i].substring(arr[i].length - 3);//获取到链接后缀
                 if (houzhui == 'jpg' || houzhui == 'png' || houzhui == 'PNG' || houzhui == 'JPG') {
-                  this.attachs[j] = 'http://39.98.173.131:7000/resources/QHSEEvidence/' + arr[i];
+                  this.attachs[j] = 'http://39.98.173.131:7000/resources/QualityEvidence/' + arr[i];
                   j++;
                 }
                 else {
                   if (arr.length != 0)
-                    this.files[k] = 'http://39.98.173.131:7000/resources/QHSEEvidence/' + arr[i];
+                    this.files[k] = 'http://39.98.173.131:7000/resources/QualityEvidence/' + arr[i];
                   k++;
                   this.form.filelength = k;
                 }

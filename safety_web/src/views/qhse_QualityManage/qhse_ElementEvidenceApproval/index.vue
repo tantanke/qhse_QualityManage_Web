@@ -533,9 +533,10 @@
                     });
                     this.$message.success("提交成功")
                 }
-                    }
-                    else
+                else
                     this.$message.error("未审核完成")
+                    }
+                    
             },
         },
         mounted() {
