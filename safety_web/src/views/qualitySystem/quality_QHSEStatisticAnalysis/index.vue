@@ -449,7 +449,6 @@
                             this.detailData.attacjDescription = this.nodeData.attachDescrption
                             this.detailData.uploadTime = this.nodeData.uploadTime
                             var attach = this.nodeData.attach;//获取地址字符串
-                            if (attach != null) {
                                 var arr = attach.split(";");
                                 for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
                                     //j代表图片数量，k代表文件数量
@@ -465,7 +464,7 @@
                                     }
                                 }
                                 console.log('attach数量：', arr.length, this.attachs);
-                            }
+                            
 
                             console.log('获取到的要素节点内容：', this.nodeData);
 
