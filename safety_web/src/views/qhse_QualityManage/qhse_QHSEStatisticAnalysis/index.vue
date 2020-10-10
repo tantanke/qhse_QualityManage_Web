@@ -121,11 +121,11 @@
                                           placeholder="请输入内容"></el-input>
                             </el-form-item>
                             <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
-                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDsecription}}
-                            </el-form-item>
+                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDescription}}</el-form-item>
                         </el-col>
                         <el-col :span="24"
                                 style="border:1px solid gray">
+                            <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attachDescrption}}</el-form-item>
                             <el-form-item label="证据图片："
                                           style="margin-bottom:10px"
                             >
@@ -431,7 +431,25 @@
             },
             async updateScore(data) {//显示出证据项的内容
                 // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
-                this.curStatus = data.status
+                
+                this.detailData = {};
+                this.detailData.name = data.name
+                this.detailData.code = data.code
+                this.detailData.content = data.content
+                if (data.content == null) {
+                    this.detailData.content = '未输入内容'
+                }
+                this.detailData.basis = data.basis
+                if (data.basis == null) {
+                    this.detailData.basis = '未输入内容'
+                }
+                this.detailData.auditMode = data.auditMode
+                this.detailData.initialScore = data.initialScore
+                this.detailData.formula = data.formula
+                this.detailData.problemDescription = data.problemDescription
+                
+                this.curStatus = data.status;
+                var this_;
 
                 // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
                 this.curCheckStatus = data.checkStatus
@@ -440,41 +458,40 @@
                 this.attachs = {};
                 this.files = {};
                 this.download = {},
+                this_= this;
                     await show_elementReviewer(data)
                         .then(res => {
-                            this.dialogVisible = true;
-                            this.nodeData = res.data;
-                            this.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
-                            this.detailData.evidenceDsecription = this.nodeData.evidenceDescription
-                            this.detailData.checkStaffName = this.nodeData.checkStaffName
-                            this.detailData.approverStaffName = this.nodeData.approverStaffName
-                            this.detailData.attacjDescription = this.nodeData.attachDescrption
-                            this.detailData.uploadTime = this.nodeData.uploadTime
-                            var attach = this.nodeData.attach;//获取地址字符串
-                            if (attach != null) {
+                            this_.dialogVisible = true;
+                            this_.nodeData = res.data;
+                            this_.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
+                            this_.detailData.evidenceDescription = this_.nodeData.evidenceDescription
+                            this_.detailData.checkStaffName = this_.nodeData.checkStaffName
+                            this_.detailData.approverStaffName = this_.nodeData.approverStaffName
+                            this_.detailData.attachDescrption = this_.nodeData.attachDescrption
+                            this_.detailData.uploadTime = this_.nodeData.uploadTime
+                            var attach = this_.nodeData.attach;//获取地址字符串
                                 var arr = attach.split(";");
                                 for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
                                     //j代表图片数量，k代表文件数量
                                     var houzhui = arr[i].substring(arr[i].length - 3);//获取到链接后缀
                                     if (houzhui == 'jpg' || houzhui == 'png' || houzhui == 'PNG' || houzhui == 'JPG') {
-                                        this.attachs[j] = arr[i];
+                                        this_.attachs[j] = arr[i];
                                         j++;
                                     }
                                     else {
-                                        this.files[k] = arr[i];
+                                        this_.files[k] = arr[i];
                                         k++;
-                                        this.filelength = k;
+                                        this_.filelength = k;
                                     }
                                 }
-                                console.log('attach数量：', arr.length, this.attachs);
-                            }
+                                console.log('attach数量：', arr.length, this_.attachs);
+                            
 
-                            console.log('获取到的要素节点内容：', this.nodeData);
 
                         })
                         .catch(err => {
                             console.log(err);
-                            this.message.error(err.message);
+                            this_.message.error(err.message);
                         })
                 this.node = data;
 
@@ -491,22 +508,8 @@
                 console.log('文件信息', this.strings)
 
 
-                this.detailData = {}
-                this.detailData.name = data.name
-                this.detailData.code = data.code
-                this.detailData.content = data.content
-                if (data.content == null) {
-                    this.detailData.content = '未输入内容'
-                }
-                this.detailData.basis = data.basis
-                if (data.basis == null) {
-                    this.detailData.basis = '未输入内容'
-                }
-                this.detailData.auditMode = data.auditMode
-                this.detailData.initialScore = data.initialScore
-                this.detailData.formula = data.formula
-                this.detailData.problemDescription = data.problemDescription
-
+                
+                console.log('最后的为什么没信息要素节点内容：', this.nodeData,this.detailData);
 
             },
             cellStyle(row, column, rowIndex, columnIndex) {//根据报警级别显示颜色

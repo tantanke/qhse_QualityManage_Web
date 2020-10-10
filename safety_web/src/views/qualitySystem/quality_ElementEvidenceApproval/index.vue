@@ -130,13 +130,14 @@
                             <el-form-item label="分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
                             <el-form-item label="计算分数：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
                             <el-form-item label="可能存在的问题：" style="margin-bottom:1px">{{detailData.problemDescription}}</el-form-item> -->
-                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDsecription}}
+                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDescription}}
                             </el-form-item>
                         </el-col>
                         <el-col :span="24"
                                 style="border:1px solid gray">
                             <!-- <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attacjDescription}}</el-form-item>
                             <el-form-item label="上传时间：" style="margin-bottom:1px">{{detailData.uploadTime}}</el-form-item> -->
+                            <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attachDescrption}}</el-form-item>
                             <el-form-item label="证据图片："
                                           style="margin-bottom:10px"
                             >
@@ -432,6 +433,7 @@
                 this.loading = true;
             },
             async updateScore(data) {//显示出证据项的内容
+                this.detailData = {}
                 // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
                 this.curStatus = data.status
                 // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
@@ -446,10 +448,10 @@
                         this.dialogVisible = true;
                         this.nodeData = res.data;
                         this.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
-                        this.detailData.evidenceDsecription = this.nodeData.evidenceDescription
+                        this.detailData.evidenceDescription = this.nodeData.evidenceDescription
                         this.detailData.checkStaffName = this.nodeData.checkStaffName
                         this.detailData.approverStaffName = this.nodeData.approverStaffName
-                        this.detailData.attacjDescription = this.nodeData.attachDescrption
+                        this.detailData.attachDescrption = this.nodeData.attachDescrption
                         this.detailData.uploadTime = this.nodeData.uploadTime
                         var attach = this.nodeData.attach;//获取地址字符串
                             var arr = attach.split(";");
@@ -487,7 +489,6 @@
                 var strings = JSON.parse(JSON.stringify(this.download))
                 this.strings = strings;
 
-                this.detailData = {}
                 this.detailData.name = data.name
                 this.detailData.code = data.code
                 this.detailData.content = data.content

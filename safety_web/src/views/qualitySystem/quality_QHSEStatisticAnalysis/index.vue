@@ -121,11 +121,12 @@
                                           placeholder="请输入内容"></el-input>
                             </el-form-item>
                             <el-form-item label="要素名称：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>
-                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDsecription}}
+                            <el-form-item label="证据描述：" style="margin-bottom:1px">{{detailData.evidenceDescription}}
                             </el-form-item>
                         </el-col>
                         <el-col :span="24"
                                 style="border:1px solid gray">
+                            <el-form-item label="附件描述：" style="margin-bottom:1px">{{detailData.attachDescrption}}</el-form-item>
                             <el-form-item label="证据图片："
                                           style="margin-bottom:10px"
                             >
@@ -428,6 +429,7 @@
                 this.loading = true;
             },
             async updateScore(data) {//显示出证据项的内容
+                this.detailData = {}
                 // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
                 this.curStatus = data.status
 
@@ -443,10 +445,10 @@
                             this.dialogVisible = true;
                             this.nodeData = res.data;
                             this.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
-                            this.detailData.evidenceDsecription = this.nodeData.evidenceDescription
+                            this.detailData.evidenceDescription = this.nodeData.evidenceDescription
                             this.detailData.checkStaffName = this.nodeData.checkStaffName
                             this.detailData.approverStaffName = this.nodeData.approverStaffName
-                            this.detailData.attacjDescription = this.nodeData.attachDescrption
+                            this.detailData.attachDescrption = this.nodeData.attachDescrption
                             this.detailData.uploadTime = this.nodeData.uploadTime
                             var attach = this.nodeData.attach;//获取地址字符串
                                 var arr = attach.split(";");
@@ -488,7 +490,6 @@
                 console.log('文件信息', this.strings)
 
 
-                this.detailData = {}
                 this.detailData.name = data.name
                 this.detailData.code = data.code
                 this.detailData.content = data.content
