@@ -19,7 +19,8 @@
                 <el-table-column label="处罚依据" prop="punishmentBasis"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)">整改</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '已整改' || scope.row.isPush === '已通过'">查看</el-button>
+                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)" v-else>整改</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -29,14 +30,14 @@
                 :visible.sync="problemRectifyDialogVisible"
                 width="50%" @close="problemRectifyDialogClose">
                 <!-- 问题整改表单 -->
-                <el-form :model="rectifyForm" label-width="140px" >
+                <el-form :model="rectifyForm" label-width="100px" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                         <el-tab-pane label="基本信息" name="0">
                             <el-form-item label="编号">
                                 <el-input v-model="rectifyForm.no" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="检查表名称">
-                                <el-input v-model="rectifyForm.checkListCode" readonly></el-input>
+                            <el-form-item label="要素名">
+                                <el-input v-model="rectifyFormCheckName" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="问题描述">
                                 <el-input v-model="rectifyForm.description" readonly></el-input>
@@ -46,6 +47,9 @@
                             </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="违章信息" name="1">
+                        <el-form-item label="处罚依据">
+                        <el-input v-model="rectifyForm.punishmentBasis" readonly></el-input>
+                    </el-form-item>
                         <el-form-item label="违章条款">
                         <el-input v-model="rectifyForm.violationClause" readonly></el-input>
                     </el-form-item>
@@ -92,15 +96,16 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
+                            <el-form-item label="条款编号">
+                                <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="条款内容">
+                                <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
                             <el-form-item label="不符合原因">
                                 <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款编号">
-                                <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
-                                <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
-                            </el-form-item>
+                            
                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 5px"
@@ -110,15 +115,14 @@
                                 </el-image>
                             </el-form-item>
                             <el-form-item label="问题附件">
-									<a :href="item" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">文件{{ index + 1}}</a>
-                                <!-- <el-button type="primary" @click="downloadProblemFile">下载问题文件</el-button> -->
+								<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="整改信息" name="3">
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
-                            <el-form-item label="纠正措施跟综验证">
+                            <el-form-item label="跟综验证">
                                 <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="纠正">
@@ -130,6 +134,7 @@
                            
                             <el-form-item label="纠正图片">
                                 <el-upload
+                                ref="uploadPic"
                                 action="/api/addQualityAttach"
                                 :on-preview="handlePreview"
                                 :on-remove="handleRemove"
@@ -143,6 +148,7 @@
                             </el-form-item>
                             <el-form-item label="纠正附件">
                                 <el-upload
+                                ref="uploadFile"
                                 action="/api/addQualityAttach"
                                 :headers="headers"
                                 :on-remove="handleFileRemove"
@@ -150,12 +156,32 @@
                                 <el-button size="small" type="success">点击上传文件</el-button>
                                 </el-upload>
                             </el-form-item>
+                            <el-form-item label="历史纠正图片">
+                                <div  v-for="(item, index) in historyImageList" :key="index" class="historyPic">
+                                    <el-image 
+                                    style="width: 100px; height: 100px;"
+                                    :src="item"
+                                    :preview-src-list="historyImageList">
+                                </el-image>
+                                <el-button type="text" size="mini" @click="deleteImage(item)" class="iconBtns">
+                                    <i class="el-icon-close"></i>
+                                    </el-button>
+                                </div>
+                            </el-form-item>
+                            <el-form-item label="历史纠正文件" class="historyfile">
+                                <div class="historyFile" v-for="(item, index) in historyFileList" :key="index" >
+                                    <a :href="item.url" class="filelinks">{{item.fileName}}</a>
+                                    <el-button type="text" size="mini" @click="deleteFile(item.url)">
+                                        <i class="el-icon-close"></i>
+                                    </el-button>
+                                </div>
+                            </el-form-item>
                         </el-tab-pane>
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="problemRectifyDialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)">提 交</el-button>
+                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)">保 存</el-button>
                 </span>
             </el-dialog>
             <!-- 图片预览对话框 -->
@@ -170,7 +196,7 @@
 </template>
 
 <script>
-import { getProblemRectifyList, updateQualityCheckRecord, modifyPush  } from "../../../services/qualitySystem/problemRectify"
+import { getProblemRectifyList, updateQualityCheckRecord, modifyPush,getOriginFileName, getQualityCheckList  } from "../../../services/qualitySystem/problemRectify"
 import { GetCurrentUser } from '../../../store/CurrentUser'
 const headers1 = {
 		Accept: 'application/json',
@@ -218,7 +244,19 @@ export default {
             // 问题文件
             fileProblemList: [],
             // 问题全部整改标志数组
-            flagRecifyArray: []
+            flagRecifyArray: [],
+            // 历史纠正图片
+            historyImageList: [],
+            historyImageRectify: [],
+            // 历史纠正文件
+            historyFileList: [],
+            historyFileRectifyList: [],
+            // 要素名
+            checkName: '',
+            // 表单要素名
+            rectifyFormCheckName: '',
+            // 质量监督检查表名称
+            qualityCheckList: []
         }
     },
     methods: {
@@ -226,10 +264,25 @@ export default {
             this.acceptRow = this.$route.query
             console.log('问题接收页面传递过来的数据')
             console.log(this.acceptRow)
-            getProblemRectifyList(this.acceptRow.qualityCheckID).then((res) => {
+            this.getProblemRectify(this.acceptRow.qualityCheckID)
+        },
+        getProblemRectify: function (qualityCheckId) {
+            // 获取问题整改表格列表
+            getProblemRectifyList(qualityCheckId).then((res) => {
                 console.log('查询质量检查id返回的数据')
                 console.log(res.data)
-                this.problemRectifyList = res.data
+                this.problemRectifyList = res.data 
+                this.getProgress()  
+            }).catch((err) => {
+                this.$message.error(err.message)
+            })
+        },
+        getProblemDetailList: function (qualityCheckId) {
+            // 获取问题整改表格列表
+            getProblemRectifyList(qualityCheckId).then((res) => {
+                console.log('查询质量检查id返回的数据')
+                console.log(res.data)
+                this.problemRectifyList = res.data   
             }).catch((err) => {
                 this.$message.error(err.message)
             })
@@ -237,6 +290,8 @@ export default {
         problemRectify: function (row) {
             // 问题整改对话框
             let that = this
+            that.changeCheckListCodeToName(that.qualityCheckList, row.checkListCode)
+            that.rectifyFormCheckName = that.checkName
             const path = 'http://39.98.173.131:7000/resources/QualityCheck/'
             that.rectifyForm = row
             if(that.rectifyForm.problemPic){
@@ -251,36 +306,96 @@ export default {
                 const fileArray = that.rectifyForm.problemAttach.split(';')
                 console.log(fileArray)
                 for(let j in fileArray){
-                    that.fileProblemList.push(path+ fileArray[j])
+                    const filePro = {
+                        url: '',
+                        fileName: ''
+                    }
+                    filePro.url = path+ fileArray[j]
+                    getOriginFileName(fileArray[j]).then((res) => {
+                        console.log(res.data)
+                        filePro.fileName = res.data
+                        that.fileProblemList.push(filePro)
+                    })
+                    
                 }
                 console.log(that.fileProblemList)
             }
-            
+            // 历史纠正图片
+            if(that.rectifyForm.correctPic){
+                var imgHistoryArray = []
+                imgHistoryArray = that.rectifyForm.correctPic.split(';');
+                console.log('历史纠正图片')
+                console.log(imgHistoryArray)
+                for(let i in imgHistoryArray){
+                    that.historyImageList.push(path+ imgHistoryArray[i])
+                }
+                console.log('拼接路径之后的历史纠正图片')
+                console.log(that.historyImageList)
+            }
+            // 历史纠正文件
+            if(that.rectifyForm.correctAttach){
+                var fileHistoryArray = []
+                fileHistoryArray = that.rectifyForm.correctAttach.split(';')
+                console.log('历史纠正文件',fileHistoryArray)
+                for(let j in fileHistoryArray){
+                    const file={
+                        url:'',
+                        fileName:''
+                    }
+                    file.url=path+fileHistoryArray[j]
+                    getOriginFileName(fileHistoryArray[j]).then((res)=>{
+                        console.log('fileNameItem',res.data)
+                        file.fileName=res.data
+                        that.historyFileList.push(file)
+                    })
+                }
+                console.log('拼接路径之后的历史纠正文件',that.historyFileList)
+            }
             that.problemRectifyDialogVisible = true
         },
+        problemLook: function (row) {
+            // 问题查看
+            let that = this
+            that.problemRectify(row)
+        },
         problemRectifySubmit: function (qualityRecordId) {
-            // 修改纠正图片与文件等纠正信息
-            this.rectifyForm.correctAttach = this.fileList.join(";")
-            console.log(this.rectifyForm.correctAttach)
-            this.rectifyForm.correctPic = this.file.join(";")
-            console.log(this.rectifyForm.correctPic)
+            // 保存修改纠正图片与文件等纠正信息
+            let that = this
+            that.historyFileRectifyList = []
+            that.translateFileStr(that.historyFileList, that.historyFileRectifyList)
+            if(that.historyFileRectifyList.length !== 0 && that.fileList.length !== 0){
+                that.rectifyForm.correctAttach = that.historyFileRectifyList.join(';') + ';' + that.fileList.join(";")
+            }else{
+                that.rectifyForm.correctAttach = that.historyFileRectifyList.join(';') + that.fileList.join(";")
+            }
+            console.log(that.rectifyForm.correctAttach)
+            that.historyImageRectify = []
+            that.translateStr(that.historyImageList,that.historyImageRectify)
+            if(that.historyImageRectify.length !== 0 && that.file.length !== 0){
+                that.rectifyForm.correctPic = that.historyImageRectify.join(';') + ';' + that.file.join(';')
+            }else{
+                that.rectifyForm.correctPic = that.historyImageRectify.join(';') + that.file.join(';')
+            }
+            console.log(that.rectifyForm.correctPic)
             console.log('更新整改表单')
-            console.log(this.rectifyForm)
-            if(this.flagRecifyArray.length !== 0){
-                const flag = this.findOnly(this.flagRecifyArray, qualityRecordId)
+            console.log(that.rectifyForm)
+            if(that.flagRecifyArray.length !== 0){
+                const flag = that.findOnly(that.flagRecifyArray, qualityRecordId)
                 if(flag !== 1){
-                   this.flagRecifyArray.push(qualityRecordId) 
+                   that.flagRecifyArray.push(qualityRecordId) 
                 }
             }else{
-                    this.flagRecifyArray.push(qualityRecordId)
+                    that.flagRecifyArray.push(qualityRecordId)
                 }
-            console.log(this.flagRecifyArray)
-            updateQualityCheckRecord(qualityRecordId,this.rectifyForm).then((res) => {
+            console.log(that.flagRecifyArray)
+            that.rectifyForm.isPush = '已整改'
+            updateQualityCheckRecord(qualityRecordId,that.rectifyForm).then((res) => {
                 console.log(res.data)
-                this.problemRectifyDialogVisible = false
-                return this.$message.success('更新表单成功')
+                that.getProblemDetailList(that.acceptRow.qualityCheckID)
+                that.problemRectifyDialogVisible = false
+                return that.$message.success('更新表单成功')
             }).catch((err) => {
-                this.$message(err.message)
+                that.$message(err.message)
             })
         },
         pushRectify: async function () {
@@ -306,11 +421,18 @@ export default {
         },
         problemRectifyDialogClose: function () {
             // 问题整改对话框关闭
-            this.activeIndex = '0'
-            this.imageList = []
-            this.fileProblemList = []
-            this.file = []
-            this.fileList = []
+            let that = this
+            that.activeIndex = '0'
+            that.file = []
+            that.fileList = []
+            that.imageList = []
+            that.fileProblemList = []
+            that.historyImageList = []
+            that.historyFileList = []
+            that.historyImageRectify = []
+            that.historyFileRectifyList = []
+            that.$refs['uploadPic'].clearFiles()
+            that.$refs['uploadFile'].clearFiles()
         },
         handlePreview: function (file) {
             // 图片已上传，图片预览
@@ -366,6 +488,67 @@ export default {
             this.fileList.push(picInfo)
             console.log(this.fileList)
         },
+        deleteImage: async function (path) {
+            // 删除纠正图片
+            let that = this
+            const confirmResult = await that.$confirm('此操作将永久删除该图片,是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                return that.$message.info('已取消')
+            }
+            const i = that.historyImageList.findIndex(x => x === path)
+            that.historyImageList.splice(i,1)
+            console.log('图片删除之后的数组')
+            console.log(that.historyImageList)
+        },
+        deleteFile: async function (path) {
+            // 删除历史纠正文件
+            let that = this
+            const confirmResult = await that.$confirm('此操作将永久删除该文件,是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                return that.$message.info('已取消')
+            }
+            const i = that.historyFileList.findIndex(x => x.url === path)
+            that.historyFileList.splice(i,1)
+            console.log('历史纠正文件删除之后的数组')
+            console.log(that.historyFileList)
+        },
+        translateStr: function(imagelist,imagelistRectify) {
+            // 转换历史纠正图片
+            for(let j in imagelist){
+                let k = imagelist[j].lastIndexOf('/')
+                imagelistRectify.push(imagelist[j].substr(k+1))
+            }
+            console.log('拼接新的纠正图片数组')
+            console.log(imagelistRectify.join(';'))
+        },
+        translateFileStr: function (filelist,filelistRectify) {
+            // 转换历史纠正文件
+            for(let j in filelist){
+                let k = filelist[j].url.lastIndexOf('/')
+                filelistRectify.push(filelist[j].url.substr(k+1))
+            }
+            console.log('拼接新的纠正文件数组')
+            console.log(filelistRectify.join(';'))
+        },
+        getProgress: function () {
+            // 获取进度
+            for(let i in this.problemRectifyList){
+                if(this.problemRectifyList[i].isPush === '已整改' || this.problemRectifyList[i].isPush === '已通过'){
+                    this.flagRecifyArray.push(this.problemRectifyList[i].qulity_CheckRecordID)
+                }
+            }
+            const length1 = this.problemRectifyList.length
+            const length2 = this.flagRecifyArray.length
+            this.progress = length2 + '/' + length1
+        },
         findOnly: function (arr, recordId) {
             // 查找标志数组有无相同元素
             var flagOnly = 0
@@ -376,20 +559,51 @@ export default {
                 }
             }
             return flagOnly
-        }
+        },
+        getQualityCheck: function () {
+            // 获取质量监督检查表
+            let that = this
+            getQualityCheckList().then((res) => {
+                console.log('质量监督检查表')
+                console.log(res.data)
+                that.qualityCheckList = res.data
+            })
+        },
+        // 将检查表要素Code转化为名称
+        changeCheckListCodeToName: function (val,checkCode) {
+            let that = this
+            for (var j = 0; j < val.length; j++) {
+                if (val[j]) {
+                    if (val[j].checkListCode == checkCode) {
+                       
+                        that.checkName = val[j].checkListName
+                        console.log('检查表要素名称:' + val[j].checkListName)
+                        break
+                    } else if (val[j].children) {
+                        that.changeCheckListCodeToName(val[j].children, checkCode)
+                    }
+                }
+            }
+        },
     },
     watch: {
 
     },
     computed: {
-        progress: function () {
-            const length1 = this.problemRectifyList.length
-            const length2 = this.flagRecifyArray.length
-            return length2 + '/' + length1
+        progress: {
+            get: function () {
+                const length1 = this.problemRectifyList.length
+                const length2 = this.flagRecifyArray.length
+                return length2 + '/' + length1
+            },
+            set: function () {
+
+            }
         }
     },
     created: function () {
         this.getAcceptRow()
+        this.getQualityCheck()
     }
 }
 </script>
@@ -415,5 +629,24 @@ export default {
     color: red;
     font-size: 22px;
     margin-right: 20px;
+}
+.historyPic {
+    position: relative;
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin: 0 5px;
+}
+.historyfile {
+    margin-top: 40px;
+}
+.historyFile {
+    float: left;
+    height: 40px;
+}
+.iconBtns {
+    position: absolute;
+    top: 4px;
+    right: 5px;
 }
 </style>

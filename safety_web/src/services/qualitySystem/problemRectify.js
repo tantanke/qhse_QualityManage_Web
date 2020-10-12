@@ -15,12 +15,11 @@ export const modifyPush =(id)=>{
 	return request(`/api/modifyPush/`+id,{method:'put'})
 }
 
-// 图片显示
-export const showPicture =(param)=>{
-	return request(`/api/pictureDownload?fileName=${param}`,{method:'get'})
+//根据文件id查询文件名
+export const getOriginFileName=(param)=>{
+	return request(`/api/getOriginFileName?fileName=${param}`,{method:'get'})
 }
-
-// 文件下载
-export const downloadFile =(param)=>{
-	return request(`/api/downloadQualityAttach?fileName=${param}`,{method:'get'})
+// 查询质量监督检查表
+export const getQualityCheckList=()=>{
+	return request(`/api/Quality_Check_tree/0`,{method:'get'})
 }

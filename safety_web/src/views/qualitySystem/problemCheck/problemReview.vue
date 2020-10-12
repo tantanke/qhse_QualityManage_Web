@@ -31,14 +31,14 @@
                 :visible.sync="problemCheckDialogVisible"
                 width="50%" @close="problemCheckDialogClose">
                 <!-- 问题审核表单 -->
-                <el-form :model="problemCheckForm" label-width="140px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
+                <el-form :model="problemCheckForm" label-width="100px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                        <el-tab-pane label="基本信息" name="0">
                             <el-form-item label="编号">
                                 <el-input v-model="problemCheckForm.no" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="检查表名称">
-                                <el-input v-model="problemCheckForm.checkListCode" readonly></el-input>
+                            <el-form-item label="要素名">
+                                <el-input v-model="problemCheckFormCheckName" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="问题描述">
                                 <el-input v-model="problemCheckForm.description" readonly></el-input>
@@ -97,15 +97,16 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
+                            <el-form-item label="条款编号">
+                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="条款内容">
+                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
                             <el-form-item label="不符合原因">
                                 <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款编号">
-                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
-                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
-                            </el-form-item>
+                            
                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 15px"
@@ -115,7 +116,7 @@
                                 </el-image>
                             </el-form-item>
                             <el-form-item label="问题附件">
-                                <a :href="item" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">文件{{ index + 1}}</a>
+                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="整改信息" name="3">
@@ -128,7 +129,7 @@
                             <el-form-item label="整改时限">
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="纠正措施跟综验证" prop="nonConformCorrectMeasureVerify">
+                            <el-form-item label="跟综验证" prop="nonConformCorrectMeasureVerify">
                                 <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证"></el-input>
                             </el-form-item>
                             <el-form-item label="纠正图片">
@@ -140,7 +141,7 @@
                                 </el-image>
                             </el-form-item>
                             <el-form-item label="纠正附件">
-                                <a :href="item" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">文件{{ index + 1}}</a>
+                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
                     </el-tabs>
@@ -155,7 +156,7 @@
 </template>
 
 <script>
-import { getProblemReviewList, acceptProblemReviewData, refuseProblemReviewData, updateQualityCheckRecord } from "../../../services/qualitySystem/problemReview"
+import { getProblemReviewList, acceptProblemReviewData, refuseProblemReviewData, updateQualityCheckRecord, getOriginFileName, getQualityCheckList}from "../../../services/qualitySystem/problemReview"
 export default {
     data () {
         return {
@@ -170,11 +171,9 @@ export default {
             // 复审验证规则
             problemCheckFormRule: {
                 nonConformCorrectMeasureVerify: [
-                    { required: true, message: '请输入纠正措施跟综验证', trigger: 'blur' }
+                    { required: true, message: '请输入跟综验证', trigger: 'blur' }
                 ]
             },
-            // 问题整改完成时间
-            rectifyFinshDate: '',
             //问题复审对话框显示与隐藏
             problemCheckDialogVisible: false,
             // 问题审核通过对象
@@ -202,7 +201,13 @@ export default {
             // 复审全部通过标志数组
             flagAcceptArray: [],
             // 审核完成标志
-            isFinish: 0
+            isFinish: 0,
+            // 要素名
+            checkName: '',
+            // 表单要素名
+            problemCheckFormCheckName: '',
+            // 质量监督检查表名称
+            qualityCheckList: []
         }
     },
     methods: {
@@ -214,6 +219,17 @@ export default {
                 console.log('查询质量检查id返回的数据')
                 console.log(res.data)
                 this.problemReviewList = res.data
+                this.getProgress()
+            }).catch((err) => {
+                this.$message.error(err.message)
+            })
+        },
+        getProblemDetailList: function (qualityCheckId) {
+            // 获取问题复审表格列表
+            getProblemReviewList(qualityCheckId).then((res) => {
+                console.log('查询质量检查id返回的数据')
+                console.log(res.data)
+                this.problemReviewList = res.data   
             }).catch((err) => {
                 this.$message.error(err.message)
             })
@@ -221,13 +237,16 @@ export default {
         // 问题审核弹出对话框
         problemViewCheck: function (row) {
             let that = this
+            that.changeCheckListCodeToName(that.qualityCheckList, row.checkListCode)
+            that.problemCheckFormCheckName = that.checkName
             that.problemCheckForm = row
+            const path = 'http://39.98.173.131:7000/resources/QualityCheck/'
             // 问题图片
             if(that.problemCheckForm.problemPic){
                 const imgArray = that.problemCheckForm.problemPic.split(';');
                 console.log(imgArray)
                 for(let i in imgArray){
-                    that.imageList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ imgArray[i])
+                    that.imageList.push(path + imgArray[i])
                 }
                 console.log(that.imageList)
             }
@@ -237,7 +256,16 @@ export default {
                 const fileArray = that.problemCheckForm.problemAttach.split(';')
                 console.log(fileArray)
                 for(let j in fileArray){
-                    that.fileProblemList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ fileArray[j])
+                    const filePro = {
+                        url: '',
+                        fileName: ''
+                    }
+                    filePro.url = path + fileArray[j]
+                    getOriginFileName(fileArray[j]).then((res) => {
+                        console.log(res.data)
+                        filePro.fileName = res.data
+                        that.fileProblemList.push(filePro)
+                    })
                 }
                 console.log(that.fileProblemList)
             }
@@ -247,7 +275,7 @@ export default {
                 const imgCorrectArray = that.problemCheckForm.correctPic.split(';');
                 console.log(imgCorrectArray)
                 for(let i in imgCorrectArray){
-                    that.imageCorrectList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ imgCorrectArray[i])
+                    that.imageCorrectList.push(path + imgCorrectArray[i])
                 }
                 console.log(that.imageCorrectList)
             }
@@ -257,7 +285,17 @@ export default {
                 const fileCorrectArray = that.problemCheckForm.correctAttach.split(';')
                 console.log(fileCorrectArray)
                 for(let j in fileCorrectArray){
-                    that.fileCorrectList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ fileCorrectArray[j])
+                    const file = {
+                        url: '',
+                        fileName: ''
+                    }
+                    file.url = path + fileCorrectArray[j]
+                    getOriginFileName(fileCorrectArray[j]).then((res) => {
+                        console.log(res.data)
+                        file.fileName = res.data
+                        that.fileCorrectList.push(file)
+                    })
+                    
                 }
                 console.log(that.fileCorrectList)
             }
@@ -265,56 +303,17 @@ export default {
         },
         problemViewLook: function (row) {
             let that = this
-            that.problemCheckForm = row
-            // 问题图片
-            if(that.problemCheckForm.problemPic){
-                const imgArray = that.problemCheckForm.problemPic.split(';');
-                console.log(imgArray)
-                for(let i in imgArray){
-                    that.imageList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ imgArray[i])
-                }
-                console.log(that.imageList)
-            }
-            
-            // 问题文件
-            if(that.problemCheckForm.problemAttach){
-                const fileArray = that.problemCheckForm.problemAttach.split(';')
-                console.log(fileArray)
-                for(let j in fileArray){
-                    that.fileProblemList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ fileArray[j])
-                }
-                console.log(that.fileProblemList)
-            }
-            
-            // 纠正图片
-            if(that.problemCheckForm.correctPic){
-                const imgCorrectArray = that.problemCheckForm.correctPic.split(';');
-                console.log(imgCorrectArray)
-                for(let i in imgCorrectArray){
-                    that.imageCorrectList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ imgCorrectArray[i])
-                }
-                console.log(that.imageCorrectList)
-            }
-            
-            // 纠正文件
-            if(that.problemCheckForm.correctAttach){
-                const fileCorrectArray = that.problemCheckForm.correctAttach.split(';')
-                console.log(fileCorrectArray)
-                for(let j in fileCorrectArray){
-                    that.fileCorrectList.push('http://39.98.173.131:7000/resources/QualityCheck/'+ fileCorrectArray[j])
-                }
-                console.log(that.fileCorrectList)
-            }
-            that.problemCheckDialogVisible = true
+            that.problemViewCheck(row)
         },
         acceptProblemReview: function () {
             // 问题审核通过
             this.$refs.problemCheckFormRef.validate((valid) => {
                 if(!valid){
-                    return this.$message.error('纠正措施跟综验证必填项未填')
+                    return this.$message.error('跟综验证必填项未填')
                 }
-                this.rectifyFinshDate = this.getRectifyDate()
-                this.problemCheckForm.reformDate = this.rectifyFinshDate
+                this.problemCheckForm.reformDate = this.getRectifyDate()
+                console.log('审核完成时间')
+                console.log(this.problemCheckForm.reformDate)
                 this.problemCheckForm.isPush = '已通过'
                 console.log('问题审核通过表单数据')
                 console.log(this.problemCheckForm)
@@ -342,6 +341,7 @@ export default {
                 console.log(this.flagAcceptArray)
                 updateQualityCheckRecord(this.problemCheckForm.qulity_CheckRecordID, this.problemCheckForm).then((res) => {
                     console.log(res.data)
+                    this.getProblemDetailList(this.acceptRow.qualityCheckID)
                     this.problemCheckDialogVisible = false
                     return this.$message.success('问题审核通过成功')
                 }).catch((err) => {
@@ -355,6 +355,12 @@ export default {
                 if(!valid){
                     return this.$message.error('纠正措施跟综验证必填项未填')
                 }
+                this.problemCheckForm.reformDate = ''
+                console.log('审核完成时间')
+                console.log(this.problemCheckForm.reformDate)
+                this.problemCheckForm.isPush = '已打回'
+                console.log('问题审核打回表单数据')
+                console.log(this.problemCheckForm)
                 if(this.flagRecifyArray.length !== 0){
                     const flag = this.findOnly(this.flagRecifyArray, this.problemCheckForm.qulity_CheckRecordID)
                     if(flag !== 1){
@@ -365,12 +371,10 @@ export default {
                 }
                 console.log('复审全部标志数组')
                 console.log(this.flagRecifyArray)
-                this.problemCheckForm.reformDate = ''
-                this.problemCheckForm.isPush = '已打回'
-                console.log('问题审核打回表单数据')
-                console.log(this.problemCheckForm)
+                
                 updateQualityCheckRecord(this.problemCheckForm.qulity_CheckRecordID, this.problemCheckForm).then((res) => {
                     console.log(res.data)
+                    this.getProblemDetailList(this.acceptRow.qualityCheckID)
                     this.problemCheckDialogVisible = false
                     return this.$message.success('问题审核打回成功')
                 }).catch((err) => {
@@ -380,13 +384,10 @@ export default {
         },
         finishReview: async function () {
             // 审核完成
-            if(this.isFinish === 1) {
-                return this.$message.error('已进行审核完成，请勿重复执行此操作！')
-            }
             console.log(this.flagRecifyArray.length)
             console.log(this.problemReviewList.length)
             console.log('全部通过数组')
-                console.log(this.flagAcceptArray.length)
+            console.log(this.flagAcceptArray.length)
             if(this.flagRecifyArray.length === this.problemReviewList.length){
                 //问题审核传通过字段
                 console.log('全部通过数组')
@@ -404,7 +405,6 @@ export default {
                     this.acceptReviewObject.qualityCheckID = this.acceptRow.qualityCheckID
                     acceptProblemReviewData(this.acceptReviewObject).then((res) => {
                     console.log(res.data)
-                    this.isFinish = 1
                     return this.$message.success('数据已归档')
                     }).catch((err) => {
                         return this.$message.error(err.message)
@@ -442,13 +442,30 @@ export default {
         },
         getRectifyDate: function () {
             // 获取整改完成时间
-            const date = new Date()
-            const y = date.getFullYear()
-            const m = date.getMonth() + 1
-            const mm = m < 10 ? '0' + m : m
-            const d = date.getDate()
-            const dd = d < 10 ? '0' + d : d
-            return y + '-' + mm + '-' + dd
+            let date = new Date()
+            console.log(date)
+            let y = date.getFullYear()
+            console.log(y)
+            let m = date.getMonth() + 1
+            console.log(m)
+            m = m < 10 ? '0' + m : m
+            let d = date.getDate()
+            console.log(d)
+            d = d < 10 ? '0' + d : d
+            let str = y + '-' + m + '-' + d
+            console.log(str)
+            return str
+        },
+        getProgress: function () {
+            // 获取进度
+            for(let i in this.problemReviewList){
+                if(this.problemReviewList[i].isPush === '已打回' || this.problemReviewList[i].isPush === '已通过'){
+                    this.flagRecifyArray.push(this.problemReviewList[i].qulity_CheckRecordID)
+                }
+            }
+            const length1 = this.problemReviewList.length
+            const length2 = this.flagRecifyArray.length
+            this.progress = length2 + '/' + length1
         },
         findOnly: function (arr, recordId) {
             // 查找标志数组有无相同元素
@@ -460,20 +477,50 @@ export default {
                 }
             }
             return flagOnly
-        }
+        },
+        getQualityCheck: function () {
+            // 获取质量监督检查表
+            let that = this
+            getQualityCheckList().then((res) => {
+                console.log('质量监督检查表')
+                console.log(res.data)
+                that.qualityCheckList = res.data
+            })
+        },
+        // 将检查表要素Code转化为名称
+        changeCheckListCodeToName: function (val,checkCode) {
+            let that = this
+            for (var j = 0; j < val.length; j++) {
+                if (val[j]) {
+                    if (val[j].checkListCode == checkCode) {
+                       
+                        that.checkName = val[j].checkListName
+                        console.log('检查表要素名称:' + val[j].checkListName)
+                        break
+                    } else if (val[j].children) {
+                        that.changeCheckListCodeToName(val[j].children, checkCode)
+                    }
+                }
+            }
+        },
     },
     created: function () {
         this.getAcceptRow()
+        this.getQualityCheck()
     },
     watch: {
 
     },
     computed: {
-        // eslint-disable-next-line vue/no-dupe-keys
-        progress: function () {
-            const length1 = this.problemReviewList.length
-            const length2 = this.flagRecifyArray.length
-            return length2 + '/' + length1
+        progress: {
+            get: function () {
+                const length1 = this.problemReviewList.length
+                const length2 = this.flagRecifyArray.length
+                return length2 + '/' + length1
+            },
+            set: function () {
+
+            }
         }
     }
 }
@@ -484,6 +531,7 @@ export default {
     margin-bottom: 20px;
 }
 .filelinks {
+    float: left;
     text-decoration: underline;
     color: #0099ff;
     margin: 0 15px;

@@ -56,15 +56,15 @@
                 </el-table-column>
                 <el-table-column type="index" label="序号" width="60px"></el-table-column>
                 <el-table-column label="单位名称" prop="checkedCompanyName"></el-table-column>
-                 <el-table-column label="检查表名称" prop="checkListName"></el-table-column>
+                 <el-table-column label="检查表名称" prop="checkListName" width="200px"></el-table-column>
                 <el-table-column label="责任部门" prop="responsiCompanyName"></el-table-column>
                 <el-table-column label="受审核部门" prop="group"></el-table-column>
                 <el-table-column label="审核日期" prop="checkDate"></el-table-column>
                 <el-table-column label="操作" width="280">
                     <template slot-scope="scope">
                         <el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)">修改</el-button>
-                        <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)">删除</el-button>
                         <el-button type="success" icon="el-icon-check" size="mini" @click="pushBasicInfo(scope.row)">推送</el-button>
+                        <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -274,8 +274,7 @@
         </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editInfoDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="editInfoClick()" v-if="eidtInfoForm.isPush == '未推送'">修 改</el-button>
-                <el-button type="success" icon="el-icon-check" v-else @click="editInfoDialogVisible = false">已推送</el-button>
+                <el-button type="primary" @click="editInfoClick()">修 改</el-button>
             </span>
             </el-dialog>
         </div>
@@ -289,6 +288,14 @@ import { GetEmployee } from "../../../services/filePropagation.js"
 import { submitBasicInfo, getCheckList, editBasicInfomation, deleteBasicInfomation, pushBasicInfomation, inquireBasicInfomation} from "../../../services/qualitySystem/basicInfo"
 export default {
   data () {
+      // 验证邮箱的规则
+    var checkCurrentDate = (rule, value, callback) => {
+        console.log(value)
+      if (this.currentDate === value) {
+        return callback()
+      }
+      callback(new Error('请选择当前时间'))
+    }
     return {
         // 加载
         loading: false,
@@ -301,7 +308,7 @@ export default {
         },
         // 查询部分数据时间数组
         selectCheckDate: [],
-        // 查询表格公司code
+        // 查询表格公司Code
         selectCheckedCompanyId: null,
         // 基本信息登记表格数据
         basicInfoList: [],
@@ -385,7 +392,9 @@ export default {
           // 责任部门负责人
           responsePersonName: '',
           // 责任部门负责人id
-          responsePersonID: ''
+          responsePersonID: '',
+          // 当前时间
+          currentDate: ''
       },
       // 验证规则
       addInfoFormRules: {
@@ -414,7 +423,8 @@ export default {
                { required: true, message: '请选择检查表', trigger: 'blur' }
           ],
           checkDate: [
-               { required: true, message: '请选择审核日期', trigger: 'blur' }   
+               { required: true, message: '请选择审核日期', trigger: 'blur' },
+               { validator: checkCurrentDate, trigger: 'blur' }   
           ],
           checkPerson: [
               { required: true, message: '请输入监督人员', trigger: 'blur' }   
@@ -444,6 +454,7 @@ export default {
     this.getBasicInfo()
     // 获取当前用户
     console.log(GetCurrentUser())
+    this.currentDate = this.getCurrentDate()
   },
   methods: {
     // 基本信息登记表对话框
@@ -467,26 +478,16 @@ export default {
           console.log(this.addInfoForm)
           submitBasicInfo(this.addInfoForm).then((res) => {
               console.log('基本信息登记提交返回结果')
-              console.log(res.data)
-              this.$message.success('基本信息登记成功')
+              console.log(res.data) 
               this.getBasicInfo()
               this.addInfoDialogVisible = false
+              return this.$message.success('基本信息登记成功')
           }).catch((err) => {
-              this.$message.error(err.message)
+              return this.$message.error(err.message)
           })
       })
-      
-      
     },
     getBasicInfo: function () {
-      // 查询所有的基本信息登记表
-    //   getBasicInfomation().then((res) => {
-    //       console.log('查询所有基本信息表')
-    //       console.log(res.data)
-    //       this.basicInfoList = res.data
-    //   }).catch((err) => {
-    //       this.$message.error(err.message)
-    //   })
         const x = []
         for(let i in this.selectCheckDate) {
             x.push(this.formatDate(this.selectCheckDate[i]))
@@ -501,13 +502,16 @@ export default {
         inquireBasicInfomation(this.selectInfoForm).then((res) => {
             console.log('查询基本信息登记表的信息')
             console.log(res.data)
-            this.basicInfoList = res.data
+            this.basicInfoList = this.sortByDate(res.data)   
         }).catch((err) => {
-            this.$message.error(err.message)
+            return this.$message.error(err.message)
         })
     },
     editBasicInfo: function (information) {
       // 弹出编辑基本信息表对话框
+      if(information.isPush === '已推送'){
+            return this.$message.error('该登记表已推送，无法进行再次修改')
+        }
       console.log('该表的基本信息')
       console.log(information)
       this.eidtInfoForm = information
@@ -532,10 +536,10 @@ export default {
       deleteBasicInfomation(row.qualityCheckID).then((res) => {
           console.log('删除基本信息登记表返回信息')
           console.log(res.data)
-          this.$message.success('删除信息成功')
           this.getBasicInfo()
+          return this.$message.success('删除信息成功')
       }).catch((err) => {
-          this.$message.error(err.message)
+          return this.$message.error(err.message)
       })
     },
     pushBasicInfo: async function (row) {
@@ -555,9 +559,10 @@ export default {
       pushBasicInfomation(row.qualityCheckID).then((res) => {
           console.log('推送基本信息表返回信息')
           console.log(res.data)
-          this.$message.success('推送成功')
+          this.getBasicInfo()
+          return this.$message.success('推送成功')
       }).catch((err) => {
-          this.$message.error(err.message)
+          return this.$message.error(err.message)
       })
     },
     addInfoDialogClosed: function () {
@@ -587,11 +592,11 @@ export default {
           console.log('修改基本信息登记表返回的信息')
           console.log(res.data)
           this.getBasicInfo()
-          this.$message.success('修改成功')
           this.editActiveIndex = '0'
           this.editInfoDialogVisible = false
+          return this.$message.success('修改成功')
       }).catch((err) => {
-          this.$message.error(err.message)
+          return this.$message.error(err.message)
       })
     },
     // 获取公司表
@@ -749,6 +754,21 @@ export default {
             this.companyCode = ''
         }
     },
+    sortByDate(data){
+		if(!data){
+			return
+		}
+		for(var i=0;i<data.length-1;i++){
+			for(var j=i+1;j<data.length;j++){
+				if(data[i].checkDate<=data[j].checkDate){
+					let temp=data[i]
+					data[i]=data[j]
+					data[j]=temp
+				}
+			}
+		}
+		return data
+	},
     // editCheckedCompanyIDChange: function (form) {
     //     let that = this
     //     that.changeCompanyCodeToId(that.companyList,form.checkedCompanyCode)
@@ -835,7 +855,23 @@ export default {
         const d = date.getDate()
         const dd = d < 10 ? '0' + d : d
         return y + '-' + mm + '-' + dd
-    }
+    },
+    getCurrentDate: function () {
+            // 获取当前时间
+            let date = new Date()
+            console.log(date)
+            let y = date.getFullYear()
+            console.log(y)
+            let m = date.getMonth() + 1
+            console.log(m)
+            m = m < 10 ? '0' + m : m
+            let d = date.getDate()
+            console.log(d)
+            d = d < 10 ? '0' + d : d
+            let str = y + '-' + m + '-' + d
+            console.log(str)
+            return str
+        },
   },
   watch: {
       // 监听受审核单位id发生变化

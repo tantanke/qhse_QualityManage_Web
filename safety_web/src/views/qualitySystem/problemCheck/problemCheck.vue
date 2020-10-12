@@ -60,7 +60,7 @@
                 <el-table-column label="审核日期" prop="checkDate"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemCheck(scope.row)">问题审核</el-button>
+                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemCheck(scope.row)" v-if="scope.row.isPush === '已推送' && scope.row.issued === '已整改'">问题审核</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -70,7 +70,7 @@
 
 <script>
 import { GetCompany } from "../../../services/gettreedata"
-import { inquireProblemReviewForm } from "../../../services/qualitySystem/problemCheck"
+import { inquireProblemReviewForm, getBasicInfomation } from "../../../services/qualitySystem/problemCheck"
 export default {
     data () {
         return {
@@ -113,9 +113,19 @@ export default {
             inquireProblemReviewForm(this.inquireForm).then((res) => {
                 console.log('查询问题审核主表表单的信息')
                 console.log(res.data)
-                this.problemChenckList = res.data
+                this.problemChenckList = this.sortByDate(res.data)
             }).catch((err) => {
                 this.$message.error(err.message)
+            })
+        },
+        getBasicInfo: function() {
+            //查询所有的基本信息登记表
+            getBasicInfomation().then((res) => {
+                console.log('查询所有基本信息表')
+                console.log(res.data)
+                this.problemChenckList = this.sortByDate(res.data)
+            }).catch((err) => {
+                return this.$message.error(err.message)
             })
         },
         jumpProblemCheck: function (row) {
@@ -173,11 +183,27 @@ export default {
             const d = date.getDate()
             const dd = d < 10 ? '0' + d : d
             return y + '-' + mm + '-' + dd
-        }
+        },
+        sortByDate(data){
+            if(!data){
+                return
+            }
+            for(var i=0;i<data.length-1;i++){
+                for(var j=i+1;j<data.length;j++){
+                    if(data[i].checkDate<=data[j].checkDate){
+                        let temp=data[i]
+                        data[i]=data[j]
+                        data[j]=temp
+                    }
+                }
+            }
+            return data
+        },
     },
     created: function () {
         // 获取公司表
         this.getCompany()
+        this.getBasicInfo()
     },
     watch: {
         // 监听查询公司id
