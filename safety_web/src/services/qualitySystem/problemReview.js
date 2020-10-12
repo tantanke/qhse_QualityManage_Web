@@ -19,3 +19,11 @@ export const acceptProblemReviewData =(data)=>{
 export const refuseProblemReviewData =(data)=>{
 	return request(`/api/backTable`,{method:'put',data})
 }
+//根据文件id查询文件名
+export const getOriginFileName=(param)=>{
+	return request(`/api/getOriginFileName?fileName=${param}`,{method:'get'})
+}
+// 查询质量监督检查表
+export const getQualityCheckList=()=>{
+	return request(`/api/Quality_Check_tree/0`,{method:'get'})
+}
