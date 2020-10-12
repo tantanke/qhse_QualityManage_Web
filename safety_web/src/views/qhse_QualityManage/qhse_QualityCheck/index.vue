@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title" style="width:100%">质量-要素证据录入</div>
+    <div class="page-title" style="width:100%">要素证据录入</div>
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true" :model="filterQuery">
@@ -36,7 +36,7 @@
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')">
+                v-if="scope.row.childNode.length === 0">
                 录入
               </el-button>
             </template>
@@ -53,7 +53,7 @@
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0 &&(scope.row.status==='未提供'|| scope.row.status==='不通过'|| scope.row.status==='未审核')">
+                v-if="scope.row.childNode.length === 0">
                 录入
               </el-button>
             </template>
@@ -142,7 +142,7 @@
               <el-form-item>
                 <el-button type="" style="margin-top:10px;margin-left:380px;float:left" @click="dialogVisible3=false">取消
                 </el-button>
-                <el-button type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+                <el-button :disabled="curStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                 </el-button>
               </el-form-item>
             </el-col>
@@ -223,6 +223,7 @@ export default {
         uploadTime: ''//上传时间
       },
       tableID: null,
+      checkstatus:'',
       curStatus: '', // 通过录入或查看按钮进入录入页面时，保存具体某个要素的状态(不通过、未审核等一系列状态)
     };
   },
@@ -367,7 +368,7 @@ export default {
     },
     async updateScore (data) {
       // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
-      this.curStatus = data.status
+      this.curStatus = data.checkStatus
 
       if (data.status == '不通过')
         this.unpass = false;
@@ -544,6 +545,8 @@ export default {
 
             // 将查询时获取到的tableID保存下来
             this.tableID = this.treeData[0].tableID
+            this.checkstatus=this.treeData[0].checkstatus
+
 
             this.deepTree(this.treeData)
           })
@@ -561,11 +564,33 @@ export default {
         var flag=0;
         for(var i=0;i<this.listData.length;i++)
       {
-        if(this.listData[i].status!='未审核')
+        if(this.listData[i].status=='未提供'||this.listData[i].status=='不通过')
         flag=1;
+        
       }
-      if(flag==0)
-        submitInputResult(this.tableID);
+      if(flag==1)
+        this.$message.error('无法推送')
+      if(flag==0){
+        submitInputResult({
+                        tableID:this.tableID,
+                        tag:0
+                    });
+        querryYearElement(this.filterQuery)//获取到叶子节点信息
+          .then(res => {
+            this.treeData = res.data;
+            
+            // 将查询时获取到的tableID保存下来
+            this.tableID = this.treeData[0].tableID
+            this.checkstatus=this.treeData[0].checkstatus
+          })
+          .catch(err => {
+            console.log(err);
+            this.message.error(err.message);
+          });
+        this.listData = [];
+        this.deepTree(this.treeData);
+        this.$message.success('推送成功')
+      }
       }
     },
     //转换年份

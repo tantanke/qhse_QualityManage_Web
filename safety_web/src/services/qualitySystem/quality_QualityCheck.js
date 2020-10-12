@@ -2,33 +2,24 @@ import request from '../../utils/request'
 
 //获取公司树
 export const querryYearElement = (data) => {
-    return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`,{
+    return request(`/api/quality_query_elementReviewer?companyCode=${data.companyCode}&year=${data.year}`,{
         data
     })
 }
 
 export const query_evidence_attach = (data) => {
-    return request(`/api/query_evidence_attach?id=${data.id}`,{
-        data
-    })
-}
-export const evidence = (data) => {
-    return request(`/api/element_evidence`,{
-        method: 'post',
+    return request(`/api/quality_query_Attach?id=${data.id}`,{
         data
     })
 }
 export const addAll_evidence_attach = (data) => {
-    return request(`/api/addAll_evidence_attach`,{
+    return request(`/api/quality_input_element`,{
         method: 'post',
         data
     })
 }
-export const employees = () => {
-    return request(`/api/employees`)
-}
 export const accidentOrEventUploadAddress=()=> {
-    return request('/api/evidence_upload')
+    return request('/api/Quality_evidence_upload')
 }
 
 export const submitInputResult = (data) => {
