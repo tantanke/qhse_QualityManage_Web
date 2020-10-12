@@ -308,7 +308,7 @@ export default {
         },
         // 查询部分数据时间数组
         selectCheckDate: [],
-        // 查询表格公司code
+        // 查询表格公司Code
         selectCheckedCompanyId: null,
         // 基本信息登记表格数据
         basicInfoList: [],

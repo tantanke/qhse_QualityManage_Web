@@ -144,18 +144,30 @@
               <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
               <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
               <el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
+                 <el-button size='mini' @click="questionEditfalse  = true">录入问题</el-button>
                 <el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
                 <el-button size='mini' type="danger" @click="addRegulation">录入违章</el-button>
               </el-form-item>
           </el-row>
           
         </el-form>
-    <div style="text-align:right">
-    <el-button  type="primary" @click="detailDialogVisible = false">确 定</el-button>
-    </div>
-
 </el-dialog>
     <!--编辑检查记录 -->
+    <el-dialog title="添加问题"
+    :close-on-click-modal='false'
+  :visible.sync="questionEditfalse"
+  width="30%">
+  <el-form>
+     <el-form-item :model="editQuestionForm"  label="请输入问题：">
+             <el-input v-model="editQuestionForm.problems" ></el-input>
+     </el-form-item>
+  </el-form>
+  <div style="text-align:right">
+    <el-button  type="primary" @click="questionEditfalse = false">取 消</el-button>
+    <el-button  type="primary" @click="submitEditQuestion()">确 定</el-button>
+    </div>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -237,13 +249,38 @@ export default {
             CheckList: [], 
             // 检查详情表单      
             detailForm: {},
-            type: 'primary'
+            questionEditfalse: false,
+            type: 'primary',
+            editQuestionForm:{}
               }
             
             },
+            
     methods: {
-        addquestion() {
-            console.log(1)
+        submitEditQuestion(){
+            let _this = this
+            if(this.editQuestionForm.problems === ''){
+                this.$message.warning('请输入问题！')
+                return
+            }
+             _this.loading = true
+             _this.questionEditfalse = false
+             _this.detailDialogVisible = false
+            editCheckRecord(_this.editQuestionForm).then(() => {
+                return addCheckList(_this.checkListForm)
+            }).then(res => {
+                _this.checkListData = res.data
+                _this.loading = false
+                _this.$message.success('新增成功！')
+                _this.checkRecordForm = {pass:'通过'}
+                _this.pushRouter()
+            })
+            .catch(err => {
+              _this.$message.error(err)
+              _this.loading = false
+              _this.checkRecordForm = {}
+          })
+
         },
         addHidden() {
             console.log(this.checkForm.checkContent)
@@ -336,6 +373,8 @@ export default {
         detailCheckRecord(data) {
             
             let _this = this
+            _this.editQuestionForm = {...data}
+            _this.editQuestionForm.problems = ''
             _this.detailForm.problems = data.problems
             _this.detailForm.companyName = data.companyName
             _this.detailForm.checkType = data.checkType
