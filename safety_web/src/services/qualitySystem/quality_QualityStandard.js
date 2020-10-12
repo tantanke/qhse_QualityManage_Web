@@ -64,14 +64,14 @@ export const querryQhseElements=(param)=>{
 
 // 编辑问题描述
 export const deleteQHSEproblemDiscription = (data) => {
-  return request(`/api/updateQualityProDis/${data.id}`, {
+  return request(`/api/deleteQualityProDis/${data.id}`, {
     method: 'delete', 
     data
   })
 }
 // 删除问题描述
 export const updateQHSEproblemDiscription = (data) => {
-  return request(`/api/deleteQualityProDis`, {
+  return request(`/api/updateQualityProDis`, {
     method: 'put', 
     data
   })

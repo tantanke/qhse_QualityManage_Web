@@ -2,7 +2,7 @@
   <div>
     <div class="page-title" style="width:100%">
         <el-breadcrumb separator="/">
-            <el-breadcrumb-item><a @click="$router.go(-1)">QHSE文件审核</a></el-breadcrumb-item>
+            <el-breadcrumb-item><a @click="$router.go(-1)">质量-文件审核</a></el-breadcrumb-item>
             <el-breadcrumb-item>详情查看</el-breadcrumb-item>
         </el-breadcrumb>
     </div>

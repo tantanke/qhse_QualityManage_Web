@@ -214,7 +214,7 @@ export default {
     // 删除文件审核记录
     deleteFile(data) {
       let _this = this
-      let url ='/api/delete_fileaduit/' +  data.fileAuditId.toString()
+      let url ='/api/delete_qualityfileaduit/' +  data.fileAuditId.toString()
       _this.$confirm('确认删除该条审核记录吗？','提示',{
         confirmButtonText: '确定',
         cancelButtonText: '取消',
