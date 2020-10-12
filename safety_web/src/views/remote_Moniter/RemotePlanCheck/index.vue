@@ -222,7 +222,7 @@ export default {
       var data1 = new Date(Date.parse(data.startDate.replace(/-/g, "/")));
       var data2 = new Date(Date.parse(data.endDate.replace(/-/g, "/")));
       var nd = new Date(Date.parse(this.nowdate.replace(/-/g, "/")));
-      if (nd <= data2 && nd > data1) return true;
+      if (nd <= data2 && nd >= data1) return true;
       else return false;
     },
     handleClick () {//查询

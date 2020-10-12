@@ -428,63 +428,10 @@
             handleGetInitialData() {
                 this.loading = true;
             },
-            updateScore(data) {//显示出证据项的内容
+            async updateScore(data) {//显示出证据项的内容
             
-                this.detailData = {}
-                // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
-                this.curStatus = data.status
-                // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
-                this.curCheckStatus = data.checkStatus
-
-                console.log(this.userId)
-                this.attachs = {};
-                this.files = {};
-                this.download = {};
-                show_elementReviewer(data)
-                    .then(res => {
-                        this.dialogVisible = true;
-                        this.nodeData = res.data;
-                        this.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
-                        this.detailData.evidenceDescription = this.nodeData.evidenceDescription
-                        this.detailData.attachDescrption = this.nodeData.attachDescrption
-                        this.detailData.uploadTime = this.nodeData.uploadTime
-                        var attach = this.nodeData.attach;//获取地址字符串
-                        
-                            var arr = attach.split(";");
-                            for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
-                                //j代表图片数量，k代表文件数量
-                                var houzhui = arr[i].substring(arr[i].length - 3);//获取到链接后缀
-                                if (houzhui == 'jpg' || houzhui == 'png' || houzhui == 'PNG' || houzhui == 'JPG') {
-                                    this.attachs[j] = arr[i];
-                                    j++;
-                                }
-                                else {
-                                    this.files[k] = arr[i];
-                                    k++;
-                                    this.filelength = k;
-                                }
-                            }
-                        
-
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        this.$message.error(err.message);
-                    })
-                this.node = data;
-                this.download = [];
-                for (var i = 0; i < this.filelength; i++) {
-                    downloadElementFile(this.files[i].substring(49, this.files[i].length))
-                        .then(res => {
-                            console.log(this.download)
-                            this.download[i] = JSON.parse(JSON.stringify(res.data))
-                        })
-                }
-                var strings = JSON.parse(JSON.stringify(this.download))
-                this.strings = strings;
-
-                this.detailData.name = data.name;
-                console.log('获取到的要素节点内容：', this.nodeData,this.detailData);
+                this.detailData = {};
+                this.detailData.name = data.name
                 this.detailData.code = data.code
                 this.detailData.content = data.content
                 if (data.content == null) {
@@ -498,8 +445,65 @@
                 this.detailData.initialScore = data.initialScore
                 this.detailData.formula = data.formula
                 this.detailData.problemDescription = data.problemDescription
+                
+                this.curStatus = data.status;
+                var this_;
+
+                // 点击进入审核或录入进入某个具体的要素时，保存这个要素的状态
+                this.curCheckStatus = data.checkStatus
+
+                console.log(this.userId)
+                this.attachs = {};
+                this.files = {};
+                this.download = {},
+                this_= this;
+                    await show_elementReviewer(data)
+                        .then(res => {
+                            this_.dialogVisible = true;
+                            this_.nodeData = res.data;
+                            this_.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
+                            this_.detailData.evidenceDescription = this_.nodeData.evidenceDescription
+                            this_.detailData.checkStaffName = this_.nodeData.checkStaffName
+                            this_.detailData.approverStaffName = this_.nodeData.approverStaffName
+                            this_.detailData.attachDescrption = this_.nodeData.attachDescrption
+                            this_.detailData.uploadTime = this_.nodeData.uploadTime
+                            var attach = this_.nodeData.attach;//获取地址字符串
+                                var arr = attach.split(";");
+                                for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
+                                    //j代表图片数量，k代表文件数量
+                                    var houzhui = arr[i].substring(arr[i].length - 3);//获取到链接后缀
+                                    if (houzhui == 'jpg' || houzhui == 'png' || houzhui == 'PNG' || houzhui == 'JPG') {
+                                        this_.attachs[j] = arr[i];
+                                        j++;
+                                    }
+                                    else {
+                                        this_.files[k] = arr[i];
+                                        k++;
+                                        this_.filelength = k;
+                                    }
+                                }
+                                console.log('attach数量：', arr.length, this_.attachs);
+                            
 
 
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this_.message.error(err.message);
+                        })
+                this.node = data;
+
+                this.download = [];
+                for (var i = 0; i < this.filelength; i++) {
+                    await downloadElementFile(this.files[i].substring(49, this.files[i].length))
+                        .then(res => {
+                            console.log(this.download)
+                            this.download[i] = JSON.parse(JSON.stringify(res.data))
+                        })
+                }
+                var strings = JSON.parse(JSON.stringify(this.download))
+                this.strings = strings;
+                console.log('为甚么没有显示',this.files,this.strings,this.download)
             },
             cellStyle(row, column, rowIndex, columnIndex) {//根据报警级别显示颜色
                 // console.log(row);
