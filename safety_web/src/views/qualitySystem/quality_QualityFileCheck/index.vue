@@ -46,7 +46,7 @@
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button type='danger' size="mini" style='margin-right:20px' icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
-              <router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>        
+              <router-link :to='{name: "QualityFileCheckIndex", params: {data:scope.row}}'>        
                 <el-button type="primary" size="mini" icon="el-icon-edit" >审核</el-button>
               </router-link>
             </template>
