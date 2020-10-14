@@ -97,32 +97,30 @@
 				</el-form-item>
 				<br/>
 				<el-form-item label="问题附件">
-					<a
-					style="margin: 5px;"
-					:href="item"
-					v-for="(item, index) in problemAttach" :key="index"
-					>文件{{index+1}}</a>
+					<div v-for="(item, index) in problemAttach" :key="index">
+						<a style="margin: 5px;":href="item.url">{{item.fileName}}</a>
+					</div>
+					
 				</el-form-item>
 				<el-form-item label="问题图片">
 					<el-image
 					style="width: 100px;height: 100px;margin: 5px;"
-					:src="item"
+					:src="item.url"
 					:preview-src-list="problemPic"
 					 v-for="(item, index) in problemPic" :key="index"
 					></el-image>
 				</el-form-item>
 				<br />
 				<el-form-item label="改正文件">
-					<a
-					style="margin: 5px;"
-					:href="item"
-					v-for="(item, index) in correctAttach" :key="index"
-					>文件{{index+1}}</a>
+					<div v-for="(item, index) in correctAttach" :key="index">
+						<a style="margin: 5px;" :href="item.url">{{item.fileName}}</a>
+					</div>
+					
 				</el-form-item>
 				<el-form-item label="改正图片">
 					<el-image
 					style="width: 100px;height: 100px;margin: 5px;"
-					:src="item"
+					:src="item.url"
 					:preview-src-list="correctPic"
 					 v-for="(item, index) in correctPic" :key="index"
 					></el-image>
@@ -138,11 +136,11 @@
 <script>
 	import {
 		queryQualityCheckTree,
-		queryQualityRecordList,
-		getOriginFileName
+		queryQualityRecordList
 	} from '../../../services/qualitySystem/issuesList.js'
 	import{
-		pictureDownload
+		pictureDownload,
+		getOriginFileName
 	}from '../../../services/qualitySystem/FieldInformEntry.js'
 	export default {
 		data() {
@@ -160,7 +158,8 @@
 				problemAttach:[],
 				correctAttach:[],
 				problemAttachName:[],
-				correctAttachName:[]
+				correctAttachName:[],
+				path:'http://39.98.173.131:7000/resources/QualityCheck/'
 			}
 		},
 		mounted() {
@@ -186,36 +185,45 @@
 			},
 			openDetailDialog(row) {
 				this.rowData = row
-				this.problemPic=this.splitPath(row.problemPic)
-				this.correctPic=this.splitPath(row.correctPic)
-				this.problemAttach=this.splitPath(row.problemAttach)
-				this.correctAttach=this.splitPath(row.correctAttach)
+				this.problemPic=this.splitPicPath(row.problemPic)
+				this.correctPic=this.splitPicPath(row.correctPic)
+				this.problemAttach=this.splitFilePath(row.problemAttach)
+				this.correctAttach=this.splitFilePath(row.correctAttach)
 				console.log('rowdata',this.rowData)
 				this.detailDialog = true
 			},
-			splitPath(pathString){
+			splitPicPath(pathString){
+				if(pathString){
+					var targetArray=[]
+					var temp=pathString.split(';')
+					for(var i=0;i<temp.length;i++){
+						var file={
+							url:'',
+							fileName:''
+						}
+						file.url=this.path+temp[i]
+						targetArray.push(file)
+					}
+					return targetArray
+				}
+			},
+			splitFilePath(pathString){
 				if(pathString){
 					var targetArray=[]
 					var temp=pathString.split(';')
 					console.log('patharray',temp)
 					for(var i=0;i<temp.length;i++){
-						var url="http://39.98.173.131:7000/resources/QualityCheck/"+temp[i]
-						targetArray.push(url)
+						var file={
+							url:'',
+							fileName:''
+						}
+						file.url=this.path+temp[i]
+						getOriginFileName(temp[i]).then(res=>{
+							file.fileName=res.data
+						})
+						targetArray.push(file)
 					}
 					console.log(targetArray)
-					return targetArray
-				}
-			},
-			getFileName(pathString){
-				if(pathString){
-					var targetArray=[]
-					var temp=pathString.split(';')
-					for(var i=0;i<temp.length;i++){
-						getOriginFileName(temp[i]).then(res=>{
-							targetArray.push(res.data)
-							console.log('fileName',res.data)
-						})
-					}
 					return targetArray
 				}
 			},

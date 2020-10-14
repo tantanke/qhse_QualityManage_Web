@@ -5,12 +5,8 @@
 			<el-form inline>
 				<el-form-item label="检查类别" style="margin-right: 20px;">
 					<el-select v-model="taskType" placeholder="请选择检查类别" clearable>
-						<el-option
-						      v-for="item in taskTypeOptions"
-						      :key="item.value"
-						      :label="item.label"
-						      :value="item.value">
-						    </el-option>
+						<el-option v-for="item in taskTypeOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="受审单位" style="margin-right: 20px;">
@@ -23,26 +19,19 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button icon="el-icon-search" type="primary" @click="select">查询</el-button>
+					<el-button icon="el-icon-download" type="warning" @click="download">下载</el-button>
 				</el-form-item>
 				<br />
 				<el-form-item label="审核结果" style="margin-right: 20px;">
 					<el-select v-model="checkResult" placeholder="请选择检查类别" clearable>
-						<el-option
-						      v-for="item in checkResultOptions"
-						      :key="item.value"
-						      :label="item.label"
-						      :value="item.value">
-						    </el-option>
+						<el-option v-for="item in checkResultOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="问题分类" style="margin-right: 20px;">
-					<el-select v-model="nature" placeholder="请选择检查类别" clearable  style="width: 250px">
-						<el-option
-						      v-for="item in natureOptions"
-						      :key="item.value"
-						      :label="item.label"
-						      :value="item.value">
-						    </el-option>
+					<el-select v-model="nature" placeholder="请选择检查类别" clearable style="width: 250px">
+						<el-option v-for="item in natureOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 			</el-form>
@@ -108,40 +97,58 @@
 								</div>
 								<div>
 									<el-form-item label="纠正">
-									<span>{{prop.row.nonConformCorrect}}</span>
-								</el-form-item>
-								<el-form-item label="纠正措施">
-									<span>{{prop.row.nonConformCorrectMeasure}}</span>
-								</el-form-item>
-								<el-form-item label="跟踪验证">
-									<span>{{prop.row.nonConformCorrectMeasureVerify}}</span>
-								</el-form-item>
-								<el-form-item label="整改时限">
-									<span>{{prop.row.reformLimit}}</span>
-								</el-form-item>
-								<el-form-item label="整改完成时间">
-									<span>{{prop.row.reformDate}}</span>
-								</el-form-item>
-								<el-form-item label="问题附件">
-									<span>{{prop.row.problemAttach}}</span>
-								</el-form-item>
-								<el-form-item label="纠正附件">
-									<span>{{prop.row.correctAttach}}</span>
-								</el-form-item>
-								<el-form-item label="问题图片">
-									<span>{{prop.row.problemPic}}</span>
-								</el-form-item>
-								<el-form-item label="纠正图片">
-									<span>{{prop.row.correctPic}}</span>
-								</el-form-item>
+										<span>{{prop.row.nonConformCorrect}}</span>
+									</el-form-item>
+									<el-form-item label="纠正措施">
+										<span>{{prop.row.nonConformCorrectMeasure}}</span>
+									</el-form-item>
+									<el-form-item label="跟踪验证">
+										<span>{{prop.row.nonConformCorrectMeasureVerify}}</span>
+									</el-form-item>
+									<el-form-item label="整改时限">
+										<span>{{prop.row.reformLimit}}</span>
+									</el-form-item>
+									<el-form-item label="整改完成时间">
+										<span>{{prop.row.reformDate}}</span>
+									</el-form-item>
+									<el-form-item label="问题附件">
+										<div v-for="(item, index) in prop.row.problemAttach" :key="index">
+											<a style="margin: 5px;" :href="item.url">
+												{{item.fileName}}
+											</a>
+										</div>
+									</el-form-item>
+									<el-form-item label="纠正附件">
+										<div v-for="(item, index) in prop.row.correctAttach" :key="index">
+											<a style="margin: 5px;" :href="item.url">
+												{{item.fileName}}
+											</a>
+										</div>
+									</el-form-item>
+									<el-form-item label="问题图片">
+										<div v-for="(item, index) in prop.row.problemPic" :key="index">
+											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.problemPic"></el-image>
+										</div>
+									</el-form-item>
+									<el-form-item label="纠正图片">
+										<div v-for="(item, index) in prop.row.correctPic" :key="index">
+											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.correctPic"></el-image>
+										</div>
+									</el-form-item>
 								</div>
 							</div>
-							<el-row v-if="prop.row.checkResult==='符合'" >
+							<el-row v-if="prop.row.checkResult==='符合'">
 								<el-form-item label="符合附件">
-									<span>{{prop.row.attach}}</span>
+									<div v-for="(item, index) in prop.row.attach" :key="index">
+										<a style="margin: 5px;" :href="item.url">
+											{{item.fileName}}
+										</a>
+									</div>
 								</el-form-item>
 								<el-form-item label="符合图片">
-									<span>{{prop.row.pic}}</span>
+									<div v-for="(item, index) in prop.row.pic" :key="index">
+										<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.pic"></el-image>
+									</div>
 								</el-form-item>
 							</el-row>
 						</el-form>
@@ -152,7 +159,8 @@
 				<el-table-column prop="taskType" label="检查类别" fixed="left" width="100" align="center"></el-table-column>
 				<el-table-column prop="checkDate" label="审核日期" fixed="left" width="120" align="center"></el-table-column>
 				<el-table-column prop="checkResult" label="审核结果" fixed="left" align="center"></el-table-column>
-				<el-table-column prop="resultDescription" label="结果描述" fixed="left" align="center" width="200" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="resultDescription" label="结果描述" fixed="left" align="center" width="200"
+				 show-overflow-tooltip></el-table-column>
 				<el-table-column prop="nature" label="问题分类" align="center" width="100"></el-table-column>
 				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkedCompanyName" label="受审单位" width="200" align="center"></el-table-column>
@@ -178,85 +186,87 @@
 		queryAllPassTable,
 		GetCompany
 	} from '../../../services/qualitySystem/dataCount.js'
+	import {
+		getOriginFileName
+	} from '../../../services/qualitySystem/FieldInformEntry.js'
+	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
 			return {
 				loading: false,
 				dateRange: [],
+				path: 'http://39.98.173.131:7000/resources/QualityCheck/',
 				qualityCheckList: [],
 				qualityRecordList: [],
 				qualityCheckTree: [],
 				checkRecordList: [],
-				tableData:[],
-				companyList:[],
-				companyName:'',
-				companyId:null,
-				companyCode:'',
-				taskType:'',
-				checkResult:'',
-				nature:'',
-				taskTypeOptions:[
-					{
-						value:'内审',
-						label:'内审'
+				tableData: [],
+				companyList: [],
+				companyName: '',
+				companyId: null,
+				companyCode: '',
+				taskType: '',
+				checkResult: '',
+				nature: '',
+				taskTypeOptions: [{
+						value: '内审',
+						label: '内审'
 					},
 					{
-						value:'外审',
-						label:'外审'
+						value: '外审',
+						label: '外审'
 					},
 					{
-						value:'管理评审',
-						label:'管理评审'
+						value: '管理评审',
+						label: '管理评审'
 					},
 					{
-						value:'顾客投诉',
-						label:'顾客投诉'
+						value: '顾客投诉',
+						label: '顾客投诉'
 					},
 					{
-						value:'监督',
-						label:'监督'
+						value: '监督',
+						label: '监督'
 					},
 					{
-						value:'远程监控',
-						label:'远程监控'
+						value: '远程监控',
+						label: '远程监控'
 					},
 					{
-						value:'其他',
-						label:'其他'
+						value: '其他',
+						label: '其他'
 					}
 				],
-				checkResultOptions:[
-					{
-						value:'符合',
-						label:'符合'
+				checkResultOptions: [{
+						value: '符合',
+						label: '符合'
 					},
 					{
-						value:'不符合',
-						label:'不符合'
+						value: '不符合',
+						label: '不符合'
 					}
 				],
-				natureOptions:[
-					{
-						value:'建议项',
-						label:'建议项'
+				natureOptions: [{
+						value: '建议项',
+						label: '建议项'
 					},
 					{
-						value:'观察项',
-						label:'观察项'
+						value: '观察项',
+						label: '观察项'
 					},
 					{
-						value:'问题项',
-						label:'问题项'
+						value: '问题项',
+						label: '问题项'
 					},
 					{
-						value:'不符合',
-						label:'不符合'
+						value: '不符合',
+						label: '不符合'
 					},
 					{
-						value:'违章项',
-						label:'违章项'
+						value: '违章项',
+						label: '违章项'
 					}
-					
+
 				]
 			}
 		},
@@ -269,10 +279,29 @@
 			getData() {
 				this.queryAllTable()
 			},
-			GetCompany(){
-				GetCompany().then(res=>{
-					this.companyList=res.data
+			GetCompany() {
+				GetCompany().then(res => {
+					this.companyList = res.data
 				})
+			},
+			download() {
+				var option={}
+				option.fileName="质量专项检查记录统计表"
+				option.datas=[{
+					sheetData: this.checkRecordList,
+					sheetFilter:['checkListName','taskType','checkDate','checkResult','resultDescription','nature','problemDescription','checkedCompanyName',
+					'group','responsiCompanyName','responsePersonName','checkPerson','contractor','owner','projectName','checkProject',
+					'execStd','nonConformityType','nonConformityNature','nonConformSource','nonConformityStd','nonConformClauseNo',
+					'nonConformClauseContent','punishmentBasis','violationClause','violationClauseContent','violationDeduction',
+					'violationScore','illegalPerson','post','postType','employmentProperty','workingYears','education','nonConformCorrect',
+					'nonConformCorrectMeasure','nonConformCorrectMeasureVerify','reformLimit','reformDate'],
+					sheetHeader:["检查项名称","检查类别","审核日期","审核结果","结果描述","问题分类","问题描述","受审单位","受审部门","责任单位",
+					"责任人","监督人员","承包商","业主","项目组名称","检测项目","执行标准","不符合类型","不符合性质","不符合原因","不符合条款",
+					"不符合条款号","不符合条款内容","处罚依据","违章条款","违章条款内容","违章扣款","违章扣分","违章人员","岗位","岗位分类",
+					"用工性质","工作年限","学历","纠正","纠正措施","跟踪验证","整改时限","整改完成时间"]
+				}]
+				var toExcel = new ExportJsonExcel(option);
+				toExcel.saveExcel();
 			},
 			queryAllPassTable() {
 				queryAllPassTable().then(res => {
@@ -281,7 +310,7 @@
 					if (this.qualityCheckList) {
 						this.qualityRecordList = []
 						this.qualityCheckTree = []
-						for(var i=0;i<this.qualityCheckList.length;i++){
+						for (var i = 0; i < this.qualityCheckList.length; i++) {
 							this.queryQualityRecordList(this.qualityCheckList[i].qualityCheckID)
 							this.queryCheckTreeByID(this.qualityCheckList[i].qualityCheckID)
 						}
@@ -297,7 +326,7 @@
 					if (this.qualityCheckList) {
 						this.qualityRecordList = []
 						this.qualityCheckTree = []
-						for(var i=0;i<this.qualityCheckList.length;i++){
+						for (var i = 0; i < this.qualityCheckList.length; i++) {
 							this.queryQualityRecordList(this.qualityCheckList[i].qualityCheckID)
 							this.queryCheckTreeByID(this.qualityCheckList[i].qualityCheckID)
 						}
@@ -333,49 +362,59 @@
 					return
 				}
 			},
-			getCombineData(){
-				this.checkRecordList=[]
-				for(var i=0;i<this.qualityCheckList.length;i++){
-					this.combineData(this.qualityCheckList[i],this.qualityRecordList[i],this.qualityCheckTree[i])
+			getCombineData() {
+				this.checkRecordList = []
+				for (var i = 0; i < this.qualityCheckList.length; i++) {
+					this.combineData(this.qualityCheckList[i], this.qualityRecordList[i], this.qualityCheckTree[i])
 				}
 			},
-			select(){
-				this.loading=true
+			select() {
+				this.loading = true
 				this.getCombineData()
-				console.log('before select',this.checkRecordList)
-				if(this.taskType){
-					this.checkRecordList=this.checkRecordList.filter(item=>{
-						return item.taskType==this.taskType
+				if (this.taskType) {
+					this.checkRecordList = this.checkRecordList.filter(item => {
+						return item.taskType == this.taskType
 					})
 				}
-				console.log('select 1',this.checkRecordList)
-				if(this.companyId){
-					this.changeCompanyIdTocompanyName(this.companyList,this.companyId)
-					this.checkRecordList=this.checkRecordList.filter(item=>{
-						return item.checkedCompanyName==this.companyName
+				if (this.companyId) {
+					this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
+					this.checkRecordList = this.checkRecordList.filter(item => {
+						return item.checkedCompanyName == this.companyName
 					})
 				}
-				console.log('select 2',this.checkRecordList)
-				console.log(this.dateRange)
-				if(this.dateRange.length){
-					this.checkRecordList=this.checkRecordList.filter(item=>{
-						return item.checkDate>=this.dateRange[0]&&item.checkDate<=this.dateRange[1]
+				if (this.dateRange) {
+					if (this.dateRange.length > 0) {
+						this.checkRecordList = this.checkRecordList.filter(item => {
+							return item.checkDate >= this.dateRange[0] && item.checkDate <= this.dateRange[1]
+						})
+					}
+				}
+				if (this.checkResult) {
+					this.checkRecordList = this.checkRecordList.filter(item => {
+						return item.checkResult == this.checkResult
 					})
 				}
-				if(this.checkResult){
-					this.checkRecordList=this.checkRecordList.filter(item=>{
-						return item.checkResult==this.checkResult
+				if (this.nature) {
+					this.checkRecordList = this.checkRecordList.filter(item => {
+						return item.nature == this.nature
 					})
 				}
-				if(this.nature){
-					this.checkRecordList=this.checkRecordList.filter(item=>{
-						return item.nature==this.nature
-					})
+				this.checkRecordList=this.sortData(this.checkRecordList)
+				this.loading = false
+			},
+			sortData(data){
+				if(data.length>0){
+					for(var i=0;i<data.length-1;i++){
+						for(var j=i+1;j<data.length;j++){
+							if(data[i].checkDate<=data[j].checkDate){
+								let temp=data[i]
+								data[i]=data[j]
+								data[j]=temp
+							}
+						}
+					}
+					return data
 				}
-				console.log('select 3',this.checkRecordList)
-				this.loading=false
-				console.log('table',this.tableData)
-				console.log('after select',this.checkRecordList)
 			},
 			changeCompanyIdTocompanyName(val, companyId) {
 				for (var j = 0; j < val.length; j++) {
@@ -393,11 +432,10 @@
 			combineData(qualityCheckList, qualityRecordList, qualityCheckTree) {
 				for (var i = 0; i < qualityCheckTree.length; i++) {
 					if (!qualityCheckTree[i].children) {
-						var checkRecordItem= {
+						var checkRecordItem = {
 							checkListName: '',
 							taskType: '',
 							//任务类别/检查类别/检查方式
-							checkListName: '',
 							//检查表名字，有多个中间用";"隔开
 							checkedCompanyName: '',
 							//受审核单位
@@ -465,72 +503,113 @@
 							reformDate: '',
 							//整改完成时间
 							reformLimit: '',
+							pic:[],
+							attach:[],
 							//整改时限
-							problemAttach: '',
+							problemAttach: [],
 							//问题附件
-							problemPic: '',
+							problemPic: [],
 							//问题图片
-							correctAttach: '',
+							correctAttach: [],
 							//纠正附件
-							correctPic: '',
+							correctPic: [],
 						}
 						checkRecordItem.checkListName = qualityCheckTree[i].qualityCheckName
 						checkRecordItem.checkResult = qualityCheckTree[i].checkResult
-						checkRecordItem.resultDescription=qualityCheckTree[i].description
-						checkRecordItem.attach=qualityCheckTree[i].attach
-						checkRecordItem.pic=qualityCheckTree[i].pic
-						checkRecordItem.taskType=qualityCheckList.taskType
-						checkRecordItem.checkDate=qualityCheckList.checkDate
-						checkRecordItem.checkedCompanyName=qualityCheckList.checkedCompanyName
-						checkRecordItem.group=qualityCheckList.group
-						checkRecordItem.responsiCompanyName=qualityCheckList.responsiCompanyName
-						checkRecordItem.responsePersonName=qualityCheckList.responsePersonName
-						checkRecordItem.checkPerson=qualityCheckList.checkPerson
-						checkRecordItem.contractor=qualityCheckList.contractor
-						checkRecordItem.owner=qualityCheckList.owner
-						checkRecordItem.projectName=qualityCheckList.projectName
-						checkRecordItem.checkProject=qualityCheckList.checkProject
-						checkRecordItem.execStd=qualityCheckList.execStd
-						var temp=qualityRecordList.filter(item=>{
-							return item.checkListCode==qualityCheckTree[i].checkListCode
+						checkRecordItem.resultDescription = qualityCheckTree[i].description
+						checkRecordItem.attach =this.splitFilePath(qualityCheckTree[i].attach)
+						checkRecordItem.pic = this.splitPicPath(qualityCheckTree[i].pic)
+						checkRecordItem.taskType = qualityCheckList.taskType
+						checkRecordItem.checkDate = qualityCheckList.checkDate
+						checkRecordItem.checkedCompanyName = qualityCheckList.checkedCompanyName
+						checkRecordItem.group = qualityCheckList.group
+						checkRecordItem.responsiCompanyName = qualityCheckList.responsiCompanyName
+						checkRecordItem.responsePersonName = qualityCheckList.responsePersonName
+						checkRecordItem.checkPerson = qualityCheckList.checkPerson
+						checkRecordItem.contractor = qualityCheckList.contractor
+						checkRecordItem.owner = qualityCheckList.owner
+						checkRecordItem.projectName = qualityCheckList.projectName
+						checkRecordItem.checkProject = qualityCheckList.checkProject
+						checkRecordItem.execStd = qualityCheckList.execStd
+						var temp = qualityRecordList.filter(item => {
+							return item.checkListCode == qualityCheckTree[i].checkListCode
 						})[0]
-						if(temp){
-						checkRecordItem.nature=temp.nature
-						checkRecordItem.problemDescription=temp.description
-						checkRecordItem.nonConformityType=temp.nonConformityType
-						checkRecordItem.nonConformityNature=temp.nonConformityNature
-						checkRecordItem.nonConformityStd=temp.nonConformityStd
-						checkRecordItem.nonConformClauseNo=temp.nonConformClauseNo
-						checkRecordItem.nonConformClauseContent=temp.nonConformClauseContent
-						checkRecordItem.nonConformSource=temp.nonConformSource
-						checkRecordItem.nonConformCorrect=temp.nonConformCorrect
-						checkRecordItem.nonConformCorrectMeasure=temp.nonConformCorrectMeasure
-						checkRecordItem.nonConformCorrectMeasureVerify=temp.nonConformCorrectMeasureVerify
-						checkRecordItem.punishmentBasis=temp.punishmentBasis
-						checkRecordItem.violationClause=temp.violationClause
-						checkRecordItem.violationClauseContent=temp.violationClauseContent
-						checkRecordItem.violationDeduction=temp.violationDeduction
-						checkRecordItem.violationScore=temp.violationScore
-						checkRecordItem.illegalPerson=temp.illegalPerson
-						checkRecordItem.post=temp.post
-						checkRecordItem.postType=temp.postType
-						checkRecordItem.employmentProperty=temp.employmentProperty
-						checkRecordItem.workingYears=temp.workingYears
-						checkRecordItem.education=temp.education
-						checkRecordItem.reformDate=temp.reformDate
-						checkRecordItem.reformLimit=temp.reformLimit
-						checkRecordItem.problemAttach=temp.problemAttach
-						checkRecordItem.problemPic=temp.problemPic
-						checkRecordItem.correctAttach=temp.correctAttach
-						checkRecordItem.correctPic=temp.correctPic
+						if (temp) {
+							checkRecordItem.nature = temp.nature
+							checkRecordItem.problemDescription = temp.description
+							checkRecordItem.nonConformityType = temp.nonConformityType
+							checkRecordItem.nonConformityNature = temp.nonConformityNature
+							checkRecordItem.nonConformityStd = temp.nonConformityStd
+							checkRecordItem.nonConformClauseNo = temp.nonConformClauseNo
+							checkRecordItem.nonConformClauseContent = temp.nonConformClauseContent
+							checkRecordItem.nonConformSource = temp.nonConformSource
+							checkRecordItem.nonConformCorrect = temp.nonConformCorrect
+							checkRecordItem.nonConformCorrectMeasure = temp.nonConformCorrectMeasure
+							checkRecordItem.nonConformCorrectMeasureVerify = temp.nonConformCorrectMeasureVerify
+							checkRecordItem.punishmentBasis = temp.punishmentBasis
+							checkRecordItem.violationClause = temp.violationClause
+							checkRecordItem.violationClauseContent = temp.violationClauseContent
+							checkRecordItem.violationDeduction = temp.violationDeduction
+							checkRecordItem.violationScore = temp.violationScore
+							checkRecordItem.illegalPerson = temp.illegalPerson
+							checkRecordItem.post = temp.post
+							checkRecordItem.postType = temp.postType
+							checkRecordItem.employmentProperty = temp.employmentProperty
+							checkRecordItem.workingYears = temp.workingYears
+							checkRecordItem.education = temp.education
+							checkRecordItem.reformDate = temp.reformDate
+							checkRecordItem.reformLimit = temp.reformLimit
+							checkRecordItem.problemAttach = this.splitFilePath(temp.problemAttach)
+							checkRecordItem.problemPic = this.splitPicPath(temp.problemPic)
+							checkRecordItem.correctAttach = this.splitFilePath(temp.correctAttach)
+							checkRecordItem.correctPic =this.splitPicPath(temp.correctPic)
 						}
 						this.checkRecordList.push(checkRecordItem)
-					}else{
-						this.combineData(qualityCheckList,qualityRecordList,qualityCheckTree[i].children)
+					} else {
+						this.combineData(qualityCheckList, qualityRecordList, qualityCheckTree[i].children)
 					}
+				}
+			},
+			//切割字符串，并组装url
+			splitFilePath(pathString) {
+				if (pathString) {
+					//定义一个空数组用于保存url
+					var targetArray = []
+					//切割传入的字符串
+					var temp = pathString.split(';')
+					//遍历数组，组装url
+					for (var i = 0; i < temp.length; i++) {
+						let file = {
+							url: '',
+							fileName: ''
+						}
+						file.url = this.path + temp[i]
+						getOriginFileName(temp[i]).then(res => {
+							file.fileName = res.data
+							targetArray.push(file)
+						})
+					}
+					//返回url数组
+					return targetArray
+				}
+			},
+			splitPicPath(picPath) {
+				if (picPath) {
+					var targetArray = []
+					var temp = picPath.split(';')
+					for (var i = 0; i < temp.length; i++) {
+						let file = {
+							url: '',
+							fileName: ''
+						}
+						file.url = this.path + temp[i]
+						targetArray.push(file)
+					}
+					return targetArray
 				}
 			}
 		}
+
 	}
 </script>
 

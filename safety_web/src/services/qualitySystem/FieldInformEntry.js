@@ -49,3 +49,11 @@ export const issuedTable=(data)=>{
 export const pictureDownload=(param)=>{
 	return request(`/api/screenShotDownload?fileName=${param}`,{method:'get'})
 }
+//获取附件原文件名
+export const getOriginFileName=(param)=>{
+	return request(`/api/getOriginFileName?fileName=${param}`,{method:'get'})
+}
+//查询处于所有状态的表
+export const queryAllTable=()=>{
+	return request('/api/queryAllTable',{method:'get'})
+}

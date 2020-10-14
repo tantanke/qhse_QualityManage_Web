@@ -12,15 +12,15 @@
 					<el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
 					<el-table-column label="操作" width="150" align="center">
 						<template slot-scope="scope">
-							<el-button type="primary" size="mini" icon="el-icon-download" @click="isComplete(scope.row)" v-if="scope.row.checkListCode.length===4">审核提交</el-button>
-							<el-button type="primary" size="mini" icon="el-icon-edit" @click="check(scope.row)" v-if="scope.row.children.length===0&&!scope.row.checkResult">审核</el-button>
+							<el-button type="primary" size="mini" icon="el-icon-download" @click="isComplete(scope.row)" v-if="scope.row.checkListCode.length===4&&isBelongToPart===true">审核提交</el-button>
+							<el-button type="primary" size="mini" icon="el-icon-edit" @click="check(scope.row)" v-if="scope.row.children.length===0&&!scope.row.checkResult&&isBelongToPart===true">审核</el-button>
 							<el-button type="success" size="mini" icon="el-icon-search" @click="check(scope.row)" v-if="scope.row.children.length===0&&scope.row.checkResult">查看</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 				
 			</el-row>
-			<el-dialog title="审核" :visible.sync="checkDialog" align="left" width="66%">
+			<el-dialog title="审核" :visible.sync="checkDialog" v-loading="dialogLoading" align="left" width="66%" @close="closeDialog">
 				<el-form :model="formData" :rules="rules" :inline='true' label-width="100px" :label-postion="left">
 					<el-form-item label="要素名:">
 						<el-input v-model="chosenData.qualityCheckName" style="width: 200%;"></el-input>
@@ -31,7 +31,7 @@
 							</el-switch>&nbsp;{{result.checkResult}}
 						</el-form-item>
 						<el-row v-if="result.checkResult==='符合'">
-							<el-col :span='20'>
+							<el-col :span='20' v-if="isBelongToPart===true">
 								<el-form-item label="审核证据">
 									<el-upload :action="'/api/addQualityAttach'" :headers="headers" ref="fileUpload" :file-list="attach"
 									 show-file-list multiple :on-success="onSuccessFile" :on-remove="onRemoveFile" :on-progress="onProgressFile"
@@ -218,7 +218,7 @@
 								<el-date-picker v-model="formData.reformLimit" style="width:88%;" value-format="yyyy-MM-dd" format="yyyy年MM月dd日"></el-date-picker>
 							</el-form-item>
 						</el-row>
-						<el-col :span='20' v-if="formData.nature!==''">
+						<el-col :span='20' v-if="formData.nature!==''&&isBelongToPart===true">
 							<el-form-item label="审核证据">
 								<el-upload :action="'/api/addQualityAttach'" :headers="headers" show-file-list multiple
 								 :on-success="onSuccessProbFile" :on-remove="onRemoveProbFile" :on-progress="onProgressFile" :auto-upload="true">
@@ -238,22 +238,30 @@
 				<el-form :inline="true">
 					<el-col :span='20'>
 						<el-form-item label="附件浏览">
-							<a style="margin: 5px;" :href="item" v-for="(item, index) in attachList" :key="index">
-								文件{{index+1}}
-							</a>
+							<div v-for="(item, index) in attachList" :key="index">
+								<a style="margin: 5px;" :href="item.url">
+								{{item.fileName}}
+							</a><el-button type="text" size="mini" @click="deleteAttach(item)" style="color: #000000;">
+							<i class="el-icon-close"></i>
+							</el-button>
+							</div>
+							
 						</el-form-item>
 						<el-form-item label="图片浏览">
-							<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="picList" v-for="(item, index) in picList"
-							 :key="index" v-on:hover="">
-							 </el-image>
+							<div v-for="(item, index) in picList" :key="index" style="float: left;">
+								<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="picList"></el-image>
+								<el-button type="text" @click="deletePic(item,index)" size="mini" style="color: #000000; position: relative;top: -90px;left: -20px;">
+									<i class="el-icon-close"></i>
+								</el-button>
+							</div>
 						</el-form-item>
 						<br />
 					</el-col>
 				</el-form>
 				<br />
 				<span slot="footer" class="dialog-footer">
-					<el-button icon="el-icon-folder" type="success" @click="handleClick" v-if="chosenData.checked">更新</el-button>
-					<el-button icon="el-icon-folder" type="primary" @click="handleClick" v-else>保存</el-button>
+					<el-button icon="el-icon-folder" type="success" @click="handleClick" v-if="chosenData.checked&&isBelongToPart===true">更新</el-button>
+					<el-button icon="el-icon-folder" type="primary" @click="handleClick" v-else-if="isBelongToPart===true">保存</el-button>
 					<el-button icon="el-icon-refresh-left" @click="checkDialog=false">关闭</el-button>
 				</span>
 			</el-dialog>
@@ -274,7 +282,9 @@
 		addQualityAttach,
 		downloadQualityAttach,
 		issuedTable,
-		pictureDownload
+		pictureDownload,
+		//获取文件原文件名
+		getOriginFileName
 	} from "../../../services/qualitySystem/FieldInformEntry.js"
 	import {
 		GetCurrentUser
@@ -295,7 +305,11 @@
 		data() {
 			return {
 				loading: false,
+				dialogLoading:false,
+				//用于判断当前主表是否属于该流程
+				isBelongToPart:false,
 				headers: newOptions.headers,
+				path:'http://39.98.173.131:7000/resources/QualityCheck/',
 				tableData: [],
 				checkRecordList: [],
 				checkDialog: false,
@@ -578,6 +592,38 @@
 			this.getParams()
 		},
 		methods: {
+			deleteAttach(item){
+				console.log('file before delete',this.attachList)
+				this.$confirm('确认删除本文件吗？删除后请点击更新保存操作','提示',{
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: "warning"
+				}).then(()=>{
+					this.dialogLoading=true
+					this.attachList.splice(this.attachList.indexOf(item.url),1)
+					this.dialogLoading=false
+					console.log('file after delete',this.attachList)
+				})
+			},
+			//删除当前选中图片
+			deletePic(item,index){
+				this.$confirm('确认删除本张图片吗？删除后请点击更新保存操作','提示',{
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: "warning"
+				}).then(()=>{
+					this.dialogLoading=true
+					console.log(item)
+					let temp=item.url.split('/')
+					var deleteName=temp[temp.length-1]
+					console.log(temp[temp.length-1])
+					this.picList.splice(this.picList.indexOf(deleteName),1)
+					
+					console.log('result',this.result)
+					this.dialogLoading=false
+				})
+				
+			},
 			//查询当前用户
 			currentUser() {
 				return GetCurrentUser()
@@ -592,6 +638,7 @@
 			},
 			//打开审核对话框
 			check(row) {
+				this.dialogLoading=true
 				console.log('row', row)
 				//chosendata赋值
 				this.chosenData.qualityCheckName = row.qualityCheckName
@@ -612,19 +659,28 @@
 					this.initFormdata(this.checkRecordList.filter(item => {
 						return item.checkListCode == row.checkListCode && item.qulity_CheckID == this.qualityCheckData.qualityCheckID
 					})[0])
+					if(!this.formData.nature){
+						this.getParams()
+					}
 				}else if(row.checkResult=='符合'){
 					this.value = false
 					this.result.checkResult = row.checkResult
 					this.initFormdata()
 					this.formData.description = row.description
-					this.picList = this.splitPath(row.pic)
-					this.attachList = this.splitPath(row.attach)
+					this.picList = this.splitPicPath(row.pic)
+					console.log('piclist',this.picList)
+					this.attachList = this.splitFilePath(row.attach)
+					
 				}else{
 					this.value = false
 					this.result.checkResult = '符合'
 					this.initFormdata()
+					
 				}
-				this.checkDialog = true
+				this.$nextTick(function(){
+					this.checkDialog = true
+					this.dialogLoading=false
+				})
 			},
 			//页面跳转后获取数据
 			getParams() {
@@ -632,6 +688,11 @@
 				this.loading = true
 				this.initData('chosenData')				//路由信息中有数据
 				if (this.qualityCheckData.qualityCheckID) {
+					if(this.qualityCheckData.isPush=='已推送'&&this.qualityCheckData.issued=='未下达'){
+						this.isBelongToPart=true
+					}else{
+						this.isBelongToPart=false
+					}
 					queryCheckTreeByID(this.qualityCheckData.qualityCheckID).then(res => {
 						var temp=[]
 						this.addCheckTreeElement(res.data, temp)
@@ -645,6 +706,7 @@
 					queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID).then(res => {
 						this.checkRecordList = res.data
 						console.log('checkRecordList', this.checkRecordList)
+						this.loading=false
 					}).catch(err => {
 						this.$message.error(err.message)
 					})
@@ -792,6 +854,8 @@
 				switch (flag) {
 					//初始化chosendata，
 					case 'chosenData':
+						this.chosenData.checkListCode=''
+						this.chosenData.qualityCheckID=''
 						this.chosenData.qualityCheckRecordID = ''
 						this.chosenData.qualityCheckName = ''
 						this.chosenData.qualityCheckTableRecordID = ''
@@ -805,7 +869,7 @@
 				}
 			},
 			//切割字符串，并组装url
-			splitPath(pathString) {
+			splitFilePath(pathString) {
 				if (pathString) {
 					//定义一个空数组用于保存url
 					var targetArray = []
@@ -813,10 +877,32 @@
 					var temp = pathString.split(';')
 					//遍历数组，组装url
 					for (var i = 0; i < temp.length; i++) {
-						var url = "http://39.98.173.131:7000/resources/QualityCheck/" + temp[i]
-						targetArray.push(url)
+						let file={
+							url:'',
+							fileName:''
+						}
+						file.url=this.path+temp[i]	
+						getOriginFileName(temp[i]).then(res=>{
+							file.fileName=res.data
+							targetArray.push(file)
+						})
 					}
 					//返回url数组
+					return targetArray
+				}
+			},
+			splitPicPath(picPath){
+				if(picPath){
+					var targetArray=[]
+					var temp=picPath.split(';')
+					for(var i=0;i<temp.length;i++){
+						let file={
+							url:'',
+							fileName:''
+						} 
+						file.url=this.path+temp[i]
+						targetArray.push(file)
+					}
 					return targetArray
 				}
 			},
@@ -834,8 +920,8 @@
 				if (checkRecord) {
 					console.log('checkRecord',checkRecord)
 					//组装附件和图片展示用url数组
-					this.picList = this.splitPath(checkRecord.problemPic)
-					this.attachList = this.splitPath(checkRecord.problemAttach)
+					this.picList = this.splitPicPath(checkRecord.problemPic)
+					this.attachList = this.splitFilePath(checkRecord.problemAttach)
 					//保存这一条记录的id
 					this.chosenData.qualityCheckRecordID = checkRecord.qulity_CheckRecordID
 					//去除多余属性
@@ -952,7 +1038,7 @@
 				//完整性检查
 				if (this.formData.reformLimit) {
 					var nowDate = new Date().toISOString().substr(0, 10)
-					if (this.formData.reformLimit < nowDate) {
+					if (this.formData.reformLimit <= nowDate) {
 						this.$message.error('整改时限不能小于当前日期')
 						this.formData.reformLimit = ''
 						return
@@ -973,8 +1059,7 @@
 					}
 				}
 				//关闭对话框，并开启页面加载
-				this.checkDialog = false
-				this.loading = true
+				
 				this.result.qualityCheckTableRecordID = this.chosenData.qualityCheckTableRecordID
 				console.log('result', this.result)
 				console.log('formdata', this.formData)
@@ -985,15 +1070,15 @@
 					if (this.chosenData.checkResult == '符合') {
 						//新增的审核结果为“符合”，只执行更新树状表操作
 						if (this.result.checkResult == '符合') {
-							this.result.attach = this.combinePath(this.attach)
-							this.result.pic = this.combinePath(this.pic)
+							this.result.attach = this.combinePath(this.attach,this.attachList)
+							this.result.pic = this.combinePath(this.pic,this.picList)
 							this.result.description = this.formData.description
 							this.addQualityInformAndAttach(this.result)
 						}
 						//新增审核结果为“不符合”，执行更新树状表操作，同时新增一条质量检查记录
 						else {
-							this.formData.problemAttach = this.combinePath(this.attach)
-							this.formData.problemPic = this.combinePath(this.pic)
+							this.formData.problemAttach = this.combinePath(this.attach,this.attachList)
+							this.formData.problemPic = this.combinePath(this.pic,this.picList)
 							this.addQualityInformAndAttach(this.result)
 							this.addCheckRecord(this.formData)
 						}
@@ -1018,15 +1103,17 @@
 						//新增审核结果为“不符合”
 						else {
 							//更新对应质量检查记录
+							this.formData.problemAttach = this.combinePath(this.attach,this.attachList)
+							this.formData.problemPic = this.combinePath(this.pic,this.picList)
+							console.log('update chosendata',this.chosenData)
+							console.log('update formdata',this.formData)
 							updateCheckRecord(this.chosenData.qualityCheckRecordID, this.formData).then(res => {
 								if (res.code == '1000') {
 									this.$message.success('更新信息成功')
 									this.getParams()
 								}
-								this.loading = false
 							}).catch(err => {
 								this.$message.error(err.message)
-								this.loading = false
 							})
 						}
 					}
@@ -1052,7 +1139,7 @@
 				}
 				//重新获取数据，刷新页面
 				this.getParams()
-				this.loading = false
+				this.checkDialog = false
 
 			},
 			//检查现场信息是否录入完毕，用于推送整个表之前的检查
@@ -1144,13 +1231,25 @@
 				return count
 			},
 			//将路径数组组装成字符串
-			combinePath(pathArray) {
+			combinePath(pathArray,pathList) {
 				var targetString = ''
-				for (var i = 0; i < pathArray.length; i++) {
-					if (!targetString) {
-						targetString = pathArray[i]
-					} else {
-						targetString = targetString + ';' + pathArray[i]
+				if(pathArray){
+					for (var i = 0; i < pathArray.length; i++) {
+						if (!targetString) {
+							targetString = pathArray[i]
+						} else {
+							targetString = targetString + ';' + pathArray[i]
+						}
+					}
+				}
+				if(pathList){
+					for(var i=0;i<pathList.length;i++){
+						var temp=pathList[i].url.split('/')
+						if(!targetString){
+							targetString=temp[temp.length-1]
+						}else{
+							targetString=targetString+';'+temp[temp.length-1]
+						}
 					}
 				}
 				return targetString

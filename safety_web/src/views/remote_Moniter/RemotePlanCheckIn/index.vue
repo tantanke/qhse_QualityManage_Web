@@ -69,7 +69,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { getDetails } from "../../../services/remote";//查询当天录入情况
 import { getMonitorPlanList } from "../../../services/remote";//查询
 import { getCheckDetail, getInputDates } from "../../../services/remote";//查询
-import { deletePlan, getNeedToCheckedDetails } from "../../../services/remote";//删除
+import { deletePlan, getNeedToCheckedDetails,getDayReport } from "../../../services/remote";//删除
 
 
 export default {
@@ -198,7 +198,7 @@ export default {
       })
     },
     pushfile (data) {
-      getNeedToCheckedDetails({ date: this.nowdate, monitorPlanID: data.monitorPlanID }).then(res => {
+      getDayReport({ date: this.nowdate, monitorPlanID: data.monitorPlanID }).then(res => {
         this.downloadData = [];
         this.resData = res.data;
         if (res.code == '1000') {

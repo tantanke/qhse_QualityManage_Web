@@ -19,15 +19,19 @@ export const queryFileaduit2 = (data) => {
       data
     })
 }
-// 待修改
-
+export const queryFileaduit3 = () => {
+  return request('/api/query_qualityfileaduit', {
+      method: 'get'
+    })
+}
 export const querryQhseElement = (data) => {
-  return request(`/api/querryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
+  return request(`/api/quality_queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
       method: 'GET',
       data
     })
 }
 
+// 待修改
 export const addFileaduitrecord = (data) => {
   return request('/api/add_qualityfileaduitrecord',{
       method: 'post',

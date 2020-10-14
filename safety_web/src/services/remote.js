@@ -127,3 +127,9 @@ export const deleteSumDataByDate = (data) => {
     data
   })
 }
+//日报
+export const getDayReport = (data) => {
+  return request(`/api/getDayReport?planId=${data.monitorPlanID}&date=${data.date}`,{
+    data
+  })
+}

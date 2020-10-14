@@ -45,10 +45,6 @@
           <el-table-column label="视频监控描述:" width="100"  prop="description" style="margin-bottom:5px">{{resData.description}}</el-table-column>
           <el-table-column label="截图编号:" width="100" prop="picNo" style="margin-bottom:5px">{{resData.picNo}}</el-table-column>
           <el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-table-column> -->
-              
-            <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
-              <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
-            </el-table-column> -->
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
               <el-button 
@@ -287,8 +283,8 @@ export default {
    },
    mounted(){
       this.nowdate=this.getNowFormatDate();
-      this.selectdate=this.getNowFormatDate1();
-      this.selecttime=this.getNowFormatDate1();
+      this.selectdate=this.getNowFormatDate();
+      this.selecttime=this.getNowFormatDate();
        console.log('核查细节页面报错')
        getNeedToCheckedDetails(this.$route.params).then(res=>{
          for(var i=0;i<res.data.length;i++)
