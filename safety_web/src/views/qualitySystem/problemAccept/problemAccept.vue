@@ -129,6 +129,7 @@ export default {
                 console.log('查询所有基本信息表')
                 console.log(res.data)
                 this.problemList = this.sortByDate(res.data)
+                this.loading = false
             }).catch((err) => {
                 return this.$message.error(err.message)
             })
@@ -206,6 +207,7 @@ export default {
         },
     },
     created: function () {
+        this.loading = true
         // 获取公司表
         this.getCompany()
         this.getBasicInfo()

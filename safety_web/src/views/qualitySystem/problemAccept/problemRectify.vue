@@ -273,6 +273,7 @@ export default {
                 console.log(res.data)
                 this.problemRectifyList = res.data 
                 this.getProgress()  
+                this.loading = false
             }).catch((err) => {
                 this.$message.error(err.message)
             })
@@ -602,6 +603,7 @@ export default {
         }
     },
     created: function () {
+        this.loading = true
         this.getAcceptRow()
         this.getQualityCheck()
     }

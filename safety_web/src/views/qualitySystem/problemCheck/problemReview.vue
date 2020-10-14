@@ -220,6 +220,7 @@ export default {
                 console.log(res.data)
                 this.problemReviewList = res.data
                 this.getProgress()
+                this.loading = false
             }).catch((err) => {
                 this.$message.error(err.message)
             })
@@ -505,6 +506,7 @@ export default {
         },
     },
     created: function () {
+        this.loading = true
         this.getAcceptRow()
         this.getQualityCheck()
     },
