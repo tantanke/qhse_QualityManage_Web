@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title" style="width:100%">质量-文件审核</div>
+    <div class="page-title" style="width:100%">QHSE文件审核</div>
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true" :model="filterQuery">
@@ -41,12 +41,14 @@
           v-loading="loading">
           <el-table-column prop="year" label="年份" width="120" align="center"></el-table-column>
           <el-table-column prop="companyName" label="公司名称"></el-table-column>
+          <el-table-column prop="additor" label="审核时间"></el-table-column>
+          <el-table-column prop="auditTime" label="审核人"></el-table-column>
           <el-table-column prop="auditName" label="审核名称"></el-table-column>
           <el-table-column prop="auditType" label="审核类别"></el-table-column>
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button type='danger' size="mini" style='margin-right:20px' icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
-              <router-link :to='{name: "QualityFileCheckIndex", params: {data:scope.row}}'>        
+              <router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>        
                 <el-button type="primary" size="mini" icon="el-icon-edit" >审核</el-button>
               </router-link>
             </template>
@@ -101,13 +103,9 @@
 <script>
 import CurrentUser from '../../../store/CurrentUser'
 import { addFileaduit } from "../../../services/qualitySystem/quality_Filecheck"
-import { querryQhseElement,queryFileaduit,queryFileaduit2 } from "../../../services/qualitySystem/quality_Filecheck"
+import { querryQhseElement,queryFileaduit,queryFileaduit2,queryFileaduit3 } from "../../../services/qualitySystem/quality_Filecheck"
 import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
-const DefaultQuery = {
-  year: "",
-  status:""
-};
 export default {
   data() {
     return {
@@ -161,14 +159,6 @@ export default {
           this.$message.error(err.message);
         });
     },
-    loadFilterParams() {
-      this.filterQuery = { ...DefaultQuery, ...this.$route.query };
-      this.filterQuery = {
-        ...this.filterQuery
-      };
-      let year = new Date();
-      this.filterQuery.year = String(year.getFullYear())
-    },
     handleClick() {
       if(!this.filterQuery.year){
         this.filterQuery.year = new Date()
@@ -186,7 +176,16 @@ export default {
     handleGetInitialData() {
       let serchform = {};
       this.loading = true;
-      if(!this.searchForm.companyName){
+      if(!this.searchForm.companyName && !this.filterQuery.year){
+        queryFileaduit3().then(res => {
+        this.tableData = res.data.list;
+        this.loading = false;
+      }).catch(err => {
+          this.message.error(err.message);
+          this.loading = false;
+        });
+      }
+      if(!this.searchForm.companyName && this.filterQuery.year){
         serchform = {year: this.filterQuery.year}
         queryFileaduit(serchform).then(res => {
         this.tableData = res.data.list;
@@ -196,7 +195,7 @@ export default {
           this.loading = false;
         });
       
-      } else{
+      } if(this.searchForm.companyName && this.filterQuery.year){
         serchform = {year: this.filterQuery.year,companyName:this.searchForm.companyName}
         queryFileaduit2(serchform).then(res => {
         this.tableData = res.data.list;
@@ -214,7 +213,7 @@ export default {
     // 删除文件审核记录
     deleteFile(data) {
       let _this = this
-      let url ='/api/delete_qualityfileaduit/' +  data.fileAuditId.toString()
+      let url ='/api/delete_fileaduit/' +  data.fileAuditId.toString()
       _this.$confirm('确认删除该条审核记录吗？','提示',{
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -306,7 +305,7 @@ export default {
     },
     getUserName() {
         let user = CurrentUser.get()
-        this.addForm.additor = user.userName
+        this.addForm.additor = user.employeeName
      },
     reloadForm() {
       let _this = this
@@ -323,12 +322,9 @@ export default {
     }
     
   },
-  mounted() {
-    
-    
+  mounted() {  
     this.getUserName();
     this.handleGetCompany();
-    this.loadFilterParams();
     this.handleGetInitialData();
   }
 };

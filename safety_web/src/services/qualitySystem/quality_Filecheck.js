@@ -19,7 +19,11 @@ export const queryFileaduit2 = (data) => {
       data
     })
 }
-
+export const queryFileaduit3 = () => {
+  return request('/api/query_qualityfileaduit', {
+      method: 'get'
+    })
+}
 export const querryQhseElement = (data) => {
   return request(`/api/quality_queryYearElement?companyCode=${data.companyCode}&year=${data.year}`, {
       method: 'GET',

@@ -13,6 +13,11 @@ export const queryFileaduit = (data) => {
       data
     })
 }
+export const queryFileaduit3 = () => {
+  return request('/api/query_fileaduit', {
+      method: 'get'
+    })
+}
 export const queryFileaduit2 = (data) => {
   return request(`/api/query_fileaduit?companyName=${data.companyName}&year=${data.year}`, {
       method: 'get',
