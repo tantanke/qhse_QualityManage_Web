@@ -291,7 +291,7 @@ export default {
       // 验证邮箱的规则
     var checkCurrentDate = (rule, value, callback) => {
         console.log(value)
-      if (this.currentDate >= value) {
+      if (this.currentDate <= value) {
         return callback()
       }
       callback(new Error('审核日期不能选择小于当前日期'))
