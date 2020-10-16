@@ -6,7 +6,7 @@
         </el-breadcrumb>
         <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         </el-row>
-        <div class="page-title" style="width: 100%">问题整改  <span class="boxNew"><span class="progressData">{{progress}}</span><el-button type="success" style="font-size: 16px" @click="pushRectify">整改完成</el-button></span></div>
+        <div class="page-title" style="width: 100%">问题整改  <span class="boxNew" v-if="isBelongToPart === true"><span class="progressData" >{{progress}}</span><el-button type="success" style="font-size: 16px" @click="pushRectify">整改完成</el-button></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
         <!-- 问题接收列表区域 -->
             <el-table :data="problemRectifyList" border stripe>
@@ -33,9 +33,6 @@
                 <el-form :model="rectifyForm" label-width="100px" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                         <el-tab-pane label="基本信息" name="0">
-                            <el-form-item label="编号">
-                                <el-input v-model="rectifyForm.no" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="要素名">
                                 <el-input v-model="rectifyFormCheckName" readonly></el-input>
                             </el-form-item>
@@ -142,7 +139,7 @@
                                 :show-file-list="true"
                                 list-type="picture"
                                 :headers="headers"
-                                >
+                                v-if="isBelongToPart === true">
                                 <el-button size="small" type="primary">点击上传图片</el-button>
                                 </el-upload>
                             </el-form-item>
@@ -152,7 +149,8 @@
                                 action="/api/addQualityAttach"
                                 :headers="headers"
                                 :on-remove="handleFileRemove"
-                                :on-success="handleFileSuccess">
+                                :on-success="handleFileSuccess"
+                                v-if="isBelongToPart === true">
                                 <el-button size="small" type="success">点击上传文件</el-button>
                                 </el-upload>
                             </el-form-item>
@@ -180,8 +178,9 @@
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="problemRectifyDialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)">保 存</el-button>
+                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true">保 存</el-button>
+                    <el-button @click="problemRectifyDialogVisible = false" v-else>关闭</el-button>
+                    
                 </span>
             </el-dialog>
             <!-- 图片预览对话框 -->
@@ -256,12 +255,14 @@ export default {
             // 表单要素名
             rectifyFormCheckName: '',
             // 质量监督检查表名称
-            qualityCheckList: []
+            qualityCheckList: [],
+            // 是否属于这个部分
+            isBelongToPart: false
         }
     },
     methods: {
         getAcceptRow: function () {
-            this.acceptRow = this.$route.query
+            this.acceptRow = this.$route.query.queryData
             console.log('问题接收页面传递过来的数据')
             console.log(this.acceptRow)
             this.getProblemRectify(this.acceptRow.qualityCheckID)
@@ -272,7 +273,12 @@ export default {
                 console.log('查询质量检查id返回的数据')
                 console.log(res.data)
                 this.problemRectifyList = res.data 
-                this.getProgress()  
+                this.getProgress()
+                if(this.acceptRow.isPush === "已推送" && this.acceptRow.issued === "已下达"){
+                    this.isBelongToPart = true
+                }else{
+                    this.isBelongToPart = false
+                }
                 this.loading = false
             }).catch((err) => {
                 this.$message.error(err.message)
