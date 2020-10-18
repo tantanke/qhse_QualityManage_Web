@@ -110,7 +110,7 @@
           <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
           <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过' " label='原因描述：'>
+      <el-form-item v-show="checkRecordForm.pass === '不通过' &&  reason === '不录入'" label='原因描述：'>
            <el-input            
             type="textarea"
             :rows="3"
@@ -118,7 +118,7 @@
             v-model="checkRecordForm.reason">
             </el-input>
       </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'" label='问题描述：'>
+      <el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'"  label='问题描述：'>
            <el-input            
             type="textarea"
             :rows="3"
@@ -355,6 +355,8 @@ export default {
                 _this.loading = false
                 _this.$message.success('新增成功！')
                 _this.checkRecordForm = {pass:'通过'}
+                _this.checkRecordForm.reason = ''
+                _this.checkRecordForm.problems = ''
                 _this.pushRouter()
             })
             .catch(err => {
