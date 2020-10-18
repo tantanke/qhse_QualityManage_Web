@@ -291,10 +291,10 @@ export default {
       // 验证邮箱的规则
     var checkCurrentDate = (rule, value, callback) => {
         console.log(value)
-      if (this.currentDate === value) {
+      if (this.currentDate <= value) {
         return callback()
       }
-      callback(new Error('请选择当前时间'))
+      callback(new Error('审核日期不能选择小于当前日期'))
     }
     return {
         // 加载
@@ -308,7 +308,7 @@ export default {
         },
         // 查询部分数据时间数组
         selectCheckDate: [],
-        // 查询表格公司Code
+        // 查询表格公司code
         selectCheckedCompanyId: null,
         // 基本信息登记表格数据
         basicInfoList: [],
@@ -448,6 +448,7 @@ export default {
     }
   },
   created: function () {
+    this.loading = true
     // 获取公司表
     this.getCompany()
     this.getEmploee()
@@ -502,7 +503,8 @@ export default {
         inquireBasicInfomation(this.selectInfoForm).then((res) => {
             console.log('查询基本信息登记表的信息')
             console.log(res.data)
-            this.basicInfoList = this.sortByDate(res.data)   
+            this.basicInfoList = this.sortByDate(res.data)
+            this.loading = false   
         }).catch((err) => {
             return this.$message.error(err.message)
         })

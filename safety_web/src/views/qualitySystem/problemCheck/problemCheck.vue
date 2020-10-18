@@ -61,6 +61,8 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemCheck(scope.row)" v-if="scope.row.isPush === '已推送' && scope.row.issued === '已整改'">问题审核</el-button>
+                        <el-button type="danger" icon="el-icon-close" size="mini" v-else-if="scope.row.issued === '未下达'">流程未通</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="jumpProblemCheck(scope.row)" v-else>查看信息</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -124,6 +126,7 @@ export default {
                 console.log('查询所有基本信息表')
                 console.log(res.data)
                 this.problemChenckList = this.sortByDate(res.data)
+                this.loading = false
             }).catch((err) => {
                 return this.$message.error(err.message)
             })
@@ -132,7 +135,9 @@ export default {
             // 跳转问题审核列表页面
             this.$router.push({
                 path: '/qualitySystem/problemCheck/problemReview',
-                query: row
+                query: {
+                    queryData: row
+                    }
             })
         },
         inquireCompanyIdChanged: function (val) {
@@ -201,6 +206,7 @@ export default {
         },
     },
     created: function () {
+        this.loading = true
         // 获取公司表
         this.getCompany()
         this.getBasicInfo()

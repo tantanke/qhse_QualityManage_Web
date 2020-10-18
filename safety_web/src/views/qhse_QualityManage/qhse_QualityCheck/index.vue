@@ -13,6 +13,7 @@
             </el-date-picker>
           </el-form-item>
           &nbsp;&nbsp;&nbsp;
+          
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
           </el-form-item>
@@ -163,7 +164,6 @@ import { submitInputResult } from "../../../services/qhse_QualityCheck";// 确�
 import { GetCurrentUser } from '../../../store/CurrentUser';
 import { downloadElementFile } from "../../../services/qhse_EvidenceCheck";
 // import {querryYearElement}from"../../../services/qhse_EvidenceCheck"
-
 
 const headers1 = {
   Accept: 'application/json',
@@ -631,6 +631,8 @@ export default {
     this.handleGetPeople();
     this.loadFilterParams();
     this.handleGetInitialData();//获取到表单信息
+    this.filterQuery.companyCode=GetCurrentUser().companyCode;
+    this.handleClick();
     this.loading = false;
   },
   computed: {

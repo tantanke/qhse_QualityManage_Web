@@ -249,6 +249,7 @@ methods:{
 mounted(){
   console.log('这是远程计划的bug开始')
   this.nowdate=this.getNowFormatDate();
+  this.handleClick();
 }
 }
 </script>

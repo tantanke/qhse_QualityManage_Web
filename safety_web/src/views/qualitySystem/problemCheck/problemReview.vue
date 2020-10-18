@@ -6,7 +6,7 @@
         </el-breadcrumb>
         <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         </el-row>
-        <div class="page-title" style="width: 100%">问题复审<span class="boxNew"><span class="progressData">{{progress}}</span><el-button type="success" style="font-size: 16px" @click="finishReview">审核完成</el-button></span></div>
+        <div class="page-title" style="width: 100%">问题复审<span class="boxNew" v-if="isBelongToPart === true"><span class="progressData">{{progress}}</span><el-button type="success" style="font-size: 16px" @click="finishReview">审核完成</el-button></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 		<!-- 问题复审列表区域 -->
             <el-table :data="problemReviewList" border stripe>
@@ -34,9 +34,6 @@
                 <el-form :model="problemCheckForm" label-width="100px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                        <el-tab-pane label="基本信息" name="0">
-                            <el-form-item label="编号">
-                                <el-input v-model="problemCheckForm.no" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="要素名">
                                 <el-input v-model="problemCheckFormCheckName" readonly></el-input>
                             </el-form-item>
@@ -147,8 +144,9 @@
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="danger" @click="refuseProblemReview">打回</el-button>
-                    <el-button type="primary" @click="acceptProblemReview">通 过</el-button>
+                    <el-button type="danger" @click="refuseProblemReview" v-if="isBelongToPart === true">打 回</el-button>
+                    <el-button type="primary" @click="acceptProblemReview" v-if="isBelongToPart === true">通 过</el-button>
+                    <el-button @click="problemCheckDialogVisible = false" v-else>关 闭</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -207,12 +205,14 @@ export default {
             // 表单要素名
             problemCheckFormCheckName: '',
             // 质量监督检查表名称
-            qualityCheckList: []
+            qualityCheckList: [],
+            // 是否属于这个部分
+            isBelongToPart: false
         }
     },
     methods: {
         getAcceptRow: function () {
-            this.acceptRow = this.$route.query
+            this.acceptRow = this.$route.query.queryData
             console.log('问题审核页面传递过来的数据')
             console.log(this.acceptRow)
             getProblemReviewList(this.acceptRow.qualityCheckID).then((res) => {
@@ -220,6 +220,12 @@ export default {
                 console.log(res.data)
                 this.problemReviewList = res.data
                 this.getProgress()
+                if(this.acceptRow.isPush === "已推送" && this.acceptRow.issued === "已整改"){
+                    this.isBelongToPart = true
+                }else{
+                    this.isBelongToPart = false
+                }
+                this.loading = false
             }).catch((err) => {
                 this.$message.error(err.message)
             })
@@ -505,6 +511,7 @@ export default {
         },
     },
     created: function () {
+        this.loading = true
         this.getAcceptRow()
         this.getQualityCheck()
     },
