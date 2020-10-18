@@ -100,6 +100,7 @@ import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
+import {getTaskList} from "../services/taskList"
 import {GetNaviByUserRole,logout,getModule} from '../services/navisBar'
 // import IconDashBoard from '../assets/icons/dashboard.svg'
 // import IconSystem from '../assets/icons/system.svg'
@@ -123,6 +124,7 @@ export default {
       changeS:false,
       close2:false,
       close3:false,
+      taskFlag:false,
       dialogTableVisible:false,
       client:VueCookies.get("client"),
       // isCollapse: true,
@@ -225,11 +227,42 @@ export default {
         localStorage.setItem('sysCate','安全')
         _this.qhse = 'QHSE安全系统'
          this.$router.push({name: 'mainPath'})
+	 _this.checkTaskList(_this.navs)
+	if(_this.taskFlag){
+		getTaskList().then(res=>{
+			let notReceive=res.data.filter(item=>{
+				return !item.receiveDate
+			})
+			if(notReceive.length>0){
+				_this.$confirm('您当前有任务待处理,请前往待办任务确认!','待办任务提醒',{
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(()=>{
+					this.$router.push({
+						name:'TaskList'
+					})
+				})
+			}
+		})
+	}
         _this.dialogTableVisible = false
         _this.changeS = false
       }).catch(err=>{
 			this.$message.error(err.message)
 		})
+    },
+    checkTaskList(tree){
+	if(tree){
+		for(var i=0;i<tree.length;i++){
+			if(tree[i].code==='00010010'){
+				this.taskFlag=true
+				break
+			}else{
+				this.checkTaskList(tree[i].children)
+			}
+		}
+	}
     },
     goQuality() {
       let _this = this
