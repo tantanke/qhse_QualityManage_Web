@@ -35,14 +35,14 @@
         <el-table
           :data="tableData"
           style="width: 100%"
-          max-height="560"
+          max-height="537"
           highlight-current-row
           border
           v-loading="loading">
           <el-table-column prop="year" label="年份" width="120" align="center"></el-table-column>
           <el-table-column prop="companyName" label="公司名称"></el-table-column>
-          <el-table-column prop="additor" label="审核时间"></el-table-column>
-          <el-table-column prop="auditTime" label="审核人"></el-table-column>
+          <el-table-column prop="additor" label="审核人"></el-table-column>
+          <el-table-column prop="auditTime" label="审核时间"></el-table-column>
           <el-table-column prop="auditName" label="审核名称"></el-table-column>
           <el-table-column prop="auditType" label="审核类别"></el-table-column>
           <el-table-column label="操作" width="200" align="center">
@@ -54,6 +54,8 @@
             </template>
           </el-table-column>
         </el-table>
+        <div style="margin-top:15px" >
+  </div>
       </el-row>
     </div >
     <!--添加审核表 -->
@@ -145,9 +147,7 @@ export default {
         { value: "通过", label: "通过" },
         { value: "未通过", label: "未通过" }
       ],
-      rules: {
-
-      }
+      // 记录是否分页
     };
   },
   methods: {
@@ -160,11 +160,6 @@ export default {
         });
     },
     handleClick() {
-      if(!this.filterQuery.year){
-        this.filterQuery.year = new Date()
-      }
-      let nowdata = new Date(this.filterQuery.year);
-      this.filterQuery.year = String(nowdata.getFullYear())
       this.handleGetInitialData();
     },
     // 获取当前年份
@@ -210,6 +205,10 @@ export default {
 
       
     },
+    //分页相关
+    handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+      },
     // 删除文件审核记录
     deleteFile(data) {
       let _this = this

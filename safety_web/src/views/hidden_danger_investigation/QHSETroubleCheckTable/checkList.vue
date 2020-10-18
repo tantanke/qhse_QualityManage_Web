@@ -110,6 +110,14 @@
           <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
           <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
       </el-form-item>
+      <el-form-item v-show="checkRecordForm.pass === '不通过' " label='原因描述：'>
+           <el-input            
+            type="textarea"
+            :rows="3"
+            placeholder="请输入原因"
+            v-model="checkRecordForm.reason">
+            </el-input>
+      </el-form-item>
       <el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'" label='问题描述：'>
            <el-input            
             type="textarea"
@@ -143,6 +151,7 @@
               <el-form-item label="检查日期：" style="margin-bottom:1px">{{detailForm.checkDate}}</el-form-item>
               <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
               <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
+              <el-form-item v-show='detailForm.reason' label="原因描述：" style="margin-bottom:1px">{{detailForm.reason}}</el-form-item>
               <el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
                  <el-button size='mini' @click="questionEditfalse  = true">录入问题</el-button>
                 <el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
@@ -334,6 +343,10 @@ export default {
                 _this.$message.warning('请输入具体问题！')
                 return
             }
+            if(_this.reason === '不录入' && !_this.checkRecordForm.reason && _this.checkRecordForm.pass !== '通过'){
+                _this.$message.warning('请输入具体原因！')
+                return
+            }
              _this.loading = true
             editCheckRecord(_this.checkRecordForm).then(() => {
                 return addCheckList(_this.checkListForm)
@@ -364,7 +377,7 @@ export default {
             let _this = this
             let user = CurrentUser.get()
             _this.checkRecordForm = {...data,..._this.checkRecordForm}
-            _this.checkRecordForm.checkPerson = user.userName
+            _this.checkRecordForm.checkPerson = user.employeeName
             _this.checkRecordForm.checkPersonId = user.userId
             _this.checkRecordForm.checkTypeCode = _this.checkForm.checkListCode
             this.checkDialogVisible = true
@@ -374,8 +387,10 @@ export default {
             
             let _this = this
             _this.editQuestionForm = {...data}
+            console.log(data)
             _this.editQuestionForm.problems = ''
             _this.detailForm.problems = data.problems
+            _this.detailForm.reason = data.reason
             _this.detailForm.companyName = data.companyName
             _this.detailForm.checkType = data.checkType
             _this.detailForm.checkDate = data.checkDate

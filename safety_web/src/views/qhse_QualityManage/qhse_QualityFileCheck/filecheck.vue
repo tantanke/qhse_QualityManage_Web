@@ -60,19 +60,26 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
-              style="margin-left:2px"
               type="success"
               size="mini"
-              v-show="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '已审核' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
-              查看详情
+              查看详情  
               </el-button>
-              <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
+               <el-button
+              type="danger"
+              size="mini"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
+              @click="detaileFile(scope.row)" icon="el-icon-search"
+              >
+              查看详情  
+              </el-button>
+               <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
             </template>
           </el-table-column>
         </el-table>
@@ -121,7 +128,7 @@
               >
               查看详情  
               </el-button>
-              <span v-show="scope.row.status !== '备案待查'">请完成要素证据批准</span>
+               <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
             </template>
           </el-table-column>
         </el-table>
@@ -214,9 +221,9 @@
               <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>            
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
-              <el-form-item label="实际得分：" style="margin-bottom:1px">{{detailData.codeScore}}</el-form-item>
+              <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="审核状态：" style="margin-bottom:1px">{{detailData.pass}}</el-form-item> 
+              <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button type='primary'>{{detailData.pass}}</el-button></el-form-item> 
               <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
                 <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
@@ -284,7 +291,7 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,getStatus,queryRecordId} from "../../../services/qhse_Filecheck"; // 文件审核相关
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,queryRecordId} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
@@ -429,6 +436,7 @@ export default {
                     _this.deepTree(item.childNode)
                 }
             })
+            console.log( _this.fileList)
             return _this.fileList
       },
       // 填充基础表单
@@ -523,24 +531,14 @@ export default {
       _this.inputPlace = `请输入0-${data.initialScore}之间的分数`
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
+      // 状态数据
+      _this.detailData.codeScore = data.codeScore
+      _this.detailData.pass = data.pass
       _this.detailData.problemDescription = data.problemDescription
       // 获取信息表单    
       _this.statusForm.code = data.code
-         return  getStatus(_this.statusForm)
-      }).then(res => {
-        _this.detailData.codeScore = ''
-        _this.detailData.pass = ''
-        if(res.data.length > 0){
-        _this.detailData.codeScore = res.data[0].codeScore
-        _this.detailData.pass = res.data[0].pass
-        _this.detaildialogVisible = true
-        }/*  else{
-          // 如果前面获取状态失败 直接重新审核
-          _this.editFileRecord(data)
-        } */
-         _this.eviLoaind = false
-         _this.addLoading = false
-         
+      _this.eviLoaind = false
+      _this.addLoading = false
       })
       .catch(err => {
         _this.$message.error(err)

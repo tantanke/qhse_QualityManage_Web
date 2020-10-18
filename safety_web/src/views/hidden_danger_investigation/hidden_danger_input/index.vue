@@ -172,7 +172,8 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="是否立即验收" style="margin-top:114px">
-                <el-switch v-model="form.ok"></el-switch>
+                   <el-radio v-model="form.ok" label="1">是</el-radio> 
+                   <el-radio v-model="form.ok" label="0">否</el-radio>    
               </el-form-item>
                <br />
           <el-form-item label="操作" >
@@ -407,7 +408,6 @@ export default {
       console.log(this.form)
       let noFill = false
       let _this = this
-      _this.form.ok === true ? _this.form.ok = 1 : _this.form.ok = 0
       Object.keys(_this.form).forEach((value) => {
         if(_this.form[value] === '' ){
            noFill = true
