@@ -1,7 +1,7 @@
 <template>
   <div class="problemList">
 
-          <div class="page-title" style="width:100%">事件清单</div>
+          <div class="page-title" style="width:100%">事故事件清单</div>
       <el-radio v-model="listcate" label="事件清单">事件清单</el-radio>
       <el-radio  v-model="listcate" label="事故清单">事故清单</el-radio>
       <el-row v-show="listcate === '事件清单'" style="margin-top:20px"> 

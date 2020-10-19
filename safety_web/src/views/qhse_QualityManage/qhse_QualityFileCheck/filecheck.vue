@@ -60,13 +60,13 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' "  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' "
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -74,7 +74,7 @@
                <el-button
               type="danger"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' "
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -221,9 +221,9 @@
               <el-form-item label="打分项：" style="margin-bottom:1px">{{detailData.name}}</el-form-item>            
               <el-form-item label="审核方式：" style="margin-bottom:1px">{{detailData.auditMode}}</el-form-item>
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
-              <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
+              <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button type='primary'>{{detailData.pass}}</el-button></el-form-item> 
+              <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.pass}}</el-button></el-form-item> 
               <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
                 <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
@@ -291,7 +291,7 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,queryRecordId} from "../../../services/qhse_Filecheck"; // 文件审核相关
+import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,queryRecordId,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
@@ -532,13 +532,22 @@ export default {
       _this.detailData.formula = data.formula
       _this.detailData.name = data.name
       // 状态数据
-      _this.detailData.codeScore = data.codeScore
-      _this.detailData.pass = data.pass
+      /* _this.detailData.codeScore = data.codeScore
+      _this.detailData.pass = data.pass */
       _this.detailData.problemDescription = data.problemDescription
       // 获取信息表单    
       _this.statusForm.code = data.code
-      _this.eviLoaind = false
-      _this.addLoading = false
+      return  getStatus(_this.statusForm)
+      }).then(res => {
+        _this.detailData.codeScore = ''
+        _this.detailData.pass = ''
+        if(res.data.length > 0){
+        _this.detailData.codeScore = res.data[0].codeScore
+        _this.detailData.pass = res.data[0].pass
+        _this.detaildialogVisible = true
+        }
+         _this.eviLoaind = false
+         _this.addLoading = false
       })
       .catch(err => {
         _this.$message.error(err)
@@ -707,13 +716,14 @@ export default {
           _this.$message.error('请填写合法的分数')
           return
         }
+      _this.addLoading = true
       _this.status = _this.fileRecord.pass
       _this.updateCheckForm.fileCheckStatus = _this.fileRecord.pass
-      // 先更新状态
-      updateCheckstatus(_this.updateCheckForm).then(() => {
+      // 再添加文件审核记录
+      addFileaduitrecord(_this.fileRecord).then(() => {
         _this.goHidden.code = _this.fileRecord.code
-        // 再添加文件审核记录
-        return addFileaduitrecord(_this.fileRecord)
+              // 先更新状态
+        return updateCheckstatus(_this.updateCheckForm)
       }).then(() => {
         // 这里应该返回文件审核记录的recordID
         if(_this.status === '不通过') {
@@ -722,6 +732,7 @@ export default {
          _this.addQuestion()     
         }  
         _this.$message.success('添加成功！')
+        _this.addLoading = false
         _this.dialogVisible = false
         // 重置添加状态
         _this.fileRecord.pass = ''
@@ -733,6 +744,7 @@ export default {
         _this.handleGetInitialData()
       })
       .catch(err => {
+        _this.addLoading = false
         _this.$message.error(err)
       })
 
