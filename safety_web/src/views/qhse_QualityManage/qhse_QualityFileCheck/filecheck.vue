@@ -60,13 +60,13 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' "  
+                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' "
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -74,7 +74,7 @@
                <el-button
               type="danger"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' "
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
