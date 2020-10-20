@@ -3,12 +3,6 @@
 		<div class="page-title" style="width: 100%">数据统计</div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<el-form inline>
-				<el-form-item label="检查类别" style="margin-right: 20px;">
-					<el-select v-model="taskType" placeholder="请选择检查类别" clearable>
-						<el-option v-for="item in taskTypeOptions" :key="item.value" :label="item.label" :value="item.value">
-						</el-option>
-					</el-select>
-				</el-form-item>
 				<el-form-item label="受审单位" style="margin-right: 20px;">
 					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px;" :options="companyList"
 					 v-model="companyId"></treeselect>
@@ -21,21 +15,8 @@
 					<el-button icon="el-icon-search" type="primary" @click="select">查询</el-button>
 					<el-button icon="el-icon-download" type="warning" @click="download">下载</el-button>
 				</el-form-item>
-				<br />
-				<el-form-item label="审核结果" style="margin-right: 20px;">
-					<el-select v-model="checkResult" placeholder="请选择检查类别" clearable>
-						<el-option v-for="item in checkResultOptions" :key="item.value" :label="item.label" :value="item.value">
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="问题分类" style="margin-right: 20px;">
-					<el-select v-model="nature" placeholder="请选择检查类别" clearable style="width: 250px">
-						<el-option v-for="item in natureOptions" :key="item.value" :label="item.label" :value="item.value">
-						</el-option>
-					</el-select>
-				</el-form-item>
 			</el-form>
-			<el-table border :data="checkRecordList" style="width: 100%" max-height="560" fixed>
+			<el-table border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
 				<el-table-column type="expand" fixed="left">
 					<template slot-scope="prop">
 						<el-form label-width="150px" :label-position="left" inline class="demo-table-expand">
@@ -156,12 +137,25 @@
 				</el-table-column>
 				<el-table-column type="index" label="序号" fixed="left" width="60" align="center"></el-table-column>
 				<el-table-column prop="checkListName" label="名称" fixed="left" width="200" align="center"></el-table-column>
-				<el-table-column prop="taskType" label="检查类别" fixed="left" width="100" align="center"></el-table-column>
+				<el-table-column prop="taskType" label="检查类别" fixed="left"
+				 width="100" align="center"
+				 :filters="taskTypeFilter"
+				 :filter-method="filterHandler"
+				 ></el-table-column>
 				<el-table-column prop="checkDate" label="审核日期" fixed="left" width="120" align="center"></el-table-column>
-				<el-table-column prop="checkResult" label="审核结果" fixed="left" align="center"></el-table-column>
+				<el-table-column prop="checkResult" label="审核结果"
+				 fixed="left" align="center" width="100"
+				 :filters="[{text:'符合',value:'符合'},{text:'不符合',value:'不符合'}]"
+				 :filter-method="filterHandler"
+				>
+				</el-table-column>
 				<el-table-column prop="resultDescription" label="结果描述" fixed="left" align="center" width="200"
 				 show-overflow-tooltip></el-table-column>
-				<el-table-column prop="nature" label="问题分类" align="center" width="100"></el-table-column>
+				<el-table-column prop="nature" label="问题分类"
+				 align="center" width="100"
+				 :filters="natureFilter"
+				 :filter-method="filterHandler"
+				 ></el-table-column>
 				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkedCompanyName" label="受审单位" width="200" align="center"></el-table-column>
 				<el-table-column prop="group" label="受审部门" align="center" width="200"></el-table-column>
@@ -208,6 +202,57 @@
 				taskType: '',
 				checkResult: '',
 				nature: '',
+				natureFilter:[
+					{
+						text:'建议项',
+						value:'建议项'
+					},
+					{
+						text:'观察项',
+						value:'观察项'
+					},
+					{
+						text:'问题项',
+						value:'问题项'
+					},
+					{
+						text:'不符合',
+						value:'不符合'
+					},
+					{
+						text:'违章项',
+						value:'违章项'
+					}
+				],
+				taskTypeFilter:[{
+						value: '内审',
+						text: '内审'
+					},
+					{
+						value: '外审',
+						text: '外审'
+					},
+					{
+						value: '管理评审',
+						text: '管理评审'
+					},
+					{
+						value: '顾客投诉',
+						text: '顾客投诉'
+					},
+					{
+						value: '监督',
+						text: '监督'
+					},
+					{
+						value: '远程监控',
+						text: '远程监控'
+					},
+					{
+						value: '其他',
+						text: '其他'
+					}
+				],
 				taskTypeOptions: [{
 						value: '内审',
 						label: '内审'
@@ -283,6 +328,10 @@
 				GetCompany().then(res => {
 					this.companyList = res.data
 				})
+			},
+			filterHandler(value, row, column) {
+			        const property = column['property'];
+			        return row[property] === value;
 			},
 			download() {
 				var option={}
