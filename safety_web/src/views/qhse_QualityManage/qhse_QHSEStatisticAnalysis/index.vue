@@ -33,6 +33,11 @@
             </el-row>
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
                 <div style="margin:15px 0px">
+                   <span style="margin-right:15px">请选择批准方式:</span>
+                   <el-radio v-model="showType" label="树形审核">树形审核</el-radio>
+                   <el-radio v-model="showType" label="列表审核">列表审核</el-radio>
+                </div>
+                <div style="margin:15px 0px">
                     <span style="margin-right:15px">请选择查看内容:</span>
                     <el-radio v-model="checkType" label="未审核">未审核</el-radio>
                     <el-radio v-model="checkType" label="已审核">已审核</el-radio>
@@ -44,7 +49,7 @@
                 </div>
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='未审核'"
+                        v-if="checkType=='未审核'&&showType=='树形审核'"
                         :data="treeData"
                         style="width: 100%text-align:center"
                         ref="treeTable"
@@ -72,8 +77,66 @@
                 </el-table>
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='已审核'"
+                        v-if="checkType=='已审核'&&showType=='树形审核'"
                         :data="hasData"
+                        style="width: 100% text-align:center"
+                        ref="treeTable"
+                        row-key="code"
+                        :indent="30"
+                        max-height="560"
+                        highlight-current-row
+                        border
+                        @cell-click="handleCellClick"
+                        v-loading="loading"
+                        :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+                    <el-table-column prop="name" label="内容"></el-table-column>
+                    1
+                    <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+                    <el-table-column label="操作" width="150" align="center">
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 "
+                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    1
+                </el-table>
+                <el-table
+                        :cell-style="cellStyle"
+                        v-if="checkType=='未审核'&&showType=='列表审核'"
+                        :data="listData"
+                        style="width: 100%text-align:center"
+                        ref="treeTable"
+                        row-key="code"
+                        :indent="30"
+                        max-height="560"
+                        highlight-current-row
+                        border
+                        @cell-click="handleCellClick"
+                        v-loading="loading"
+                        :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+                    <el-table-column prop="name" label="内容"></el-table-column>
+                    <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+                    <el-table-column label="操作" width="150" align="center">
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 "
+                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table
+                        :cell-style="cellStyle"
+                        v-if="checkType=='已审核'&&showType=='列表审核'"
+                        :data="haslistData"
                         style="width: 100% text-align:center"
                         ref="treeTable"
                         row-key="code"
@@ -170,6 +233,7 @@
     import {show_approve_check} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
     import {showAllElement} from "../../../services/qhse_EvidenceCheck";
     import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认审核
+    import{GetCurrentUser}from"../../../../src/store/CurrentUser"
 
     const DefaultQuery = {
         year: "",
@@ -179,6 +243,9 @@
     export default {
         data() {
             return {
+                listData:[],
+                haslistData:[],
+                showType:'树形审核',
                 unpasstext: '',
                 total: '',
                 total1: '',
@@ -219,6 +286,28 @@
             };
         },
         methods: {
+            deepTree3 (treedata) {
+              let _this = this;
+              treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                  _this.haslistData.push(item)
+                  return
+                } else {
+                  _this.deepTree3(item.childNode)
+                }
+              })
+            },
+            deepTree4(treedata) {
+              let _this = this;
+              treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                  _this.listData.push(item)
+                  return
+                } else {
+                  _this.deepTree4(item.childNode)
+                }
+              })
+            },
             selectDepart(val) {
                 console.log('selectDepart', val);
                 this.filterQuery.companyCode = val.nodeCode;
@@ -277,9 +366,11 @@
                         this.$message.success(res.message);
                         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
                             .then(res => {
+                                this.listData=[];
                                 this.treeData = res.data;
                                 this.total1 = 0;
                                 this.deepTree1(this.treeData);
+                                this.deepTree4(this.treeData);
                             })
                             .catch(err => {
                                 console.log(err);
@@ -288,10 +379,11 @@
 
                         show_approve_check(this.filterQuery)
                             .then(res => {
+                                this.haslistData=[];
                                 this.hasData = res.data;
-                                console.log('啊', this.hasData)
                                 this.total2 = 0;
                                 this.deepTree2(this.hasData);
+                                this.deepTree3(this.hasData);
                             })
                             .catch(err => {
                                 console.log(err);
@@ -312,9 +404,11 @@
                         this.$message.success(res.message);
                         query_elementReviewer(this.filterQuery)//获取到叶子节点信息
                             .then(res => {
+                                this.listData=[];
                                 this.treeData = res.data;
                                 this.total1 = 0;
                                 this.deepTree1(this.treeData);
+                                this.deepTree4(this.treeData);
                             })
                             .catch(err => {
                                 console.log(err);
@@ -324,9 +418,11 @@
 
                         show_approve_check(this.filterQuery)
                             .then(res => {
+                                this.haslistData=[];
                                 this.total2 = 0;
                                 this.hasData = res.data;
                                 this.deepTree2(this.hasData);
+                                this.deepTree3(this.hasData);
                             })
                             .catch(err => {
                                 console.log(err);
@@ -375,6 +471,7 @@
                         });
                     query_elementReviewer(this.filterQuery)//获取到叶子节点信息
                         .then(res => {
+                            this.listData=[];
                             this.treeData = res.data;
                             console.log(res.data, 'query_elementReviewer')
 
@@ -382,22 +479,22 @@
                             if (this.treeData.length) {
                                 this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID
                             }
-
-
+                            this.deepTree4(this.treeData);
                             this.total1 = 0;
                             this.deepTree1(this.treeData);
                             console.log('查询的时候查询1')
                         })
                         .catch(err => {
-                            console.log(err);
-                            this.message.error(err.message);
+                            console.log(err);;
                         });
                     console.log('获取已审核')
                     show_approve_check(this.filterQuery)
                         .then(res => {
+                            this.haslistData=[];
                             this.hasData = res.data;
                             console.log('已审核数据源1', this.hasData)
-
+                            this.deepTree3(this.hasData);
+                            console.log('已审核列表',this.haslistData);
                             // 如果长度大于0，从其中取出tableID属性
                             if (this.hasData.length) {
                                 this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
@@ -546,6 +643,8 @@
             this.handleGetCompany();//第一个函数 获取到公司信息
             this.loadFilterParams();
             this.handleGetInitialData();//获取到表单信息
+            this.filterQuery.companyCode=GetCurrentUser().companyCode;
+            this.handleClick();
             this.loading = false;
         }
     }

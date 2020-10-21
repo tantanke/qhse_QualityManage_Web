@@ -628,11 +628,16 @@ export default new Router({
           name: 'QHSETroubleCheckTable',
           component: resolve => require(['./views/hidden_danger_investigation/QHSETroubleCheckTable/checkList.vue'], resolve)
         },
-        //检查表配置
         {
           path: '/hidden_danger/check_list_item',
           name: 'QHSEChecklistConfig',
           component: resolve => require(['./views/hidden_danger_investigation/check_list_item/index.vue'], resolve)
+        },
+        //检查表配置
+        {
+          path: '/hidden_danger/AccidentDetail',
+          name: 'AccidentDetail',
+          component: resolve => require(['./views/hidden_danger_investigation/accidentTable/index.vue'], resolve)
         },
         //远程监控
         {

@@ -77,24 +77,52 @@
 			},
 			select() {
 				//console.log('user', this.GetCurrentUser())
-				if (this.dateRange) {
-					if (this.companyId && this.dateRange.length > 0) {
-						this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
-						this.queryData.checkedCompanyCode = this.companyCode
-						this.queryData.checkDate = this.dateRange[0] + ';' + this.dateRange[1]
-						console.log(this.queryData)
-						queryTableByYearAndComAndPush(this.queryData).then(res=>{
-							console.log(res.data)
-							this.checkListData=res.data
-						}).catch(err=>{
-							this.$message.error(err.message)
+				// if (this.dateRange) {
+				// 	if (this.companyId && this.dateRange.length > 0) {
+				// 		this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
+				// 		this.queryData.checkedCompanyCode = this.companyCode
+				// 		this.queryData.checkDate = this.dateRange[0] + ';' + this.dateRange[1]
+				// 		console.log(this.queryData)
+				// 		queryTableByYearAndComAndPush(this.queryData).then(res=>{
+				// 			console.log(res.data)
+				// 			this.checkListData=res.data
+				// 		}).catch(err=>{
+				// 			this.$message.error(err.message)
+				// 		})
+				// 	}else{
+				// 		this.$message.error('查询信息不完整')
+				// 	}
+				// } else {
+				// 	this.$message.error('查询信息不完整')
+				// }
+				queryAllTable().then(res=>{
+					console.log('all table list',res.data)
+					let temp=res.data
+					console.log('before filter',temp)
+					if(this.companyId){
+						this.changeCompanyIdTocompanyName(this.companyList,this.companyId)
+						temp=temp.filter(item=>{
+							return item.checkedCompanyName==this.companyName
 						})
-					}else{
-						this.$message.error('查询信息不完整')
 					}
-				} else {
-					this.$message.error('查询信息不完整')
-				}
+					
+					if(this.dateRange&&this.dateRange.length>0){
+						temp=temp.filter(item=>{
+							return item.checkDate>=this.dateRange[0]&&item.checkDate<=this.dateRange[1]
+						})
+					}
+					for(var i=0;i<temp.length-1;i++){
+						for(var j=i+1;j<temp.length;j++){
+							if(temp[i].checkDate<temp[j].checkDate){
+								let tempItem=temp[i]
+								temp[i]=temp[j]
+								temp[j]=tempItem
+							}
+						}
+					}
+					console.log('after filter',temp)
+					this.checkListData=temp
+				})
 
 			},
 			//将从filterQuery.companyCode获取的公司id转换为公司名称，递归实现
