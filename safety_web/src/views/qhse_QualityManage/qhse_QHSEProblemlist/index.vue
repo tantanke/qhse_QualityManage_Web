@@ -2,9 +2,9 @@
   <div class="problemList">
 
           <div class="page-title" style="width:100%">QHSE问题清单</div>
-      <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患清单</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题清单</el-radio>
+      <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章列表</el-radio>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患列表</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题列表</el-radio>
       <el-row v-show="listcate === 'QHSE违章清单'">
           <el-row>
           <el-form :inline="true">
@@ -61,7 +61,7 @@
                     <span>{{ props.row.companyName }}</span>
                 </el-form-item>
                 <el-form-item label="检查时间:">
-                    <span>{{ props.row.recordDate }}</span>
+                    <span>{{ props.row.supervisionDate.substring(0, 10) }}</span>
                 </el-form-item>
                 <el-form-item label="作业项目:">
                     <span>{{ props.row.workItem }}</span>
@@ -120,21 +120,16 @@
              </el-form>
              </template>
           </el-table-column>
-          <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
-          <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
-          <el-table-column prop='regulationName' label='违章人员'></el-table-column>
-          <el-table-column prop='regulationSource' label='隐患来源'></el-table-column>
-          <el-table-column prop='punish' label='罚款'></el-table-column>
-<!--           <el-table-column
-            fixed="right"
-            label="操作"
-            align='center'
-            width="200">
-            <template slot-scope="scope">
-                <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteRegulation(scope.row)">删除</el-button>
+          <el-table-column align='center' prop='safeStaff_Name' label='检查人员'></el-table-column>
+          <el-table-column align='center' prop='companyName' label='施工队伍'></el-table-column>
+          <el-table-column align='center'  label='检查时间'>
+              <template slot-scope="scope">
+               <span>{{scope.row.supervisionDate.substring(0, 10)}}</span>
             </template>
-            </el-table-column> -->
+              </el-table-column>        
+          <el-table-column align='center' prop='regulationName' label='违章人员'></el-table-column>
+          <el-table-column align='center' prop='regulationSource' label='隐患来源'></el-table-column>
+          <el-table-column align='center' prop='punish' label='罚款'></el-table-column>
         </el-table>
           </el-row>
       </el-row>
@@ -231,6 +226,11 @@
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
+                <el-form-item label="隐患状态:">
+                <span v-show=" props.row.status === 1" >待整改</span>
+                <span v-show=" props.row.status === 3" >待验收</span>
+                <span v-show=" props.row.status === 5"  >已验收</span>
+                </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
                     <a  :href="'http://39.98.173.131:9000/api' + props.row.affix1" target="_blank">证据图片1</a>
                 </el-form-item>
@@ -246,12 +246,22 @@
            </el-form>
            </template>
           </el-table-column>
-          <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
-          <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
-          <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>    
+          <el-table-column align='center' prop='safeStaff_Name' label='检查人员'></el-table-column>
+          <el-table-column align='center' prop='companyName' label='施工队伍'></el-table-column>
+          <el-table-column align='center' prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column align='center' prop='reformPerson' label='整改负责人'></el-table-column>
+          <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
+          <el-table-column align='center'  prop='supervisionDate' label='检查时间'></el-table-column>
+          <el-table-column
+            label="隐患状态"
+            align='center'
+            >
+            <template slot-scope="scope">
+              <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
+                <el-button v-show="scope.row.status === 3"  type="warning" icon="el-icon-edit" plain size="small" >验收中</el-button>
+                <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
+            </template>
+            </el-table-column>     
           </el-table>
           </el-row>
       </el-row>
@@ -313,23 +323,24 @@
                     width='250'
                     label="公司名称">
                 </el-table-column>
-                <!-- <el-table-column
+                <el-table-column
                     prop="safeStaffName"
-                    label="检查人">
-                </el-table-column> -->
+                    label="检查项">
+                </el-table-column>
                   <el-table-column
                     prop="problemDescription"
                     label="问题描述">
                 </el-table-column>
-                <!-- <el-table-column
-                fixed="right"
-                label="操作"
-                align='center'
-                width="200">
-                <template slot-scope="scope">
-                    <el-button type="danger" icon="el-icon-delete" plain size="small" @click="deleteProblem(scope.row)">删除</el-button>
-                </template>
-                </el-table-column>       -->
+                <el-table-column
+                    fixed="right"
+                    label="问题状态"
+                    align='center'>
+                    <template slot-scope="scope">
+                        <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >待整改</el-button>
+                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
+                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
+                    </template>
+                    </el-table-column> 
             </el-table>
           </el-row>
       </el-row>

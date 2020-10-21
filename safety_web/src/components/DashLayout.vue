@@ -227,7 +227,7 @@ export default {
         localStorage.setItem('sysCate','安全')
         _this.qhse = 'QHSE安全系统'
          this.$router.push({name: 'mainPath'})
-	 _this.checkTaskList(_this.navs)
+        _this.checkTaskList(_this.navs)
 	if(_this.taskFlag){
 		getTaskList().then(res=>{
 			let notReceive=res.data.filter(item=>{
@@ -434,6 +434,17 @@ export default {
         }
       }
     }
+  }
+  .redPoint::before{
+       display: inline-block;
+       content: '';
+       width: 8px;
+       height: 8px;
+       position: relative;
+       top: -7px;
+       left: 1px;
+       border-radius: 50%;
+       background-color: red;
   }
   .main-header {
     background: #fff;

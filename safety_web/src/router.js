@@ -12,6 +12,11 @@ export default new Router({
       component: resolve => require(['./views/Login.vue'], resolve)
     },
     {
+      path: '/qhseBigScreen',
+      name: 'Login',
+      component: resolve => require(['./views/bigScreen.vue'], resolve)
+    },
+    {
       path: '/',
       name: 'mainPath',
       // redirect: 'firstPage',
@@ -269,7 +274,6 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
         { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
         { path: '/qhse_QualityManage/taskList', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
-        
         //报告管理  report_management
         {
           path: '/report_management/report_plan/index',
@@ -593,6 +597,16 @@ export default new Router({
         }, //个人中心我单位的问题
 
         //隐患排查
+        //临时隐患违章录入
+        {
+          path: '/hidden_danger/tempory_danger',
+          name: 'InputHiddenDanger',
+          component: resolve => require(['./views/hidden_danger_investigation/tempory_danger/index.vue'], resolve)
+        },{
+          path: '/hidden_danger/tempory_regulation',
+          name: 'InputViolation',
+          component: resolve => require(['./views/hidden_danger_investigation/tempory_regulation/index.vue'], resolve)
+        },
         {
           path: '/hidden_danger/hidden_danger_investigation',
           name: 'hidden_danger_investigation',

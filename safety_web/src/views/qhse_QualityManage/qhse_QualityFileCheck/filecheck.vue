@@ -182,10 +182,14 @@
                 <el-input type="text" v-model.number="fileRecord.codeScore" :placeholder="inputPlace"></el-input>
               </el-form-item>
               <el-form-item label='通过状态:' labelWidth='100px' >
-                <el-select v-model="fileRecord.pass" placeholder="请选择是否通过" style="width:62%">
-                <el-option label="通过" value="通过"></el-option>
-                <el-option label="不通过" value="不通过"></el-option>
-              </el-select>
+                  <el-switch
+                          style="margin-right:10px"
+                          v-model="fileRecord.pass"
+                          active-color="#13ce66"
+                          inactive-color="#ff4949"
+                          active-text="通过"
+                          inactive-text="不通过">
+                  </el-switch>
               </el-form-item>
               <el-form-item label='问题选择:' labelWidth='100px' v-if="fileRecord.pass === '不通过'">
                 <el-checkbox-group v-model="selectProblem" >

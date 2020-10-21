@@ -111,20 +111,20 @@
            </el-form>
            </template>
           </el-table-column>
-         <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
-          <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
-          <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
+         <el-table-column align='center' prop='safeStaff_Name' label='检查人员'></el-table-column>
+          <el-table-column align='center' prop='companyName' label='施工队伍'></el-table-column>
+          <el-table-column align='center' prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column align='center' prop='reformPerson' label='整改负责人'></el-table-column>
+          <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
+          <el-table-column align='center' prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column
             label="状态"
             align='center'>
             <template slot-scope="scope">
                 <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
-               <el-button v-show="scope.row.status === 1" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
+               <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
                 <el-button v-show="scope.row.status === 3" type="warning" icon="el-icon-edit" plain size="small" @click="goRecieve(scope.row)">待验收</el-button>
-                <span v-show="scope.row.status === 5"  >已验收</span>
+                <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
             </template>
             </el-table-column>
           </el-table>
@@ -157,7 +157,7 @@
                 </div>
             </el-form-item>
             <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button type="danger" @click="noreciveInfo">不通过</el-button>
+                <el-button type="danger" @click="noreciveInfo">打 回</el-button>
                 <el-button type="primary"  @click="reciveInfo">通 过</el-button>
             </el-form-item>
             </el-form>
@@ -227,7 +227,7 @@
                     <template slot-scope="scope">
                         <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"   >待整改</el-button>
                         <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit" plain size="small" @click="goProRecieve(scope.row)">待验收</el-button>
-                        <span v-show="scope.row.status === '已整改'"  >已验收</span>
+                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small" >已整改</el-button>
                     </template>
                     </el-table-column>       
             </el-table>
@@ -321,6 +321,7 @@ export default {
        },
        goRecieve(data) {
           this.detail.reformCase = data.reformCase
+          this.detail.img = []
           if(data.affix4){
              this.detail.img.push('http://39.98.173.131:9000/api'+ data.affix4)
              this.detail.img.push('http://39.98.173.131:9000/api'+ data.affix3)

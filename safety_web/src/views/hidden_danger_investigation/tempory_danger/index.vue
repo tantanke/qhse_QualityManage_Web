@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title">{{form.dangerSource}}-隐患基本信息</div>
+    <div class="page-title">临时-隐患基本信息</div>
     <div class="page-content" v-loading='adding' style="height:660px">
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
@@ -225,16 +225,12 @@ export default {
         factorDepartment: '',
         consequence:'',//产生的后果
         location: '',
-        /* qHSE_FileAudit_ID: '', 
-        QHSE_FileAuditRecord_ID: '',
-        code: '', 
-        QHSE_CheckCategory: '' //后续判断之后填入
-        */
-        dangerSource: '',
+        dangerSource: '临时录入',
         affix1:  null,
         affix2:  null,
         
       },
+      moreForm:{},
       person: '',
       header: { Authorization: GetCurrentUser().token },
       companys: [], // 公司
@@ -255,15 +251,14 @@ export default {
     }
   },
   created() {
-    this.getSource()
     this.getCompany()
     this.getEmployees()
     this.getCheckTypes()
     this.getConsequences()
     this.getRanks()
     this.getrecordDate()
-    // 设置检查类型
-    !this.$route.params.type || localStorage.setItem('checkType',this.$route.params.type)
+    this.form.SafeStaff_ID = GetCurrentUser().employeeId
+    this.moreForm = {...this.form}
   },
   methods: {
     // 给附件命名
@@ -311,21 +306,6 @@ export default {
         .catch(err => {
           this.$message.error(err.message)
         })
-    },
-    getSource() {
-      let source, _this = this
-      _this.form.dangerSource = localStorage.getItem('dangerSource')
-      this.form.SafeStaff_ID = GetCurrentUser().employeeId
-      source = _this.form.dangerSource
-      if (source === '体系运行'){
-      const initData = JSON.parse(localStorage.getItem('sourcedata'))
-      console.log(initData)
-      _this.form.qHSE_FileAudit_ID = initData.qHSE_FileAudit_ID
-      _this.form.qHSE_FileAuditRecord_ID = initData.qHSE_FileAuditRecord_ID
-      _this.form.code = initData.code
-      } else if (source === '隐患排查') {
-      _this.form.qHSE_CheckCategory = _this.$route.params.type || localStorage.getItem('checkType')
-      }
     },
     // 获取数据方法
     getCompany() {
@@ -395,17 +375,8 @@ export default {
       this.form.reformPerson = arrs[1]
       this.form.reformPersonID = arrs[0]
     },
-    // 限制路由进入
-    limitRouter(){
-       // 在取消或者确定添加的时候删除暂存的item
-       // 利用这个来判断路由是刷新还是直接输入路由的地址进入
-       localStorage.removeItem('dangerSource')
-       localStorage.removeItem('checkType')
-       localStorage.removeItem('sourcedata')
-    },
     // 确认提交方法
     onSubmit() {
-      console.log(this.form)
       let noFill = false
       let _this = this
       Object.keys(_this.form).forEach((value) => {
@@ -414,7 +385,8 @@ export default {
         }
       })
       if(noFill || _this.person === '') {
-        console.log(_this.form)
+        console.log(this.form)
+        console.log(this.moreForm)
         _this.$message.warning('请把表单填写完整！')
         return
       }
@@ -425,7 +397,8 @@ export default {
         .then(res => {
           console.log(res)
           _this.$message.success(res.message)
-          _this.$router.go(-1)
+          _this.adding = false
+          _this.resetForm()
         })
         .catch(err => {
           console.log(err)
@@ -433,29 +406,16 @@ export default {
           _this.$message.error(err.message)
         })
     },
-
+    // 重置表单
+    resetForm(){
+        this.form = {...this.moreForm}
+        this.type = ''
+        this.person = ''
+    },
     // 一些事件
     changeCompany(value) {
       this.form.companyId = value[value.length - 1]
-    },
-     
-  },
-  beforeRouteEnter (to, from, next) {
-     let fronRouter = from.name
-    if((fronRouter === "QHSETroubleCheckTable" ) ){
-      localStorage.setItem('dangerSource','隐患排查');
-       next()
-    }  
-    if(localStorage.getItem('dangerSource','隐患排查')){
-       next()
-    }
-    if (fronRouter === "FileCheckIndex" ) {
-      localStorage.setItem('dangerSource','体系运行');
-      next()
-    } 
-    if(localStorage.getItem('dangerSource','体系运行')) {
-      next()
-    }
+    },  
   }
 }
 </script>

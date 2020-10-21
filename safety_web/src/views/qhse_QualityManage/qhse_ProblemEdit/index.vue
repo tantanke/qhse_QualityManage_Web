@@ -108,12 +108,12 @@
            </el-form>
            </template>
           </el-table-column>
-         <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
-          <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
-          <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
+         <el-table-column align='center' prop='safeStaff_Name' label='检查人员'></el-table-column>
+          <el-table-column align='center' prop='companyName' label='施工队伍'></el-table-column>
+          <el-table-column align='center' prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column align='center' prop='reformPerson' label='整改负责人'></el-table-column>
+          <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
+          <el-table-column align='center' prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column
             label="状态"
             align='center'>
@@ -121,7 +121,8 @@
                 <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
                 <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small" @click="goEdit(scope.row)">待整改</el-button>
                 <el-button v-show="scope.row.status === 3"  type="warning" icon="el-icon-edit" plain size="small" >验收中</el-button>
-                <span v-show="scope.row.status === 5"  >已验收</span>
+                <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
+                
             </template>
             </el-table-column>
           </el-table>
@@ -205,10 +206,10 @@
                     width='250'
                     label="公司名称">
                 </el-table-column>
-                <!-- <el-table-column
+                <el-table-column
                     prop="safeStaffName"
-                    label="检查人">
-                </el-table-column> -->
+                    label="检查项">
+                </el-table-column>
                   <el-table-column
                     prop="problemDescription"
                     label="问题描述">
@@ -221,7 +222,7 @@
                     <template slot-scope="scope">
                         <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  @click="goEditPage(scope.row)" >待整改</el-button>
                         <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
-                        <span v-show="scope.row.status === '已整改'"  >已验收</span>
+                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
                     </template>
                     </el-table-column>       
             </el-table>        
@@ -237,19 +238,6 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="proForm.situation" style="width:70%"></el-input>
             </el-form-item>
-           <!--  <el-form-item label='整改文件:'>
-               <el-upload
-                 ref="upload2"
-                  action="/api/uploadScreenShot"
-                  :on-success="handleAvatarSuccessPro"
-                  :limit="2"    
-                  :headers="header"        
-                  :on-exceed="handleExceedPro"
-                >
-                <el-button size="small" type="primary">浏览文件</el-button>
-                <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
-                </el-upload>
-            </el-form-item> -->
             <el-form-item style="margin-left:50%;margin-top:40px">
                 <el-button @click="editProShow= false">取 消</el-button>
                 <el-button type="primary" @click="goEditPro">确 定</el-button>
