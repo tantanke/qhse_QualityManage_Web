@@ -59,6 +59,11 @@
               size="mini"
               @click="pushfile(scope.row)"
               >导出</el-button>
+               <el-button 
+              type="info"
+              size="mini"
+              @click="endplans(scope.row)"
+              >结束</el-button>
             </template>
           </el-table-column> 
         </el-table> 
@@ -106,7 +111,7 @@ import {GetCurrentUser} from "../../../store/CurrentUser.js"
 import { createNewMonitorPlan } from "../../../services/remote";//新建
 import { getMonitorPlanList } from "../../../services/remote";//查询
 import { deletePlan } from "../../../services/remote";//删除
-import { getDetails } from "../../../services/remote";//查询细节
+import { getDetails,endPlan } from "../../../services/remote";//查询细节
 
 export default {
 data() {
@@ -122,6 +127,19 @@ data() {
     }
 },
 methods:{
+  endplans(data){
+    endPlan(data).then(res=>{
+         console.log('结束结果',res);
+         this.$message.success('成功结束任务');
+         //再次查询
+         getMonitorPlanList().then(res=>{
+            console.log('查询结果',res)
+            this.listData=res.data
+          }).catch(err=>{
+            console.log('查询失败',err)
+          })
+    })
+  },
    getNowFormatDate(){
         var date = new Date();
         var seperator1 = "-";
@@ -152,7 +170,7 @@ methods:{
           for(var i=0;i<length ;i++){
             var date1 = new Date(Date.parse(datas[i].startDate.replace(/-/g,"/")));
             var date2 = new Date(Date.parse(datas[i].endDate.replace(/-/g,"/")));
-            if(date1>=datemin && date2<=datemax){
+            if(date1>=datemin ){
               this.listData.push(datas[i])
             }
           }

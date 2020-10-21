@@ -41,6 +41,7 @@
                     <span style="margin-right:15px">请选择查看内容:</span>
                     <el-radio v-model="checkType" label="未批准">未批准</el-radio>
                     <el-radio v-model="checkType" label="已批准">已批准</el-radio>
+                    <el-radio v-model="checkType" label="未通过">未通过</el-radio>
                     <!--<div style="float:right;margin:5px 20px;color:orange">未审核:{{this.total3}}</div>-->
                     <div style="float:right;margin:5px 20px;color:orange">
                         未审核:{{this.total - this.total1 - this.total2 || '0'}}
@@ -166,6 +167,64 @@
                         -->
                     </el-table-column>
                     1
+                </el-table> 
+                <el-table
+                        :cell-style="cellStyle"
+                        v-if="checkType=='不通过'&&showType=='列表审核'"
+                        :data="nopassData"
+                        style="width: 100%text-align:center"
+                        ref="treeTable"
+                        row-key="code"
+                        :indent="30"
+                        max-height="560"
+                        highlight-current-row
+                        border
+                        @cell-click="handleCellClick"
+                        v-loading="loading"
+                        :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+                    <el-table-column prop="name" label="内容"></el-table-column>
+                    <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+                    <el-table-column label="操作" width="150" align="center">
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 "
+                            >{{scope.row.checkStatus === 1 ? '进入批准' : '查看'}}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-table
+                        :cell-style="cellStyle"
+                        v-if="checkType=='不通过'&&showType=='列表审核'"
+                        :data="haslistData"
+                        style="width: 100% text-align:center"
+                        ref="treeTable"
+                        row-key="code"
+                        :indent="30"
+                        max-height="560"
+                        highlight-current-row
+                        border
+                        @cell-click="handleCellClick"
+                        v-loading="loading"
+                        :tree-props="{children: 'childNode', hasChildren: 'hasChildren'}">
+                    <el-table-column prop="name" label="内容"></el-table-column>
+                    1
+                    <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
+                    <el-table-column label="操作" width="150" align="center">
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 "
+                            >{{scope.row.checkStatus === 1 ? '进入批准' : '查看'}}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    1
                 </el-table>
             </el-row>
             <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px" :close-on-click-modal=false>
@@ -236,7 +295,7 @@
     import {no_elementReviewer} from "../../../services/qhse_EvidenceCheck"//不通过审核
     import {show_elementReviewer} from "../../../services/qhse_EvidenceCheck"//显示要素证据信息
     import {downloadElementFile} from "../../../services/qhse_EvidenceCheck"
-    import {show_approve_check} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
+    import {show_approve_check,show_no_pass_element} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
     import {showAllElement} from "../../../services/qhse_EvidenceCheck";
     import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认批准
     import{GetCurrentUser}from"../../../../src/store/CurrentUser";
@@ -249,8 +308,10 @@
     export default {
         data() {
             return {
-                listData:'',
-                haslistData:'',
+                nopasslistData:[],
+                nopassData:[],
+                listData:[],
+                haslistData:[],
                 unpasstext: '',
                 checkType: '未批准',
                 filelength: '',
@@ -291,17 +352,67 @@
             };
         },
         methods: {
-            deepTree3 (treedata) {
+            reshowdata(){
+                console.log('展示数据了呀')
+                query_elementReviewers(this.filterQuery)//获取到叶子节点信息
+                            .then(res => {
+                                this.listData=[];
+                                this.treeData = res.data;
+                                this.total1 = 0;
+                                this.deepTree1(this.treeData);
+                                this.deepTree4(this.treeData);
+                                if (this.treeData.length) {
+                                this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                            }
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                this.message.error(err.message);
+                            });
+
+                        show_approve_check(this.filterQuery)
+                            .then(res => {
+                                this.haslistData=[];
+                                this.hasData = res.data;
+                                this.total2 = 0;
+                                this.deepTree2(this.hasData);
+                                thie.deepTree3(this.hasData);
+                                // 如果长度大于0，从其中取出tableID属性
+                            if (this.hasData.length) {
+                                this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                            }
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                this.message.error(err.message);
+                            });
+                        show_no_pass_element(this.filterQuery).then(res=>{
+                            this.nopasslistData=[];
+                            this.nopassData=res.data;
+                            this.deepTree5(this.nopassData);
+                        })
+            },
+            deepTree5 (treedata) {
               let _this = this;
               treedata.forEach(item => {
                 if (item.childNode.length === 0) {
-                  _this.haslistData.push(item)
+                  _this.nopasslistDatas.push(item);
                   return
                 } else {
                   _this.deepTree3(item.childNode)
                 }
               })
-              return listData;
+            },
+             deepTree3 (treedata) {
+              let _this = this;
+              treedata.forEach(item => {
+                if (item.childNode.length === 0) {
+                  _this.haslistData.push(item);
+                  return
+                } else {
+                  _this.deepTree3(item.childNode)
+                }
+              })
             },
             deepTree4(treedata) {
               let _this = this;
@@ -313,7 +424,6 @@
                   _this.deepTree4(item.childNode)
                 }
               })
-              return listData;
             },
             selectDepart(val) {
                 console.log('selectDepart', val);
@@ -372,32 +482,7 @@
                     approval_elementReviewer(this.nodeData).then(res => {
                         console.log(res.message);
                         this.$message.success(res.message);
-                        query_elementReviewers(this.filterQuery)//获取到叶子节点信息
-                            .then(res => {
-                                this.listData=[];
-                                this.treeData = res.data;
-                                this.total1 = 0;
-                                this.deepTree1(this.treeData);
-                                this.deepTree4(this.treeData);
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                this.message.error(err.message);
-                            });
-
-                        show_approve_check(this.filterQuery)
-                            .then(res => {
-                                this.haslistData=[];
-                                this.hasData = res.data;
-                                this.total2 = 0;
-                                this.deepTree2(this.hasData);
-                                thie.deepTree3(this.hasData);
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                this.message.error(err.message);
-                            });
-
+                        this.reshowdata();
                         this.dialogVisible = false;
                     }).catch(err => {
                         this.$message.error(err.message);
@@ -411,33 +496,7 @@
                     no_elementReviewer(this.nodeData).then(res => {
                         console.log(res.message);
                         this.$message.success(res.message);
-                        query_elementReviewers(this.filterQuery)//获取到叶子节点信息
-                            .then(res => {
-                                this.listData=[];
-                                this.treeData = res.data;
-                                this.total1 = 0;
-                                this.deepTree1(this.treeData);
-                                this.deepTree4(this.treeData);
-                                // this.companyName = res.data.name;
-                                // this.year = res.data.year;
-                                // this.status = res.data.status;
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                this.message.error(err.message);
-                            });
-                        show_approve_check(this.filterQuery)
-                            .then(res => {
-                                this.haslistData=[];
-                                this.hasData = res.data;
-                                this.total2 = 0;
-                                this.deepTree2(this.hasData);
-                                this.sdeepTree3(this.hasData);
-                            })
-                            .catch(err => {
-                                console.log(err);
-                                this.message.error(err.message);
-                            });
+                        this.reshowdata();
 
                         this.dialogVisible = false;
                     }).catch(err => {
@@ -481,42 +540,8 @@
                             console.log(err);
                             this.message.error(err.message);
                         });
-                    query_elementReviewers(this.filterQuery)//获取到叶子节点信息
-                        .then(res => {
-                            this.listData=[];
-                            this.treeData = res.data;
-                            this.total1 = 0;
-                            console.log(this.filterQuery.compayCode)
-
-                            // 如果长度大于0，从其中取出tableID属性
-                            if (this.treeData.length) {
-                                this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID
-                            }
-
-                            this.deepTree1(this.treeData);
-                            this.deepTree4(this.treeData);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            this.message.error(err.message);
-                        });
-
-                    show_approve_check(this.filterQuery)
-                        .then(res => {
-                            this.haslistData=[];
-                            this.hasData = res.data;
-                            this.total2 = 0;
-                            this.deepTree2(this.hasData);
-                            this.deepTree3(this.hasData);
-                            // 如果长度大于0，从其中取出tableID属性
-                            if (this.hasData.length) {
-                                this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            this.message.error(err.message);
-                        });
+                    console.log('没有展示数据吗')
+                    this.reshowdata();
                 }
                 this.loading = false;
 
@@ -567,6 +592,8 @@
                             this_.nodeData = res.data;
                             this_.nodeData.qHSE_CompanyYearManagerSysElement_ID = data.qHSE_CompanyYearManagerSysElement_ID
                             this_.detailData.evidenceDescription = this_.nodeData.evidenceDescription
+                            if(this_.nodeData.evidenceDescription=='录入判定该项要素不涉及流程，不予录入')
+                            this.$message.warnning('该项要素不涉及流程！')
                             this_.detailData.checkStaffName = this_.nodeData.checkStaffName
                             this_.detailData.approverStaffName = this_.nodeData.approverStaffName
                             this_.detailData.attachDescrption = this_.nodeData.attachDescrption
@@ -630,7 +657,8 @@
                         tableID: this.tableID,
                         tag: 2
                     });
-                    this.$message.success("提交成功")
+                    this.$message.success("提交成功");
+                    this.reshowdata();
                 }
                 else
                     this.$message.error("未审核完成")

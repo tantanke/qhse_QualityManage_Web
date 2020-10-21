@@ -145,6 +145,8 @@
                 </el-button>
                 <el-button :disabled="curStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
                 </el-button>
+                <el-button :disabled="curStatus !== 0" type="info" style="margin-top:10px;" @click="pushnull">不涉及
+                </el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -301,7 +303,7 @@ export default {
         return 'color:orange'
       } else if (row.column.label === "状态" && row.row.status === "未批准") {
         return 'color:blue'
-      } else if (row.column.label === "状态" && row.row.status === "未审核") {
+      } else if (row.column.label === "状态" && row.row.status === "不通过") {
         return 'color:red'
       }
     },
@@ -313,9 +315,11 @@ export default {
     },
     deepTree (treedata) {
       let _this = this
-
       treedata.forEach(item => {
         if (item.childNode.length === 0) {
+          if(item.status==='不通过')
+          _this.listData.unshift(item)
+          else
           _this.listData.push(item)
           return
         } else {
@@ -364,6 +368,41 @@ export default {
         this.$message.success('添加成功');
 
       }
+
+    },
+    async pushnull(){//推送空数据
+       this.form= {//保存上传的文件
+        evidenceID: '',//证据id
+        id: '',//年度要素id,
+        code: '',//要素编码
+        evidenceDescription: '录入判定该项要素不涉及流程，不予录入',//证据描述
+        attachID: '',//附件id
+        attachDescrption: '',//附件描述
+        attach: '',//最终上传的列表
+        uploadTime: ''//上传时间
+      };
+        //上传空数据
+        await addAll_evidence_attach(this.form).then(res => {
+          console.log(res);
+          console.log(1);
+          //上传后刷新树
+          this.dialogVisible3 = false;
+        this.$message.success('添加成功');
+        }).catch(err => {
+          this.$message.error(err.message);
+          console.log('', this.form)
+        });
+        await querryYearElement(this.filterQuery)//获取到叶子节点信息
+          .then(res => {
+            this.treeData = res.data;
+          })
+          .catch(err => {
+            console.log(err);
+            this.message.error(err.message);
+          });
+        this.listData = [];
+        await this.deepTree(this.treeData);
+
 
     },
     async updateScore (data) {

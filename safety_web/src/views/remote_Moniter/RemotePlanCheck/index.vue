@@ -222,7 +222,7 @@ export default {
       var data1 = new Date(Date.parse(data.startDate.replace(/-/g, "/")));
       var data2 = new Date(Date.parse(data.endDate.replace(/-/g, "/")));
       var nd = new Date(Date.parse(this.nowdate.replace(/-/g, "/")));
-      if (nd <= data2 && nd >= data1) return true;
+      if (nd >= data1) return true;
       else return false;
     },
     handleClick () {//查询
@@ -239,7 +239,7 @@ export default {
           for (var i = 0; i < length; i++) {
             var date1 = new Date(Date.parse(datas[i].startDate.replace(/-/g, "/")));
             var date2 = new Date(Date.parse(datas[i].endDate.replace(/-/g, "/")));
-            if (date1 >= datemin && date2 <= datemax) {
+            if (date1 >= datemin ) {
               this.listData.push(datas[i])
             }
           }
