@@ -90,23 +90,25 @@
                         <treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 				        v-model="checkedCompanyId"></treeselect>
                     </el-form-item>
-                     <el-form-item label="受审核部门" prop="group">
-                     <el-select v-model="addInfoForm.group" placeholder="请选择">
+                     <el-form-item label="受审核部门">
+                     <!-- <el-select v-model="addInfoForm.group" placeholder="请选择">
                      <el-option :label="item.empGroup" :value="item.empGroup" v-for="(item, index) in employeeList" :key="index">
                          <span>{{item.empGroup}}({{item.companyName}})</span>
                      </el-option>
-                    </el-select>
+                    </el-select> -->
+                    <el-input v-model="addInfoForm.group"></el-input>
                     </el-form-item>
                      <el-form-item label="责任部门" prop="responsiCompanyCode">
                         <treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 				        v-model="responsiCompanyId"></treeselect>
                     </el-form-item>
-                    <el-form-item label="责任部门负责人" prop="responsePersonID">
-                         <el-select v-model="addInfoForm.responsePersonID" placeholder="请选择">
+                    <el-form-item label="责任部门负责人">
+                         <!-- <el-select v-model="addInfoForm.responsePersonID" placeholder="请选择">
                             <el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeArr" :key="index">
                                 <span>{{item.name}}&nbsp;({{item.companyName}})</span>
                             </el-option>
-                        </el-select>
+                        </el-select> -->
+                        <el-input v-model="addInfoForm.responsePersonID"></el-input>
                     </el-form-item>
                     <el-form-item label="检查方式" prop="taskType">
                          <el-radio-group v-model="addInfoForm.taskType">
@@ -360,7 +362,7 @@ export default {
           // 受审核单位ID
           checkedCompanyCode: null,
           // 受审核部门
-          group: '',
+          // group: '',
           // 作业项目
           workProject: '',
           // 项目组名称
@@ -432,15 +434,15 @@ export default {
           taskType: [
               { required: true, message: '请选择检查方式', trigger: 'blur' }   
           ],
-          responsePersonID: [
-              { required: true, message: '请选择责任部门负责人', trigger: 'blur' }   
-          ],
+        //   responsePersonID: [
+        //       { required: true, message: '请选择责任部门负责人', trigger: 'blur' }   
+        //   ],
           responsiCompanyCode: [
               { required: true, message: '请选择责任部门', trigger: 'blur' }   
           ],
-          group: [
-              { required: true, message: '请选择受审核部门', trigger: 'blur' }   
-          ],
+        //   group: [
+        //       { required: true, message: '请选择受审核部门', trigger: 'blur' }   
+        //   ],
           checkedCompanyCode: [
                { required: true, message: '请选择受审核单位', trigger: 'blur' }   
           ]
