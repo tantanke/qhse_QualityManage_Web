@@ -23,6 +23,7 @@
           highlight-current-row
           border>
           <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
+          <el-table-column prop="sumDate" label="日期" align="center"> </el-table-column>
           <el-table-column prop="companyName" label="基层单位" align="center"> </el-table-column>
           <el-table-column prop="workNum" label="开工项目数量" width="100" align="center"> </el-table-column>
           <el-table-column prop="dayReportNum" label="日报数量" align="center"> </el-table-column>
@@ -54,6 +55,9 @@
           <el-form label-width="120px" style="width:100%;" >
            <el-row>
             <el-col :span="24">
+              <el-form-item label="日期:"  prop="sumDate" style="margin-bottom:1px">
+                <el-input type="text"   label="日期:"  class="resizeNone" v-model="resData.sumDate" placeholder="请输入内容"></el-input>
+              </el-form-item>
               <el-form-item label="基层单位:"  prop="companyName" style="margin-bottom:1px">
                 <el-input type="text"   label="基层单位:"  class="resizeNone" v-model="resData.companyName" placeholder="请输入内容"></el-input>
               </el-form-item>
@@ -137,7 +141,7 @@ export default {
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
-							sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
+							sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量","备用数量","覆盖率","利用率","使用率"]
             }];
 						// //导出
 						var toExcel = new ExportJsonExcel(option);
@@ -152,7 +156,8 @@ export default {
 				for (var i = 0; i < node.length; i++) {
 					//如果当前节点存在，装填数据
 					if (node[i]) {
-				   this.downloadDataItem = {}
+           this.downloadDataItem = {}
+						this.downloadDataItem.sumDate = node[i].sumDate
 						this.downloadDataItem.companyName = node[i].companyName
 						this.downloadDataItem.workNum = node[i].workNum
 						this.downloadDataItem.dayReportNum = node[i].dayReportNum

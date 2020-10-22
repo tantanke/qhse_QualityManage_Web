@@ -108,7 +108,7 @@ export default {
       //设置数据来源和数据格式
       option.datas = [{
         sheetData: this.downloadData,
-        sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "电话"]
+        sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "电话","基层单位"]
       }];
       //导出
       var toExcel = new ExportJsonExcel(option);

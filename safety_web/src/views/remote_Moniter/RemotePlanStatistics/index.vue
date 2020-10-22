@@ -102,7 +102,7 @@ export default {
       //设置数据来源和数据格式
       option.datas = [{
         sheetData: [],
-        sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
+        sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
       }];
       //导出
       var toExcel = new ExportJsonExcel(option);
@@ -175,7 +175,7 @@ export default {
           //设置数据来源和数据格式
           option.datas = [{
             sheetData: this.downloadData,
-            sheetHeader: ["基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
+            sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
           }];
           //导出
           var toExcel = new ExportJsonExcel(option);
@@ -191,6 +191,7 @@ export default {
         //如果当前节点存在，装填数据
         if (node[i]) {
           this.downloadDataItem = {}
+					this.downloadDataItem.sumDate = node[i].sumDate
           this.downloadDataItem.companyName = node[i].companyName
           this.downloadDataItem.workNum = node[i].workNum
           this.downloadDataItem.dayReportNum = node[i].dayReportNum

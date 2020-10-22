@@ -100,7 +100,7 @@ export default {
         //设置数据来源和数据格式
         option.datas = [{
           sheetData: this.downloadData,
-          sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况", "视频监控描述", "截图编号", "处置情况(录入)", "是否关闭(录入)"]
+          sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "基层单位","记录仪使用情况", "视频监控描述", "截图编号", "处置情况(录入)", "是否关闭(录入)"]
         }];
         //导出
         var toExcel = new ExportJsonExcel(option);
@@ -120,6 +120,7 @@ export default {
           this.downloadDataItem.projectName = node[i].projectName
           this.downloadDataItem.charger = node[i].charger
           this.downloadDataItem.tel = node[i].tel
+          this.downloadDataItem.companyName = node[i].companyName
           this.downloadDataItem.condition = node[i].condition
           this.downloadDataItem.description = node[i].description
           this.downloadDataItem.picNo = node[i].picNo

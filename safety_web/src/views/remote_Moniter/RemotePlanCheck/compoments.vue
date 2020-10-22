@@ -42,6 +42,7 @@
           <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
           <el-table-column prop="charger" label="负责人" width="120" align="center"> </el-table-column>
           <el-table-column prop="tel" label="电话" width="100" align="center"> </el-table-column>
+          <el-table-column prop="companyName" label="基层单位" width="140" align="center"> </el-table-column>
           <el-table-column label="视频监控描述:" width="100"  prop="description" style="margin-bottom:5px">{{resData.description}}</el-table-column>
           <el-table-column label="截图编号:" width="100" prop="picNo" style="margin-bottom:5px">{{resData.picNo}}</el-table-column>
           <el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">{{resData.disposeIn}}</el-table-column> -->
@@ -161,7 +162,7 @@ export default {
 						//设置数据来源和数据格式
 						option.datas = [{
 							sheetData: this.downloadData,
-							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况","视频监控描述","截图编号","处置情况(录入)","是否关闭(录入)","核查情况描述","处置情况(核查)","是否关闭(核查)"]
+							sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话","基层单位", "记录仪使用情况","视频监控描述","截图编号","处置情况(录入)","是否关闭(录入)","核查情况描述","处置情况(核查)","是否关闭(核查)"]
 						}];
 						//导出
 						var toExcel = new ExportJsonExcel(option);
@@ -181,6 +182,7 @@ export default {
 						this.downloadDataItem.projectName = node[i].projectName
 						this.downloadDataItem.charger = node[i].charger
             this.downloadDataItem.tel = node[i].tel
+            this.downloadDataItem.companyName = node[i].companyName
             this.downloadDataItem.condition = node[i].condition
             this.downloadDataItem.description = node[i].description
             this.downloadDataItem.picNo = node[i].picNo
