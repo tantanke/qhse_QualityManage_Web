@@ -50,6 +50,7 @@
           <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
           <el-table-column prop="charger" label="负责人" width="120" align="center"> </el-table-column>
           <el-table-column prop="tel" label="电话" width="140" align="center"> </el-table-column>
+          <el-table-column prop="companyName" label="基层单位" width="140" align="center"> </el-table-column>
           <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center"> 
               <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
             </el-table-column> -->

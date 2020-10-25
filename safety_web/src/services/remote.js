@@ -133,3 +133,10 @@ export const getDayReport = (data) => {
     data
   })
 }
+//结束按钮
+export const endPlan = (data) => {
+  return request(`/api/endPlan?planId=${data.monitorPlanID}`, {
+    method:'delete',
+    data
+  })
+}

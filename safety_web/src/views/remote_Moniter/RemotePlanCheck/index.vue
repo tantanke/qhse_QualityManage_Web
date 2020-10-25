@@ -100,7 +100,7 @@ export default {
         //设置数据来源和数据格式
         option.datas = [{
           sheetData: this.downloadData,
-          sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "记录仪使用情况", "视频监控描述", "截图编号", "处置情况(录入)", "是否关闭(录入)"]
+          sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "负责人电话", "基层单位","记录仪使用情况", "视频监控描述", "截图编号", "处置情况(录入)", "是否关闭(录入)"]
         }];
         //导出
         var toExcel = new ExportJsonExcel(option);
@@ -120,6 +120,7 @@ export default {
           this.downloadDataItem.projectName = node[i].projectName
           this.downloadDataItem.charger = node[i].charger
           this.downloadDataItem.tel = node[i].tel
+          this.downloadDataItem.companyName = node[i].companyName
           this.downloadDataItem.condition = node[i].condition
           this.downloadDataItem.description = node[i].description
           this.downloadDataItem.picNo = node[i].picNo
@@ -222,7 +223,7 @@ export default {
       var data1 = new Date(Date.parse(data.startDate.replace(/-/g, "/")));
       var data2 = new Date(Date.parse(data.endDate.replace(/-/g, "/")));
       var nd = new Date(Date.parse(this.nowdate.replace(/-/g, "/")));
-      if (nd <= data2 && nd >= data1) return true;
+      if (nd >= data1) return true;
       else return false;
     },
     handleClick () {//查询
@@ -239,7 +240,7 @@ export default {
           for (var i = 0; i < length; i++) {
             var date1 = new Date(Date.parse(datas[i].startDate.replace(/-/g, "/")));
             var date2 = new Date(Date.parse(datas[i].endDate.replace(/-/g, "/")));
-            if (date1 >= datemin && date2 <= datemax) {
+            if (date1 >= datemin ) {
               this.listData.push(datas[i])
             }
           }

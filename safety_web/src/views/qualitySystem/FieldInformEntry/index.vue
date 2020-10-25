@@ -43,7 +43,8 @@
 	import {
 		getCompany,
 		queryTableByYearAndComAndPush,
-		queryCheckTreeByID
+		queryCheckTreeByID,
+		queryAllTable
 	} from "../../../services/qualitySystem/FieldInformEntry.js"
 	import {
 		GetCurrentUser

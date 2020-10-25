@@ -54,3 +54,7 @@ export  const show_approve_check = (data)=>{
 export  const showAllElement = (data)=>{
   return request(`/api/showAllElement?companyCode=${data.companyCode}&year=${data.year}`,{data})
 }
+//不通过
+export  const show_no_pass_element = (data)=>{
+  return request(`/api/show_no_pass_element?companyCode=${data.companyCode}&year=${data.year}&status=${data.status}`,{data})
+}
