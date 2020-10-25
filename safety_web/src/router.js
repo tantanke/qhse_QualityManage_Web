@@ -13,8 +13,8 @@ export default new Router({
     },
     {
       path: '/qhseBigScreen',
-      name: 'Login',
-      component: resolve => require(['./views/bigScreen.vue'], resolve)
+      name: 'qhseBigScree',
+      component: resolve => require(['./views/bigScreen/bigScreen.vue'], resolve)
     },
     {
       path: '/',

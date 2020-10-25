@@ -385,8 +385,7 @@ export default {
             this.checkDialogVisible = true
         },
         // 显示出检查详情
-        detailCheckRecord(data) {
-            
+        detailCheckRecord(data) {           
             let _this = this
             _this.editQuestionForm = {...data}
             console.log(data)
@@ -440,9 +439,21 @@ export default {
         // 初始化最近一次的检查记录
         initChecklist () {
            let data = JSON.parse(localStorage.getItem('checkdata'))
-           if(data)
+           if(data){
            this.checkForm = {...data}
+           this.checkForm.checkDate = this.getTime()
+           }
            
+        },
+        getTime() {
+        let nowDate = new Date()
+        let month  = Number(nowDate.getMonth() + 1)
+        if(month>=10) {
+            month = String(month)
+        } else {
+            month = String('0' + month)
+        }
+        return `${nowDate.getFullYear()}-${month}-${nowDate.getDate()}`
         },
         // 添加检查记录表
         addChecklist () {

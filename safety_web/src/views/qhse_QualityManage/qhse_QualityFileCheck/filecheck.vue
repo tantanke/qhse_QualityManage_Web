@@ -184,7 +184,7 @@
               <el-form-item label='通过状态:' labelWidth='100px' >
                   <el-switch
                           style="margin-right:10px"
-                          v-model="fileRecord.pass"
+                          v-model="filePass"
                           active-color="#13ce66"
                           inactive-color="#ff4949"
                           active-text="通过"
@@ -228,6 +228,8 @@
               <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.pass}}</el-button></el-form-item> 
+              <!-- <el-form-item label="隐患违章：" style="margin-bottom:1px">未录入</el-form-item>
+              <el-form-item label="未录入原因：" style="margin-bottom:1px">222</el-form-item> -->
               <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
                 <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
@@ -271,6 +273,7 @@
       </el-dialog>
       <el-dialog
         :close-on-click-modal='false'
+        :show-close='false'
           width="30%"
            title="违章隐患录入"
           :visible.sync="noinnerVisible"
@@ -282,9 +285,19 @@
                <el-radio v-model="reason" label="违章">录入违章</el-radio>            
                <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
             </el-form-item>
-             <el-form-item>
-            <el-button type="primary" @click="checkNopass">确定</el-button>
-            <el-button @click="cancelInput">取 消</el-button>
+            <el-form-item v-show="reason === '不录入'">
+               <el-input
+                  type="textarea"
+                  :rows="3"
+                  placeholder="请输入不录入隐患违章原因"
+                  v-model="noPassReasonForm.noPassReason">
+                </el-input>
+           </el-form-item>
+             <el-form-item v-if="reason === '不录入'">
+            <el-button type="primary" @click="addnoPassReasonFileAudit">确 定</el-button>
+           </el-form-item>
+           <el-form-item v-else>
+            <el-button type="primary" @click="checkNopass">确 定</el-button>
            </el-form-item>
           </el-form>
          </div>
@@ -295,7 +308,7 @@
 
 <script>
 import CurrentUser from '../../../store/CurrentUser'
-import {addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,queryRecordId,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
+import {noPassReasonFileAudit,addProblemDescription,querryQhseElement,updateCheckstatus,addFileaduitrecord,queryRecordId,getStatus} from "../../../services/qhse_Filecheck"; // 文件审核相关
 import {querryQHSEproblemDiscription} from '../../../services/qhse_QualityStandard'
 import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_EvidenceCheck"//显示要素证据信息
 export default {
@@ -327,7 +340,7 @@ export default {
         fileAuditId: '',
         code: '',
         codeScore: '',
-        pass: '',
+        pass: '通过',
         additor: '',
         auditTime: ''
       },
@@ -338,6 +351,12 @@ export default {
         fileAuditId: '',
         code: ''
       },
+      // 不通过但是不录入问题的原因
+      noPassReasonForm:{
+         fileAuditId:'',
+         code:'',
+         noPassReason:''
+      },
       // 问题描述
       addQuestionForm: {
         qHSE_FileAudit_ID: '',
@@ -347,7 +366,8 @@ export default {
         companyCode: '',
         companyName: '',
         auditTime: '',
-        additor:''
+        auditor:'',
+        itemName:''
       },
       nowcode: null,
       // 控制弹出页面
@@ -363,7 +383,7 @@ export default {
       detailData: {},
       treeData: [],
       initData:[],
-      reason:'违章',
+      reason:'不录入',
       editdata: '',
       nodialogVisible: false,
       nopass: {},
@@ -382,6 +402,7 @@ export default {
       eviLoaind: false,
       addLoading: false,
       download:[],
+      filePass:true,
       // 管理审核数量
       hasTotal: 0,
       noTotal: 0,
@@ -390,6 +411,15 @@ export default {
       // 跳转到隐患违章页面所需要的数据
       goHidden:{code:'',qHSE_FileAudit_ID:'',qHSE_FileAuditRecord_ID:''}
     };
+  },
+  watch: {
+    filePass(val){
+        if(val){
+           this.fileRecord.pass = '通过'
+        }else{
+           this.fileRecord.pass = '不通过'
+        }
+    }
   },
   methods: {
     async downloadRes(url, name) {
@@ -440,7 +470,6 @@ export default {
                     _this.deepTree(item.childNode)
                 }
             })
-            console.log( _this.fileList)
             return _this.fileList
       },
       // 填充基础表单
@@ -450,7 +479,7 @@ export default {
       const initData = JSON.parse(localStorage.getItem('data'));
       _this.goHidden.qHSE_FileAudit_ID = initData.fileAuditId
       const user = CurrentUser.get()
-      initData.additor = user.userName
+      initData.additor = user.employeeName
       _this.filterQuery.year = initData.year
       _this.filterQuery.companyCode = initData.companyCode
       _this.filterQuery.companyName = initData.companyName
@@ -466,10 +495,13 @@ export default {
       _this.fileRecord.additor = initData.additor
       // 获取审核状态表单
       _this.statusForm.fileAuditId = initData.fileAuditId
+      // 不添加原因表单
+       _this.noPassReasonForm.fileAuditId = initData.fileAuditId
+      
       // 添加问题表单
       _this.addQuestionForm.companyCode = initData.companyCode
       _this.addQuestionForm.companyName = initData.companyName
-      _this.addQuestionForm.additor = initData.additor
+      _this.addQuestionForm.auditor = initData.additor
       
     },
     handleCellClick(row, cell, column) {
@@ -510,7 +542,6 @@ export default {
                   //j代表图片数量，k代表文件数量
                   let startIndex = arr[i].lastIndexOf(".");
                   let houzhui=arr[i].substring(startIndex+1, arr[i].length).toLowerCase();//获取到链接后缀
-                  console.log(houzhui)
                   if(houzhui=='jpg'||houzhui=='png'){
                   this.attachs[j]=arr[i];            
                   j++;
@@ -534,6 +565,8 @@ export default {
       _this.detailData.initialScore = data.initialScore
       _this.inputPlace = `请输入0-${data.initialScore}之间的分数`
       _this.detailData.formula = data.formula
+      // 添加问题描述来源
+      
       _this.detailData.name = data.name
       // 状态数据
       /* _this.detailData.codeScore = data.codeScore
@@ -569,6 +602,7 @@ export default {
       _this.selectProblem = []
       // 获取证据图片 
       _this.eviLoaind = true
+      console.log(data.name)
       _this.detaildialogVisible = true
       _this.getEvidence(data)  
       //  获取分数与状态填充
@@ -624,8 +658,8 @@ export default {
       _this.dialogVisible = true
       _this.editdata = data
       _this.addLoading  = true
-      _this.fileRecord.pass = ''
       _this.fileRecord.codeScore = ''
+      _this.addQuestionForm.itemName = data.name
       _this.nodeData = ''
       _this.attachs = []
       _this.files = []
@@ -656,9 +690,7 @@ export default {
       // 获取单位年度审核表
       querryQhseElement(_this.querryTree).then(res => {
         _this.treeData = res.data;
-        console.log(_this.treeData)
         _this.treeList = res.data;
-        console.log(_this.treeList)
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
           _this.$message.warning('请检查要素证据审批是否完成！')
@@ -668,7 +700,6 @@ export default {
         return _this.deepTree(_this.treeData)
       })  
       .then(() => {
-        console.log(_this.fileList)
         _this.noTotal = _this.allTotal - _this.hasTotal
         if(_this.hasTotal  === _this.allTotal){
            _this.finishAudit = true
@@ -692,7 +723,7 @@ export default {
        })
        _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
        // 先获取到id之后再进行添加问题
-       console.log(_this.addQuestionForm.qHSE_FileAudit_ID,_this.addQuestionForm.code)
+       _this.noPassReasonForm.code = _this.addQuestionForm.code
        queryRecordId({fileAuditId:_this.addQuestionForm.qHSE_FileAudit_ID,code:_this.addQuestionForm.code})
        .then((res) => {
          _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.data[0].qHSE_FileAudit_RecordID
@@ -704,6 +735,20 @@ export default {
        }).catch(err => {
         this.$message.error(err)
         _this.noinnerVisible = false
+      })
+    },
+    // 不录入时候的原因
+    addnoPassReasonFileAudit(){
+        if(this.noPassReasonForm.noPassReason === ''){
+          this.$message.error('请输入不录入原因！')
+          return
+        }
+        noPassReasonFileAudit(this.noPassReasonForm).then(res => {
+          this.$message.success('录入成功！')
+          this.noinnerVisible = false
+        }).catch(err => {
+        this.$message.error(err)
+        this.noinnerVisible = false
       })
     },
     // 删除文件审核记录
@@ -739,7 +784,6 @@ export default {
         _this.addLoading = false
         _this.dialogVisible = false
         // 重置添加状态
-        _this.fileRecord.pass = ''
         _this.fileRecord.code = ''
         _this.fileRecord.codeScore = ''
         _this.problemList = []

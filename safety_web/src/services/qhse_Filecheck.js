@@ -52,6 +52,12 @@ export const updateCheckstatus = (data) => {
       data
     })
 }
+export const noPassReasonFileAudit = (data) => {
+  return request('/api/noPassReasonFileAudit',{
+      method: 'put',
+      data
+    })
+}
 
 export const addProblemDescription = (data) => {
   return request('/api/add_problemDescription',{

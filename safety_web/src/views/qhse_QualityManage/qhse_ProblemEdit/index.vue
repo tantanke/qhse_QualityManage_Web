@@ -201,14 +201,22 @@
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
+                   <el-table-column
+                    prop="auditTime"
+                    label="检查时间">
+                </el-table-column>
                     <el-table-column
                     prop="companyName"
                     width='250'
                     label="公司名称">
                 </el-table-column>
                 <el-table-column
-                    prop="safeStaffName"
+                    prop="itemName"
                     label="检查项">
+                </el-table-column>
+                <el-table-column
+                    prop="auditor"
+                    label="检查人">
                 </el-table-column>
                   <el-table-column
                     prop="problemDescription"
@@ -447,9 +455,8 @@ export default {
             _this.dangerBtn = true
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
-               _this.dangerrecord = res.data.list
-               console.log(res.data.list)
-               if(res.data.list.length === 0) {
+               _this.dangerrecord = res.list
+               if(res.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
                     message: '该条件查询下无数据！请切换条件查询！',
