@@ -6,11 +6,66 @@ html{
     body{
         height: 100%;
         width: 100%;
-       .main{
+       .main{ //主界面
            height: 100%;
            width: 100%;
            position: fixed;
            background-size: 100% 100%;
+           .head{//头部
+            margin-top: 8px;
+               .title{
+                   margin-left: 41.4%;
+                   font-size: 2.4vw;
+                   color:#00FFFF ;
+               }
+               .time{
+                   color: #C4D6E9;
+                   margin-left: 8%;
+                   margin-top: 2%;
+                   font-weight: 600;
+                   font-size: 0.9vw
+               }
+               .buttons{
+                   margin-top: 1.4%;
+                   font-size: 1.1vw;
+                   color: #BDCFE3;
+                   i{
+                    font-size: 1.8vw;
+                    font-weight: 600;
+                    color:#6dd5ed;
+                    display: inline-block;
+                    position: relative;
+                    top: 4px;
+                   }
+                   span{
+                    cursor: pointer;
+                   }
+               }
+           }
+           .main-item1{
+               margin-top: 0.2%;
+               .rightContent{
+                border: 1px solid #6dd5ed;
+                width: 48%;
+                height: 50%;
+                position: fixed;
+                margin-left: 1%;
+                .qualityManage{
+                    height: 45%;
+                    width: 48%;                  
+                    position: fixed;
+                    background-size: 100% 100%;                
+                }   
+               }
+            .recording{
+                height: 45%;
+                width: 48%;
+                margin-left: 50%;
+                position: fixed;
+                background-size: 100% 100%;
+                border: 1px solid #6dd5ed;
+            }
+           }
        }
     }
 }
