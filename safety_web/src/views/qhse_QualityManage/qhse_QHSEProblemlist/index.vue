@@ -3,8 +3,8 @@
 
           <div class="page-title" style="width:100%">QHSE问题清单</div>
       <el-radio v-model="listcate" label="QHSE违章清单">QHSE违章列表</el-radio>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患列表</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题列表</el-radio>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" >QHSE隐患列表</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单" style="margin-bottom:20px">QHSE问题列表</el-radio>
       <el-row v-show="listcate === 'QHSE违章清单'">
           <el-row>
           <el-form :inline="true">
@@ -16,7 +16,6 @@
                         @change="handleChange"
                         ref="cascaderAddr"  
                         :show-all-levels="false" 
-                        clearable
                         filterable          
                         >             
                       </el-cascader>
@@ -73,7 +72,8 @@
                     <span>{{ props.row.factorHSE }}</span>
                 </el-form-item>
                 <el-form-item label="对应安全沟通类型:">
-                    <span>{{ props.row.factorObserver }}</span>
+                    <span v-if="props.row.factorObserver">{{ props.row.factorObserver }}</span>
+                    <span v-else>未录入</span>
                 </el-form-item>
                 <el-form-item label="原因:">
                     <span>{{ props.row.factorSource }}</span>
@@ -448,7 +448,7 @@ export default {
                            if(item[i]){
                               pItem[value] = item[i]
                            }else{
-                               pItem[value] = '无'
+                               pItem[value] = '暂未录入'
                            }
                        }
                    })
@@ -486,7 +486,7 @@ export default {
                                     if(item[i]){
                                         pItem[value] = item[i]
                                     }else{
-                                        pItem[value] = '无'
+                                        pItem[value] = '暂未录入'
                                     }
                                 }
                             })
@@ -527,8 +527,7 @@ export default {
             let baseurl 
             let form = {}
             let start,end         
-            let _this = this
-            _this.dangerLoading = true        
+            let _this = this         
             if (_this.date) {
                start = _this.dateH[0]
                end = _this.dateH[1]
@@ -541,6 +540,11 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyId) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+            _this.dangerLoading = true       
             _this.dangerBtn = true
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
@@ -574,7 +578,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
-            _this.regulationrecordLoading = true
+           
             if (_this.date) {
                start = _this.date[0]
                end = _this.date[1]
@@ -587,6 +591,11 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyId) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+             _this.regulationrecordLoading = true
             _this.regulationBtn = true
            baseurl  = _this.getUrl('/api/query_regulationrecord',form)
            queryRegulationrecord(baseurl,form).then(res => {
@@ -623,8 +632,7 @@ export default {
             let baseurl 
             let form = {}
             let start,end         
-            let _this = this
-            _this.problemLoading = true
+            let _this = this        
             if (_this.date) {
                start = _this.dateQ[0]
                end = _this.dateQ[1]
@@ -635,8 +643,13 @@ export default {
                form.endDate = _this.date30[1]
             }
             if (_this.checkForm.companyId.length !== 0) {
-                form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
+                form.companyCode= _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+             if(!form.companyCode) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+             _this.problemLoading = true
             _this.proBtn = true
            baseurl  = _this.getUrl('/api/query_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
@@ -670,7 +683,6 @@ export default {
    mounted() {     
        this.getRecentTime()
        this.getCompanyList()
-       this.searchRegulation()
        this.initMap()
    },
 }

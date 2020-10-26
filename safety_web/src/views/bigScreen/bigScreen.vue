@@ -13,11 +13,63 @@
           </el-col>
      </el-row>
      <el-row class="main-item1">
-      <el-row class="rightContent">
-      <el-row class="title">222</el-row>
-      <el-row class="qualityManage"  :style="quality">    
+      <el-col :span='12' class="rightContent">
+      <el-row class="title">
+        【质量管理】
       </el-row>
-    </el-row>
+      <el-row class="qualityManage"  :style="progress">   
+        <el-row class="contenTitle">质量报告计划进度</el-row>
+        <el-row class="content">
+          <el-col :span='6'>
+              <ul>
+                <li>总体完成情况</li>
+                <li ><img src="./img/jiankong.png" alt=""></li>
+                <li >本年累计完成</li>
+                <li>{{100 + " "}}个</li>
+                <li><img src="./img/yunwei.png" alt=""></li>
+                <li>完成进度</li>
+                <li>{{100 + " "}}%</li>
+              </ul>
+          </el-col>
+           <el-col :span='18'>
+
+           </el-col>
+        </el-row>
+      </el-row>
+    </el-col>
+      <el-col :span='12' class="leftContent">
+      <el-row class="title">
+        【记录仪管理】
+      </el-row>
+      <el-row class="recording"  :style="progress">    
+        <el-row class="contenTitle">本月记录仪使用情况</el-row> 
+      </el-row>
+    </el-col>
+     </el-row>
+     <el-row class="main-item2">
+        <el-row class="title">
+          【标准进度管理】
+        </el-row>
+        <el-row class="mainContent">
+          <el-col class="leftItem" :span='8'>
+            <el-row class="item-title"></el-row>
+            <el-row class="content" :style="progress"> 
+               <el-row class="contenTitle">初稿完成进度</el-row> 
+            </el-row>
+          </el-col>
+          <el-col class="midItem" :span='8'>
+            <el-row  class="item-title"></el-row>
+            <el-row class="content" :style="progress">
+              <el-row class="contenTitle">评审通过进度</el-row> 
+            </el-row>
+          </el-col>
+          <el-col class="rightItem" :span='8'>
+            <el-row  class="item-title"></el-row>
+            <el-row class="content" :style="progress">
+              <el-row class="contenTitle">标准发布进度</el-row> 
+            </el-row>
+          </el-col>
+        </el-row>
      </el-row>
 </el-row>
 
@@ -42,6 +94,22 @@ export default {
   // 记录管理
   recording: {
   backgroundImage: "url(" + require("./img/hdbj.png") + ")",
+  backgroundRepeat: "no-repeat",
+  backgroundSize:"100% 100%",
+  },
+  // 进度管理背景
+  progress: {
+  backgroundImage: "url(" + require("./img/mbox1.png") + ")",
+  backgroundRepeat: "no-repeat",
+  backgroundSize:"100% 100%",
+  },
+  icon1: {
+  backgroundImage: "url(" + require("./img/jiankong.png") + ")",
+  backgroundRepeat: "no-repeat",
+  backgroundSize:"100% 100%",
+  },
+  icon2s: {
+  backgroundImage: "url(" + require("./img/yunwei.png") + ")",
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
   },

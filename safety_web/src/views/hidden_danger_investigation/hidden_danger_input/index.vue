@@ -38,7 +38,6 @@
                 :disabled='select3'
                   v-model="form.factorSource"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -62,7 +61,6 @@
                 <el-select
                   v-model="form.rank"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -81,7 +79,6 @@
                 <el-select
                   v-model="person"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -122,7 +119,6 @@
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -142,7 +138,6 @@
                   :disabled='select1'
                   v-model="form.factorHSE"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -159,7 +154,6 @@
                 :disabled='select1'
                   v-model="form.factorDepartment"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -219,10 +213,10 @@ export default {
         consequenceID: '',//可能后果
         recordDate: '',
         rank: '',
-        factorSource: '',
+        factorSource: null,
         profession:'', // 所属专业
-        factorHSE: '',      
-        factorDepartment: '',
+        factorHSE: null,      
+        factorDepartment: null,
         consequence:'',//产生的后果
         location: '',
         /* qHSE_FileAudit_ID: '', 
@@ -282,6 +276,9 @@ export default {
       let _this = this
       // 进度随便跑把 谁先到无所谓
       // 查询归属职能部门
+      _this.factorDepartments = []
+       _this.factorSources = []
+        _this.factorHSEs = []
       QueryFactorDepartment(typeNode).then(res => {
         _this.factorDepartments = res.data
         _this.form.factorDepartment = res.data[0].factorDepartmentName

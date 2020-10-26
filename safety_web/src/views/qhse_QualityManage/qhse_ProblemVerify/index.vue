@@ -1,8 +1,8 @@
 <template>
   <div class="problemList">
           <div class="page-title" style="width:100%">QHSE问题验收</div>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患验收</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题验收</el-radio>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" >QHSE隐患验收</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单"  style="margin-bottom:20px">QHSE问题验收</el-radio>
       <el-row v-show="listcate === 'QHSE隐患清单'"> 
           <el-row>
           <el-form :inline="true">
@@ -14,7 +14,6 @@
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"    
-                         clearable
                         filterable           
                         >             
                       </el-cascader>
@@ -450,7 +449,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
-            _this.dangerLoading = true        
+                
             if (_this.date) {
                start = _this.dateH[0]
                end = _this.dateH[1]
@@ -463,6 +462,11 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyId) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+            _this.dangerLoading = true    
             _this.dangerBtn = true
            baseurl  = _this.getUrl('/api/query_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
@@ -506,7 +510,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
-            _this.problemLoading = true
+           
             if (_this.date) {
                start = _this.dateQ[0]
                end = _this.dateQ[1]
@@ -519,6 +523,11 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyCode = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyCode) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+             _this.problemLoading = true
             _this.proBtn = true
            baseurl  = _this.getUrl('/api/query_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
@@ -552,7 +561,6 @@ export default {
    mounted() {     
        this.getRecentTime()
        this.getCompanyList()
-       this.searchDanger()
    },
 }
 </script>
