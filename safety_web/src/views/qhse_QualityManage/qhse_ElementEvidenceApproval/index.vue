@@ -170,7 +170,7 @@
                 </el-table> 
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='不通过'&&showType=='树形审核'"
+                        v-if="checkType=='未通过'&&showType=='树形批准'"
                         :data="nopassData"
                         style="width: 100%text-align:center"
                         ref="treeTable"
@@ -191,14 +191,14 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入批准' : '查看'}}
+                            >{{scope.row.checkStatus === 2 ? '进入批准' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='不通过'&&showType=='列表审核'"
+                        v-if="checkType=='未通过'&&showType=='列表批准'"
                         :data="nopasslistData"
                         style="width: 100% text-align:center"
                         ref="treeTable"
@@ -220,7 +220,7 @@
                                     size="mini"
                                     @click="updateScore(scope.row)"
                                     v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入批准' : '查看'}}
+                            >{{scope.row.checkStatus === 2 ? '进入批准' : '查看'}}
                             </el-button>
                         </template>
                     </el-table-column>
@@ -376,7 +376,7 @@
                                 this.hasData = res.data;
                                 this.total2 = 0;
                                 this.deepTree2(this.hasData);
-                                thie.deepTree3(this.hasData);
+                                this.deepTree3(this.hasData);
                                 // 如果长度大于0，从其中取出tableID属性
                             if (this.hasData.length) {
                                 this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
