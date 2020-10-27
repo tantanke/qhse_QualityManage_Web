@@ -176,6 +176,7 @@
                 if (this.myNovalue == null || this.myNovalue == '') {
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
+                        this.filterMethods(this.listData)
                     })
                 }
                 else {
@@ -200,23 +201,7 @@
                 let res = await getDetails(this.$route.params)
                 this.listData = res.data;
                 console.log(this.listData, '11111111')
-                // 两个辅助结构，为了得到不重复的filterList
-                let distinctProjectName = new Set()
-                let distinctCompanyName = new Set()
-                // 添加之前先将原来的清空，防止出现重复数据
-                this.filterProjectNameList = []
-                this.filterCompanyNameList = []
-                this.listData.forEach(e=>{
-                    if (!distinctProjectName.has(e.projectName)) {
-                        distinctProjectName.add(e.projectName)
-                        this.filterProjectNameList.push({value: e.projectName, text: e.projectName})
-                    }
-                    if (!distinctCompanyName.has(e.companyName)) {
-                        distinctCompanyName.add(e.companyName)
-                        this.filterCompanyNameList.push({value:e.companyName, text:e.companyName})
-                    }
-                })
-
+                this.filterMethods(this.listData)
                 this.options = [];
                 for (var i = 0; i < this.listData.length; i++) {
                     this.options.push({value: this.listData[i].myNo, label: this.listData[i].myNo});
@@ -312,6 +297,7 @@
                     this.$message.success('删除成功', res)
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
+                        this.filterMethods(this.listData)
                     })
                 }).catch(err => {
                     this.$message.error('删除失败', err)
@@ -348,6 +334,24 @@
             filterCompanyName(value, row, column) {
                 const property = column['property'];
                 return row[property] === value;
+            },
+            filterMethods(listData) {
+                // 两个辅助结构，为了得到不重复的filterList
+                let distinctProjectName = new Set()
+                let distinctCompanyName = new Set()
+                // 添加之前先将原来的清空，防止出现重复数据
+                this.filterProjectNameList = []
+                this.filterCompanyNameList = []
+                listData.forEach(e=>{
+                    if (!distinctProjectName.has(e.projectName)) {
+                        distinctProjectName.add(e.projectName)
+                        this.filterProjectNameList.push({value: e.projectName, text: e.projectName})
+                    }
+                    if (!distinctCompanyName.has(e.companyName)) {
+                        distinctCompanyName.add(e.companyName)
+                        this.filterCompanyNameList.push({value:e.companyName, text:e.companyName})
+                    }
+                })
             }
 
         },

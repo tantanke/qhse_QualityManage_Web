@@ -6,7 +6,7 @@
                 <el-form label-width="130px" :inline="true">
                     <el-form-item>
                         <a ref="download"></a>
-                        <el-button type="primary" icon="el-icon-upload " @click="cilckFile()">Excel模板下载</el-button>
+                        <el-button type="primary" icon="el-icon-upload " @click="clickFile()">Excel模板下载</el-button>
                     </el-form-item>
                     <el-form-item>
                         <!-- 除了提交文件外还需要提交id，所以没用默认的提交方式，而是在submit之前通过接口去提交 -->
@@ -41,10 +41,16 @@
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
                     <el-table-column prop="deviceNo" label="设备编号" width="150" align="center"></el-table-column>
                     <el-table-column prop="myNo" label="自编号" width="150" align="center"></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称" align="center"
+                                     :filters="filterProjectNameList"
+                                     :filter-method="filterProjectName"
+                    ></el-table-column>
                     <el-table-column prop="charger" label="负责人" width="200" align="center"></el-table-column>
                     <el-table-column prop="tel" label="电话" width="200" align="center"></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"
+                                     :filters="filterCompanyNameList"
+                                     :filter-method="filterCompanyName"
+                    ></el-table-column>
                     <el-table-column label="操作" width="200" align="center">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="handelcelChange(scope.row)">编辑</el-button>
@@ -130,6 +136,11 @@
                                           placeholder="请输入内容">
                                 </el-input>
                             </el-form-item>
+                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
+                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
+                                          placeholder="请输入内容">
+                                </el-input>
+                            </el-form-item>
                         </el-col>
                         <el-col :span="24">
                             <el-form-item>
@@ -162,6 +173,8 @@
                 resData: {},
                 ifchange: false,
                 isCheckIn: false, // 用于判断手动录入窗口是否应该显示
+                filterProjectNameList: [],  // 用于对项目名称进行筛选的结构
+                filterCompanyNameList: [],  // 用于对基层单位进行筛选的结构
             }
         },
         methods: {
@@ -172,7 +185,7 @@
                 this.isCheckIn = false;
             }
             ,
-            cilckFile() {
+            clickFile() {
                 this.downloadData = [];
                 var option = {};
                 option.fileName = '远程计划模板';
@@ -193,6 +206,8 @@
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
                         this.$message.success('导入成功', res)
+
+                        this.filterMethods(this.listData)
                     })
                 }).catch(err => {
                     this.$message.error('批量导入失败', err)
@@ -212,6 +227,7 @@
                     this.$message.success('删除成功', res)
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
+                        this.filterMethods(this.listData)
                     })
                 }).catch(err => {
                     this.$message.error('删除失败', err)
@@ -227,10 +243,43 @@
                     this.ifchange = false
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
+                        this.filterMethods(this.listData)
                     })
                 }).catch(err => {
                     console.log('修改失败', err)
                 })
+            },
+            // 用于筛选项目名称列的方法
+            filterProjectName(value, row, column) {
+                // property 是列名，比如此处就为projectName
+                const property = column['property'];
+                // value 是选中的值，可能会有多个，依次比较，当前行列的值是否与选中的值相等，相等则保留
+                return row[property] === value;
+
+            },
+            // 用于筛选基层单位列的方法
+            filterCompanyName(value, row, column) {
+                const property = column['property'];
+                return row[property] === value;
+            },
+            filterMethods(listData) {
+                // 两个辅助结构，为了得到不重复的filterList
+                let distinctProjectName = new Set()
+                let distinctCompanyName = new Set()
+                // 添加之前先将原来的清空，防止出现重复数据
+                this.filterProjectNameList = []
+                this.filterCompanyNameList = []
+                listData.forEach(e=>{
+                    if (!distinctProjectName.has(e.projectName)) {
+                        distinctProjectName.add(e.projectName)
+                        this.filterProjectNameList.push({value: e.projectName, text: e.projectName})
+                    }
+                    if (!distinctCompanyName.has(e.companyName)) {
+                        distinctCompanyName.add(e.companyName)
+                        this.filterCompanyNameList.push({value:e.companyName, text:e.companyName})
+                    }
+                })
+                console.log(this.filterProjectNameList, this.filterCompanyNameList)
             }
         },
         mounted() {
@@ -238,6 +287,8 @@
             this.id = {"planId": this.$route.params.monitorPlanID}
             getDetails(this.$route.params).then(res => {
                 this.listData = res.data;
+                console.log(this.listData, 7897879798)
+                this.filterMethods(this.listData)
                 console.log(this.listData, 123)
             })
         }

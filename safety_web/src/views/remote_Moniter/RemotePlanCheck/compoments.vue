@@ -39,10 +39,16 @@
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
                     <el-table-column prop="deviceNo" label="设备编号" width="100" align="center"></el-table-column>
                     <el-table-column prop="myNo" label="自编号" width="100" align="center"></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称" align="center"
+                                     :filters="filterProjectNameList"
+                                     :filter-method="filterProjectName"
+                    ></el-table-column>
                     <el-table-column prop="charger" label="负责人" width="120" align="center"></el-table-column>
                     <el-table-column prop="tel" label="电话" width="100" align="center"></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"
+                                     :filters="filterCompanyNameList"
+                                     :filter-method="filterCompanyName"
+                    ></el-table-column>
                     <el-table-column label="视频监控描述:" width="100" prop="description" style="margin-bottom:5px">
                         {{resData.description}}
                     </el-table-column>
@@ -142,7 +148,9 @@
                 monitorPlanDetailID: '',
                 options: [],
                 myNovalue: '',
-                lists: []
+                lists: [],
+                filterProjectNameList: [],  // 用于对项目名称进行筛选的结构
+                filterCompanyNameList: [],  // 用于对基层单位进行筛选的结构
             }
         },
         methods: {
@@ -261,6 +269,7 @@
                     this.$message.success('删除成功')
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
+                        this.filterMethods(this.listData)
                     })
                 }).catch(err => {
                     this.$message.error('删除失败', err)
@@ -288,6 +297,36 @@
                         this.listData.push(res.data[i]);
                     }
                 })
+            },
+            filterProjectName(value, row, column) {
+                // property 是列名，比如此处就为projectName
+                const property = column['property'];
+                // value 是选中的值，可能会有多个，依次比较，当前行列的值是否与选中的值相等，相等则保留
+                return row[property] === value;
+
+            },
+            // 用于筛选基层单位列的方法
+            filterCompanyName(value, row, column) {
+                const property = column['property'];
+                return row[property] === value;
+            },
+            filterMethods(listData) {
+                // 两个辅助结构，为了得到不重复的filterList
+                let distinctProjectName = new Set()
+                let distinctCompanyName = new Set()
+                // 添加之前先将原来的清空，防止出现重复数据
+                this.filterProjectNameList = []
+                this.filterCompanyNameList = []
+                listData.forEach(e=>{
+                    if (!distinctProjectName.has(e.projectName)) {
+                        distinctProjectName.add(e.projectName)
+                        this.filterProjectNameList.push({value: e.projectName, text: e.projectName})
+                    }
+                    if (!distinctCompanyName.has(e.companyName)) {
+                        distinctCompanyName.add(e.companyName)
+                        this.filterCompanyNameList.push({value:e.companyName, text:e.companyName})
+                    }
+                })
             }
         },
         mounted() {
@@ -304,6 +343,7 @@
 
                 console.log(this.listData)
                 this.lists = this.listData
+                this.filterMethods(this.listData)
             })
 
         }
