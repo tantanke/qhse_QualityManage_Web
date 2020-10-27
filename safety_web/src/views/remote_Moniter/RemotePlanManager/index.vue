@@ -42,6 +42,7 @@
           <el-table-column prop="endDate" label="计划结束时间" width="150" align="center"> </el-table-column>
           <el-table-column prop="planName" label="计划名称" align="center"> </el-table-column>
           <el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center"> </el-table-column>
+          <el-table-column prop="status" label="计划状态" width="120" align="center"> </el-table-column>
            <el-table-column label="操作" width="300" align="center">
             <template slot-scope="scope">
               <el-button 

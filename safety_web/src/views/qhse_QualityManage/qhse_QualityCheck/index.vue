@@ -371,16 +371,11 @@ export default {
 
     },
     async pushnull(){//推送空数据
-       this.form= {//保存上传的文件
-        evidenceID: '',//证据id
-        id: '',//年度要素id,
-        code: '',//要素编码
-        evidenceDescription: '录入判定该项要素不涉及流程，不予录入',//证据描述
-        attachID: '',//附件id
-        attachDescrption: '',//附件描述
-        attach: '',//最终上传的列表
-        uploadTime: ''//上传时间
-      };
+       this.form.evidenceDescription='录入判定该项要素不涉及流程，不予录入',//证据描述
+       this.form. attachID= '',//附件id
+        this.form.attachDescrption= '',//附件描述
+        this.form.attach= '',//最终上传的列表
+        this.form.uploadTime=''//上传时间
         //上传空数据
         await addAll_evidence_attach(this.form).then(res => {
           console.log(res);
