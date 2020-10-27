@@ -35,6 +35,7 @@
           <el-table-column prop="projectName" label="项目名称" align="center"> </el-table-column>
           <el-table-column prop="charger" label="负责人" width="200" align="center"> </el-table-column>
           <el-table-column prop="tel" label="电话" width="200" align="center"> </el-table-column>
+          <el-table-column prop="companyName" label="基层单位" width="140" align="center"> </el-table-column>
           <el-table-column label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="handelcelChange(scope.row)">编辑</el-button>
@@ -68,6 +69,10 @@
               </el-form-item>
               <el-form-item label="电话:" prop="tel" style="margin-bottom:1px">
                 <el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel" placeholder="请输入内容">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
+                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName" placeholder="请输入内容">
                 </el-input>
               </el-form-item>
             </el-col>
