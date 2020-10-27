@@ -312,6 +312,7 @@
               <el-table
               stripe
             :data='problemrecord'
+            v-loading='problemLoading'
             style="width: 100%"
             max-height="590">
              <el-table-column
@@ -407,7 +408,7 @@ export default {
            let _this = this
            let m = new Map(
                [
-                   ['safeStaff_ID','检查人员'],['workItem','作业项目'],['companyId','施工队伍id'],['supervisionDate','检查日期'],['type','隐患类别'],
+                   ['safeStaff_Name','检查人员'],['companyName','施工队伍'],['safeStaff_ID','检查人员id'],['workItem','作业项目'],['companyId','施工队伍id'],['supervisionDate','检查日期'],['type','隐患类别'],
                    ['description','隐患描述'],['reformPersonID','整改负责人id'],['reformPerson','整改负责人'],['limitDate','限制时间'],['recordDate','记录上传时间'],
                    ['receptionDate','验收时间'],['reformCase','整改情况'],['ok','提交状态'],['consequenceID','可能后果'],['rank','隐患级别'],
                    ['factorSource','原因'],['profession','所属专业'],['factorHSE','对应体系要素'],['factorDepartment','归属职能部门'],['consequence','产生的后果'],['dangerSource','隐患来源'],
@@ -426,7 +427,7 @@ export default {
                    ['score','扣分'],['employeeCharacter','用工性质'],['workSeniority','工种工龄'],['position','岗位分类'],['regulationCharacter','违章性质'],
                    ['factorSource','原因'],['profession','所属专业'],['factorHSE','对应体系要素'],['factorDepartment','归属部门'],['factorObserver','安全沟通类型'],
                    ['qHSE_CheckCategory','检查类别'],['qHSE_FileAudit_ID','文件审核id'],['qHSE_FileAuditRecord_ID','文件审核记录id'],['code','要素编码'],['regulationSource','违章来源'],
-                   ['regulationID','违章人员ID'],['rgulationName','违章人员姓名'],
+                   ['regulationID','违章人员ID'],['regulationName','违章人员姓名'],['safeStaff_Name','检查人员'],['companyName','施工队伍'],
                ]
            ) 
            //数据库表中的所有字段
@@ -458,7 +459,7 @@ export default {
                option.filename = 'QHSE违章清单'
                option.datas = [{
 							sheetData: pData,
-                            sheetHeader: ['违章类别','检查人员id','违章人员ID','作业项目','施工队伍id','检查日期',
+                            sheetHeader: ['违章类别','检查人员id','检查人员','违章人员ID','违章人员','作业项目','施工队伍id','施工队伍','检查日期',
                             '违章描述','罚款','违章状态','可能后果','上传记录时间','扣分','用工性质','工种工龄',
                             '岗位分类','违章性质','原因','所属专业','对应体系要素','归属部门','安全沟通类型','检查类别'
                             ,'文件审核id','文件审核记录id',
@@ -482,6 +483,7 @@ export default {
                             let pItem = {}
                             Object.keys(item).forEach(i => {
                                 let value  = m.get(i)
+                                 /* pItem[value] = value */
                                 if(value){
                                     if(item[i]){
                                         pItem[value] = item[i]
@@ -496,7 +498,7 @@ export default {
                         option.filename = 'QHSE隐患清单'
                         option.datas = [{
                                         sheetData: pData,
-                                        sheetHeader: ['隐患类别','检查人员','作业项目','施工队伍id','检查日期','隐患描述','整改负责人id','整改负责人','限制时间',
+                                        sheetHeader: ['隐患类别','检查人员id','检查人员','作业项目','施工队伍id','施工队伍','检查日期','隐患描述','整改负责人id','整改负责人','限制时间',
                                         '验收时间','整改情况','提交状态','可能后果','记录上传时间','隐患级别','原因','所属专业','对应体系要素',
                                         '归属职能部门','产生的后果','位置区域','检查类别','文件审核id','文件审核记录id','要素编码','隐患来源'
                                         ]

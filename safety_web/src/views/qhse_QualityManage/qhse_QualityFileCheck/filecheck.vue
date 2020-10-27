@@ -228,7 +228,7 @@
               <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.pass}}</el-button></el-form-item> 
-              <el-form-item label="审核时间：" style="margin-bottom:1px">{{detailData.auditTime}}</el-form-item> 
+              <el-form-item label="审核时间：" v-show="detailData.auditTime"  style="margin-bottom:1px">{{detailData.auditTime}}</el-form-item> 
               <el-form-item label="未录入原因：" v-show="detailData.noPassReason" style="margin-bottom:1px">{{detailData.noPassReason}}</el-form-item>
               <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
@@ -745,8 +745,9 @@ export default {
           this.$message.error('请输入不录入原因！')
           return
         }
-        noPassReasonFileAudit(this.noPassReasonForm).then(res => {
+        noPassReasonFileAudit(this.noPassReasonForm).then(() => {
           this.$message.success('录入成功！')
+          this.noPassReasonForm.noPassReason = ''
           this.noinnerVisible = false
         }).catch(err => {
         this.$message.error(err)

@@ -198,6 +198,7 @@
               <el-table
               stripe
             :data='problemrecord'
+            v-loading='problemLoading'
             style="width: 100%"
             max-height="590">
                    <el-table-column

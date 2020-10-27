@@ -202,6 +202,7 @@
           <el-row style="height:370px" >
               <el-table
               stripe
+              v-loading='problemLoading'
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
@@ -402,6 +403,7 @@ export default {
            updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'已整改'}).then(res => {
                console.log(res)
                this.recieveProShow = false
+               this.$message.success('验收成功')
                this.getProblemDescription()
            })
         })
