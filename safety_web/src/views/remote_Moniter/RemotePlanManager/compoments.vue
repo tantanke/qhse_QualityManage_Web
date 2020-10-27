@@ -10,22 +10,21 @@
                     </el-form-item>
                     <el-form-item>
                         <!-- 除了提交文件外还需要提交id，所以没用默认的提交方式，而是在submit之前通过接口去提交 -->
-                        <el-upload action="\":before-upload="handleClick" :data="this.id" ref="upload"
+                        <el-upload action="/" :before-upload="handleClick" :data="this.id" ref="upload"
                                    :auto-upload="false">
                             <el-button type="warning" icon="el-icon-upload " size="medium">excel导入
                             </el-button>
                         </el-upload>
                     </el-form-item>
-
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-upload " @click="newSubmitForm()">确认</el-button>
                     </el-form-item>
                     <!--手动录入待完善-->
                     <el-form-item>
                         <!-- 显示出录入窗口，并且将数据清空，让用户重新录入 -->
-                        <el-button type="primary" icon="el-icon-upload " @click="isCheckIn=true;resData={}">手动录入</el-button>
+                        <el-button type="primary" icon="el-icon-upload " @click="isCheckIn=true;resData={}">手动录入
+                        </el-button>
                     </el-form-item>
-
                     <el-form-item style="float:right">
                         <el-button type="danger" @click="handleCancel">返回</el-button>
                     </el-form-item>
@@ -45,13 +44,13 @@
                     <el-table-column prop="projectName" label="项目名称" align="center"></el-table-column>
                     <el-table-column prop="charger" label="负责人" width="200" align="center"></el-table-column>
                     <el-table-column prop="tel" label="电话" width="200" align="center"></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"></el-table-column>
                     <el-table-column label="操作" width="200" align="center">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="handelcelChange(scope.row)">编辑</el-button>
                             <el-button type="danger" size="mini" @click="handelcelDelete(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
-
                 </el-table>
             </el-row>
 
@@ -81,6 +80,11 @@
                             </el-form-item>
                             <el-form-item label="电话:" prop="tel" style="margin-bottom:1px">
                                 <el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel"
+                                          placeholder="请输入内容">
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
+                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
                                           placeholder="请输入内容">
                                 </el-input>
                             </el-form-item>
@@ -132,7 +136,8 @@
                                 <el-button type="" style="margin-top:20px;margin-left:100px" @click="isCheckIn=false">
                                     取消
                                 </el-button>
-                                <el-button type="primary" style="margin-top:20px;" @click="confirmCheckIn">确定录入</el-button>
+                                <el-button type="primary" style="margin-top:20px;" @click="confirmCheckIn">确定录入
+                                </el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -160,7 +165,7 @@
             }
         },
         methods: {
-            confirmCheckIn(){
+            confirmCheckIn() {
                 // 确认录入
                 console.log(this.resData, 555555)
                 // 等后端的接口了
