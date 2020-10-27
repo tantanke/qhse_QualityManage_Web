@@ -166,7 +166,7 @@
                 </el-table>
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='不通过'&&showType=='列表审核'"
+                        v-if="checkType=='不通过'&&showType=='树形审核'"
                         :data="nopassData"
                         style="width: 100%text-align:center"
                         ref="treeTable"
@@ -195,7 +195,7 @@
                 <el-table
                         :cell-style="cellStyle"
                         v-if="checkType=='不通过'&&showType=='列表审核'"
-                        :data="haslistData"
+                        :data="nopasslistData"
                         style="width: 100% text-align:center"
                         ref="treeTable"
                         row-key="code"
@@ -381,7 +381,6 @@
 
                             this.total2 = 0;
                             this.deepTree2(this.hasData);
-                            console.log('查询的时候查询2')
                         })
                         .catch(err => {
                             console.log(err);
@@ -392,15 +391,16 @@
                             this.nopassData=res.data;
                             this.deepTree5(this.nopassData);
                         })
+                        console.log(this.nopassData,this.nopasslistData);
             },
             deepTree5 (treedata) {
               let _this = this;
               treedata.forEach(item => {
                 if (item.childNode.length === 0) {
-                  _this.nopasslistDatas.push(item);
+                  _this.nopasslistData.push(item);
                   return
                 } else {
-                  _this.deepTree3(item.childNode)
+                  _this.deepTree5(item.childNode)
                 }
               })
             },

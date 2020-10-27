@@ -170,7 +170,7 @@
                 </el-table> 
                 <el-table
                         :cell-style="cellStyle"
-                        v-if="checkType=='不通过'&&showType=='列表审核'"
+                        v-if="checkType=='不通过'&&showType=='树形审核'"
                         :data="nopassData"
                         style="width: 100%text-align:center"
                         ref="treeTable"
@@ -199,7 +199,7 @@
                 <el-table
                         :cell-style="cellStyle"
                         v-if="checkType=='不通过'&&showType=='列表审核'"
-                        :data="haslistData"
+                        :data="nopasslistData"
                         style="width: 100% text-align:center"
                         ref="treeTable"
                         row-key="code"
@@ -396,10 +396,10 @@
               let _this = this;
               treedata.forEach(item => {
                 if (item.childNode.length === 0) {
-                  _this.nopasslistDatas.push(item);
+                  _this.nopasslistData.push(item);
                   return
                 } else {
-                  _this.deepTree3(item.childNode)
+                  _this.deepTree5(item.childNode)
                 }
               })
             },

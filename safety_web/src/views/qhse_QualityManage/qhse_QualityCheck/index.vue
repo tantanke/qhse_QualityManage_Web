@@ -371,16 +371,15 @@ export default {
 
     },
     async pushnull(){//推送空数据
-       this.form= {//保存上传的文件
-        evidenceID: '',//证据id
-        id: '',//年度要素id,
-        code: '',//要素编码
-        evidenceDescription: '录入判定该项要素不涉及流程，不予录入',//证据描述
-        attachID: '',//附件id
-        attachDescrption: '',//附件描述
-        attach: '',//最终上传的列表
-        uploadTime: ''//上传时间
-      };
+    var datetime = new Date();
+      var year = datetime.getFullYear();
+      var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+      var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+      this.form.uploadTime = year + '-' + month + '-' + date;
+       this.form.evidenceDescription='录入判定该项要素不涉及流程，不予录入',//证据描述
+       this.form. attachID= '',//附件id
+        this.form.attachDescrption= '',//附件描述
+        this.form.attach= '',//最终上传的列表
         //上传空数据
         await addAll_evidence_attach(this.form).then(res => {
           console.log(res);
