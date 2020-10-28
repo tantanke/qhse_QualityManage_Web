@@ -32,7 +32,27 @@
               </ul>
           </el-col>
            <el-col :span='18'>
-
+               <el-row class='qualityManageChart'>
+                 <el-col :span='3'>1</el-col>
+                 <el-col :span='3'>2</el-col>
+                 <el-col :span='3'>3</el-col>
+                 <el-col :span='3'>4</el-col>
+                 <el-col :span='3'>5</el-col>
+               </el-row>
+               <el-row class='date'>2020.06</el-row>
+               <el-row class='tags'>
+                 
+                 <el-col :span='5'>.</el-col>
+                    <el-col  :span='3'>
+                      <el-button class="will"  plain></el-button><span>计划数</span>
+                    </el-col>
+                     <el-col :span='3'>
+                      <el-button class="finish" plain></el-button><span>完成数</span>
+                     </el-col>
+                      <el-col :span='3'>
+                        <el-button class="finishrate"  plain></el-button><span>完成率</span>
+                      </el-col>
+               </el-row>
            </el-col>
         </el-row>
       </el-row>
@@ -76,6 +96,9 @@
 </template>
 
 <script>
+import echarts from 'echarts'
+require('echarts/lib/chart/bar')
+import CurrentUser from '../../store/CurrentUser'
 export default {
   data() {
  return {
@@ -144,15 +167,23 @@ export default {
         }
         this.time = y+"-"+m+"-"+d+"   "+h+":"+i+":"+s
       },1000)   
-    }
-  },
+    },
+    initQualityManageChart() {
+    
+          }
+      },
   computed: {
     nowTime() {
       return this.time
     }
   },
   mounted() {
+    if(!CurrentUser.get()){
+      this.$message.error('请登录!')
+      this.$router.push({name: 'Login'})
+    }
     this.updateTime()
+    this.initQualityManageChart()
   },
 }
 </script>

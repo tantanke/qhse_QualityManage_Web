@@ -69,6 +69,32 @@
         span
         span
         span
+        span
+        span
+        span
+        span 
+        span
+        span
+        span
+        span
+        span
+        span
+        span
+        span
+        span 
+        span
+        span
+        span
+        span
+        span
+        span
+        span
+        span 
+        span
+        span
+        span
+        span
+        <el-button type="info" plain @click='goScreen'>QHSE看板</el-button>  
         <router-link :to='{name: "index"}'>
           <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
           //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
@@ -184,6 +210,12 @@ export default {
     }
   },
   methods: {
+    goScreen(){
+       const {href} = this.$router.resolve({
+      name: "qhseBigScreen",
+      });
+        window.open(href, '_blank');
+    },
     changeSys() {
       let _this = this
       if(_this.qhse == 'QHSE质量系统') {

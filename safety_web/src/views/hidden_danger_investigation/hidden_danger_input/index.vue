@@ -11,7 +11,7 @@
                   ref="companyChoose"
                   v-model="form.companyId"
                   :options="companys"
-                  :props="{value: 'nodeCode'}"
+                  :props="{value: 'nodeCode',expandTrigger: 'hover'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                   

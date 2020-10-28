@@ -16,6 +16,7 @@ html{
            width: 100%;
            position: fixed;
            background-size: 100% 100%;
+           
            .head{//头部
             margin-top: 8px;
                .title{
@@ -80,6 +81,37 @@ html{
                     position: fixed;
                     background-size: 100% 100%; 
                     .content{
+                        height: 100%;
+                        .qualityManageChart{
+                            margin-top: 10%;
+                            background: linear-gradient(#fa709a, #fee140);
+                            width: 80%;
+                            height: 12.2vw;
+                        }
+                        .date{
+                            color: $title-color;
+                            font-size: 0.7vw;
+                            margin-left: 32.5%;
+                        }
+                        .tags{
+                            margin-top: 1%;
+                            font-size: 0.5vw;
+                            color: $title-color;
+                            .el-button{
+                                width: 11px;
+                                height: 11px;
+                                margin-right: 5px;
+                            }
+                            .will{
+                                background: linear-gradient(#5ee7df, #b490ca);
+                            }
+                            .finish{
+                                background: linear-gradient(#fa709a, #fee140);
+                            }
+                            .finishrate{
+                                background: linear-gradient(#0250c5, #d43f8d);
+                            }
+                        }
                         li{
                             list-style: none;
                         }
@@ -87,13 +119,14 @@ html{
                         li:nth-child(1){
                            color: $title-color;
                            margin-left: 20% ;
-                           margin-top: 4%;
+                           margin-top: 10%;
+                           margin-bottom: 5%;
                            font-size: 1.2vw;
                         }
                         li:nth-child(2){
                             margin-left: 30% ;
                             img{
-                                width: 70px;
+                                width: 45%;
                                 transform:rotate(30deg);
                             }
                         }
@@ -104,12 +137,14 @@ html{
                          }
                          li:nth-child(4){
                             color:$finish-color;
+                            font-size: 0.9vw;
                             margin-left: 38% ;
                          }
                          li:nth-child(5){
+
                             margin-left: 30% ;
                             img{
-                                width: 70px;
+                                width: 45%;
                                 transform:rotate(30deg);
                             }
                          }
@@ -121,6 +156,7 @@ html{
                          li:nth-child(7){
                             color:$finish-color;
                             margin-left: 37% ;
+                            font-size: 0.9vw;
                          }
                     }                            
                 }   

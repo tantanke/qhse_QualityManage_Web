@@ -8,7 +8,7 @@ export const addFileaduit = (data) => {
   }
 
 export const queryFileaduit = (data) => {
-  return request('/api/query_fileaduit?year='+data.year/* +'&companyName='+data.companyName */, {
+  return request('/api/query_fileaduit?companyName='+data.companyName, {
       method: 'get',
       data
     })
