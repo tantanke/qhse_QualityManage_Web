@@ -337,7 +337,7 @@
                     label="问题描述">
                 </el-table-column>
                  <el-table-column
-                    prop="auditor"
+                    prop="problemSourcer"
                     label="问题来源">
                 </el-table-column>
                 <el-table-column

@@ -284,7 +284,7 @@ export default {
             if(res.code === 1000) {
             _this.filterQuery.year = _this.addForm.year
             _this.filterQuery.companyCode = _this.ScompanyName
-            this.searchForm.companyName
+            this.searchForm.companyName = _this.ScompanyName
             console.log(_this.filterQuery)
             _this.handleGetInitialData();
             _this.dialogFormVisible = false

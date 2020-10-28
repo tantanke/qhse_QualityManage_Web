@@ -223,6 +223,10 @@
                     label="问题描述">
                 </el-table-column>
                 <el-table-column
+                    prop="problemSourcer"
+                    label="问题来源">
+                </el-table-column>
+                <el-table-column
                     fixed="right"
                     label="状态"
                     align='center'

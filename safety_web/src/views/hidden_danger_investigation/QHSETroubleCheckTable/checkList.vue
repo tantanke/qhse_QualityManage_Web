@@ -123,7 +123,7 @@
             type="textarea"
             :rows="3"
             placeholder="请输入问题"
-            v-model="problemForm.problems">
+            v-model="problemForm.problemDescription">
             </el-input>
       </el-form-item>
       <el-form-item v-show="checkRecordForm.pass === '不通过'" label='检查记录：'>
@@ -167,8 +167,8 @@
   :visible.sync="questionEditfalse"
   width="30%">
   <el-form>
-     <el-form-item :model="editQuestionForm"  label="请输入问题：">
-             <el-input v-model="editQuestionForm.problems" ></el-input>
+     <el-form-item :model="problemForm"  label="请输入问题：">
+             <el-input v-model="problemForm.problemDescription" ></el-input>
      </el-form-item>
   </el-form>
   <div style="text-align:right">
@@ -225,7 +225,14 @@ export default {
                 pass:'通过'
             },
             problemForm:{
-
+                problemDescription:'',
+                code:'',
+                companyName:'',
+                companyCode:'',
+                auditor:'',
+                itemName:'',
+                auditTime:'',
+                problemSource:'隐患排查'
             },
             // 检查表单
             checkListForm: {
@@ -271,19 +278,16 @@ export default {
     methods: {
         submitEditQuestion(){
             let _this = this
-            if(this.editQuestionForm.problems === ''){
+            if(this.problemForm.problemDescription === ''){
                 this.$message.warning('请输入问题！')
                 return
             }
              _this.loading = true
              _this.questionEditfalse = false
              _this.detailDialogVisible = false
-            editCheckRecord(_this.editQuestionForm).then(() => {
-                return addCheckList(_this.checkListForm)
-            }).then(res => {
-                _this.checkListData = res.data
+            addProblemDescription(_this.problemForm).then(res => {
                 _this.loading = false
-                _this.$message.success('新增成功！')
+                _this.$message.success('录入问题成功！')
                 _this.checkRecordForm = {pass:'通过'}
                 _this.pushRouter()
             })
@@ -342,7 +346,7 @@ export default {
         },
         submitadd () {
             let _this = this          
-            if(_this.reason === '问题' && !_this.problemForm.problems){
+            if(_this.reason === '问题' && !_this.problemForm.problemDescription){
                 _this.$message.warning('请输入具体问题！')
                 return
             }
@@ -355,12 +359,26 @@ export default {
             editCheckRecord(_this.checkRecordForm).then(() => {
                 return addCheckList(_this.checkListForm)
             }).then(res => {
-                _this.checkListData = res.data
+                 _this.checkListData = res.data
+                if(_this.reason === '问题'){
+                    return  addProblemDescription(_this.problemForm)
+                }
+                else{    
                 _this.loading = false
                 _this.$message.success('新增成功！')
                 _this.checkRecordForm = {pass:'通过'}
                 _this.checkRecordForm.reason = ''
-                _this.problemForm.problems = ''
+                _this.problemForm.problemDescription = ''
+                _this.pushRouter()
+                }
+            })
+            .then(res => {
+                console.log(res)
+                _this.loading = false
+                _this.$message.success('新增成功！')
+                _this.checkRecordForm = {pass:'通过'}
+                _this.checkRecordForm.reason = ''
+                _this.problemForm.problemDescription = ''
                 _this.pushRouter()
             })
             .catch(err => {
@@ -382,10 +400,21 @@ export default {
         addCheckRecord(data) {
             let _this = this
             let user = CurrentUser.get()
+
+
+            //检查记录表单
             _this.checkRecordForm = {...data,..._this.checkRecordForm}
             _this.checkRecordForm.checkPerson = user.employeeName
             _this.checkRecordForm.checkPersonId = user.userId
             _this.checkRecordForm.checkTypeCode = _this.checkForm.checkListCode
+            //问题表单
+            _this.problemForm.code = _this.checkRecordForm.code
+            _this.problemForm.companyName = _this.checkRecordForm.companyName
+            _this.problemForm.companyCode = _this.checkRecordForm.companyCode
+            _this.problemForm.auditor = _this.checkRecordForm.checkPerson
+            _this.problemForm.itemName = _this.checkRecordForm.name
+            _this.problemForm.auditTime = _this.checkRecordForm.checkDate
+            _this.problemForm.problemDescription = ''
             this.checkDialogVisible = true
         },
         // 显示出检查详情
@@ -401,6 +430,16 @@ export default {
             _this.detailForm.checkDate = data.checkDate
             _this.detailForm.pass = data.pass
             _this.detailForm.checkPerson = data.checkPerson
+
+            // 添加问题表单
+            _this.problemForm.code = data.code
+            _this.problemForm.companyName = data.companyName
+            _this.problemForm.companyCode = data.companyCode
+            _this.problemForm.auditor = data.checkPerson
+            _this.problemForm.itemName = data.name
+            _this.problemForm.auditTime = data.checkDate
+            _this.problemForm.problemDescription = ''
+            console.log(_this.problemForm)
             _this.detailDialogVisible = true
         },
         // 筛选出所有叶子节点

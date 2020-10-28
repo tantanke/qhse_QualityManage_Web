@@ -33,23 +33,39 @@
           </el-col>
            <el-col :span='18'>
                <el-row class='qualityManageChart'>
-                 <el-col :span='3'>1</el-col>
-                 <el-col :span='3'>2</el-col>
-                 <el-col :span='3'>3</el-col>
-                 <el-col :span='3'>4</el-col>
-                 <el-col :span='3'>5</el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in listdata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+                 <el-col :span='17' class="zhuImage">
+                   <el-row>
+                     <el-col :span='4' style="color:#021151">.</el-col>
+                     <el-col :span='6'  class="zhu1" :style="qualityzhu1">
+                     </el-col>
+                     <el-col :span='4' class="point">
+                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                     </el-col>
+                     <el-col :span='6' class="zhu2"  :style="qualityzhu2"></el-col>
+                   </el-row>
+                 </el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in ratedata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
                </el-row>
                <el-row class='date'>2020.06</el-row>
                <el-row class='tags'>
                  
-                 <el-col :span='5'>.</el-col>
-                    <el-col  :span='3'>
+                 <el-col :span='8' style="color:#021151">.</el-col>
+                    <el-col  :span='2'>
                       <el-button class="will"  plain></el-button><span>计划数</span>
                     </el-col>
-                     <el-col :span='3'>
+                     <el-col :span='2'>
                       <el-button class="finish" plain></el-button><span>完成数</span>
                      </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='2'>
                         <el-button class="finishrate"  plain></el-button><span>完成率</span>
                       </el-col>
                </el-row>
@@ -63,6 +79,48 @@
       </el-row>
       <el-row class="recording"  :style="progress">    
         <el-row class="contenTitle">本月记录仪使用情况</el-row> 
+        <el-row class='recordingManageChart'>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in listdata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+                 <el-col :span='17' class="zhuImage">
+                   <el-row>
+                     <el-col :span='4' style="color:#021151">.</el-col>
+                     <el-col :span='4'  class="zhu1" :style="recordingzhu1">
+                     </el-col>
+                     <el-col :span='3' class="point">
+                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                     </el-col>
+                     <el-col :span='4'  class="zhu2" :style="recordingzhu2">
+                     </el-col>
+                     <el-col :span='3' style="color:#021151">.</el-col>
+                     <el-col :span='4' class="zhu3"  :style="recordingzhu3"></el-col>
+                   </el-row>                 
+                 </el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in ratedata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+               </el-row>
+               <el-row class='date'>2020.06</el-row>
+               <el-row class='tags'>                
+                 <el-col :span='11' style="color:#021151">.</el-col>
+                    <el-col  :span='3'>
+                      <el-button class="will"  plain></el-button><span>领用数</span>
+                    </el-col>
+                     <el-col :span='3'>
+                      <el-button class="finish" plain></el-button><span>正常开机数</span>
+                     </el-col>
+                      <el-col :span='3'>
+                        <el-button class="jiankong"  plain></el-button><span>监控查看数</span>
+                      </el-col>
+                      <el-col :span='3'>
+                        <el-button class="finishrate"  plain></el-button><span>使用比</span>
+                      </el-col>
+               </el-row>
       </el-row>
     </el-col>
      </el-row>
@@ -75,18 +133,129 @@
             <el-row class="item-title"></el-row>
             <el-row class="content" :style="progress"> 
                <el-row class="contenTitle">初稿完成进度</el-row> 
+               <el-row class='qualityManageChart'>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in listdata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+                 <el-col :span='17' class="zhuImage">
+                   <el-row>
+                     <el-col :span='4' style="color:#021151">.</el-col>
+                     <el-col :span='6'  class="zhu1" :style="firstzhu1">
+                     </el-col>
+                     <el-col :span='4' class="point">
+                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                     </el-col>
+                     <el-col :span='6' class="zhu2"  :style="firstzhu2"></el-col>
+                   </el-row>
+                 </el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in ratedata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+               </el-row>
+               <el-row class='date'>2020.06</el-row>
+               <el-row class='tags'>
+                 
+                 <el-col :span='9' style="color:#021151">.</el-col>
+                    <el-col  :span='3'>
+                      <el-button class="will"  plain></el-button><span>计划数</span>
+                    </el-col>
+                     <el-col :span='3'>
+                      <el-button class="finish" plain></el-button><span>完成数</span>
+                     </el-col>
+                      <el-col :span='3'>
+                        <el-button class="finishrate"  plain></el-button><span>完成率</span>
+                      </el-col>
+               </el-row>
             </el-row>
           </el-col>
           <el-col class="midItem" :span='8'>
             <el-row  class="item-title"></el-row>
             <el-row class="content" :style="progress">
               <el-row class="contenTitle">评审通过进度</el-row> 
+              <el-row class='qualityManageChart'>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in listdata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+                 <el-col :span='17' class="zhuImage">
+                   <el-row>
+                     <el-col :span='4' style="color:#021151">.</el-col>
+                     <el-col :span='6'  class="zhu1" :style="passzhu1">
+                     </el-col>
+                     <el-col :span='4' class="point">
+                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                     </el-col>
+                     <el-col :span='6' class="zhu2"  :style="passzhu2"></el-col>
+                   </el-row>
+                 </el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in ratedata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+               </el-row>
+               <el-row class='date'>2020.06</el-row>
+               <el-row class='tags'>
+                 
+                 <el-col :span='9' style="color:#021151">.</el-col>
+                    <el-col  :span='3'>
+                      <el-button class="will"  plain></el-button><span>计划数</span>
+                    </el-col>
+                     <el-col :span='3'>
+                      <el-button class="finish" plain></el-button><span>完成数</span>
+                     </el-col>
+                      <el-col :span='3'>
+                        <el-button class="finishrate"  plain></el-button><span>完成率</span>
+                      </el-col>
+               </el-row>
             </el-row>
           </el-col>
           <el-col class="rightItem" :span='8'>
             <el-row  class="item-title"></el-row>
             <el-row class="content" :style="progress">
               <el-row class="contenTitle">标准发布进度</el-row> 
+              <el-row class='qualityManageChart'>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in listdata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+                 <el-col :span='17' class="zhuImage">
+                   <el-row>
+                     <el-col :span='4' style="color:#021151">.</el-col>
+                     <el-col :span='6'  class="zhu1" :style="handoutzhu1">
+                     </el-col>
+                     <el-col :span='4' class="point">
+                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                     </el-col>
+                     <el-col :span='6' class="zhu2"  :style="handoutzhu2"></el-col>
+                   </el-row>
+                 </el-col>
+                 <el-col :span='3'>
+                   <ul v-for="(value,index) in ratedata1" :key="index">
+                       <li><span>{{value}}</span></li>
+                   </ul>
+                 </el-col>
+               </el-row>
+               <el-row class='date'>2020.06</el-row>
+               <el-row class='tags'>
+                 
+                 <el-col :span='9' style="color:#021151">.</el-col>
+                    <el-col  :span='3'>
+                      <el-button class="will"  plain></el-button><span>计划数</span>
+                    </el-col>
+                     <el-col :span='3'>
+                      <el-button class="finish" plain></el-button><span>完成数</span>
+                     </el-col>
+                      <el-col :span='3'>
+                        <el-button class="finishrate"  plain></el-button><span>完成率</span>
+                      </el-col>
+               </el-row>
             </el-row>
           </el-col>
         </el-row>
@@ -96,13 +265,13 @@
 </template>
 
 <script>
-import echarts from 'echarts'
-require('echarts/lib/chart/bar')
 import CurrentUser from '../../store/CurrentUser'
 export default {
   data() {
  return {
   // 背景样式
+  listdata1:[30000,24000,18000,12000,6000,0],
+  ratedata1:['100%','80%','60%','40%','20%','0%',],
   bg: {
   backgroundImage: "url(" + require("./img/bg.jpg") + ")",
   backgroundRepeat: "no-repeat",
@@ -114,17 +283,67 @@ export default {
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
   },
+  // 质量柱状图数据 只需要获得已使用占总数的百分比填入
+  qualityzhu1:{
+    height: '80%',
+    top: '20%'
+  },
+  qualityzhu2:{
+    height: '70%',
+    top: '30%'
+  },
   // 记录管理
   recording: {
   backgroundImage: "url(" + require("./img/hdbj.png") + ")",
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
   },
+  // 记录管理柱状图
+  recordingzhu1:{
+    height: '80%',
+    top: '20%'
+  },
+  recordingzhu2:{
+    height: '70%',
+    top: '30%'
+  },
+  recordingzhu3:{
+    height: '60%',
+    top: '40%'
+  },
   // 进度管理背景
   progress: {
   backgroundImage: "url(" + require("./img/mbox1.png") + ")",
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
+  },
+
+  //初稿完成进度
+  firstzhu1:{
+    height: '80%',
+    top: '20%'
+  },
+  firstzhu2:{
+    height: '80%',
+    top: '20%'
+  },
+  //评审通过进度
+  passzhu1:{
+    height: '50%',
+    top: '50%'
+  },
+  passzhu2:{
+    height: '80%',
+    top: '20%'
+  },
+  //标准发布进度
+  handoutzhu1:{
+    height: '70%',
+    top: '30%'
+  },
+  handoutzhu2:{
+    height: '80%',
+    top: '20%'
   },
   icon1: {
   backgroundImage: "url(" + require("./img/jiankong.png") + ")",
@@ -168,9 +387,21 @@ export default {
         this.time = y+"-"+m+"-"+d+"   "+h+":"+i+":"+s
       },1000)   
     },
-    initQualityManageChart() {
-    
-          }
+    initQualityBarchart(){
+
+    },
+    initRecordingBarchart(){
+
+    },
+    initFirstBarchart(){
+
+    },
+    initPassBarchart(){
+
+    },
+    initHandBarchart(){
+
+    },
       },
   computed: {
     nowTime() {
@@ -183,7 +414,11 @@ export default {
       this.$router.push({name: 'Login'})
     }
     this.updateTime()
-    this.initQualityManageChart()
+    this.initQualityBarchart()
+    this.initRecordingBarchart()
+    this.initFirstBarchart()
+    this.initPassBarchart()
+    this.initHandBarchart()
   },
 }
 </script>

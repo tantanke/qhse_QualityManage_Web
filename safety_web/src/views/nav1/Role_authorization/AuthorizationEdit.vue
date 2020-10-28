@@ -53,11 +53,17 @@
 				const roleCode = this.$route.params.id
 
 				GetRoleNodeId({roleCode:roleCode}).then((res) => {
+					console.log(res.data)
+					let nodedata = []
 					res.data.forEach(item => {
 						if(item !== '')
-						this.nodeIdList.push(item)
+						nodedata.push(item)
 					})
-					console.log(this.nodeIdList)
+					nodedata.forEach(i => {
+						if(i.length !== 4){ // 这里只能通过长度判断	QAQ
+							this.nodeIdList.push(i)
+						}
+					})
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})

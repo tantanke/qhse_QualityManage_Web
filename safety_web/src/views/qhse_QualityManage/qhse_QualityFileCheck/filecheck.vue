@@ -367,7 +367,8 @@ export default {
         companyName: '',
         auditTime: '',
         auditor:'',
-        itemName:''
+        itemName:'',
+        problemSource:'文件审核'
       },
       nowcode: null,
       // 控制弹出页面
