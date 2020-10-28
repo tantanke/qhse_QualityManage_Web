@@ -336,6 +336,10 @@
                     prop="problemDescription"
                     label="问题描述">
                 </el-table-column>
+                 <el-table-column
+                    prop="auditor"
+                    label="问题来源">
+                </el-table-column>
                 <el-table-column
                     fixed="right"
                     label="问题状态"

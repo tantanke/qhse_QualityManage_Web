@@ -39,3 +39,11 @@ export const addCheckList = (data) => {
       data
   })
 }
+
+//添加问题
+export const addProblemDescription = (data) => {
+  return request('/api/add_problemDescription',{
+      method: 'post',
+      data
+    })
+}

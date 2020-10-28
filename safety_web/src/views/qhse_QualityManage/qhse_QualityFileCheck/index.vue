@@ -10,8 +10,9 @@
               :options="companyList"
               placeholder="请选择公司单位"
               @select='getQueryCode'
+              :clearable='false'
               v-model="filterQuery.companyCode"
-              style="width:200px"
+              style="width:250px"
               :disable-branch-nodes='true'
             />
           </el-form-item>
@@ -19,6 +20,7 @@
             <el-date-picker
               v-model="filterQuery.year"
               type="year"
+              format='yyyy'
               placeholder="选择年份"
               style="width:200px">
               </el-date-picker>
@@ -105,7 +107,7 @@
 <script>
 import CurrentUser from '../../../store/CurrentUser'
 import { addFileaduit } from "../../../services/qhse_Filecheck"
-import { querryQhseElement,queryFileaduit,queryFileaduit2,queryFileaduit3 } from "../../../services/qhse_Filecheck"
+import { querryQhseElement,queryFileaduit2,queryFileaduit} from "../../../services/qhse_Filecheck"
 import request from '../../../utils/request'
 import { GetCompany } from "../../../services/gettreedata";
 export default {
@@ -140,7 +142,7 @@ export default {
       filterQuery: {},
       searchForm: {},
       companyList: [],
-      loading: true,
+      loading: false,
       tableData: [],
       statuss: [
         { value: "", label: "所有" },
@@ -170,18 +172,22 @@ export default {
     // 初始化表格数据
     handleGetInitialData() {
       let serchform = {};
-      this.loading = true;
-      if(!this.searchForm.companyName && !this.filterQuery.year){
-        queryFileaduit3().then(res => {
+      if(typeof(this.filterQuery.year) === 'object' && this.filterQuery.year)
+      this.filterQuery.year = String(this.filterQuery.year.getFullYear())
+      if(this.searchForm.companyName && this.filterQuery.year){
+        serchform = {year: this.filterQuery.year,companyName:this.searchForm.companyName}
+        this.loading = true;
+        queryFileaduit2(serchform).then(res => {
         this.tableData = res.data.list;
         this.loading = false;
       }).catch(err => {
           this.message.error(err.message);
           this.loading = false;
         });
-      }
-      if(!this.searchForm.companyName && this.filterQuery.year){
-        serchform = {year: this.filterQuery.year}
+      } 
+      else if(this.searchForm.companyName && !this.filterQuery.year){
+         serchform = {companyName:this.searchForm.companyName}
+        this.loading = true;
         queryFileaduit(serchform).then(res => {
         this.tableData = res.data.list;
         this.loading = false;
@@ -189,18 +195,10 @@ export default {
           this.message.error(err.message);
           this.loading = false;
         });
-      
-      } if(this.searchForm.companyName && this.filterQuery.year){
-        serchform = {year: this.filterQuery.year,companyName:this.searchForm.companyName}
-        queryFileaduit2(serchform).then(res => {
-        this.tableData = res.data.list;
-        this.loading = false;
-        this.searchForm.companyName = ''
-      }).catch(err => {
-          this.message.error(err.message);
-          this.loading = false;
-          this.searchForm.companyName = ''
-        });
+      }
+      else {
+        console.log(this.searchForm.companyName,this.filterQuery.year)
+        this.$message.warning('请选择正确的公司查询！')
       }
 
       
@@ -285,6 +283,9 @@ export default {
        }).then((res) => {
             if(res.code === 1000) {
             _this.filterQuery.year = _this.addForm.year
+            _this.filterQuery.companyCode = _this.ScompanyName
+            this.searchForm.companyName
+            console.log(_this.filterQuery)
             _this.handleGetInitialData();
             _this.dialogFormVisible = false
             _this.reloadForm() 
@@ -324,7 +325,6 @@ export default {
   mounted() {  
     this.getUserName();
     this.handleGetCompany();
-    this.handleGetInitialData();
   }
 };
 </script>

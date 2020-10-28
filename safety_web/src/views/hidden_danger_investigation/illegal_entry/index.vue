@@ -11,7 +11,7 @@
                   v-model="form.companyId"
                   :options="companys"
                   ref='companyChoose'
-                  :props="{value: 'nodeCode'}"
+                  :props="{value: 'nodeCode',expandTrigger: 'hover'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                 />
@@ -72,7 +72,7 @@
                 <el-select
                  :disabled='isSelect4'
                   v-model="form.factorObserver"
-                  placeholder="请选择违章类别"
+                  :placeholder="factorPlaceholder"
                   filterable
                   loading-text="查询中..."
                 >
@@ -295,6 +295,7 @@ export default {
       factorDepartments: [], //归属部门
       consequences: [], //可能后果
       qHSE_FileAudit_ID: '', //文件审核id
+      factorPlaceholder:'请选择违章类别',
       // 管理是否禁用
       isSelect1:true,
       isSelect2:true,
@@ -368,7 +369,9 @@ export default {
         _this.isSelect4 = false
          console.log(res)
        }).catch(() => {
-          this.$message.error('获取数据失败！')
+          _this.form.factorObserver = null
+         _this.isSelect4 = true
+         _this.factorPlaceholder = '无'
         })
     },
     getrecordDate(){

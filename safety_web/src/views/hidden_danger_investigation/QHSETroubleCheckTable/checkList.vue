@@ -123,7 +123,7 @@
             type="textarea"
             :rows="3"
             placeholder="请输入问题"
-            v-model="checkRecordForm.problems">
+            v-model="problemForm.problems">
             </el-input>
       </el-form-item>
       <el-form-item v-show="checkRecordForm.pass === '不通过'" label='检查记录：'>
@@ -181,7 +181,7 @@
 </template>
 
 <script>
-import {addCheckList,GetqhseCompanytree,getChecklistTree,editCheckRecord} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
+import {addCheckList,GetqhseCompanytree,getChecklistTree,editCheckRecord,addProblemDescription} from '../../../services/hidden_danger_investigation/QHSETroubleCheckTable'
 import { GetDictionary } from '../../../services/dictionary'
 import CurrentUser from '../../../store/CurrentUser'
 export default {
@@ -223,6 +223,9 @@ export default {
             // 添加检查记录
             checkRecordForm: {
                 pass:'通过'
+            },
+            problemForm:{
+
             },
             // 检查表单
             checkListForm: {
@@ -339,7 +342,7 @@ export default {
         },
         submitadd () {
             let _this = this          
-            if(_this.reason === '问题' && !_this.checkRecordForm.problems){
+            if(_this.reason === '问题' && !_this.problemForm.problems){
                 _this.$message.warning('请输入具体问题！')
                 return
             }
@@ -348,6 +351,7 @@ export default {
                 return
             }
              _this.loading = true
+             // 先添加问题再编辑检查记录
             editCheckRecord(_this.checkRecordForm).then(() => {
                 return addCheckList(_this.checkListForm)
             }).then(res => {
@@ -356,7 +360,7 @@ export default {
                 _this.$message.success('新增成功！')
                 _this.checkRecordForm = {pass:'通过'}
                 _this.checkRecordForm.reason = ''
-                _this.checkRecordForm.problems = ''
+                _this.problemForm.problems = ''
                 _this.pushRouter()
             })
             .catch(err => {
