@@ -106,7 +106,8 @@
             <el-col :span="24" class="col_border">
 
               <el-form-item label="上传文件">
-                <el-upload :show-file-list="show" :on-remove="removeFile" v-model="form.fileID" :headers="headers"
+                <!-- 原来这里是show-file-list="show", 但是导致了第一次上传文件不显示的bug，故更改为true -->
+                <el-upload :show-file-list="true" :on-remove="removeFile" v-model="form.fileID" :headers="headers"
                   multiple ref="uploads" style="float:left" :on-success="handleFilerSuccess"
                   :action="accidentOrEventUploadAddress">
                   <div class="span1">浏览附件</div>
