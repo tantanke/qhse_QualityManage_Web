@@ -105,7 +105,6 @@
                    </ul>
                  </el-col>
                </el-row>
-               <el-row class='date'>2020.06</el-row>
                <el-row class='tags'>                
                  <el-col :span='11' style="color:#021151">.</el-col>
                     <el-col  :span='3'>

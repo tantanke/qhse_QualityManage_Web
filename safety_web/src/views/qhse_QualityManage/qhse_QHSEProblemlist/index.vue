@@ -460,7 +460,7 @@ export default {
                    pData.push(pItem)
                })
                console.log(pData)
-               option.filename = 'QHSE违章清单'
+               option.fileName = 'QHSE违章清单'
                option.datas = [{
 							sheetData: pData,
                             sheetHeader: ['违章类别','检查人员id','检查人员','违章人员ID','违章人员','作业项目','施工队伍id','施工队伍','检查日期',
@@ -499,7 +499,7 @@ export default {
                             pData.push(pItem)
                         })
                         console.log(pData)
-                        option.filename = 'QHSE隐患清单'
+                        option.fileName = 'QHSE隐患清单'
                         option.datas = [{
                                         sheetData: pData,
                                         sheetHeader: ['隐患类别','检查人员id','检查人员','作业项目','施工队伍id','施工队伍','检查日期','隐患描述','整改负责人id','整改负责人','限制时间',

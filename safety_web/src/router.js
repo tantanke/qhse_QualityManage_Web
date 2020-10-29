@@ -274,6 +274,10 @@ export default new Router({
         { path: '/qhse_QualityManage/qhse_QualityCheck/ProblemList', name:'ProblemList', component: resolve => require(['./views/qhse_QualityManage/qhse_QHSEProblemlist/index.vue'],resolve)},
         { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
         { path: '/qhse_QualityManage/taskList', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
+        //看板数据管理
+        { path: '/qhse_QualityManage/qhse_BigScreenManage/progressManage', name:'progressManage', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/progress.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_BigScreenManage/qualityManage', name:'qualityManage', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/quality.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_BigScreenManage/recordingManage', name:'recordingManage', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/recording.vue'],resolve)},
         //报告管理  report_management
         {
           path: '/report_management/report_plan/index',

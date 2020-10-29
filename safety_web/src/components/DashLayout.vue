@@ -95,6 +95,15 @@
         span
         span
         <el-button type="info" plain @click='goScreen'>QHSE看板</el-button>  
+        <router-link :to='{name: "qualityManage"}'>
+         <el-button type="info" plain>质量</el-button>   
+        </router-link>
+         <router-link :to='{name: "progressManage"}'>
+           <el-button type="info" plain >进度</el-button>  
+        </router-link>
+         <router-link :to='{name: "recordingManage"}'>
+          <el-button type="info" plain>记录</el-button>  
+        </router-link>
         <router-link :to='{name: "index"}'>
           <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
           //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
