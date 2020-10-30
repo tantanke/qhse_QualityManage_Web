@@ -10,14 +10,12 @@
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 		<!-- 问题复审列表区域 -->
             <el-table :data="problemReviewList" border stripe>
-                <el-table-column type="index" label="序号" width="70px"></el-table-column>
-                <el-table-column label="问题性质" prop="nature"></el-table-column>
-                <el-table-column label="违章人员" prop="illegalPerson"></el-table-column> 
-                <el-table-column label="岗位" prop="post"></el-table-column>
-                <el-table-column label="违章条款" prop="violationClause" width="190px"></el-table-column>
-                <el-table-column label="不符合标准" prop="nonConformityStd"></el-table-column>
-                <el-table-column label="处罚依据" prop="punishmentBasis"></el-table-column>
-                <el-table-column label="操作">
+                <el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
+                <el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="责任单位" prop="responsiCompanyName" show-overflow-tooltip align="center"></el-table-column> 
+                <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '已通过' || scope.row.isPush === '已打回'">查看</el-button>
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemViewCheck(scope.row)" v-else>复审</el-button>
@@ -31,11 +29,17 @@
                 :visible.sync="problemCheckDialogVisible"
                 width="50%" @close="problemCheckDialogClose">
                 <!-- 问题审核表单 -->
-                <el-form :model="problemCheckForm" label-width="100px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
+                <el-form :model="problemCheckForm" label-width="130px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                        <el-tab-pane label="基本信息" name="0">
-                            <el-form-item label="要素名">
+                            <el-form-item label="要素名称">
                                 <el-input v-model="problemCheckFormCheckName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="责任单位">
+                                <el-input v-model="problemCheckForm.responsiCompanyName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="负责人">
+                                <el-input v-model="problemCheckForm.responsePersonName" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="问题描述">
                                 <el-input v-model="problemCheckForm.description" readonly></el-input>
@@ -43,68 +47,7 @@
                             <el-form-item label="问题性质">
                                 <el-input v-model="problemCheckForm.nature" readonly></el-input>
                             </el-form-item>
-                        </el-tab-pane>
-                        <el-tab-pane label="违章信息" name="1">
-                     <el-form-item label="处罚依据">
-                        <el-input v-model="problemCheckForm.punishmentBasis" readonly></el-input>
-                    </el-form-item>
-                        <el-form-item label="违章条款">
-                        <el-input v-model="problemCheckForm.violationClause" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="违章条款内容">
-                        <el-input v-model="problemCheckForm.violationClauseContent" readonly></el-input>
-                    </el-form-item>
-                        <el-form-item label="违章扣款">
-                        <el-input v-model="problemCheckForm.violationDeduction" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="违章扣分">
-                        <el-input v-model="problemCheckForm.violationScore" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="违章人员">
-                        <el-input v-model="problemCheckForm.illegalPerson" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="岗位">
-                        <el-input v-model="problemCheckForm.post" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="岗位分类">
-                        <el-input v-model="problemCheckForm.postType" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="用工性质">
-                        <el-input v-model="problemCheckForm.employmentProperty" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="工作年限">
-                        <el-input v-model="problemCheckForm.workingYears" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="学历">
-                        <el-input v-model="problemCheckForm.education" readonly></el-input>
-                    </el-form-item>
-                        </el-tab-pane>
-                        <el-tab-pane label="问题信息" name="2">
-                            <el-form-item label="不符合性质">
-                                <el-input v-model="problemCheckForm.nonConformityNature" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合类型">
-                                <el-input v-model="problemCheckForm.nonConformityType" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合标准">
-                                <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="条款编号">
-                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="条款内容">
-                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
-                            
-                            <el-form-item label="问题图片">
+                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 15px"
                                     :src="item"
@@ -116,18 +59,121 @@
                                 <a :href="item.url" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
-                        <el-tab-pane label="整改信息" name="3">
+                        <el-tab-pane label="违章信息" name="1" v-if="problemCheckForm.nature === '违章项'">
+                     <el-form-item label="处罚依据">
+                        <el-input v-model="problemCheckForm.punishmentBasis" readonly></el-input>
+                    </el-form-item>
+                        <el-form-item label="违章条款号">
+                        <el-input v-model="problemCheckForm.violationClause" readonly></el-input>
+                    </el-form-item>
+               
+                    <el-form-item label="违章条款内容">
+                        <el-input v-model="problemCheckForm.violationClauseContent" readonly></el-input>
+                    </el-form-item>
+                        <el-form-item label="违章扣款">
+                        <el-input v-model="problemCheckForm.violationDeduction" readonly></el-input>
+                    </el-form-item>
+                  
+                    <el-form-item label="违章扣分">
+                        <el-input v-model="problemCheckForm.violationScore" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="违章人员">
+                        <el-input v-model="problemCheckForm.illegalPerson" readonly></el-input>
+                    </el-form-item>
+               
+                    <el-form-item label="违章人员岗位">
+                        <el-input v-model="problemCheckForm.post" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="岗位分类">
+                        <el-input v-model="problemCheckForm.postType" readonly></el-input>
+                    </el-form-item>
+                
+                    <el-form-item label="用工性质">
+                        <el-input v-model="problemCheckForm.employmentProperty" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="工作年限">
+                        <el-input v-model="problemCheckForm.workingYears" readonly></el-input>
+                    </el-form-item>
+        
+                    <el-form-item label="学历">
+                        <el-input v-model="problemCheckForm.education" readonly></el-input>
+                    </el-form-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="问题信息" name="2" v-else-if="problemCheckForm.nature === '问题项'">
+                            <el-form-item label="不符合标准">
+                                <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准号">
+                                <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准内容">
+                                <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款">
+                                <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款号">
+                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款内容">
+                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="整改时限">
+                                <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
+                            </el-form-item> 
+                        </el-tab-pane>
+                        <el-tab-pane label="观察信息" name="3" v-else-if="problemCheckForm.nature === '观察项'">
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="整改时限">
+                                <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
+                            </el-form-item> 
+                        </el-tab-pane>
+                        <el-tab-pane label="不符合项" name="4" v-else-if="problemCheckForm.nature === '不符合'">
+                            <el-form-item label="不符合性质">
+                                <el-input v-model="problemCheckForm.nonConformityNature" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合类型">
+                                <el-input v-model="problemCheckForm.nonConformityType" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准">
+                                <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准号">
+                                <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准内容">
+                                <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款">
+                                <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款号">
+                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款内容">
+                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="整改时限">
+                                <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
+                            </el-form-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="整改信息" name="5">
                             <el-form-item label="纠正">
                                 <el-input v-model="problemCheckForm.nonConformCorrect" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="纠正措施">
                                 <el-input v-model="problemCheckForm.nonConformCorrectMeasure" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="整改时限">
-                                <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="跟综验证" prop="nonConformCorrectMeasureVerify">
-                                <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证"></el-input>
+                            <el-form-item label="整改完成时间">
+                                <el-input v-model="problemCheckForm.reformDate" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="纠正图片">
                                 <el-image 
@@ -141,6 +187,20 @@
                                 <a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
+                         <el-tab-pane label="验证信息" name="6">
+                             <el-form-item label="验证时间">
+                                 <el-input v-model="problemCheckForm.cheVerifyDate" readonly></el-input>
+                             </el-form-item>
+                             <el-form-item label="验证人">
+                                 <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
+                             </el-form-item>
+                             <el-form-item label="跟综验证">
+                                <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证"></el-input>
+                            </el-form-item>
+                            <el-form-item label="验证意见">
+                                 <el-input v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
+                             </el-form-item>
+                         </el-tab-pane>
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -155,6 +215,7 @@
 
 <script>
 import { getProblemReviewList, acceptProblemReviewData, refuseProblemReviewData, updateQualityCheckRecord, getOriginFileName, getQualityCheckList}from "../../../services/qualitySystem/problemReview"
+import { GetCurrentUser } from '../../../store/CurrentUser'
 export default {
     data () {
         return {
@@ -198,8 +259,6 @@ export default {
             flagRecifyArray: [],
             // 复审全部通过标志数组
             flagAcceptArray: [],
-            // 审核完成标志
-            isFinish: 0,
             // 要素名
             checkName: '',
             // 表单要素名
@@ -207,7 +266,9 @@ export default {
             // 质量监督检查表名称
             qualityCheckList: [],
             // 是否属于这个部分
-            isBelongToPart: false
+            isBelongToPart: false,
+            // 表格要素名
+            problemCheckName: ''
         }
     },
     methods: {
@@ -215,6 +276,7 @@ export default {
             this.acceptRow = this.$route.query.queryData
             console.log('问题审核页面传递过来的数据')
             console.log(this.acceptRow)
+            this.getQualityCheck()
             getProblemReviewList(this.acceptRow.qualityCheckID).then((res) => {
                 console.log('查询质量检查id返回的数据')
                 console.log(res.data)
@@ -243,9 +305,15 @@ export default {
         // 问题审核弹出对话框
         problemViewCheck: function (row) {
             let that = this
+            that.imageList = []
+			that.fileProblemList = []
+			that.imageCorrectList = []
+			that.fileCorrectList = []
             that.changeCheckListCodeToName(that.qualityCheckList, row.checkListCode)
             that.problemCheckFormCheckName = that.checkName
             that.problemCheckForm = row
+            that.problemCheckForm.cheVerifierName = that.GetCurrentUser().employeeName
+            that.problemCheckForm.cheVerifierID = that.GetCurrentUser().employeeId
             const path = 'http://39.98.173.131:7000/resources/QualityCheck/'
             // 问题图片
             if(that.problemCheckForm.problemPic){
@@ -254,7 +322,7 @@ export default {
                 for(let i in imgArray){
                     that.imageList.push(path + imgArray[i])
                 }
-                console.log(that.imageList)
+                console.log('对话框打开之前问题图片拼接'+that.imageList)
             }
             
             // 问题文件
@@ -273,7 +341,7 @@ export default {
                         that.fileProblemList.push(filePro)
                     })
                 }
-                console.log(that.fileProblemList)
+                console.log('对话框打开之前问题文件拼接'+that.fileProblemList)
             }
             
             // 纠正图片
@@ -283,7 +351,7 @@ export default {
                 for(let i in imgCorrectArray){
                     that.imageCorrectList.push(path + imgCorrectArray[i])
                 }
-                console.log(that.imageCorrectList)
+                console.log('对话框打开之前纠正图片拼接'+that.imageCorrectList)
             }
             
             // 纠正文件
@@ -303,7 +371,7 @@ export default {
                     })
                     
                 }
-                console.log(that.fileCorrectList)
+                console.log('对话框打开之前纠正文件拼接'+that.fileCorrectList)
             }
             that.problemCheckDialogVisible = true
         },
@@ -313,13 +381,11 @@ export default {
         },
         acceptProblemReview: function () {
             // 问题审核通过
-            this.$refs.problemCheckFormRef.validate((valid) => {
-                if(!valid){
-                    return this.$message.error('跟综验证必填项未填')
-                }
                 this.problemCheckForm.reformDate = this.getRectifyDate()
                 console.log('审核完成时间')
                 console.log(this.problemCheckForm.reformDate)
+                this.problemCheckForm.cheVerifyDate = this.getRectifyDate()
+                console.log('审核验证时间' + this.problemCheckForm.cheVerifyDate)
                 this.problemCheckForm.isPush = '已通过'
                 console.log('问题审核通过表单数据')
                 console.log(this.problemCheckForm)
@@ -353,17 +419,15 @@ export default {
                 }).catch((err) => {
                     return this.$message.error(err.message)
                 })
-            })
         },
         refuseProblemReview: function () {
             // 问题审核打回
-            this.$refs.problemCheckFormRef.validate((valid) => {
-                if(!valid){
-                    return this.$message.error('纠正措施跟综验证必填项未填')
-                }
+            
                 this.problemCheckForm.reformDate = ''
                 console.log('审核完成时间')
                 console.log(this.problemCheckForm.reformDate)
+                this.problemCheckForm.cheVerifyDate = this.getRectifyDate()
+                console.log('审核验证时间'+this.problemCheckForm.cheVerifyDate)
                 this.problemCheckForm.isPush = '已打回'
                 console.log('问题审核打回表单数据')
                 console.log(this.problemCheckForm)
@@ -386,7 +450,6 @@ export default {
                 }).catch((err) => {
                     return this.$message.error(err.message)
                 })
-            }) 
         },
         finishReview: async function () {
             // 审核完成
@@ -428,7 +491,6 @@ export default {
                     this.refuseReviewObject.qualityCheckID = this.acceptRow.qualityCheckID
                     refuseProblemReviewData(this.refuseReviewObject).then((res) => {
                     console.log(res.data)
-                    this.isFinish = 1
                     return this.$message.success('数据已打回')
                     }).catch((err) => {
                         return this.$message.error(err.message)
@@ -499,7 +561,6 @@ export default {
             for (var j = 0; j < val.length; j++) {
                 if (val[j]) {
                     if (val[j].checkListCode == checkCode) {
-                       
                         that.checkName = val[j].checkListName
                         console.log('检查表要素名称:' + val[j].checkListName)
                         break
@@ -508,12 +569,31 @@ export default {
                     }
                 }
             }
+           
         },
+         // 将表格检查表要素Code转化为名称
+        changeTabelCheckListCodeToName: function (val,checkCode) {
+            let that = this
+            for (var j = 0; j < val.length; j++) {
+                if (val[j]) {
+                    if (val[j].checkListCode == checkCode) {
+                       
+                        that.problemCheckName = val[j].checkListName
+                        console.log('表格检查表要素名称:' + val[j].checkListName)
+                       
+                    } else if (val[j].children) {
+                        that.changeCheckListCodeToName(val[j].children, checkCode)
+                    }
+                }
+            }
+        },
+        GetCurrentUser() {
+			return GetCurrentUser()
+		},
     },
     created: function () {
         this.loading = true
         this.getAcceptRow()
-        this.getQualityCheck()
     },
     watch: {
 
@@ -546,10 +626,10 @@ export default {
 .boxNew {
     display: inline-block;
     float: left;
-    margin-right: 40px;
+    /* margin-right: 40px; */
 }
 .progressData {
-    color: red;
+    color: #67C23A;
     font-size: 22px;
     margin-right: 20px;
 }

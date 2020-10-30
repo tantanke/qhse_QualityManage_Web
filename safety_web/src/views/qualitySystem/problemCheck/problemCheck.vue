@@ -22,46 +22,46 @@
 			</el-form-item>
          </el-form>
          <!-- 问题审核列表区域 -->
-            <el-table :data="problemChenckList" border stripe>
+            <el-table :data="problemCheckList" border stripe>
                 <el-table-column type="expand" label="详情" width="60px">
                     <template slot-scope="scope">
-                        <el-row>
-                            <el-col :span="8">
-                                <div class="detail">受审核单位:{{scope.row.checkedCompanyName}}</div>
-                                <div class="detail">受审核部门:{{scope.row.group}}</div>
-                                <div class="detail">责任部门:{{scope.row.responsiCompanyName}}</div>
-                                <div class="detail">责任部门负责人:{{scope.row.responsePersonName}}</div>
-                                <div class="detail">检查方式:{{scope.row.taskType}}</div>
-                            </el-col>
-                            <el-col :span="8">
-                                <div class="detail">审核日期:{{scope.row.checkDate}}</div>
-                                <div class="detail">检查表名称:{{scope.row.checkListName}}</div>
-                                <div class="detail">监督人员:{{scope.row.checkPerson}}</div>
-                                <div class="detail">监督检查依据:{{scope.row. checkBasis}}</div>
-                                <div class="detail">执行标准:{{scope.row.execStd}}</div>
-                            </el-col>
-                            <el-col :span="8">
-                                 <div class="detail">业主:{{scope.row.owner}}</div>
-                                <div class="detail">承包商:{{scope.row.contractor}}</div>
-                                <div class="detail">作业项目:{{scope.row.workProject}}</div>
-                                <div class="detail">项目组名称:{{scope.row.projectName}}</div>
-                                <div class="detail">检测项目:{{scope.row.checkProject}}</div>
-                            </el-col>
-                           
-                        </el-row>
+						<el-row>
+							<el-col :span="10">
+							    <div class="detail">受审核单位: {{scope.row.checkedCompanyName}}</div>
+							    <div class="detail">受审室组: {{scope.row.group}}</div>
+								<div class="detail">作业项目名称: {{scope.row.projectName}}</div>
+								<div class="detail">检测项目: {{scope.row.checkProject}}</div>
+								<div class="detail">检测标准: {{scope.row.execStd}}</div>
+							</el-col>
+							<el-col :span="8">
+								<div class="detail">单位负责人: {{scope.row.checkedPersonName}}</div>
+								<div class="detail">室组长: {{scope.row.groupLeaderName}}</div>
+							    <div class="detail">项目组长: {{scope.row.projectLeaderName}}</div>
+								<div class="detail">业主: {{scope.row.owner}}</div>
+								<div class="detail">作业地点: {{scope.row.workPlace}}</div>
+							</el-col>
+							<el-col :span="6">
+								<div class="detail">承包商: {{scope.row.contractor}}</div>
+								<div class="detail">承包商人数: {{scope.row.contractorNumber}}</div>
+								<div class="detail">作业人数: {{scope.row.workerNumber}}</div>
+							    <div class="detail">ERP员工数量: {{scope.row.erpNumber}}</div>
+								<div class="detail">外聘员工数量: {{scope.row.externalNumber}}</div>
+							</el-col>
+						</el-row>
                     </template>
                 </el-table-column>
                 <el-table-column type="index" label="序号" width="60px"></el-table-column>
-                <el-table-column label="单位名称" prop="checkedCompanyName"></el-table-column>
-                <el-table-column label="受审核部门" prop="group"></el-table-column>
-                <el-table-column label="检查表名称" prop="checkListName" width="190px"></el-table-column>
-                <el-table-column label="责任部门" prop="responsiCompanyName"></el-table-column>
-                <el-table-column label="责任人" prop="responsePersonName"></el-table-column>
-                <el-table-column label="审核日期" prop="checkDate"></el-table-column>
-                <el-table-column label="操作">
+                <el-table-column prop="qualityCheckName" width="200" label="审核任务名称" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="checkCategory" label="审核类别" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="checkBasis" label="审核依据" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="checkMethod" label="审核方式" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkPerson" label="审核人员" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="checkDate" width="120" label="审核日期" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="progress" label="审核进度" width="100" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="finishDate" label="(整改/验证)完成时间" align="center" width="120"></el-table-column>
+                <el-table-column label="操作" fixed="right" align="center" width="120">
                     <template slot-scope="scope">
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemCheck(scope.row)" v-if="scope.row.isPush === '已推送' && scope.row.issued === '已整改'">问题审核</el-button>
-                        <el-button type="danger" icon="el-icon-close" size="mini" v-else-if="scope.row.issued === '未下达'">流程未通</el-button>
                         <el-button type="success" icon="el-icon-success" size="mini" @click="jumpProblemCheck(scope.row)" v-else>查看信息</el-button>
                     </template>
                 </el-table-column>
@@ -95,7 +95,7 @@ export default {
             // 公司列表数据
             companyList: [],
             // 问题审核列表区域
-            problemChenckList: [],
+            problemCheckList: [],
         }
     },
     methods: {
@@ -115,21 +115,14 @@ export default {
             inquireProblemReviewForm(this.inquireForm).then((res) => {
                 console.log('查询问题审核主表表单的信息')
                 console.log(res.data)
-                this.problemChenckList = this.sortByDate(res.data)
+                this.problemCheckList = this.sortByDate(res.data)
             }).catch((err) => {
                 this.$message.error(err.message)
             })
         },
         getBasicInfo: function() {
             //查询所有的基本信息登记表
-            getBasicInfomation().then((res) => {
-                console.log('查询所有基本信息表')
-                console.log(res.data)
-                this.problemChenckList = this.sortByDate(res.data)
-                this.loading = false
-            }).catch((err) => {
-                return this.$message.error(err.message)
-            })
+            this.processFailed()
         },
         jumpProblemCheck: function (row) {
             // 跳转问题审核列表页面
@@ -204,6 +197,22 @@ export default {
             }
             return data
         },
+        processFailed: function () {
+            // 筛选出流程未通的数据
+            getBasicInfomation().then((res) => {
+                console.log('查询所有基本信息生成的信息')
+                console.log(res.data)
+                let problemDataList = res.data
+                problemDataList = problemDataList.filter((item) => {
+						return item.issued !== '未下达'
+					})
+                this.problemCheckList = this.sortByDate(problemDataList)
+                 this.loading = false
+            }).catch((err) => {
+                this.$message.error(err.message)
+            })
+           
+        }
     },
     created: function () {
         this.loading = true
