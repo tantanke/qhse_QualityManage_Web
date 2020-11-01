@@ -5,18 +5,17 @@
           <el-row style="margin-top:1%">
               <el-form :inline="true" >
                 <el-form-item>
-                    <el-form-item label='填报日期：' labelWidth='120px'>
-                        <el-date-picker
-                                v-model="selectdate"
-                                type="daterange"
-                                align="right"
-                                unlink-panels
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                        >
-                        </el-date-picker>
+                    <el-form-item label='选择公司：' labelWidth='120px'>
+                        <el-cascader
+                        v-model="chooseItem"
+                        :options="companyList"
+                        :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                        :show-all-levels="false"
+                        @change="handleChange"
+                        ref="cascaderAddr"  
+                        :clearable='true'        
+                        >             
+                      </el-cascader>
                     </el-form-item>
                 </el-form-item>
                  <el-form-item>
@@ -47,23 +46,46 @@
 </template>
 
 <script>
+import CurrentUser from '@/store/CurrentUser'
+import {queryDashboardScheduleManagement,GetqhseCompanytree} from '@/services/qhseDashboard/index'
 export default {
     data() {
       return {
         selectdate: '',
+        chooseItem:'',
+        companyId:'',
+        companyList:[],
         listData:[]
       }
     },
     methods: {
       searchData(){
-
+        console
       },
       importFile(){
 
       },
       downLoadFile(){
 
+      },
+       getCompany(){
+        GetqhseCompanytree().then(res =>{
+               this.companyList = res.data
+        }).catch(err =>{
+          this.$message.error(err)
+        })
+        
+      },
+      handleChange(){
+        this.companyId = this.chooseItem[this.chooseItem.length - 1]
+        console.log(this.companyId)
       }
+    },
+    mounted() {
+      this.getCompany()
+      queryDashboardScheduleManagement().then(res => {
+        console.log(res)
+      })
     },
 }
 </script>

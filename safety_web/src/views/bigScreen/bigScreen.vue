@@ -265,6 +265,7 @@
 
 <script>
 import CurrentUser from '../../store/CurrentUser'
+import {queryDashboardQualityManagement,queryDashboardRecorderManagement,queryDashboardScheduleManagement} from '@/services/qhseDashboard/index'
 export default {
   data() {
  return {
