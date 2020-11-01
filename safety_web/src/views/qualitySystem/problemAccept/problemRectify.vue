@@ -1,40 +1,44 @@
 <template>
     <div>
         <el-breadcrumb separator="/" class="bread">
-            <el-breadcrumb-item :to="{ path: '/qualitySystem/problemAccept/problemAccept' }">问题接收</el-breadcrumb-item>
-            <el-breadcrumb-item>问题整改</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/qualitySystem/problemAccept/problemAccept' }">问题整改</el-breadcrumb-item>
+            <el-breadcrumb-item>整改项</el-breadcrumb-item>
         </el-breadcrumb>
         <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         </el-row>
-        <div class="page-title" style="width: 100%">问题整改  <span class="boxNew" v-if="isBelongToPart === true"><span class="progressData" >{{progress}}</span><el-button type="success" style="font-size: 16px" @click="pushRectify">整改完成</el-button></span></div>
+        <div class="page-title" style="width: 100%">问题整改  <span class="boxNew" v-if="isBelongToPart === true"><span class="progressData" >{{"进度："+ progress}}</span></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
         <!-- 问题接收列表区域 -->
             <el-table :data="problemRectifyList" border stripe>
-                <el-table-column type="index" label="序号" width="70px"></el-table-column>
-                <el-table-column label="问题性质" prop="nature"></el-table-column>
-                <el-table-column label="违章人员" prop="illegalPerson"></el-table-column> 
-                <el-table-column label="岗位" prop="post"></el-table-column>
-                <el-table-column label="违章条款" prop="violationClause" width="190px"></el-table-column>
-                <el-table-column label="不符合标准" prop="nonConformityStd"></el-table-column>
-                <el-table-column label="处罚依据" prop="punishmentBasis"></el-table-column>
-                <el-table-column label="操作">
+                <el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
+                <el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="责任单位" prop="responsiCompanyName" show-overflow-tooltip align="center"></el-table-column> 
+                <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '已整改' || scope.row.isPush === '已通过'">查看</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '已整改' || scope.row.isPush === '已通过' || scope.row.isPush === '验证已通过'">查看</el-button>
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)" v-else>整改</el-button>
                     </template>
                 </el-table-column>
             </el-table>
               <!-- 问题整改对话框 -->
             <el-dialog
-                title="问题整改"
+                title="整改项"
                 :visible.sync="problemRectifyDialogVisible"
                 width="50%" @close="problemRectifyDialogClose">
                 <!-- 问题整改表单 -->
-                <el-form :model="rectifyForm" label-width="100px" >
+                <el-form :model="rectifyForm" label-width="130px" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                         <el-tab-pane label="基本信息" name="0">
-                            <el-form-item label="要素名">
+                            <el-form-item label="要素名称">
                                 <el-input v-model="rectifyFormCheckName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="责任单位">
+                                <el-input v-model="rectifyForm.responsiCompanyName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="负责人">
+                                <el-input v-model="rectifyForm.responsePersonName" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="问题描述">
                                 <el-input v-model="rectifyForm.description" readonly></el-input>
@@ -42,67 +46,6 @@
                             <el-form-item label="问题性质">
                                 <el-input v-model="rectifyForm.nature" readonly></el-input>
                             </el-form-item>
-                        </el-tab-pane>
-                        <el-tab-pane label="违章信息" name="1">
-                        <el-form-item label="处罚依据">
-                        <el-input v-model="rectifyForm.punishmentBasis" readonly></el-input>
-                    </el-form-item>
-                        <el-form-item label="违章条款">
-                        <el-input v-model="rectifyForm.violationClause" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="违章条款内容">
-                        <el-input v-model="rectifyForm.violationClauseContent" readonly></el-input>
-                    </el-form-item>
-                        <el-form-item label="违章扣款">
-                        <el-input v-model="rectifyForm.violationDeduction" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="违章扣分">
-                        <el-input v-model="rectifyForm.violationScore" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="违章人员">
-                        <el-input v-model="rectifyForm.illegalPerson" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="岗位">
-                        <el-input v-model="rectifyForm.post" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="岗位分类">
-                        <el-input v-model="rectifyForm.postType" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="用工性质">
-                        <el-input v-model="rectifyForm.employmentProperty" readonly></el-input>
-                    </el-form-item>
-                    <el-form-item label="工作年限">
-                        <el-input v-model="rectifyForm.workingYears" readonly></el-input>
-                    </el-form-item>
-                    </el-form-item>
-                    <el-form-item label="学历">
-                        <el-input v-model="rectifyForm.education" readonly></el-input>
-                    </el-form-item>
-                        </el-tab-pane>
-                        <el-tab-pane label="问题信息" name="2">
-                            <el-form-item label="不符合性质">
-                                <el-input v-model="rectifyForm.nonConformityNature" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合类型">
-                                <el-input v-model="rectifyForm.nonConformityType" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合标准">
-                                <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="条款编号">
-                                <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="条款内容">
-                                <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
-                            
                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 5px"
@@ -115,10 +58,138 @@
 								<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
-                        <el-tab-pane label="整改信息" name="3">
+                        <el-tab-pane label="违章信息" name="1" v-if="rectifyForm.nature === '违章项'">
+                        <el-form-item label="处罚依据">
+                        <el-input v-model="rectifyForm.punishmentBasis" readonly></el-input>
+                    </el-form-item>
+                        <el-form-item label="违章条款号">
+                        <el-input v-model="rectifyForm.violationClause" readonly></el-input>
+                    </el-form-item>
+            
+                    <el-form-item label="违章条款内容">
+                        <el-input v-model="rectifyForm.violationClauseContent" readonly></el-input>
+                    </el-form-item>
+                        <el-form-item label="违章扣款">
+                        <el-input v-model="rectifyForm.violationDeduction" readonly></el-input>
+                    </el-form-item>
+                  
+                    <el-form-item label="违章扣分">
+                        <el-input v-model="rectifyForm.violationScore" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="违章人员">
+                        <el-input v-model="rectifyForm.illegalPerson" readonly></el-input>
+                    </el-form-item>
+                   
+                    <el-form-item label="违章人员岗位">
+                        <el-input v-model="rectifyForm.post" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="岗位分类">
+                        <el-input v-model="rectifyForm.postType" readonly></el-input>
+                    </el-form-item>
+              
+                    <el-form-item label="用工性质">
+                        <el-input v-model="rectifyForm.employmentProperty" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="工作年限">
+                        <el-input v-model="rectifyForm.workingYears" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="学历">
+                        <el-input v-model="rectifyForm.education" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="整改时限">
+                        <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
+                    </el-form-item> 
+                        </el-tab-pane>
+                        <el-tab-pane label="问题信息" name="2" v-else-if="rectifyForm.nature === '问题项'">
+                            <el-form-item label="不符合标准">
+                                <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准号">
+                                <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准内容">
+                                <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款">
+                                <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款号">
+                                <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款内容">
+                                <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
+                        </el-tab-pane>
+                        <el-tab-pane label="观察信息" name="3" v-else-if="rectifyForm.nature === '观察项'">
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="整改时限">
+                                <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
+                            </el-form-item> 
+                        </el-tab-pane>
+                        <el-tab-pane label="不符合项" name="4" v-else-if="rectifyForm.nature === '不符合'">
+                            <el-form-item label="不符合性质">
+                                <el-input v-model="rectifyForm.nonConformityNature" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合类型">
+                                <el-input v-model="rectifyForm.nonConformityType" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准">
+                                <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准号">
+                                <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合标准内容">
+                                <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款">
+                                <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款号">
+                                <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合条款内容">
+                                <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合原因">
+                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="整改时限">
+                                <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
+                            </el-form-item> 
+                        </el-tab-pane>
+                         <el-tab-pane label="验证信息" name="5">
+                            <el-form-item label="审核验证时间">
+                                 <el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
+                             </el-form-item>
+                             <el-form-item label="审核验证人">
+                                 <el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
+                             </el-form-item>
+                             <el-form-item label="审核验证意见">
+                                 <el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
+                             </el-form-item>
+                             <el-form-item label="责任单位验证时间">
+                                <el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
+                            </el-form-item>
+							<el-form-item label="责任单位验证人">
+                                <el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
+                            </el-form-item>
+							<el-form-item label="责任单位验证意见">
+                                <el-input v-model="rectifyForm.resVerifyAdvice" readonly></el-input>
+                            </el-form-item>
+                        </el-tab-pane>
+                        <el-tab-pane label="整改信息" name="6">
+                            <el-form-item label="整改完成时间">
+                                <el-input v-model="rectifyForm.reformDate" readonly></el-input>
+                            </el-form-item>
                             <el-form-item label="跟综验证">
                                 <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
                             </el-form-item>
@@ -128,7 +199,6 @@
                             <el-form-item label="纠正措施">
                                 <el-input v-model="rectifyForm.nonConformCorrectMeasure" type="textarea" placeholder="请填写纠正措施"></el-input>
                             </el-form-item>
-                           
                             <el-form-item label="纠正图片">
                                 <el-upload
                                 ref="uploadPic"
@@ -175,6 +245,7 @@
                                 </div>
                             </el-form-item>
                         </el-tab-pane>
+                       
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -195,7 +266,7 @@
 </template>
 
 <script>
-import { getProblemRectifyList, updateQualityCheckRecord, modifyPush,getOriginFileName, getQualityCheckList  } from "../../../services/qualitySystem/problemRectify"
+import { getProblemRectifyList, updateQualityCheckRecord, getOriginFileName, getQualityCheckList  } from "../../../services/qualitySystem/problemRectify"
 import { GetCurrentUser } from '../../../store/CurrentUser'
 const headers1 = {
 		Accept: 'application/json',
@@ -246,10 +317,10 @@ export default {
             flagRecifyArray: [],
             // 历史纠正图片
             historyImageList: [],
-            historyImageRectify: [],
+            //historyImageRectify: [],
             // 历史纠正文件
             historyFileList: [],
-            historyFileRectifyList: [],
+            //historyFileRectifyList: [],
             // 要素名
             checkName: '',
             // 表单要素名
@@ -297,17 +368,21 @@ export default {
         problemRectify: function (row) {
             // 问题整改对话框
             let that = this
+            that.imageList = []
+            that.fileProblemList = []
+            that.historyImageList = []
+            that.historyFileList = []
             that.changeCheckListCodeToName(that.qualityCheckList, row.checkListCode)
             that.rectifyFormCheckName = that.checkName
             const path = 'http://39.98.173.131:7000/resources/QualityCheck/'
             that.rectifyForm = row
             if(that.rectifyForm.problemPic){
-                const imgArray = that.rectifyForm.problemPic.split(';');
+                const imgArray = that.rectifyForm.problemPic.split(';')
                 console.log(imgArray)
                 for(let i in imgArray){
                     that.imageList.push(path+ imgArray[i])
                 }
-                console.log(that.imageList)
+                console.log('对话框打开之前问题图片拼接'+that.imageList)
             }
             if(this.rectifyForm.problemAttach){
                 const fileArray = that.rectifyForm.problemAttach.split(';')
@@ -325,7 +400,7 @@ export default {
                     })
                     
                 }
-                console.log(that.fileProblemList)
+                console.log('对话框打开之前问题文件拼接'+that.fileProblemList)
             }
             // 历史纠正图片
             if(that.rectifyForm.correctPic){
@@ -336,7 +411,7 @@ export default {
                 for(let i in imgHistoryArray){
                     that.historyImageList.push(path+ imgHistoryArray[i])
                 }
-                console.log('拼接路径之后的历史纠正图片')
+                console.log('对话框打开之前拼接路径之后的历史纠正图片')
                 console.log(that.historyImageList)
             }
             // 历史纠正文件
@@ -356,7 +431,7 @@ export default {
                         that.historyFileList.push(file)
                     })
                 }
-                console.log('拼接路径之后的历史纠正文件',that.historyFileList)
+                console.log('对话框打开之前拼接路径之后的历史纠正文件',that.historyFileList)
             }
             that.problemRectifyDialogVisible = true
         },
@@ -368,20 +443,21 @@ export default {
         problemRectifySubmit: function (qualityRecordId) {
             // 保存修改纠正图片与文件等纠正信息
             let that = this
-            that.historyFileRectifyList = []
-            that.translateFileStr(that.historyFileList, that.historyFileRectifyList)
-            if(that.historyFileRectifyList.length !== 0 && that.fileList.length !== 0){
-                that.rectifyForm.correctAttach = that.historyFileRectifyList.join(';') + ';' + that.fileList.join(";")
+            console.log('提交更新质量记录id'+qualityRecordId)
+            let historyFileRectifyList = []
+            that.translateFileStr(that.historyFileList, historyFileRectifyList)
+            if(historyFileRectifyList.length !== 0 && that.fileList.length !== 0){
+                that.rectifyForm.correctAttach = historyFileRectifyList.join(';') + ';' + that.fileList.join(";")
             }else{
-                that.rectifyForm.correctAttach = that.historyFileRectifyList.join(';') + that.fileList.join(";")
+                that.rectifyForm.correctAttach = historyFileRectifyList.join(';') + that.fileList.join(";")
             }
             console.log(that.rectifyForm.correctAttach)
-            that.historyImageRectify = []
-            that.translateStr(that.historyImageList,that.historyImageRectify)
-            if(that.historyImageRectify.length !== 0 && that.file.length !== 0){
-                that.rectifyForm.correctPic = that.historyImageRectify.join(';') + ';' + that.file.join(';')
+            let historyImageRectify = []
+            that.translateStr(that.historyImageList,historyImageRectify)
+            if(historyImageRectify.length !== 0 && that.file.length !== 0){
+                that.rectifyForm.correctPic = historyImageRectify.join(';') + ';' + that.file.join(';')
             }else{
-                that.rectifyForm.correctPic = that.historyImageRectify.join(';') + that.file.join(';')
+                that.rectifyForm.correctPic = historyImageRectify.join(';') + that.file.join(';')
             }
             console.log(that.rectifyForm.correctPic)
             console.log('更新整改表单')
@@ -405,27 +481,27 @@ export default {
                 that.$message(err.message)
             })
         },
-        pushRectify: async function () {
-            // 全部整改完成推送
-            console.log(this.flagRecifyArray.length)
-            console.log(this.problemRectifyList.length)
-            if(this.flagRecifyArray.length === this.problemRectifyList.length){
-                const confirmResult = await this.$confirm('整改已完成，可以进行推送操作，是否继续?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).catch(err => err)
-                    if (confirmResult !== 'confirm') {
-                        return this.$message.info('已取消')
-                    }
-                modifyPush(this.acceptRow.qualityCheckID).then((res) => {
-                    console.log(res.data)
-                    return this.$message.success('推送成功')
-                })
-            }else {
-                return this.$message.error('有问题尚未整改完成，请继续整改。')
-            }
-        },
+        // pushRectify: async function () {
+        //     // 全部整改完成推送
+        //     console.log(this.flagRecifyArray.length)
+        //     console.log(this.problemRectifyList.length)
+        //     if(this.flagRecifyArray.length === this.problemRectifyList.length){
+        //         const confirmResult = await this.$confirm('整改已完成，可以进行推送操作，是否继续?', '提示', {
+        //                 confirmButtonText: '确定',
+        //                 cancelButtonText: '取消',
+        //                 type: 'warning'
+        //             }).catch(err => err)
+        //             if (confirmResult !== 'confirm') {
+        //                 return this.$message.info('已取消')
+        //             }
+        //         modifyPush(this.acceptRow.qualityCheckID).then((res) => {
+        //             console.log(res.data)
+        //             return this.$message.success('推送成功')
+        //         })
+        //     }else {
+        //         return this.$message.error('有问题尚未整改完成，请继续整改。')
+        //     }
+        // },
         problemRectifyDialogClose: function () {
             // 问题整改对话框关闭
             let that = this
@@ -436,8 +512,8 @@ export default {
             that.fileProblemList = []
             that.historyImageList = []
             that.historyFileList = []
-            that.historyImageRectify = []
-            that.historyFileRectifyList = []
+            //that.historyImageRectify = []
+            //that.historyFileRectifyList = []
             that.$refs['uploadPic'].clearFiles()
             that.$refs['uploadFile'].clearFiles()
         },
@@ -548,7 +624,7 @@ export default {
         getProgress: function () {
             // 获取进度
             for(let i in this.problemRectifyList){
-                if(this.problemRectifyList[i].isPush === '已整改' || this.problemRectifyList[i].isPush === '已通过'){
+                if(this.problemRectifyList[i].isPush === '已整改' || this.problemRectifyList[i].isPush === '已通过' || this.problemRectifyList[i].isPush === '验证已通过'){
                     this.flagRecifyArray.push(this.problemRectifyList[i].qulity_CheckRecordID)
                 }
             }
@@ -576,8 +652,40 @@ export default {
                 that.qualityCheckList = res.data
             })
         },
+        getVerifyDate: function () {
+				// 获取整改完成时间
+				let date = new Date()
+				console.log(date)
+				let y = date.getFullYear()
+				console.log(y)
+				let m = date.getMonth() + 1
+				console.log(m)
+				m = m < 10 ? '0' + m : m
+				let d = date.getDate()
+				console.log(d)
+				d = d < 10 ? '0' + d : d
+				let str = y + '-' + m + '-' + d
+				console.log(str)
+				return str
+			},
         // 将检查表要素Code转化为名称
         changeCheckListCodeToName: function (val,checkCode) {
+            let that = this
+            for (var j = 0; j < val.length; j++) {
+                if (val[j]) {
+                    if (val[j].checkListCode == checkCode) {
+                       
+                        that.checkName = val[j].checkListName
+                        console.log('检查表要素名称:' + val[j].checkListName)
+                        break
+                    } else if (val[j].children) {
+                        that.changeCheckListCodeToName(val[j].children, checkCode)
+                    }
+                }
+            }
+        },
+        // 将表格检查表要素Code转化为名称
+        changeTabelCheckListCodeToName: function (val,checkCode) {
             let that = this
             for (var j = 0; j < val.length; j++) {
                 if (val[j]) {
@@ -631,10 +739,10 @@ export default {
 .boxNew {
     display: inline-block;
     float: left;
-    margin-right: 40px;
+    /* margin-right: 40px; */
 }
 .progressData {
-    color: red;
+    color: #67C23A;
     font-size: 22px;
     margin-right: 20px;
 }

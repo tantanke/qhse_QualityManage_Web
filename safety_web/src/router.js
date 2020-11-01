@@ -747,7 +747,11 @@ export default new Router({
 		{ path: '/qualitySystem/problemAccept/problemRectify', name: 'problemRectify', component: resolve => require(['./views/qualitySystem/problemAccept/problemRectify.vue'],resolve)}, 
          // 问题复审
 		{ path: '/qualitySystem/problemCheck/problemReview', name: 'problemReview', component: resolve => require(['./views/qualitySystem/problemCheck/problemReview.vue'],resolve)},
-      ]
+    //问题验证
+		{ path: '/qualitySystem/problemVerify/index', name: 'ValidationProblem', component: resolve => require(['./views/qualitySystem/problemVerify/index.vue'],resolve)},
+		//问题验证验证项界面
+		{ path: 'qualitySystem/problemVerify/verify', name: 'verify', component: resolve => require(['./views/qualitySystem/problemVerify/verify.vue'],resolve)},  
+  ]
     },
 
   ]
