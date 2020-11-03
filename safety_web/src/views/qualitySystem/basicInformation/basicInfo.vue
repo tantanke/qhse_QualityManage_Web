@@ -19,14 +19,12 @@
 					<el-button type="primary" icon="el-icon-plus" @click="addBasicInfo">基本信息生成</el-button>
 				</el-form-item>
 			</el-form>
-
-
 			<!-- 基本信息登记列表区域 -->
 			<el-table :data="basicInfoList" border stripe>
 				<el-table-column type="expand" label="详情" width="50px">
 					<template slot-scope="scope">
 						<el-row>
-							<el-col :span="10">
+							<el-col :span="8">
 								<div class="detail">受审核单位: {{scope.row.checkedCompanyName}}</div>
 								<div class="detail">受审室组: {{scope.row.group}}</div>
 								<div class="detail">作业项目名称: {{scope.row.projectName}}</div>
@@ -40,7 +38,7 @@
 								<div class="detail">业主: {{scope.row.owner}}</div>
 								<div class="detail">作业地点: {{scope.row.workPlace}}</div>
 							</el-col>
-							<el-col :span="6">
+							<el-col :span="8">
 								<div class="detail">承包商: {{scope.row.contractor}}</div>
 								<div class="detail">承包商人数: {{scope.row.contractorNumber}}</div>
 								<div class="detail">作业人数: {{scope.row.workerNumber}}</div>
@@ -63,23 +61,23 @@
 				<el-table-column label="(整改/验证)完成时间" prop="finishDate" align="center" width="150"></el-table-column>
 				<el-table-column label="操作" width="260" align="center" fixed="right">
 					<template slot-scope="scope">
-						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)">修改</el-button>
-						<el-button type="success" icon="el-icon-check" size="mini" @click="pushBasicInfo(scope.row)">推送</el-button>
-						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)">删除</el-button>
+						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush==='已推送'">查看</el-button>
+						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">修改</el-button>
+						<el-button type="success" icon="el-icon-check" size="mini" @click="pushBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">推送</el-button>
+						<el-button type="success" icon="el-icon-check" size="mini" v-if="scope.row.isPush==='已推送'">已推送</el-button>
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
-
-
 			<!-- 新增基本信息生成登记表对话框 -->
 			<el-dialog title="新增基本信息登记表" :close-on-click-modal="false" :visible.sync="addInfoDialogVisible" @closed="addInfoDialogClosed">
 				<el-form :model="addInfoForm" :rules="addInfoFormRules" ref="addInfoFormRef" label-width="110px" :label-position="right"
 				 :inline="true">
 					<el-form-item label="审核任务名称" prop="qualityCheckName">
-						<el-input v-model="addInfoForm.qualityCheckName"style="width: 272%" placeholder="请输入"></el-input>
+						<el-input v-model="addInfoForm.qualityCheckName" style="width: 272%" placeholder="请输入"></el-input>
 					</el-form-item>
 					<br />
-						<el-form-item label="审核类别" prop="checkCategory">
+					<el-form-item label="审核类别" prop="checkCategory">
 						<el-select v-model="addInfoForm.checkCategory" style="width: 100%">
 							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkCategoryOptions" :key="item.value">
 							</el-option>
@@ -96,25 +94,26 @@
 							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkMethodOptions" :key="item.value">
 							</el-option>
 						</el-select>
-					</el-form-item>	
+					</el-form-item>
 					<el-form-item label="检查表名称" prop="checkListCode">
 						<el-input clearable v-model="addInfoForm.checkListName" readonly placeholder="请输入"></el-input>
 					</el-form-item>
 					<el-form-item label="审核日期" prop="checkDate" style="width: 46%">
-						<el-date-picker clearable v-model="addInfoForm.checkDate" type="date" placeholder="请选择日期"
-						 format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+						<el-date-picker clearable v-model="addInfoForm.checkDate" type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日"
+						 value-format="yyyy-MM-dd">
 						</el-date-picker>
 					</el-form-item>
 					<el-form-item label="审核人员" prop="checkPerson">
 						<el-select v-model="addInfoForm.checkPersonID" style="width: 100%" clearable filterable>
-							<el-option :label="item.name+'('+item.companyName+')'" :value="item.employeeID" v-for="(item,index) in employee" :key="index"></el-option>
+							<el-option :label="item.name+'('+item.companyName+')'" :value="item.employeeID" v-for="(item,index) in employee"
+							 :key="index"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="受审核单位" prop="checkedCompanyCode">
 						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="min-width: 230px;max-width:560px ; width:fit-content "
 						 :options="companyList" v-model="checkedCompanyId"></treeselect>
 					</el-form-item>
-					<el-form-item label="受审单位负责人" prop="checkedPersonName">
+					<el-form-item label="受审单位负责人" prop="checkedPersonID">
 						<el-select v-model="addInfoForm.checkedPersonID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
@@ -138,7 +137,7 @@
 					<el-form-item label="作业项目名称" prop="projectName">
 						<el-input clearable v-model="addInfoForm.projectName" style="width: 100%" placeholder="请输入"></el-input>
 					</el-form-item>
-					<el-form-item label="项目组长" prop="projectLeaderName">
+					<el-form-item label="项目组长" prop="projectLeaderID">
 						<el-select v-model="addInfoForm.projectLeaderID" style="width: 100%" placeholder="请选择" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
@@ -222,24 +221,17 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="editInfoDialogVisible = false">取 消</el-button>
-					<el-button type="primary" @click="editInfoClick()">修 改</el-button>
+					<el-button @click="editInfoDialogVisible = false">关 闭</el-button>
+					<el-button type="primary" @click="editInfoClick()" v-if="eidtInfoForm.isPush==='未推送'">修 改</el-button>
 				</span>
 			</el-dialog>
 		</div>
 	</div>
 </template>
-
 <script>
-	import {
-		GetCompany
-	} from "../../../services/gettreedata"
-	import {
-		GetCurrentUser
-	} from '../../../store/CurrentUser'
-	import {
-		GetEmployee
-	} from "../../../services/filePropagation.js"
+	import { GetCompany } from "../../../services/gettreedata"
+	import { GetCurrentUser } from '../../../store/CurrentUser'
+	import { GetEmployee } from "../../../services/filePropagation.js"
 	import {
 		submitBasicInfo,
 		getCheckList,
@@ -356,25 +348,25 @@
 					projectLeaderName: '',
 					projectLeaderID: '',
 					//承包商
-					contractor:'',
+					contractor: '',
 					//业主
-					owner:'',
+					owner: '',
 					//检查项目
-					checkProject:'',
+					checkProject: '',
 					//执行标准
-					execStd:'',
+					execStd: '',
 					//工人数量
-					workerNumber:'',
+					workerNumber: '',
 					//外聘员工数量
-					externalNumber:'',
+					externalNumber: '',
 					//工作地点
-					workPlace:'',
+					workPlace: '',
 					//承包商数量
-					contractorNumber:'',
+					contractorNumber: '',
 					//完成时间
-					finishDate:'',
+					finishDate: '',
 					//erp员工数量
-					erpnumber:''
+					erpnumber: ''
 				},
 				// 验证规则
 				addInfoFormRules: {
@@ -383,17 +375,17 @@
 						message: '请输入审核任务名称',
 						trigger: 'blur'
 					}],
-					checkCategory:[{
+					checkCategory: [{
 						required: true,
 						message: '请输入审核类别名称',
 						trigger: 'blur'
 					}],
-					checkBasis:[{
+					checkBasis: [{
 						required: true,
 						message: '请输入审核依据名称',
 						trigger: 'blur'
 					}],
-					checkMethod:[{
+					checkMethod: [{
 						required: true,
 						message: '请输入审核方式名称',
 						trigger: 'blur'
@@ -403,14 +395,9 @@
 						message: '请输入项目组名称',
 						trigger: 'blur'
 					}],
-					checkProject: [{
+					projectLeaderID: [{
 						required: true,
-						message: '请输入需要检测的项目',
-						trigger: 'blur'
-					}],
-					checkBasis: [{
-						required: true,
-						message: '请输入监督检查依据',
+						message: '请选择项目组长',
 						trigger: 'blur'
 					}],
 					checkDate: [{
@@ -433,9 +420,19 @@
 						message: '请选择受审核部门',
 						trigger: 'blur'
 					}],
+					groupLeaderID: [{
+						required: true,
+						message: '请选择受审室组负责人',
+						trigger: 'blur'
+					}],
 					checkedCompanyCode: [{
 						required: true,
 						message: '请选择受审核单位',
+						trigger: 'blur'
+					}],
+					checkedPersonID: [{
+						required: true,
+						message: '请选择受审单位负责人',
 						trigger: 'blur'
 					}]
 				}
@@ -451,7 +448,6 @@
 			this.getEmploee()
 			this.getBasicInfo()
 			// 获取当前用户
-			console.log(GetCurrentUser())
 			this.currentDate = this.getCurrentDate()
 		},
 		methods: {
@@ -463,45 +459,44 @@
 				this.addInfoDialogVisible = true
 				this.getCheckTableList()
 				this.init('addInfoForm')
-				console.log('checkBasisOptions',this.checkBasisOptions)
 			},
-			init(options){
-				switch(options){
+			init(options) {
+				switch (options) {
 					case 'addInfoForm':
-						this.addInfoForm.checkCategory=''
-						this.addInfoForm.checkListCode=''
-						this.addInfoForm.checkListName=''
-						this.addInfoForm.checkedCompanyName=''
-						this.addInfoForm.checkedCompanyCode=''
-						this.addInfoForm.group=''
-						this.addInfoForm.checkedPersonID=''
-						this.addInfoForm.checkedPersonName=''
-						this.addInfoForm.groupLeaderID=''
-						this.addInfoForm.groupLeaderName=''
-						this.addInfoForm.responsiCompanyName=''
-						this.addInfoForm.responsiCompanyCode=''
-						this.addInfoForm.responsePersonID=''
-						this.addInfoForm.responsePersonName=''
-						this.addInfoForm.checkDate=''
-						this.addInfoForm.checkPersonID=''
-						this.addInfoForm.checkPerson=''
-						this.addInfoForm.checkBasis=''
-						this.addInfoForm.contractor=''
-						this.addInfoForm.owner=''
-						this.addInfoForm.projectName=''
-						this.addInfoForm.projectLeaderID=''
-						this.addInfoForm.projectLeaderName=''
-						this.addInfoForm.checkProject=''
-						this.addInfoForm.execStd=''
-						this.addInfoForm.checkMethod=''
-						this.addInfoForm.qualityCheckName=''
-						this.addInfoForm.workerNumber=''
-						this.addInfoForm.externalNumber=''
-						this.addInfoForm.workPlace=''
-						this.addInfoForm.contractorNumber=''
-						this.addInfoForm.finishDate=''
-						this.addInfoForm.erpnumber=''
-						this.checkedCompanyId=null
+						this.addInfoForm.checkCategory = ''
+						this.addInfoForm.checkListCode = ''
+						this.addInfoForm.checkListName = ''
+						this.addInfoForm.checkedCompanyName = ''
+						this.addInfoForm.checkedCompanyCode = ''
+						this.addInfoForm.group = ''
+						this.addInfoForm.checkedPersonID = ''
+						this.addInfoForm.checkedPersonName = ''
+						this.addInfoForm.groupLeaderID = ''
+						this.addInfoForm.groupLeaderName = ''
+						this.addInfoForm.responsiCompanyName = ''
+						this.addInfoForm.responsiCompanyCode = ''
+						this.addInfoForm.responsePersonID = ''
+						this.addInfoForm.responsePersonName = ''
+						this.addInfoForm.checkDate = ''
+						this.addInfoForm.checkPersonID = ''
+						this.addInfoForm.checkPerson = ''
+						this.addInfoForm.checkBasis = ''
+						this.addInfoForm.contractor = ''
+						this.addInfoForm.owner = ''
+						this.addInfoForm.projectName = ''
+						this.addInfoForm.projectLeaderID = ''
+						this.addInfoForm.projectLeaderName = ''
+						this.addInfoForm.checkProject = ''
+						this.addInfoForm.execStd = ''
+						this.addInfoForm.checkMethod = ''
+						this.addInfoForm.qualityCheckName = ''
+						this.addInfoForm.workerNumber = ''
+						this.addInfoForm.externalNumber = ''
+						this.addInfoForm.workPlace = ''
+						this.addInfoForm.contractorNumber = ''
+						this.addInfoForm.finishDate = ''
+						this.addInfoForm.erpnumber = ''
+						this.checkedCompanyId = null
 						break
 					default:
 						break
@@ -516,13 +511,9 @@
 						return this.$message.error('基本信息表必填项未填')
 					}
 					this.changeCheckListCodeToName()
-					console.log('基本信息表单登记提交')
-					console.log('addinfoform',this.addInfoForm)
 					submitBasicInfo(this.addInfoForm).then((res) => {
-						console.log('基本信息登记提交返回结果')
-						console.log(res.data)
 						this.getBasicInfo()
-						
+
 						return this.$message.success('基本信息登记成功')
 					}).catch((err) => {
 						return this.$message.error(err.message)
@@ -535,16 +526,11 @@
 				for (let i in this.selectCheckDate) {
 					x.push(this.formatDate(this.selectCheckDate[i]))
 				}
-				console.log(x)
 				this.selectInfoForm.checkDate = x.join(';')
-				console.log(this.selectInfoForm.checkDate)
-				console.log(this.selectInfoForm)
 				// if(this.selectInfoForm.checkedCompanyCode == null || this.selectInfoForm.checkDate == '') {
 				//     return this.$message.error('请同时选择公司以及审核日期')
 				// }
 				inquireBasicInfomation(this.selectInfoForm).then((res) => {
-					console.log('查询基本信息登记表的信息')
-					console.log(res.data)
 					this.basicInfoList = this.sortByDate(res.data)
 					this.loading = false
 				}).catch((err) => {
@@ -556,14 +542,12 @@
 				// if (information.isPush === '已推送') {
 				// 	return this.$message.error('该登记表已推送，无法进行再次修改')
 				// }
-				console.log('该表的基本信息')
-				console.log(information)
 				this.eidtInfoForm = information
-				this.changeCompanyCodeToId(this.companyList,this.eidtInfoForm.checkedCompanyCode)
-				this.checkedCompanyId=this.companyId
+				this.changeCompanyCodeToId(this.companyList, this.eidtInfoForm.checkedCompanyCode)
+				this.checkedCompanyId = this.companyId
 				//this.getCheckTableList()
-				this.employeeList=this.employee.filter(item=>{
-					return item.companyName==this.eidtInfoForm.checkedCompanyName
+				this.employeeList = this.employee.filter(item => {
+					return item.companyName == this.eidtInfoForm.checkedCompanyName
 				})
 				//this.editCheckedCompanyIDChange(information)
 				//   this.eidtResponsiCompanyIDChange(information)    
@@ -583,8 +567,6 @@
 					return this.$message.info('已取消删除')
 				}
 				deleteBasicInfomation(row.qualityCheckID).then((res) => {
-					console.log('删除基本信息登记表返回信息')
-					console.log(res.data)
 					this.getBasicInfo()
 					return this.$message.success('删除信息成功')
 				}).catch((err) => {
@@ -596,7 +578,7 @@
 				if (row.isPush === "已推送") {
 					return this.$message.error('该登记表已推送，请勿重复操作')
 				}
-				const confirmResult = await this.$confirm('是否推送该表信息?', '提示', {
+				const confirmResult = await this.$confirm('推送该表后相关信息无法修改或删除！是否推送该表信息?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
@@ -604,10 +586,7 @@
 				if (confirmResult !== 'confirm') {
 					return this.$message.info('已取消推送')
 				}
-				console.log(row)
 				pushBasicInfomation(row.qualityCheckID).then((res) => {
-					console.log('推送基本信息表返回信息')
-					console.log(res.data)
 					this.getBasicInfo()
 					return this.$message.success('推送成功')
 				}).catch((err) => {
@@ -624,10 +603,9 @@
 			// 获取检查表
 			getCheckTableList: function() {
 				getCheckList().then((res) => {
-					console.log('检查表信息', res.data)
 					this.checkTableList = res.data
-					console.log('获取的检查表信息', this.checkTableList)
 					for (var i = 0; i < this.checkTableList.length; i++) {
+						//生成审核类别选择表
 						if (!this.isCopy(this.checkTableList[i].checkCategory, this.checkCategoryOptions)) {
 							let item = {
 								value: '',
@@ -636,6 +614,7 @@
 							item.value = item.label = this.checkTableList[i].checkCategory
 							this.checkCategoryOptions.push(item)
 						}
+						//生成审核依据选择表
 						if (!this.isCopy(this.checkTableList[i].checkBasis, this.checkBasisOptions)) {
 							let item = {
 								value: '',
@@ -644,6 +623,7 @@
 							item.value = item.label = this.checkTableList[i].checkBasis
 							this.checkBasisOptions.push(item)
 						}
+						//生成审核方式选择表
 						if (!this.isCopy(this.checkTableList[i].checkMethod, this.checkMethodOptions)) {
 							let item = {
 								value: '',
@@ -655,6 +635,7 @@
 					}
 				})
 			},
+			//检查需要新增的目标字段是否已经存在于目标数组中，返回一个boolean值
 			isCopy(original, targetArray) {
 				let copy = false
 				for (let i = 0; i < targetArray.length; i++) {
@@ -665,15 +646,14 @@
 				}
 				return copy
 			},
-			editInfoClick: function() {
+			editInfoClick: function(information) {
 				// 修改配置基本信息表
 				// 编辑确认基本信息表
 				let that = this
-				console.log('编辑修改的基本信息表')
-				console.log(that.eidtInfoForm)
+				if (this.eidtInfoForm.isPush === '已推送') {
+					return this.$message.error('该登记表已推送，无法进行再次修改')
+				}
 				editBasicInfomation(that.eidtInfoForm.qualityCheckID, that.eidtInfoForm).then((res) => {
-					console.log('修改基本信息登记表返回的信息')
-					console.log(res.data)
 					this.getBasicInfo()
 					this.editActiveIndex = '0'
 					this.editInfoDialogVisible = false
@@ -683,12 +663,9 @@
 				})
 			},
 			// 获取公司表
-
 			getCompany: function() {
 				GetCompany().then(res => {
 					this.companyList = res.data
-					console.log('公司表')
-					console.log(this.companyList)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -696,33 +673,30 @@
 			},
 			// 获取当前用户
 			getCurrentUser: function() {
-				console.log(GetCurrentUser())
-				const currentUser = GetCurrentUser()
-				// this.addInfoForm.checkPerson = currentUser.employeeName
-				// this.addInfoForm.checkPersonID = currentUser.employeeId
+				return GetCurrentUser()
 			},
 			//获得员工信息
 			getEmploee: function() {
 				GetEmployee().then(res => {
 					//调用接口返回员工表，并对员工表进行筛选，只返回属于该行公司的员工信息
 					this.employee = res.data
-					console.log('员工表')
-					console.log(this.employee)
+				}).catch(err => {
+					this.$message.error(err.message)
 				})
-
 			},
+			//受审单位监听事件
 			checkCompanyCodeChanged: function(val) {
 				// 监听受审核单位发生变化时的操作
 				console.log(val)
 				if (val) {
+					//根据公司id获取公司code，name
 					this.changeCompanyIdToName(this.companyList, this.checkedCompanyId)
 					this.addInfoForm.checkedCompanyName = this.companyName
 					this.addInfoForm.checkedCompanyCode = this.companyCode
-					console.log('add checked companyname',this.addInfoForm.checkedCompanyName)
+					//筛选属于该公司的员工
 					this.employeeList = this.employee.filter((item) => {
 						return item.companyName == this.addInfoForm.checkedCompanyName
 					})
-					console.log('filter emploee list',this.employeeList)
 					const x = []
 					const arr = this.employeeList
 					for (let i = 0; i < this.employeeList.length; i++) {
@@ -750,9 +724,7 @@
 					if (val[j]) {
 						if (val[j].id == companyId) {
 							this.companyCode = val[j].nodeCode
-							console.log('公司nodeCode:' + this.companyCode)
 							this.companyName = val[j].label
-							console.log('公司名称:' + val[j].label)
 							break
 						} else if (val[j].children) {
 							this.changeCompanyIdToName(val[j].children, companyId)
@@ -766,9 +738,7 @@
 					if (val[j]) {
 						if (val[j].nodeCode == companyCode) {
 							this.companyId = val[j].id
-							console.log('公司Id:' + this.companyId)
 							this.companyName = val[j].label
-							console.log('公司名称:' + val[j].label)
 							break
 						} else if (val[j].children) {
 							this.changeCompanyCodeToId(val[j].children, companyCode)
@@ -778,15 +748,6 @@
 			},
 			// 将检查表code改变为name
 			changeCheckListCodeToName: function() {
-				//    for(let j = 0; j < this.checkListCode.length; j++) {
-				//         for(let i in this.checkTableList) {
-				//             if(this.checkListCode[j] === this.checkTableList[i].checkListCode){
-				//                 console.log(this.checkTableList[i].checkListName)
-				//                 this.checkListName[j] = this.checkTableList[i].checkListName
-				//                 console.log(this.checkListName)
-				//             }
-				//         } 
-				//    }
 				for (let i in this.checkTableList) {
 					if (this.addInfoForm.checkListCode === this.checkTableList[i].checkListCode) {
 						this.addInfoForm.checkListName = this.checkTableList[i].checkListName
@@ -795,37 +756,6 @@
 				}
 				//    this.addInfoForm.checkListName = this.checkListName.join(';')
 				console.log(this.addInfoForm.checkListName)
-			},
-			responsePersonIDChange: function(val) {
-				// 责任部门负责人改变触发的事件
-				console.log('责任部门负责人ID:' + val)
-				if (val) {
-					for (let i in this.employee) {
-						if (val === this.employee[i].employeeID) {
-							this.addInfoForm.responsePersonName = this.employee[i].name
-							break
-						}
-					}
-				} else {
-					this.addInfoForm.responsePersonName = ''
-				}
-			},
-			responsiCompanyID: function(val) {
-				// 监听责任部门id发生变化获得部门的名称
-				console.log(val)
-				if (val) {
-					this.changeCompanyIdToName(this.companyList, this.responsiCompanyId)
-					this.addInfoForm.responsiCompanyName = this.companyName
-					this.addInfoForm.responsiCompanyCode = this.companyCode
-					this.employeeArr = this.employee.filter((item) => {
-						return item.companyName == this.addInfoForm.responsiCompanyName
-					})
-					console.log('筛选责任部门员工表')
-					console.log(this.employeeArr)
-				} else {
-					this.addInfoForm.responsiCompanyName = ''
-					this.companyCode = ''
-				}
 			},
 			selectCheckedCompanyIdChanged: function(val) {
 				// 监听查询选择公司id变化
@@ -837,6 +767,7 @@
 					this.companyCode = ''
 				}
 			},
+			//对基本信息计划进行排序，审核日期越靠后次序越高
 			sortByDate(data) {
 				if (!data) {
 					return
@@ -852,92 +783,23 @@
 				}
 				return data
 			},
-			// editCheckedCompanyIDChange: function (form) {
-			//     let that = this
-			//     that.changeCompanyCodeToId(that.companyList,form.checkedCompanyCode)
-			//     that.editCheckedCompanyId = that.companyId
-			//     that.editFilterCheckedGroup(form)
-			// },
-			// eidtResponsiCompanyIDChange: function (form) {
-			//     let that = this
-			//     that.changeCompanyCodeToId(that.companyList,form.responsiCompanyCode)
-			//     that.eidtResponsiCompanyId = that.companyId
-			//     that.editFilterReponseCompany(form)
-			// },
-			// editFilterCheckedGroup: function (form) {
-			//     // 筛选编辑受审核部门
-			//     let that = this
-			//     that.changeCompanyIdToName(that.companyList, that.editCheckedCompanyId)
-			//         form.checkedCompanyName = that.companyName
-			//         form.checkedCompanyCode = that.companyCode
-			//         that.editEmployeeList = that.employee.filter((item) => {
-			//             return item.companyName == form.checkedCompanyName
-			//         })
-			//         const x = []
-			//         const arr = that.editEmployeeList
-			//         for(let i = 0; i < that.editEmployeeList.length; i++){
-			//             var isRepeat = false
-			//             for(let j = i+1; j < arr.length; j++) {
-			//                 if(that.editEmployeeList[i].empGroup === arr[j].empGroup){
-			//                     isRepeat = true
-			//                     break
-			//                 }
-
-			//             } 
-			//             if(isRepeat == false){
-			//                 x.push(that.editEmployeeList[i])
-			//             }
-
-			//         }
-			//         that.editEmployeeList = x
-			//         console.log('编辑受审核单位得到的受审核部门')
-			//         console.log(that.editEmployeeList)
-
-			// },
-			// editFilterReponseCompany: function (form) {
-			//     let that = this
-			//     that.changeCompanyIdToName(that.companyList, that.eidtResponsiCompanyId)
-			//     form.responsiCompanyName = that.companyName
-			//     form.responsiCompanyCode = that.companyCode
-			//     that.employeeArray = that.employee.filter((item) => {
-			//             return item.companyName == form.responsiCompanyName
-			//     })
-			//     console.log('筛选编辑责任部门员工表')
-			//     console.log(that.employeeArray)
-			// },
-			editCheckedCompanyIdChanged: function (val) {
-			    // 监听编辑受审核部门id变化
-			    let that = this
-			    console.log('编辑受审核单位id'+val)
+			editCheckedCompanyIdChanged: function(val) {
+				// 监听编辑受审核部门id变化
+				let that = this
 				that.changeCompanyIdToName(that.companyList, that.checkedCompanyId)
-				that.eidtInfoForm.checkedCompanyCode=that.companyCode
-				that.eidtInfoForm.checkedCompanyName=that.companyName
-				if(that.eidtInfoForm.checkedCompanyName){
-					that.employeeList=that.employee.filter(item=>{
-						return item.companyName==val
+				that.eidtInfoForm.checkedCompanyCode = that.companyCode
+				that.eidtInfoForm.checkedCompanyName = that.companyName
+				if (that.eidtInfoForm.checkedCompanyName) {
+					that.employeeList = that.employee.filter(item => {
+						return item.companyName == val
 					})
 				}
-			    //that.editFilterCheckedGroup(that.editInfoForm)
+				//that.editFilterCheckedGroup(that.editInfoForm)
 
 			},
-			// eidtResponsiCompanyIdChanged: function (val) {
-			//     // 监听编辑责任部门id变化
-			//     let that = this
-			//     console.log('监听编辑责任部门id变化'+val)
-			//     that.editFilterReponseCompany(that.editInfoForm)
-
-			// },
-			// checkListCodeChanged: function (val) {
-			//     // 监听检查表发生变化
-			//    console.log('选中的检查表信息')
-			//    console.log(val)
-			//    this.addInfoForm.checkListCode = val.join(';')
-			//    console.log(this.addInfoForm.checkListCode)
-			// },
 			// 时间格式化
 			formatDate: function(time) {
 				const timer = time.getTime()
-				console.log(timer)
 				const date = new Date(timer)
 				const y = date.getFullYear()
 				const m = date.getMonth() + 1
@@ -984,7 +846,8 @@
 				console.log('dialog open')
 				if (this.addInfoForm.checkCategory && this.addInfoForm.checkBasis && this.addInfoForm.checkMethod) {
 					let temp = this.checkTableList.filter(item => {
-						return item.checkCategory == this.addInfoForm.checkCategory && item.checkBasis == this.addInfoForm.checkBasis && item.checkMethod ==
+						return item.checkCategory == this.addInfoForm.checkCategory && item.checkBasis == this.addInfoForm.checkBasis &&
+							item.checkMethod ==
 							this.addInfoForm.checkMethod
 					})
 					if (temp.length > 0) {
@@ -1001,7 +864,8 @@
 				console.log('dialog open')
 				if (this.addInfoForm.checkCategory && this.addInfoForm.checkBasis && this.addInfoForm.checkMethod) {
 					let temp = this.checkTableList.filter(item => {
-						return item.checkCategory == this.addInfoForm.checkCategory && item.checkBasis == this.addInfoForm.checkBasis && item.checkMethod ==
+						return item.checkCategory == this.addInfoForm.checkCategory && item.checkBasis == this.addInfoForm.checkBasis &&
+							item.checkMethod ==
 							this.addInfoForm.checkMethod
 					})
 					if (temp.length > 0) {
@@ -1019,7 +883,8 @@
 				console.log('dialog open')
 				if (this.eidtInfoForm.checkCategory && this.eidtInfoForm.checkBasis && this.eidtInfoForm.checkMethod) {
 					let temp = this.checkTableList.filter(item => {
-						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis && item.checkMethod ==
+						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis &&
+							item.checkMethod ==
 							this.eidtInfoForm.checkMethod
 					})
 					if (temp.length > 0) {
@@ -1036,7 +901,8 @@
 				console.log('dialog open')
 				if (this.eidtInfoForm.checkCategory && this.eidtInfoForm.checkBasis && this.eidtInfoForm.checkMethod) {
 					let temp = this.checkTableList.filter(item => {
-						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis && item.checkMethod ==
+						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis &&
+							item.checkMethod ==
 							this.eidtInfoForm.checkMethod
 					})
 					if (temp.length > 0) {
@@ -1054,7 +920,8 @@
 				console.log('dialog open')
 				if (this.eidtInfoForm.checkCategory && this.eidtInfoForm.checkBasis && this.eidtInfoForm.checkMethod) {
 					let temp = this.checkTableList.filter(item => {
-						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis && item.checkMethod ==
+						return item.checkCategory == this.eidtInfoForm.checkCategory && item.checkBasis == this.eidtInfoForm.checkBasis &&
+							item.checkMethod ==
 							this.eidtInfoForm.checkMethod
 					})
 					if (temp.length > 0) {
@@ -1067,35 +934,36 @@
 					}
 				}
 			},
-			getEmploeeItem(employeeID,emploeeList){
-				if(!emploeeList||!employeeID){
+			//获取指定员工name
+			getEmploeeItem(employeeID, emploeeList) {
+				if (!emploeeList || !employeeID) {
 					return null
 				}
-				let temp=emploeeList.filter(item=>{
-					return item.employeeID==employeeID
+				let temp = emploeeList.filter(item => {
+					return item.employeeID == employeeID
 				})
 				return temp[0].name
 			},
-			addCheckPerson:function(){
-				this.addInfoForm.checkPerson=this.getEmploeeItem(this.addInfoForm.checkPersonID,this.employee)
+			addCheckPerson: function() {
+				this.addInfoForm.checkPerson = this.getEmploeeItem(this.addInfoForm.checkPersonID, this.employee)
 			},
-			addCheckedPerson:function(){
-				this.addInfoForm.checkedPersonName=this.getEmploeeItem(this.addInfoForm.checkedPersonID,this.employee)
+			addCheckedPerson: function() {
+				this.addInfoForm.checkedPersonName = this.getEmploeeItem(this.addInfoForm.checkedPersonID, this.employee)
 			},
-			addGroupLeader:function(){
-				this.addInfoForm.groupLeaderName=this.getEmploeeItem(this.addInfoForm.groupLeaderID,this.employee)
+			addGroupLeader: function() {
+				this.addInfoForm.groupLeaderName = this.getEmploeeItem(this.addInfoForm.groupLeaderID, this.employee)
 			},
-			addProjectLeader:function(){
-				this.addInfoForm.projectLeaderName=this.getEmploeeItem(this.addInfoForm.projectLeaderID,this.employee)
+			addProjectLeader: function() {
+				this.addInfoForm.projectLeaderName = this.getEmploeeItem(this.addInfoForm.projectLeaderID, this.employee)
 			},
-			editCheckedPerson:function(){
-				this.eidtInfoForm.checkedPersonName=this.getEmploeeItem(this.eidtInfoForm.checkedPersonID,this.employee)
+			editCheckedPerson: function() {
+				this.eidtInfoForm.checkedPersonName = this.getEmploeeItem(this.eidtInfoForm.checkedPersonID, this.employee)
 			},
-			editGroupLeader:function(){
-				this.eidtInfoForm.groupLeaderName=this.getEmploeeItem(this.eidtInfoForm.groupLeaderID,this.employee)
+			editGroupLeader: function() {
+				this.eidtInfoForm.groupLeaderName = this.getEmploeeItem(this.eidtInfoForm.groupLeaderID, this.employee)
 			},
-			editProjectLeader:function(){
-				this.eidtInfoForm.projectLeaderName=this.getEmploeeItem(this.eidtInfoForm.projectLeaderID,this.employee)
+			editProjectLeader: function() {
+				this.eidtInfoForm.projectLeaderName = this.getEmploeeItem(this.eidtInfoForm.projectLeaderID, this.employee)
 			}
 		},
 		watch: {
@@ -1112,19 +980,19 @@
 			//编辑计划表审核方式事件监听
 			'eidtInfoForm.checkMethod': 'editCheckMethod',
 			//新增计划表审核人员事件监听
-			'addInfoForm.checkPersonID':'addCheckPerson',
+			'addInfoForm.checkPersonID': 'addCheckPerson',
 			//新增计划表受审公司负责人事件监听
-			'addInfoForm.checkedPersonID':'addCheckedPerson',
+			'addInfoForm.checkedPersonID': 'addCheckedPerson',
 			//新增计划表受审室组负责人事件监听
-			'addInfoForm.groupLeaderID':'addGroupLeader',
+			'addInfoForm.groupLeaderID': 'addGroupLeader',
 			//新增计划表项目组长事件监听
-			'addInfoForm.projectLeaderID':'addProjectLeader',
+			'addInfoForm.projectLeaderID': 'addProjectLeader',
 			//编辑计划表受审公司负责人监听事件
-			'eidtInfoForm.checkedPersonID':'editCheckedPerson',
+			'eidtInfoForm.checkedPersonID': 'editCheckedPerson',
 			//编辑计划表受审室组负责人事件监听
-			'eidtInfoForm.groupLeaderID':'editGroupLeader',
+			'eidtInfoForm.groupLeaderID': 'editGroupLeader',
 			//编辑计划表项目组长事件监听
-			'eidtInfoForm.projectLeaderID':'editProjectLeader',
+			'eidtInfoForm.projectLeaderID': 'editProjectLeader',
 			// 监听受审核单位id发生变化
 			'checkedCompanyId': 'checkCompanyCodeChanged',
 			// 监听责任部门ID发生变化
