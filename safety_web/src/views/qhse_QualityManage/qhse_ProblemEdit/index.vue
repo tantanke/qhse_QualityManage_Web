@@ -137,9 +137,10 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="reformForm.reformCase" style="width:55%"></el-input>
             </el-form-item>
-            <el-form-item label='整改文件:'>
+            <el-form-item label='整改图片:'>
                <el-upload
                  ref="upload"
+                 accept=".bmp,.png,.jpg"
                   action="/api/uploadScreenShot"
                   :on-success="handleAvatarSuccess"
                   :limit="2"    
