@@ -26,7 +26,11 @@
 				<el-table-column type="expand" label="详情" width="50px">
 					<template slot-scope="scope">
 						<el-row>
+<<<<<<< HEAD
 							<el-col :span="10">
+=======
+							<el-col :span="8">
+>>>>>>> 170940f... 质量模块检查表配置
 								<div class="detail">受审核单位: {{scope.row.checkedCompanyName}}</div>
 								<div class="detail">受审室组: {{scope.row.group}}</div>
 								<div class="detail">作业项目名称: {{scope.row.projectName}}</div>
@@ -40,7 +44,11 @@
 								<div class="detail">业主: {{scope.row.owner}}</div>
 								<div class="detail">作业地点: {{scope.row.workPlace}}</div>
 							</el-col>
+<<<<<<< HEAD
 							<el-col :span="6">
+=======
+							<el-col :span="8">
+>>>>>>> 170940f... 质量模块检查表配置
 								<div class="detail">承包商: {{scope.row.contractor}}</div>
 								<div class="detail">承包商人数: {{scope.row.contractorNumber}}</div>
 								<div class="detail">作业人数: {{scope.row.workerNumber}}</div>
@@ -63,9 +71,17 @@
 				<el-table-column label="(整改/验证)完成时间" prop="finishDate" align="center" width="150"></el-table-column>
 				<el-table-column label="操作" width="260" align="center" fixed="right">
 					<template slot-scope="scope">
+<<<<<<< HEAD
 						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)">修改</el-button>
 						<el-button type="success" icon="el-icon-check" size="mini" @click="pushBasicInfo(scope.row)">推送</el-button>
 						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)">删除</el-button>
+=======
+						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush==='已推送'">查看</el-button>
+						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">修改</el-button>
+						<el-button type="success" icon="el-icon-check" size="mini" @click="pushBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">推送</el-button>
+						<el-button type="success" icon="el-icon-check" size="mini" v-if="scope.row.isPush==='已推送'">已推送</el-button>
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">删除</el-button>
+>>>>>>> 170940f... 质量模块检查表配置
 					</template>
 				</el-table-column>
 			</el-table>
@@ -222,8 +238,13 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
+<<<<<<< HEAD
 					<el-button @click="editInfoDialogVisible = false">取 消</el-button>
 					<el-button type="primary" @click="editInfoClick()">修 改</el-button>
+=======
+					<el-button @click="editInfoDialogVisible = false">关 闭</el-button>
+					<el-button type="primary" @click="editInfoClick()" v-if="eidtInfoForm.isPush==='未推送'">修 改</el-button>
+>>>>>>> 170940f... 质量模块检查表配置
 				</span>
 			</el-dialog>
 		</div>
@@ -596,7 +617,11 @@
 				if (row.isPush === "已推送") {
 					return this.$message.error('该登记表已推送，请勿重复操作')
 				}
+<<<<<<< HEAD
 				const confirmResult = await this.$confirm('是否推送该表信息?', '提示', {
+=======
+				const confirmResult = await this.$confirm('推送该表后相关信息无法修改或删除！是否推送该表信息?', '提示', {
+>>>>>>> 170940f... 质量模块检查表配置
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
 					type: 'warning'
@@ -665,12 +690,22 @@
 				}
 				return copy
 			},
+<<<<<<< HEAD
 			editInfoClick: function() {
+=======
+			editInfoClick: function(information) {
+>>>>>>> 170940f... 质量模块检查表配置
 				// 修改配置基本信息表
 				// 编辑确认基本信息表
 				let that = this
 				console.log('编辑修改的基本信息表')
 				console.log(that.eidtInfoForm)
+<<<<<<< HEAD
+=======
+				if (this.eidtInfoForm.isPush === '已推送') {
+					return this.$message.error('该登记表已推送，无法进行再次修改')
+				}
+>>>>>>> 170940f... 质量模块检查表配置
 				editBasicInfomation(that.eidtInfoForm.qualityCheckID, that.eidtInfoForm).then((res) => {
 					console.log('修改基本信息登记表返回的信息')
 					console.log(res.data)
