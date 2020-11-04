@@ -60,7 +60,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -109,7 +109,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '未审核' && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -229,13 +229,24 @@
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
               <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.pass}}</el-button></el-form-item> 
               <el-form-item label="审核时间：" v-show="detailData.auditTime"  style="margin-bottom:1px">{{detailData.auditTime}}</el-form-item> 
-              <el-form-item label="未录入原因：" v-show="detailData.noPassReason" style="margin-bottom:1px">{{detailData.noPassReason}}</el-form-item>
+              
               <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
                 <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
                 <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
                 </el-form-item>      
             </el-col>
             <el-col :span="12" >
+              <el-form-item label="隐患违章状态：" v-show="detailData.noPassReason"
+              style="margin-bottom:5px"
+              >
+              未录入
+               </el-form-item>
+               <el-form-item label="隐患违章状态：" v-show="detailData.pass === '不通过' &&  !detailData.noPassReason"
+              style="margin-bottom:10px"
+              >
+              已录入
+               </el-form-item>
+               <el-form-item label="未录入原因：" v-show="detailData.noPassReason" style="margin-bottom:1px">{{detailData.noPassReason}}</el-form-item>
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
@@ -463,7 +474,7 @@ export default {
                       _this.fileList.push(item)
                       _this.hasTotal++
                       return
-                   } else if (item.status === '备案待查' && item.fileCheckStatus ) {
+                   } else if (item.status === '备案待查' && !item.fileCheckStatus ) {
                       _this.fileList.push(item)                     
 
                    }                    

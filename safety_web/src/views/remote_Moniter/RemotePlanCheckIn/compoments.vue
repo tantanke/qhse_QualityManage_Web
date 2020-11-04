@@ -36,7 +36,6 @@
                                 <el-table :stripe="true" :header-cell-style="tableHeaderColor"
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
-                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
                                     <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
                                     <el-table-column prop="description" label="视频监控描述" align="center"></el-table-column>
                                     <el-table-column prop="picNo" label="截图编号" align="center">
@@ -45,25 +44,35 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
+                                    <!--监控人员，暂时还没有确定名字-->
+                                    <el-table-column prop="MonitorWorker" label="监控人员" align="center"></el-table-column>
+                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
                                     <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
                                 </el-table>
                             </el-form>
                         </template>
                     </el-table-column>
-                    <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-                    <el-table-column prop="checkInCount" label="录入次数" width="150" align="center"></el-table-column>
-                    <el-table-column prop="deviceNo" label="设备编号" width="150" align="center"></el-table-column>
-                    <el-table-column prop="myNo" label="自编号" width="130" align="center"></el-table-column>
+                    <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
+                    <el-table-column prop="myNo" label="自编号" width="100" align="center"></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="120" align="center"
+                                     :filters="filterCompanyNameList"
+                                     :filter-method="filterCompanyName"
+                    ></el-table-column>
+                    <!--项目类别，暂时还没确定名字-->
+                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
                     <el-table-column prop="projectName" label="项目名称" align="center"
                                      :filters="filterProjectNameList"
                                      :filter-method="filterProjectName"
                     ></el-table-column>
                     <el-table-column prop="charger" label="负责人" width="120" align="center"></el-table-column>
-                    <el-table-column prop="tel" label="电话" width="140" align="center"></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"
-                                     :filters="filterCompanyNameList"
-                                     :filter-method="filterCompanyName"
-                    ></el-table-column>
+                    <el-table-column prop="tel" label="电话" width="120" align="center"></el-table-column>
+
+                    <el-table-column prop="checkInCount" label="录入次数" width="120" align="center"></el-table-column>
+                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center"></el-table-column>
+
+
+
+
                     <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center">
                         <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
                       </el-table-column> -->

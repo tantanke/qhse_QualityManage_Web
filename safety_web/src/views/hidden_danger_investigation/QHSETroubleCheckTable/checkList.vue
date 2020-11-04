@@ -375,7 +375,6 @@ export default {
             .then(res => {
                 console.log(res)
                 _this.loading = false
-                _this.$message.success('新增成功！')
                 _this.checkRecordForm = {pass:'通过'}
                 _this.checkRecordForm.reason = ''
                 _this.problemForm.problemDescription = ''
