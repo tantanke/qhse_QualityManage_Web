@@ -1,7 +1,8 @@
 <template>
   <div>
       <div class="page-title" style="width:100%">工作记录仪管理</div>
-      <div class="page-content">
+      <div class="page-content"  v-loading='screenLoading' element-loading-text="文件上传中，请稍候"
+    element-loading-spinner="el-icon-loading">
           <el-row style="margin-top:1%">
               <el-form :inline="true" >
                 <el-form-item>
@@ -23,7 +24,7 @@
                 </el-form-item>
                 <el-form-item>
                    <el-upload ref="upload" action='/api/uploadDashboardRecorderManagement'  :headers="headers" :show-file-list="false"
-               accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
+               accept=".xls" :on-progress="handleProgress" :on-success="successHand">
 						<el-button icon="el-icon-upload" type="success" @click="importFile">数据导入</el-button>
 					</el-upload>
                 </el-form-item>
@@ -69,6 +70,7 @@ export default {
         companyList:[],
         listData:[],
         loading:false,
+        screenLoading:false,
         headers:{Authorization:CurrentUser.get().token}
       }
     },
@@ -94,6 +96,17 @@ export default {
       importFile(){
 
       },
+     successHand(res){
+            if(res.code === 1000){
+                this.$message.success('上传成功')
+                this.screenLoading = false
+            }
+            
+            else{
+                this.$message.error('上传失败，请重试')
+                this.screenLoading = false
+            }
+      },
       downLoadFile(){
          downloadDashboardRecorderManagementTemplate().then(res =>{
                 downloadfile('记录仪管理模板',res.file.data)
@@ -112,7 +125,7 @@ export default {
         this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
       },
       handleProgress(){
-            this.$alert('文件上传中，请稍候', '文件上传')
+             this.screenLoading = true
         },
     },
     mounted() {

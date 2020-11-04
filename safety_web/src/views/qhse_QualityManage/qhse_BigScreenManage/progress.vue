@@ -1,7 +1,8 @@
 <template>
   <div>
      <div class="page-title" style="width:100%">标准进度管理 </div>
-     <div class="page-content">
+     <div class="page-content" v-loading='screenLoading' element-loading-text="文件上传中，请稍候"
+    element-loading-spinner="el-icon-loading">
           <el-row style="margin-top:1%">
               <el-form :inline="true" >
                 <el-form-item>
@@ -23,7 +24,7 @@
                 </el-form-item>
                 <el-form-item>
                    <el-upload ref="upload" action='/api/uploadDashboardScheduleManagement'  :headers="headers" :show-file-list="false"
-               accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
+               accept=".xls" :on-progress="handleProgress" :on-success="successHand">
 						<el-button icon="el-icon-upload" type="success" @click="importFile">数据导入</el-button>
 					</el-upload>
                 </el-form-item>
@@ -45,13 +46,13 @@
                         highlight-current-row
                         border>
                         <el-table-column align='center' prop='companyName' label='单位名称'></el-table-column>
-                        <el-table-column align='center' prop='planNum' label='初稿计划数数'></el-table-column>
+                        <el-table-column align='center' prop='planNum' label='初稿计划数'></el-table-column>
                         <el-table-column align='center' prop='firstDraftFinishNum' label='初稿完成数'></el-table-column>
                         <el-table-column align='center' prop='firstDraftFinishRate' label='初稿完成率'></el-table-column>
-                        <el-table-column align='center' prop='ReviewPassNum' label='评审通过数'></el-table-column>
-                        <el-table-column align='center' prop='ReviewPassRate' label='评审通过率'></el-table-column>
-                        <el-table-column align='center' prop='StandardReleaseNum' label='标准发布数'></el-table-column>
-                        <el-table-column align='center' prop='StandardReleaseRate' label='标准发布率'></el-table-column>
+                        <el-table-column align='center' prop='reviewPassNum' label='评审通过数'></el-table-column>
+                        <el-table-column align='center' prop='reviewPassRate' label='评审通过率'></el-table-column>
+                        <el-table-column align='center' prop='standardReleaseNum' label='标准发布数'></el-table-column>
+                        <el-table-column align='center' prop='standardReleaseRate' label='标准发布率'></el-table-column>
                         <el-table-column align='center' prop='updateTime' label='填报时间'></el-table-column>
                       </el-table>
             </el-row> 
@@ -72,6 +73,7 @@ export default {
         companyList:[],
         listData:[],
         loading:false,
+        screenLoading:false,
         headers:{Authorization:CurrentUser.get().token}
       }
     },
@@ -86,6 +88,17 @@ export default {
            this.loading = false
           this.$message.error("查询失败，请稍后再试！")
         })
+      },
+      successHand(res){
+            if(res.code === 1000){
+                this.$message.success('上传成功')
+                this.screenLoading = false
+            }
+            
+            else{
+                this.$message.error('上传失败，请重试')
+                this.screenLoading = false
+            }
       },
       getUrl(baseurl,data) {
             let url = baseurl+'?'
@@ -117,7 +130,7 @@ export default {
         this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1]    
       },
       handleProgress(){
-            this.$alert('文件上传中，请稍候', '文件上传')
+            this.screenLoading = true
         },
       
     },

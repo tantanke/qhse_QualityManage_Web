@@ -151,12 +151,12 @@
                 <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button @click="editShow = false">取 消</el-button>
-                <el-button type="primary" @click="editInfo">确 定</el-button>
-            </el-form-item>
             </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
+           <el-button @click="editShow = false">取 消</el-button>
+                <el-button type="primary" @click="editInfo">确 定</el-button>
             </div>
+             </div>
             </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
@@ -251,11 +251,12 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="proForm.situation" style="width:70%"></el-input>
             </el-form-item>
-            <el-form-item style="margin-left:50%;margin-top:40px">
-                <el-button @click="editProShow= false">取 消</el-button>
-                <el-button type="primary" @click="goEditPro">确 定</el-button>
-            </el-form-item>
+           
             </el-form>
+             <div slot="footer" class="dialog-footer" style="text-align:right">
+           <el-button @click="editProShow= false">取 消</el-button>
+            <el-button type="primary" @click="goEditPro">确 定</el-button>
+          </div>
             </div>
             </el-dialog>
   </div>

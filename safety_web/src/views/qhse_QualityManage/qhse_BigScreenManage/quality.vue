@@ -1,7 +1,8 @@
 <template>
   <div>
       <div class="page-title" style="width:100%">质量进度管理</div>
-      <div class="page-content">
+      <div class="page-content"  v-loading='screenLoading' element-loading-text="文件上传中，请稍候"
+    element-loading-spinner="el-icon-loading">
           <el-row style="margin-top:1%">
               <el-form :inline="true" >
                 <el-form-item label='选择公司：' labelWidth='120px'>
@@ -22,7 +23,7 @@
                
                 <el-form-item>
                <el-upload ref="upload" action='/api/uploadDashboardQualityManagement'  :headers="headers" :show-file-list="false"
-               accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
+               accept=".xls" :on-progress="handleProgress" :on-success="successHand">
 						<el-button icon="el-icon-upload" type="success" @click="importFile">数据导入</el-button>
 					</el-upload>
                 </el-form-item>
@@ -67,6 +68,7 @@ export default {
         companyList:[],
         listData:[],
         loading:false,
+        screenLoading:false,
         headers:{Authorization:getCurrentUser.get().token}
       }
     },
@@ -90,10 +92,21 @@ export default {
             return url
         },
         handleProgress(){
-            this.$alert('文件上传中，请稍候', '文件上传')
+             this.screenLoading = true
         },
       importFile(){
 
+      },
+      successHand(res){
+            if(res.code === 1000){
+                this.$message.success('上传成功')
+                this.screenLoading = false
+            }
+            
+            else{
+                this.$message.error('上传失败，请重试')
+                this.screenLoading = false
+            }
       },
       downLoadFile(){
         downloadDashboardQualityManagementTemplate().then(res =>{

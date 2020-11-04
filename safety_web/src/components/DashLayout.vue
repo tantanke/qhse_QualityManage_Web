@@ -116,11 +116,25 @@
           <el-button style="width:40%" type='primary' @click='goSafe'>QHSE安全系统</el-button> 
           <el-button style="width:40%" @click='goQuality'>QHSE质量系统</el-button> 
         </el-dialog>
+        <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
+        <el-form :inline="true" >
+        <el-form-item label='选择单位：' labelWidth='120px'>
+         <el-cascader v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" ref="cascaderAddr" >             
+          </el-cascader>
+           </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dashBoardVisible = false">取 消</el-button>
+            <el-button v-show="this.searchForm.companyCode" type="primary" @click="changeScreen">确 定</el-button>
+          </div>
+        </el-dialog>
   </el-container>
+  
 </template>
 
 <script>
 // import {updateMessage,notReadMessage} from '../services/message'
+import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
@@ -144,7 +158,12 @@ Vue.use(VueCookies)
 
 export default {
   data() {
-    return {
+    return {//记录即将去往的公司
+      companyId:'',
+        chooseItem:'',
+      searchForm:{companyCode:''},
+      companyList:[],
+      dashBoardVisible: false,
       qhse:'QHSE管理系统',
       close1:false,
       changeS:false,
@@ -210,11 +229,27 @@ export default {
     }
   },
   methods: {
+     handleChange(){
+        this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
+      },
+     getCompany(){
+        GetqhseCompanytree().then(res =>{
+               this.companyList = res.data
+               this.dashBoardVisible = true
+               console.log(res.data)
+        }).catch((err) =>{
+          this.$message.error(err.message)
+        })
+      },
+      changeScreen(){
+        const {href} = this.$router.resolve({
+        name: "qhseBigScreen",
+        query: this.searchForm
+        });
+          window.open(href, '_blank');
+      },
     goScreen(){
-       const {href} = this.$router.resolve({
-      name: "qhseBigScreen",
-      });
-        window.open(href, '_blank');
+      this.getCompany()
     },
     changeSys() {
       let _this = this
@@ -376,7 +411,7 @@ export default {
 			this.$message.error(err.message)
 		})
         this.$router.push({name: 'Login'})
-      }
+      } 
     },
     handleDropCommand (cmd) {
       this[cmd]()
