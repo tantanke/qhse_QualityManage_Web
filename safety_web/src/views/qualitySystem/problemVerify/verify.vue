@@ -6,7 +6,7 @@
 		</el-breadcrumb>
 		<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         </el-row>
-        <div class="page-title" style="width: 100%">验证项<span class="boxNew" v-if="isBelongToPart === true"><span class="progressData">{{"进度："+ progress}}</span><el-button type="success" style="font-size: 16px" @click="finishVerify">验证完成</el-button></span></div>
+        <div class="page-title" style="width: 100%">验证项<span class="allBtn"><span class="boxNew" v-if="isBelongToPart === true"><span class="progressData">{{"进度："+ progress}}</span><el-button type="success" style="font-size: 16px" @click="finishVerify">验证完成</el-button></span><span class="btnDownload"><el-button icon="el-icon-download" type="primary" @click="downloadDialog">下载</el-button></span></span></div>
 		<div
 			class="page-content"
 			v-loading="loading" 
@@ -18,9 +18,14 @@
                 <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="责任单位" prop="responsiCompanyName" show-overflow-tooltip align="center"></el-table-column> 
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
+				<el-table-column label="状态" show-overflow-tooltip align="center">
+					<template slot-scope="scope">
+						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+					</template>
+				</el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '验证已打回' || scope.row.isPush === '验证已通过' || scope.row.isPush === '已通过'">查看</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '验证已打回' || scope.row.isPush === '验证已通过' || scope.row.isPush === '审核已通过'">查看</el-button>
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemViewVerify(scope.row)" v-else>验证</el-button>
                     </template>
                 </el-table-column>
@@ -215,6 +220,16 @@
                     
                 </span>
             </el-dialog>
+			<el-dialog
+				title="下载"
+				:visible.sync="downloadDialogVisible"
+				width="50%">
+				<span>这是一段信息</span>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="downloadDialogVisible = false">取 消</el-button>
+					<el-button type="primary" @click="downloadFile">确 定</el-button>
+				</span>
+			</el-dialog>
 		</div>
 	</div>
 </template>
@@ -223,6 +238,7 @@
 import { getProblemReviewList, refuseProblemReviewData, updateQualityCheckRecord, getOriginFileName, getQualityCheckList}from "../../../services/qualitySystem/problemReview"
 import { modifyPush } from "../../../services/qualitySystem/problemRectify"
 import { GetCurrentUser } from '../../../store/CurrentUser'
+import ExportJsonExcel from "js-export-excel";
 	export default {
 		data () {
 			return {
@@ -230,6 +246,8 @@ import { GetCurrentUser } from '../../../store/CurrentUser'
 				activeIndex: '0',
 				// 问题验证对话框显示与隐藏
 				problemVerifyDialogVisible: false,
+				// 下载对话框的隐藏与显示
+				downloadDialogVisible: false,
 				// 表格数据
 				problemVerifyList:[],
 				// 是否属于这个部分
@@ -477,6 +495,10 @@ import { GetCurrentUser } from '../../../store/CurrentUser'
 						}
 						modifyPush(this.acceptRow.qualityCheckID).then((res) => {
 							console.log(res.data)
+							// 跳转问题验证页面
+							this.$router.push({
+								path: '/qualitySystem/problemVerify/index',
+							})
 							return this.$message.success('推送成功')
 						}).catch((err) => {
 							return this.$message.error(err.message)
@@ -494,6 +516,10 @@ import { GetCurrentUser } from '../../../store/CurrentUser'
 						this.refuseReviewObject.qualityCheckID = this.acceptRow.qualityCheckID
 						refuseProblemReviewData(this.refuseReviewObject).then((res) => {
 							console.log(res.data)
+							// 跳转问题验证页面
+							this.$router.push({
+								path: '/qualitySystem/problemVerify/index',
+							})
 							return this.$message.success('数据已打回')
 						}).catch((err) => {
 							return this.$message.error(err.message)
@@ -528,11 +554,24 @@ import { GetCurrentUser } from '../../../store/CurrentUser'
 				this.imageCorrectList = []
 				this.fileCorrectList = []
 			},
+			downloadFile: function () {
+				// 下载表格
+				this.downloadDialogVisible = false
+			},
+			downloadDialog: function () {
+				// 下载对话框打开
+				this.downloadDialogVisible = true
+			},
 			getProgress: function () {
 				// 获取进度
 				for(let i in this.problemVerifyList){
-					if(this.problemVerifyList[i].isPush === '验证已打回' || this.problemVerifyList[i].isPush === '验证已通过' || this.problemVerifyList[i].isPush === '已通过'){
+					if(this.problemVerifyList[i].isPush === '验证已打回' || this.problemVerifyList[i].isPush === '验证已通过' || this.problemVerifyList[i].isPush === '审核已通过'){
 						this.flagRecifyArray.push(this.problemVerifyList[i].qulity_CheckRecordID)
+					}
+				}
+				for(let j in this.problemVerifyList){
+					if(this.problemVerifyList[j].isPush === '验证已通过' || this.problemVerifyList[j].isPush === '审核已通过'){
+						this.flagAcceptArray.push(this.problemVerifyList[j].qulity_CheckRecordID)
 					}
 				}
 				const length1 = this.problemVerifyList.length
@@ -662,5 +701,9 @@ import { GetCurrentUser } from '../../../store/CurrentUser'
     position: absolute;
     top: 4px;
     right: 5px;
+}
+.btnDownload {
+	display: inline-block;
+	margin-left: 20px;
 }
 </style>
