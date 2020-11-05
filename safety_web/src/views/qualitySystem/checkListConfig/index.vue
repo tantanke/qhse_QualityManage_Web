@@ -88,14 +88,15 @@
 			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
 			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<div style="display: block;width: 160px;">
-						<el-button v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 100px;margin: 5px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
+					<div style="display: block;width: 240px;">
+						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
 					</div>
-					<div style="display: block;width: 160px;">
-						<el-button v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 100px;margin: 5px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
+					<div style="display: block;width: 240px;">
+						
+						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
 					</div>
-					<div style="display: block;width: 160px;">
-						<el-button v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 100px;margin: 5px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
+					<div style="display: block;width: 240px;">
+						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
 					</div>
 					<span :title="data.checkListName" class="em-tree-text">{{ data.checkListName }}</span>
 					<span>
@@ -604,8 +605,8 @@
 						this.$message.error('数据不完整')
 						return
 					}
-					if(this.chosenData.checkCategory.length>5||this.chosenData.checkBasis.length>5||this.chosenData.checkMethod>5){
-						this.$message.error('审核类型，审核依据，审核方式长度最大为5！')
+					if(this.chosenData.checkCategory.length>9||this.chosenData.checkBasis.length>9||this.chosenData.checkMethod>9){
+						this.$message.error('审核类型，审核依据，审核方式长度最大为9！')
 						return
 					}
 					let isCopy=this.tableData.filter(item=>{
@@ -627,23 +628,23 @@
 				}
 				//调用接口新增节点
 				this.loading=true
-				// addCheckListItem(this.chosenData).then(res=>{
-				// 	//新增成功
-				// 	if(res.code=='1000'){
-				// 		//重新获取数据，并显示相应的提示信息
-				// 		this.getData()
-				// 		this.$message.success('新增节点成功')
-				// 		this.loading=false
-				// 	}else{
-				// 		this.$message.error('新增节点失败')
-				// 	}
-				// 	//清空临时数据对象
-				// 	this.initData('chosen')
-				// 	this.loading=false
-				// }).catch((err) => {
-				// 	this.$message.error(err.message)
-				// 	this.loading=false
-				// })
+				addCheckListItem(this.chosenData).then(res=>{
+					//新增成功
+					if(res.code=='1000'){
+						//重新获取数据，并显示相应的提示信息
+						this.getData()
+						this.$message.success('新增节点成功')
+						this.loading=false
+					}else{
+						this.$message.error('新增节点失败')
+					}
+					//清空临时数据对象
+					this.initData('chosen')
+					this.loading=false
+				}).catch((err) => {
+					this.$message.error(err.message)
+					this.loading=false
+				})
 				//关闭新增节点对话框
 				this.loading=false
 				this.addItemDialog=false
@@ -668,6 +669,14 @@
 					//检查数据完整性
 					if(!this.configData.checkListName||!this.configData.checkCategory||!this.configData.checkBasis||!this.configData.checkMethod){
 						this.$message.error('数据不完整')
+						return
+					}
+					if(this.configData.checkListName.length>9||this.configData.checkCategory.length>9||this.configData.checkBasis.length>9){
+						console.log(this.configData.checkCategory.length)
+						this.$message.error('审核类型，审核依据，审核方式长度最大为9！')
+						this.configData.checkCategory=this.row.checkCategory
+						this.configData.checkBasis=this.row.checkBasis
+						this.configData.checkMethod=this.row.checkMethod
 						return
 					}
 					let isCopy=this.tableData.filter(item=>{
