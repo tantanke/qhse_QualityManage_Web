@@ -1,5 +1,7 @@
 <template>
-  <el-row class="main" :style ="bg">
+  <el-row class="main" :style ="bg" v-loading='screenLoading' element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
      <el-row class="head">
           <el-col class="title"  :span='5'>
             <p>安检院QHSE看板</p>
@@ -34,7 +36,7 @@
            <el-col :span='18'>
                <el-row class='qualityManageChart'>
                  <el-col :span='3'>
-                   <ul v-for="(value,index) in listdata1" :key="index">
+                   <ul v-for="(value,index) in qualitylistdata" :key="index">
                        <li><span>{{value}}</span></li>
                    </ul>
                  </el-col>
@@ -42,11 +44,17 @@
                    <el-row>
                      <el-col :span='4' style="color:#021151">.</el-col>
                      <el-col :span='6'  class="zhu1" :style="qualityzhu1">
+                         <p>{{values.qualityzhu1}}</p>
                      </el-col>
                      <el-col :span='4' class="point">
-                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                       <div class="rateArea" :style="qualityzhuRate">
+                        <div class="finishrate"  plain style="color:#021151">.</div><div><span>{{rates.qualityzhu}}</span></div>
+                        
+                        </div>
                      </el-col>
-                     <el-col :span='6' class="zhu2"  :style="qualityzhu2"></el-col>
+                     <el-col :span='6' class="zhu2"  :style="qualityzhu2">
+                       <p>{{values.qualityzhu2}}</p>
+                     </el-col>
                    </el-row>
                  </el-col>
                  <el-col :span='3'>
@@ -55,17 +63,17 @@
                    </ul>
                  </el-col>
                </el-row>
-               <el-row class='date'>2020.06</el-row>
+               <el-row class='date'>{{qualityDate}}</el-row>
                <el-row class='tags'>
                  
-                 <el-col :span='8' style="color:#021151">.</el-col>
-                    <el-col  :span='2'>
+                 <el-col :span='7' style="color:#021151">.</el-col>
+                    <el-col  :span='3'>
                       <el-button class="will"  plain></el-button><span>计划数</span>
                     </el-col>
-                     <el-col :span='2'>
+                     <el-col :span='3'>
                       <el-button class="finish" plain></el-button><span>完成数</span>
                      </el-col>
-                      <el-col :span='2'>
+                      <el-col :span='3'>
                         <el-button class="finishrate"  plain></el-button><span>完成率</span>
                       </el-col>
                </el-row>
@@ -81,7 +89,7 @@
         <el-row class="contenTitle">本月记录仪使用情况</el-row> 
         <el-row class='recordingManageChart'>
                  <el-col :span='3'>
-                   <ul v-for="(value,index) in listdata1" :key="index">
+                   <ul v-for="(value,index) in recordinglistdata" :key="index">
                        <li><span>{{value}}</span></li>
                    </ul>
                  </el-col>
@@ -89,14 +97,21 @@
                    <el-row>
                      <el-col :span='4' style="color:#021151">.</el-col>
                      <el-col :span='4'  class="zhu1" :style="recordingzhu1">
+                       <p>{{values.recordingzhu1}}</p>
                      </el-col>
                      <el-col :span='3' class="point">
-                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                        <div class="rateArea" :style="recordingzhuRate">
+                        <div class="finishrate"  plain style="color:#021151">.</div><div><span>{{rates.recordingzhu}}</span></div>
+                        
+                        </div>
                      </el-col>
                      <el-col :span='4'  class="zhu2" :style="recordingzhu2">
+                       <p>{{values.recordingzhu2}}</p>
                      </el-col>
                      <el-col :span='3' style="color:#021151">.</el-col>
-                     <el-col :span='4' class="zhu3"  :style="recordingzhu3"></el-col>
+                     <el-col :span='4' class="zhu3"  :style="recordingzhu3">
+                       <p>{{values.recordingzhu3}}</p>
+                     </el-col>
                    </el-row>                 
                  </el-col>
                  <el-col :span='3'>
@@ -106,17 +121,17 @@
                  </el-col>
                </el-row>
                <el-row class='tags'>                
-                 <el-col :span='11' style="color:#021151">.</el-col>
-                    <el-col  :span='3'>
+                 <el-col :span='8' style="color:#021151">.</el-col>
+                    <el-col  :span='4'>
                       <el-button class="will"  plain></el-button><span>领用数</span>
                     </el-col>
-                     <el-col :span='3'>
+                     <el-col :span='4'>
                       <el-button class="finish" plain></el-button><span>正常开机数</span>
                      </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='4'>
                         <el-button class="jiankong"  plain></el-button><span>监控查看数</span>
                       </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='4'>
                         <el-button class="finishrate"  plain></el-button><span>使用比</span>
                       </el-col>
                </el-row>
@@ -134,7 +149,7 @@
                <el-row class="contenTitle">初稿完成进度</el-row> 
                <el-row class='qualityManageChart'>
                  <el-col :span='3'>
-                   <ul v-for="(value,index) in listdata1" :key="index">
+                   <ul v-for="(value,index) in firstlistdata" :key="index">
                        <li><span>{{value}}</span></li>
                    </ul>
                  </el-col>
@@ -142,11 +157,16 @@
                    <el-row>
                      <el-col :span='4' style="color:#021151">.</el-col>
                      <el-col :span='6'  class="zhu1" :style="firstzhu1">
+                       <p>{{values.firstzhu1}}</p>
                      </el-col>
                      <el-col :span='4' class="point">
-                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                       <div class="rateArea" :style="firstzhuRate">
+                        <div class="finishrate"  plain style="color:#021151">.</div><div><span>{{rates.firstzhu}}</span></div>                    
+                        </div>
                      </el-col>
-                     <el-col :span='6' class="zhu2"  :style="firstzhu2"></el-col>
+                     <el-col :span='6' class="zhu2"  :style="firstzhu2">
+                       <p>{{values.firstzhu2}}</p>
+                     </el-col>
                    </el-row>
                  </el-col>
                  <el-col :span='3'>
@@ -155,17 +175,17 @@
                    </ul>
                  </el-col>
                </el-row>
-               <el-row class='date'>2020.06</el-row>
+               <el-row class='date'>{{standardDate}}</el-row>
                <el-row class='tags'>
                  
                  <el-col :span='9' style="color:#021151">.</el-col>
-                    <el-col  :span='3'>
+                    <el-col  :span='4'>
                       <el-button class="will"  plain></el-button><span>计划数</span>
                     </el-col>
-                     <el-col :span='3'>
+                     <el-col :span='4'>
                       <el-button class="finish" plain></el-button><span>完成数</span>
                      </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='4'>
                         <el-button class="finishrate"  plain></el-button><span>完成率</span>
                       </el-col>
                </el-row>
@@ -177,7 +197,7 @@
               <el-row class="contenTitle">评审通过进度</el-row> 
               <el-row class='qualityManageChart'>
                  <el-col :span='3'>
-                   <ul v-for="(value,index) in listdata1" :key="index">
+                   <ul v-for="(value,index) in firstlistdata" :key="index">
                        <li><span>{{value}}</span></li>
                    </ul>
                  </el-col>
@@ -185,11 +205,17 @@
                    <el-row>
                      <el-col :span='4' style="color:#021151">.</el-col>
                      <el-col :span='6'  class="zhu1" :style="passzhu1">
+                       <p>{{values.passzhu1}}</p>
                      </el-col>
                      <el-col :span='4' class="point">
-                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                        <div class="rateArea" :style="passzhuRate">
+                        <div class="finishrate"  plain style="color:#021151">.</div><div><span>{{rates.passzhu}}</span></div>
+                        
+                        </div>
                      </el-col>
-                     <el-col :span='6' class="zhu2"  :style="passzhu2"></el-col>
+                     <el-col :span='6' class="zhu2"  :style="passzhu2">
+                       <p>{{values.passzhu2}}</p>
+                     </el-col>
                    </el-row>
                  </el-col>
                  <el-col :span='3'>
@@ -198,17 +224,17 @@
                    </ul>
                  </el-col>
                </el-row>
-               <el-row class='date'>2020.06</el-row>
+               <el-row class='date'>{{standardDate}}</el-row>
                <el-row class='tags'>
                  
                  <el-col :span='9' style="color:#021151">.</el-col>
-                    <el-col  :span='3'>
+                    <el-col  :span='4'>
                       <el-button class="will"  plain></el-button><span>计划数</span>
                     </el-col>
-                     <el-col :span='3'>
+                     <el-col :span='4'>
                       <el-button class="finish" plain></el-button><span>完成数</span>
                      </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='4'>
                         <el-button class="finishrate"  plain></el-button><span>完成率</span>
                       </el-col>
                </el-row>
@@ -220,7 +246,7 @@
               <el-row class="contenTitle">标准发布进度</el-row> 
               <el-row class='qualityManageChart'>
                  <el-col :span='3'>
-                   <ul v-for="(value,index) in listdata1" :key="index">
+                   <ul v-for="(value,index) in firstlistdata" :key="index">
                        <li><span>{{value}}</span></li>
                    </ul>
                  </el-col>
@@ -228,11 +254,16 @@
                    <el-row>
                      <el-col :span='4' style="color:#021151">.</el-col>
                      <el-col :span='6'  class="zhu1" :style="handoutzhu1">
+                       <p>{{values.handoutzhu1}}</p>
                      </el-col>
                      <el-col :span='4' class="point">
-                        <div class="finishrate"  plain style="color:#021151">.</div><span>20.2%</span>
+                        <div class="rateArea" :style="handoutzhuRate">
+                        <div class="finishrate"  plain style="color:#021151">.</div><div><span>{{rates.handoutzhu}}</span></div>
+                        </div>
                      </el-col>
-                     <el-col :span='6' class="zhu2"  :style="handoutzhu2"></el-col>
+                     <el-col :span='6' class="zhu2"  :style="handoutzhu2">
+                       <p>{{values.handoutzhu2}}</p>
+                     </el-col>
                    </el-row>
                  </el-col>
                  <el-col :span='3'>
@@ -241,17 +272,17 @@
                    </ul>
                  </el-col>
                </el-row>
-               <el-row class='date'>2020.06</el-row>
+               <el-row class='date'>{{standardDate}}</el-row>
                <el-row class='tags'>
                  
                  <el-col :span='9' style="color:#021151">.</el-col>
-                    <el-col  :span='3'>
+                    <el-col  :span='4'>
                       <el-button class="will"  plain></el-button><span>计划数</span>
                     </el-col>
-                     <el-col :span='3'>
+                     <el-col :span='4'>
                       <el-button class="finish" plain></el-button><span>完成数</span>
                      </el-col>
-                      <el-col :span='3'>
+                      <el-col :span='4'>
                         <el-button class="finishrate"  plain></el-button><span>完成率</span>
                       </el-col>
                </el-row>
@@ -265,11 +296,17 @@
 
 <script>
 import CurrentUser from '../../store/CurrentUser'
+import axios from 'axios'
+import {queryDashboardQualityManagement,queryDashboardRecorderManagement,queryDashboardScheduleManagement} from '@/services/qhseDashboard/index'
 export default {
   data() {
  return {
   // 背景样式
-  listdata1:[30000,24000,18000,12000,6000,0],
+  // Y轴计算
+  qualitylistdata:[],
+  recordinglistdata:[],
+  firstlistdata:[],
+  //百分比样式
   ratedata1:['100%','80%','60%','40%','20%','0%',],
   bg: {
   backgroundImage: "url(" + require("./img/bg.jpg") + ")",
@@ -282,14 +319,41 @@ export default {
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
   },
+  //日期记录
+  qualityDate:'',
+  standardDate:'',
+  //所有的值记录
+  values:{
+     qualityzhu1:'',
+     qualityzhu2:'',
+     recordingzhu1:'',
+     recordingzhu2:'',
+     recordingzhu3:'',
+     firstzhu1:'',
+     firstzhu2:'',
+     passzhu1:'',
+     passzhu2:'',
+     handoutzhu1:'',
+     handoutzhu2:'',
+  },
+  rates:{
+     qualityzhu:'',
+     recordingzhu:'',
+     firstzhu:'',
+     passzhu:'',
+     handoutzhu:'',
+  },
   // 质量柱状图数据 只需要获得已使用占总数的百分比填入
   qualityzhu1:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
   },
   qualityzhu2:{
-    height: '70%',
-    top: '30%'
+    height: '',
+    top: '',
+  },
+  qualityzhuRate:{
+    top: ''
   },
   // 记录管理
   recording: {
@@ -299,16 +363,20 @@ export default {
   },
   // 记录管理柱状图
   recordingzhu1:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
   },
   recordingzhu2:{
-    height: '70%',
-    top: '30%'
+   height: '',
+    top: '',
   },
   recordingzhu3:{
-    height: '60%',
-    top: '40%'
+    height: '',
+    top: '',
+  },
+  recordingzhuRate:{
+    height: '',
+    top: ''
   },
   // 进度管理背景
   progress: {
@@ -319,30 +387,39 @@ export default {
 
   //初稿完成进度
   firstzhu1:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
   },
   firstzhu2:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
+  },
+  firstzhuRate:{
+    top: ''
   },
   //评审通过进度
   passzhu1:{
-    height: '50%',
-    top: '50%'
+    height: '',
+    top: '',
   },
   passzhu2:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
+  },
+  passzhuRate:{
+    top: ''
   },
   //标准发布进度
   handoutzhu1:{
-    height: '70%',
-    top: '30%'
+    height: '',
+    top: '',
   },
   handoutzhu2:{
-    height: '80%',
-    top: '20%'
+    height: '',
+    top: '',
+  },
+  handoutzhuRate:{
+    top: ''
   },
   icon1: {
   backgroundImage: "url(" + require("./img/jiankong.png") + ")",
@@ -354,7 +431,13 @@ export default {
   backgroundRepeat: "no-repeat",
   backgroundSize:"100% 100%",
   },
-  time:'加载中...'
+  time:'加载中...',
+  // 公司编码
+  serForm:{
+    companycode:""
+  },
+  screenLoading:true,
+  finishnum:1,
  }
   },
   methods: {
@@ -386,21 +469,130 @@ export default {
         this.time = y+"-"+m+"-"+d+"   "+h+":"+i+":"+s
       },1000)   
     },
-    initQualityBarchart(){
-
+    
+    // 采用动态生成游标的方式 避免太低
+    getYnum(data,name,rate){ 
+      let topdata = Math.ceil((data*1.5)/rate)*rate
+      let listdata = [topdata,topdata*0.8,topdata*0.6,topdata*0.4,topdata*0.2,0]
+      this[name] = listdata
     },
-    initRecordingBarchart(){
-
+    // 初始化柱状图
+    initQualityBarchart(data){
+      let _this = this
+      let { monthFinishRate,updateTime,monthFinishNum,monthPlanNum } = data[0]
+      // 数值
+      _this.getYnum(monthPlanNum,'qualitylistdata',10)
+      _this.rates.qualityzhu = monthFinishRate + "%"
+      _this.values.qualityzhu1 = monthPlanNum 
+      _this.values.qualityzhu2 = monthFinishNum
+      // 计算柱状图1
+      let zhuheight1 =  Math.ceil((monthPlanNum/_this.qualitylistdata[0])*100) // 至少保留1
+      let zhutop1 = 100 - zhuheight1
+      _this.qualityzhu1.height = zhuheight1 + '%'
+      _this.qualityzhu1.top = zhutop1 + '%'
+      // 计算柱状图2
+      let zhuheight2 =  Math.ceil((monthFinishNum/_this.qualitylistdata[0])*100) // 至少保留1
+      let zhutop2 = 100 - zhuheight2
+      _this.qualityzhu2.height = zhuheight2 + '%'
+      _this.qualityzhu2.top = zhutop2 + '%'
+      //计算点位
+      if(monthFinishRate<15) monthFinishRate = 15
+      _this.qualityzhuRate.top = (100 - monthFinishRate + 15) + "%"
+      _this.qualityDate = updateTime
+       if(!--this.finishnum){
+          this.screenLoading = false
+      }
     },
-    initFirstBarchart(){
-
+    initRecordingBarchart(data){
+      let _this = this
+      let {weeklyCollectNum,weeklyNormalNum,weeklySupervisionNum,weeklyUsageRate} = data[0]
+      // 数值
+      _this.getYnum(weeklyCollectNum,'recordinglistdata',10)
+      _this.rates.recordingzhu = weeklyUsageRate*100 + "%"
+      _this.values.recordingzhu1 = weeklyCollectNum
+      _this.values.recordingzhu2 = weeklyNormalNum
+      _this.values.recordingzhu3 = weeklySupervisionNum
+      // 计算柱状图1
+      let zhuheight1 = Math.ceil((weeklyCollectNum/_this.recordinglistdata[0])*100) // 至少保留1
+      let zhutop1 = 100 - zhuheight1
+      _this.recordingzhu1.height = zhuheight1 + '%'
+      _this.recordingzhu1.top = zhutop1 + '%'
+      // 计算柱状图2
+      let zhuheight2 = Math.ceil((weeklyNormalNum/_this.recordinglistdata[0])*100) // 至少保留1
+      let zhutop2 = 100 - zhuheight2
+      _this.recordingzhu2.height = zhuheight2 + '%'
+      _this.recordingzhu2.top = zhutop2 + '%'
+       // 计算柱状图3
+      let zhuheight3 = Math.ceil((weeklySupervisionNum/_this.recordinglistdata[0])*100) // 至少保留1
+      let zhutop3 = 100 - zhuheight3
+      _this.recordingzhu3.height = zhuheight3 + '%'
+      _this.recordingzhu3.top = zhutop3 + '%'
+      //计算点位
+      if(weeklyUsageRate<0.14) weeklyUsageRate = 0.14
+      _this.recordingzhuRate.top = (100 - weeklyUsageRate*100 + 14) + "%"
+      if(!--this.finishnum){
+          this.screenLoading = false
+      }
     },
-    initPassBarchart(){
-
+    initProgresstBarchart(data){
+      let _this = this
+      let {planNum,firstDraftFinishNum,firstDraftFinishRate,reviewPassNum,reviewPassRate,standardReleaseNum
+      ,standardReleaseRate,updateTime} = data[0]
+     _this.getYnum(planNum,'firstlistdata',10)
+     //百分比
+     _this.standardDate = updateTime
+      _this.rates.firstzhu = firstDraftFinishRate*100 + "%"
+      _this.rates.passzhu = reviewPassRate*100 + "%"
+      _this.rates.handoutzhu = standardReleaseRate*100 + "%"
+       //柱状图的值
+      _this.values.firstzhu1 = planNum
+      _this.values. handoutzhu1 = planNum
+      _this.values.passzhu1 = planNum
+      _this.values.firstzhu2 = firstDraftFinishNum
+      _this.values.passzhu2 = reviewPassNum
+       _this.values.handoutzhu2 = standardReleaseNum
+      // 计算柱状图1
+      let zhuheight1 =  Math.ceil((planNum/_this.firstlistdata[0])*100) // 至少保留1
+      let zhutop1 = 100 - zhuheight1
+      _this.firstzhu1.height = zhuheight1 + '%'
+      _this.firstzhu1.top = zhutop1 + '%'
+      _this.passzhu1.height = zhuheight1 + '%'
+      _this.passzhu1.top = zhutop1 + '%'
+      _this.handoutzhu1.height = zhuheight1 + '%'
+      _this.handoutzhu1.top = zhutop1 + '%'
+      // 计算柱状图1-2
+      let zhuheight12 =  Math.ceil((firstDraftFinishNum/_this.firstlistdata[0])*100) // 至少保留1
+      let zhutop12 = 100 - zhuheight12
+      _this.firstzhu2.height = zhuheight12 + '%'
+      _this.firstzhu2.top = zhutop12 + '%'
+       // 计算柱状图2-2
+      let zhuheight22 =  Math.ceil((reviewPassNum/_this.firstlistdata[0])*100) // 至少保留1
+      let zhutop22 = 100 - zhuheight22
+      _this.passzhu2.height = zhuheight22 + '%'
+      _this.passzhu2.top = zhutop22 + '%'
+      // 计算柱状图3-2
+      let zhuheight32 =  Math.ceil((standardReleaseNum/_this.firstlistdata[0])*100) // 至少保留1
+      let zhutop32 = 100 - zhuheight32
+      _this.handoutzhu2.height = zhuheight32 + '%'
+      _this.handoutzhu2.top = zhutop32 + '%'
+      //计算点位
+      if(standardReleaseRate<0.14) standardReleaseRate = 0.14
+      if(reviewPassRate<0.14) reviewPassRate = 0.14
+      if(firstDraftFinishRate<0.14) firstDraftFinishRate = 0.14
+      _this.firstzhuRate.top = (100 - firstDraftFinishRate*100 + 14 ) + "%"
+      _this.passzhuRate.top = (100 - reviewPassRate*100 + 14 ) + "%"
+      _this.handoutzhuRate.top = (100 - standardReleaseRate*100 + 14 ) + "%"
+       if(!--this.finishnum){
+          this.screenLoading = false
+      }
     },
-    initHandBarchart(){
-
-    },
+    confirmToken(){
+    if(!CurrentUser.get()){
+      this.$message.error('请登录!')
+      this.$router.push({name: 'Login'})
+    } 
+    this.serForm.companyCode = this.$route.query.companyCode
+    }
       },
   computed: {
     nowTime() {
@@ -408,16 +600,18 @@ export default {
     }
   },
   mounted() {
-    if(!CurrentUser.get()){
-      this.$message.error('请登录!')
-      this.$router.push({name: 'Login'})
-    }
-    this.updateTime()
-    this.initQualityBarchart()
-    this.initRecordingBarchart()
-    this.initFirstBarchart()
-    this.initPassBarchart()
-    this.initHandBarchart()
+    let _this = this
+    _this.confirmToken()
+    _this.updateTime()
+    axios.all([queryDashboardScheduleManagement(_this.serForm),queryDashboardQualityManagement(_this.serForm)
+    ,queryDashboardRecorderManagement(_this.serForm)]) .then(axios.spread(function (progressData,qualityData, recordData,) {
+    // 两个请求现在都执行完成
+    _this.initQualityBarchart(qualityData.data)
+    _this.initRecordingBarchart(recordData.data)
+    _this.initProgresstBarchart(progressData.data)
+   })).catch((err) => {
+     this.$message.error(err.message)
+   })
   },
 }
 </script>

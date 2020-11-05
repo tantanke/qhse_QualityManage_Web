@@ -15,9 +15,14 @@
                 <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="责任单位" prop="responsiCompanyName" show-overflow-tooltip align="center"></el-table-column> 
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="状态" show-overflow-tooltip align="center">
+					<template slot-scope="scope">
+						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+					</template>
+				</el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '已整改' || scope.row.isPush === '已通过' || scope.row.isPush === '验证已通过'">查看</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '问题已整改' || scope.row.isPush === '审核已通过' || scope.row.isPush === '验证已通过'">查看</el-button>
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)" v-else>整改</el-button>
                     </template>
                 </el-table-column>
@@ -208,6 +213,7 @@
                                 :on-success="handleSuccess"
                                 :show-file-list="true"
                                 list-type="picture"
+                                accept=".jpg,.jpeg,.png"
                                 :headers="headers"
                                 v-if="isBelongToPart === true">
                                 <el-button size="small" type="primary">点击上传图片</el-button>
@@ -217,6 +223,7 @@
                                 <el-upload
                                 ref="uploadFile"
                                 action="/api/addQualityAttach"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                 :headers="headers"
                                 :on-remove="handleFileRemove"
                                 :on-success="handleFileSuccess"
@@ -471,7 +478,7 @@ export default {
                     that.flagRecifyArray.push(qualityRecordId)
                 }
             console.log(that.flagRecifyArray)
-            that.rectifyForm.isPush = '已整改'
+            that.rectifyForm.isPush = '问题已整改'
             updateQualityCheckRecord(qualityRecordId,that.rectifyForm).then((res) => {
                 console.log(res.data)
                 that.getProblemDetailList(that.acceptRow.qualityCheckID)
@@ -624,7 +631,7 @@ export default {
         getProgress: function () {
             // 获取进度
             for(let i in this.problemRectifyList){
-                if(this.problemRectifyList[i].isPush === '已整改' || this.problemRectifyList[i].isPush === '已通过' || this.problemRectifyList[i].isPush === '验证已通过'){
+                if(this.problemRectifyList[i].isPush === '问题已整改' || this.problemRectifyList[i].isPush === '审核已通过' || this.problemRectifyList[i].isPush === '验证已通过'){
                     this.flagRecifyArray.push(this.problemRectifyList[i].qulity_CheckRecordID)
                 }
             }

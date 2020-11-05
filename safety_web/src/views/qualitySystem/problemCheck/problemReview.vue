@@ -15,9 +15,14 @@
                 <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="责任单位" prop="responsiCompanyName" show-overflow-tooltip align="center"></el-table-column> 
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
+                <el-table-column label="状态" show-overflow-tooltip align="center">
+					<template slot-scope="scope">
+						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+					</template>
+				</el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '已通过' || scope.row.isPush === '已打回'">查看</el-button>
+                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '审核已通过' || scope.row.isPush === '审核已打回'">查看</el-button>
                         <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemViewCheck(scope.row)" v-else>复审</el-button>
                     </template>
                 </el-table-column>
@@ -238,11 +243,13 @@ export default {
             // 问题审核通过对象
             acceptReviewObject: {
                 qualityCheckID: '',
+                finishDate: '',
                 isPush: '通过'
             },
             // 问题审核打回对象
             refuseReviewObject: {
                 qualityCheckID: '',
+                finishDate: '',
                 isPush: '打回'
             },
             // 纠正措施跟综验证
@@ -386,7 +393,7 @@ export default {
                 console.log(this.problemCheckForm.reformDate)
                 this.problemCheckForm.cheVerifyDate = this.getRectifyDate()
                 console.log('审核验证时间' + this.problemCheckForm.cheVerifyDate)
-                this.problemCheckForm.isPush = '已通过'
+                this.problemCheckForm.isPush = '审核已通过'
                 console.log('问题审核通过表单数据')
                 console.log(this.problemCheckForm)
                 if(this.flagRecifyArray.length !== 0){
@@ -428,7 +435,7 @@ export default {
                 console.log(this.problemCheckForm.reformDate)
                 this.problemCheckForm.cheVerifyDate = this.getRectifyDate()
                 console.log('审核验证时间'+this.problemCheckForm.cheVerifyDate)
-                this.problemCheckForm.isPush = '已打回'
+                this.problemCheckForm.isPush = '审核已打回'
                 console.log('问题审核打回表单数据')
                 console.log(this.problemCheckForm)
                 if(this.flagRecifyArray.length !== 0){
@@ -472,9 +479,14 @@ export default {
                     }
                     
                     this.acceptReviewObject.qualityCheckID = this.acceptRow.qualityCheckID
+                    this.acceptReviewObject.finishDate = this.getRectifyDate()
                     acceptProblemReviewData(this.acceptReviewObject).then((res) => {
-                    console.log(res.data)
-                    return this.$message.success('数据已归档')
+                        console.log(res.data)
+                        // 跳转问题审核页面
+						this.$router.push({
+							path: '/qualitySystem/problemCheck/problemCheck',
+						})
+                        return this.$message.success('数据已归档')
                     }).catch((err) => {
                         return this.$message.error(err.message)
                     })
@@ -489,9 +501,14 @@ export default {
                     }
                     
                     this.refuseReviewObject.qualityCheckID = this.acceptRow.qualityCheckID
+                    this.refuseReviewObject.finishDate = ''
                     refuseProblemReviewData(this.refuseReviewObject).then((res) => {
-                    console.log(res.data)
-                    return this.$message.success('数据已打回')
+                        console.log(res.data)
+                        // 跳转问题审核页面
+						this.$router.push({
+							path: '/qualitySystem/problemCheck/problemCheck',
+						})
+                        return this.$message.success('数据已打回')
                     }).catch((err) => {
                         return this.$message.error(err.message)
                     })
@@ -527,8 +544,13 @@ export default {
         getProgress: function () {
             // 获取进度
             for(let i in this.problemReviewList){
-                if(this.problemReviewList[i].isPush === '已打回' || this.problemReviewList[i].isPush === '已通过'){
+                if(this.problemReviewList[i].isPush === '审核已打回' || this.problemReviewList[i].isPush === '审核已通过'){
                     this.flagRecifyArray.push(this.problemReviewList[i].qulity_CheckRecordID)
+                }
+            }
+            for(let j in this.problemReviewList){
+                if(this.problemReviewList[j].isPush === '审核已通过'){
+                    this.flagAcceptArray.push(this.problemReviewList[j].qulity_CheckRecordID)
                 }
             }
             const length1 = this.problemReviewList.length

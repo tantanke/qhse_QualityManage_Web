@@ -155,11 +155,11 @@
                     </el-card>
                 </div>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
+            </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
                 <el-button type="danger" @click="noreciveInfo">打 回</el-button>
                 <el-button type="primary"  @click="reciveInfo">通 过</el-button>
-            </el-form-item>
-            </el-form>
+            </div>
             </div>
             </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
@@ -228,7 +228,7 @@
                     label="问题描述">
                 </el-table-column>
                 <el-table-column
-                    prop="problemSourcer"
+                    prop="problemSource"
                     label="问题来源">
                 </el-table-column>
                 <el-table-column
@@ -255,11 +255,11 @@
             <el-form-item label='整改情况:'>
                <span>{{detailPro.situation}}</span>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button type="danger" @click="norecivePro">不通过</el-button>
-                <el-button type="primary"  @click="recivePro">通 过</el-button>
-            </el-form-item>
             </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
+                 <el-button type="danger" @click="norecivePro">打回</el-button>
+                <el-button type="primary"  @click="recivePro">通 过</el-button>
+            </div>
             </div>
             </el-dialog>
   </div>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="page-title">{{form.dangerSource}}-质量隐患基本信息</div>
+    <div class="page-title">{{form.dangerSource}}-隐患基本信息</div>
     <div class="page-content" v-loading='adding' style="height:660px">
       <el-row>
         <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
@@ -11,7 +11,7 @@
                   ref="companyChoose"
                   v-model="form.companyId"
                   :options="companys"
-                  :props="{value: 'nodeCode'}"
+                  :props="{value: 'nodeCode',expandTrigger: 'hover'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                   
@@ -38,7 +38,6 @@
                 :disabled='select3'
                   v-model="form.factorSource"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -62,7 +61,6 @@
                 <el-select
                   v-model="form.rank"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -81,7 +79,6 @@
                 <el-select
                   v-model="person"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -122,7 +119,6 @@
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -142,7 +138,6 @@
                   :disabled='select1'
                   v-model="form.factorHSE"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -159,7 +154,6 @@
                 :disabled='select1'
                   v-model="form.factorDepartment"
                   placeholder="请选择隐患类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -172,7 +166,8 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="是否立即验收" style="margin-top:114px">
-                <el-switch v-model="form.ok"></el-switch>
+                   <el-radio v-model="form.ok" label="1">是</el-radio> 
+                   <el-radio v-model="form.ok" label="0">否</el-radio>    
               </el-form-item>
                <br />
           <el-form-item label="操作" >
@@ -213,15 +208,15 @@ export default {
         reformPerson: null,//整改负责人
         reformPersonID: null,//整改负责人ID
         limitDate: '',//限制时间
-        ok: '', //提交状态
+        ok: '1', //提交状态
         status: 1,
         consequenceID: '',//可能后果
         recordDate: '',
         rank: '',
-        factorSource: '',
+        factorSource: null,
         profession:'', // 所属专业
-        factorHSE: '',      
-        factorDepartment: '',
+        factorHSE: null,      
+        factorDepartment: null,
         consequence:'',//产生的后果
         location: '',
         /* qHSE_FileAudit_ID: '', 
@@ -281,6 +276,9 @@ export default {
       let _this = this
       // 进度随便跑把 谁先到无所谓
       // 查询归属职能部门
+      _this.factorDepartments = []
+       _this.factorSources = []
+        _this.factorHSEs = []
       QueryFactorDepartment(typeNode).then(res => {
         _this.factorDepartments = res.data
         _this.form.factorDepartment = res.data[0].factorDepartmentName
@@ -407,7 +405,6 @@ export default {
       console.log(this.form)
       let noFill = false
       let _this = this
-      _this.form.ok === true ? _this.form.ok = 1 : _this.form.ok = 0
       Object.keys(_this.form).forEach((value) => {
         if(_this.form[value] === '' ){
            noFill = true

@@ -95,15 +95,6 @@
         span
         span
         <el-button type="info" plain @click='goScreen'>QHSE看板</el-button>  
-        <router-link :to='{name: "qualityManage"}'>
-         <el-button type="info" plain>质量</el-button>   
-        </router-link>
-         <router-link :to='{name: "progressManage"}'>
-           <el-button type="info" plain >进度</el-button>  
-        </router-link>
-         <router-link :to='{name: "recordingManage"}'>
-          <el-button type="info" plain>记录</el-button>  
-        </router-link>
         <router-link :to='{name: "index"}'>
           <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
           //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
@@ -125,11 +116,25 @@
           <el-button style="width:40%" type='primary' @click='goSafe'>QHSE安全系统</el-button> 
           <el-button style="width:40%" @click='goQuality'>QHSE质量系统</el-button> 
         </el-dialog>
+        <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
+        <el-form :inline="true" >
+        <el-form-item label='选择单位：' labelWidth='120px'>
+         <el-cascader v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" ref="cascaderAddr" >             
+          </el-cascader>
+           </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dashBoardVisible = false">取 消</el-button>
+            <el-button v-show="this.searchForm.companyCode" type="primary" @click="changeScreen">确 定</el-button>
+          </div>
+        </el-dialog>
   </el-container>
+  
 </template>
 
 <script>
 // import {updateMessage,notReadMessage} from '../services/message'
+import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
@@ -153,7 +158,12 @@ Vue.use(VueCookies)
 
 export default {
   data() {
-    return {
+    return {//记录即将去往的公司
+      companyId:'',
+        chooseItem:'',
+      searchForm:{companyCode:''},
+      companyList:[],
+      dashBoardVisible: false,
       qhse:'QHSE管理系统',
       close1:false,
       changeS:false,
@@ -219,11 +229,27 @@ export default {
     }
   },
   methods: {
+     handleChange(){
+        this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
+      },
+     getCompany(){
+        GetqhseCompanytree().then(res =>{
+               this.companyList = res.data
+               this.dashBoardVisible = true
+               console.log(res.data)
+        }).catch((err) =>{
+          this.$message.error(err.message)
+        })
+      },
+      changeScreen(){
+        const {href} = this.$router.resolve({
+        name: "qhseBigScreen",
+        query: this.searchForm
+        });
+          window.open(href, '_blank');
+      },
     goScreen(){
-       const {href} = this.$router.resolve({
-      name: "qhseBigScreen",
-      });
-        window.open(href, '_blank');
+      this.getCompany()
     },
     changeSys() {
       let _this = this
@@ -269,6 +295,7 @@ export default {
         _this.qhse = 'QHSE安全系统'
          this.$router.push({name: 'mainPath'})
         _this.checkTaskList(_this.navs)
+        console.log(_this.navs)
 	if(_this.taskFlag){
 		getTaskList().then(res=>{
 			let notReceive=res.data.filter(item=>{
@@ -384,7 +411,7 @@ export default {
 			this.$message.error(err.message)
 		})
         this.$router.push({name: 'Login'})
-      }
+      } 
     },
     handleDropCommand (cmd) {
       this[cmd]()
@@ -406,6 +433,7 @@ export default {
         GetNaviByUserRole().then((res) => {
             if (res.code === 1000)
                 this.nav = res.data
+                console.log(this.navs)
         })
     }
   },

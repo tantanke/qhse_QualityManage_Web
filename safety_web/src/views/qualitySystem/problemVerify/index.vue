@@ -13,6 +13,7 @@
             </el-form-item>
 				<el-form-item label="审核日期">
 					<el-date-picker
+					 	v-model="inquireCheckDate"
 						type="daterange"
 						range-separator="至"
 						start-placeholder="开始日期"
@@ -20,7 +21,7 @@
 					</el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="el-icon-search">查询</el-button>
+					<el-button type="primary" icon="el-icon-search" @click="handleInquire">查询</el-button>
 				</el-form-item>
 			</el-form>
 			<el-table :data="problemList" border stripe>
@@ -85,6 +86,7 @@
 				companyId: null,
 				// 公司code
 				companyCode: '',
+				companyName: '',
 				// 公司列表数据
 				companyList: [],
 				inquireCheckDate: [],
@@ -95,8 +97,13 @@
 				},
 			}
 		},
+		watch: {
+			// 监听查询公司id
+			'inquireCompanyId':'inquireCompanyIdChanged'
+    	},
 		created: function () {
 			this.loading = true
+			this.getCompany()
 			this.getBasicInfo()
 		},
 		methods:{
