@@ -255,6 +255,7 @@
           <el-table-column
             label="隐患状态"
             align='center'
+            fixed="right"
             >
             <template slot-scope="scope">
               <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>

@@ -60,7 +60,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -79,7 +79,7 @@
               >
               查看详情  
               </el-button>
-               <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查' && scope.row.totalCount !==0">请完成要素证据批准</span>
+               <span v-show="scope.row.childNode.length === 0  && scope.row.status !== '备案待查'">请完成要素证据批准</span>
             </template>
           </el-table-column>
         </el-table>
@@ -109,7 +109,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -468,16 +468,19 @@ export default {
             let _this = this
             
             treedata.forEach(item => {
+              // 叶子节点全部进入
                 if (item.childNode.length === 0) {
                      _this.allTotal++
+                     
                    if (item.status === '备案待查' && (item.fileCheckStatus === '通过' || item.fileCheckStatus === '不通过')){
                       _this.fileList.push(item)
                       _this.hasTotal++
                       return
                    } else if (item.status === '备案待查' && !item.fileCheckStatus ) {
                       _this.fileList.push(item)                     
-
-                   }                    
+                   } else{
+                     _this.fileList.push(item)     
+                   }                   
                 } else {
                     _this.deepTree(item.childNode)
                 }
@@ -702,9 +705,11 @@ export default {
       _this.noTotal = 0
       _this.allTotal = 0
       // 获取单位年度审核表
+     
       querryQhseElement(_this.querryTree).then(res => {
         _this.treeData = res.data;
         _this.treeList = res.data;
+         console.log(res.data)
         _this.updateCheckForm.qhseCompanyYearManagerSysElementTableID = res.data[0].tableID
         if(res.data.length === 0){
           _this.$message.warning('请检查要素证据审批是否完成！')

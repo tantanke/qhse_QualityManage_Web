@@ -115,6 +115,7 @@
           <el-table-column align='center' prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column
             label="状态"
+            fixed="right"
             align='center'>
             <template slot-scope="scope">
                 <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->

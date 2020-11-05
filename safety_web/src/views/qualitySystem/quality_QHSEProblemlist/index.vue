@@ -253,6 +253,7 @@
           <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
           <el-table-column align='center'  prop='supervisionDate' label='检查时间'></el-table-column>
           <el-table-column
+          fixed="right"
             label="隐患状态"
             align='center'
             >

@@ -60,7 +60,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -109,7 +109,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && !scope.row.fileCheckStatus && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -468,16 +468,19 @@ export default {
             let _this = this
             
             treedata.forEach(item => {
+              // 叶子节点全部进入
                 if (item.childNode.length === 0) {
                      _this.allTotal++
+                     
                    if (item.status === '备案待查' && (item.fileCheckStatus === '通过' || item.fileCheckStatus === '不通过')){
                       _this.fileList.push(item)
                       _this.hasTotal++
                       return
                    } else if (item.status === '备案待查' && !item.fileCheckStatus ) {
                       _this.fileList.push(item)                     
-
-                   }                    
+                   } else{
+                     _this.fileList.push(item)     
+                   }                   
                 } else {
                     _this.deepTree(item.childNode)
                 }
