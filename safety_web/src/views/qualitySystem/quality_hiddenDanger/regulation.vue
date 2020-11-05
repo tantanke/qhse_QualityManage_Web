@@ -11,7 +11,7 @@
                   v-model="form.companyId"
                   :options="companys"
                   ref='companyChoose'
-                  :props="{value: 'nodeCode'}"
+                  :props="{value: 'nodeCode',expandTrigger: 'hover'}"
                   @change="changeCompany"
                   :show-all-levels="false"
                 />
@@ -31,7 +31,6 @@
                 <el-select
                   v-model="person"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -58,7 +57,6 @@
                   :disabled='isSelect2'
                   v-model="form.factorHSE"
                   placeholder="请选择违章类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -74,8 +72,7 @@
                 <el-select
                  :disabled='isSelect4'
                   v-model="form.factorObserver"
-                  placeholder="请选择违章类别"
-                  clearable
+                  :placeholder="factorPlaceholder"
                   filterable
                   loading-text="查询中..."
                 >
@@ -92,8 +89,7 @@
                 :disabled='isSelect3'
                   v-model="form.factorSource"
                   placeholder="请选择违章类别"
-                  
-                  clearable
+            
                   filterable
                   loading-text="查询中..."
                 >
@@ -110,7 +106,6 @@
                  :disabled='isSelect1'
                   v-model="form.factorDepartment"
                   placeholder="请选择违章类别"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -126,7 +121,7 @@
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
-                  clearable
+  
                   filterable
                   loading-text="查询中..."
                 >
@@ -158,7 +153,6 @@
                 <el-select
                   v-model="form.employeeCharacter"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -174,7 +168,6 @@
                 <el-select
                   v-model="form.workSeniority"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >         
@@ -193,7 +186,6 @@
                 <el-select
                   v-model="form.position"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -209,7 +201,6 @@
                 <el-select
                   v-model="form.regulationCharacter"
                   placeholder="请选择"
-                  clearable
                   filterable
                   loading-text="查询中..."
                 >
@@ -272,25 +263,20 @@ export default {
         position:'',
         score:'',
         recordDate: '',
-        factorSource: '',
+        factorSource: null,
         profession: '',
-        factorHSE: '',
-        factorDepartment: '',
+        factorHSE: null,
+        factorDepartment: null,
         employeeCharacter: '',
         workSeniority: '',
         punish: '',
-        factorObserver:'',
+        factorObserver:null,
         regulationCharacter:'',
         affix1:null,
         affix2:null,
         regulationSource: null,
         regulationID:null,
         regulationName:null
-         /* qHSE_FileAudit_ID: '', 
-        QHSE_FileAuditRecord_ID: '',
-        code: '', 
-        QHSE_CheckCategory: '' //后续判断之后填入
-        */
       },
       adding: false,
       person: '',
@@ -309,6 +295,7 @@ export default {
       factorDepartments: [], //归属部门
       consequences: [], //可能后果
       qHSE_FileAudit_ID: '', //文件审核id
+      factorPlaceholder:'请选择违章类别',
       // 管理是否禁用
       isSelect1:true,
       isSelect2:true,
@@ -347,6 +334,10 @@ export default {
       let code = value[value.length-1]
       let _this = this
        //查询归属职能部门
+       _this.factorDepartments = []
+       _this.factorSources = []
+        _this.factorHSEs = []
+        _this.factorObservers = []
       QueryFactorDepartment(code).then(res => {
         _this.factorDepartments = res.data
         _this.form.factorDepartment = res.data[0].factorDepartmentName
@@ -378,7 +369,9 @@ export default {
         _this.isSelect4 = false
          console.log(res)
        }).catch(() => {
-          this.$message.error('获取数据失败！')
+          _this.form.factorObserver = null
+         _this.isSelect4 = true
+         _this.factorPlaceholder = '无'
         })
     },
     getrecordDate(){
@@ -533,7 +526,7 @@ export default {
       console.log()
     },
   },
- beforeRouteEnter (to, from, next) {
+  beforeRouteEnter (to, from, next) {
     let fronRouter = from.name
     if((fronRouter === "QHSETroubleCheckTable" ) ){
       localStorage.setItem('regulationSource','隐患排查');

@@ -1,8 +1,8 @@
 <template>
   <div class="problemList">
-          <div class="page-title" style="width:100%">QHSE问题验收</div>
-      <el-radio  v-model="listcate" label="QHSE隐患清单" @click.native.once="getMessage">QHSE隐患验收</el-radio>
-      <el-radio  v-model="listcate" label="QHSE问题清单" @click.native.once="getProblem" style="margin-bottom:20px">QHSE问题验收</el-radio>
+          <div class="page-title" style="width:100%">质量-问题验收</div>
+      <el-radio  v-model="listcate" label="QHSE隐患清单" >质量-隐患验收</el-radio>
+      <el-radio  v-model="listcate" label="QHSE问题清单"  style="margin-bottom:20px">质量-问题验收</el-radio>
       <el-row v-show="listcate === 'QHSE隐患清单'"> 
           <el-row>
           <el-form :inline="true">
@@ -14,7 +14,6 @@
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"    
-                         clearable
                         filterable           
                         >             
                       </el-cascader>
@@ -111,20 +110,20 @@
            </el-form>
            </template>
           </el-table-column>
-         <el-table-column prop='safeStaff_Name' label='检查人员'></el-table-column>
-          <el-table-column prop='companyName' label='施工队伍'></el-table-column>
-          <el-table-column prop='rank' label='隐患级别'></el-table-column>
-          <el-table-column prop='reformPerson' label='整改负责人'></el-table-column>
-          <el-table-column prop='dangerSource' label='隐患来源'></el-table-column>    
-          <el-table-column prop='supervisionDate' label='检查时间'></el-table-column>        
+         <el-table-column align='center' prop='safeStaff_Name' label='检查人员'></el-table-column>
+          <el-table-column align='center' prop='companyName' label='施工队伍'></el-table-column>
+          <el-table-column align='center' prop='rank' label='隐患级别'></el-table-column>
+          <el-table-column align='center' prop='reformPerson' label='整改负责人'></el-table-column>
+          <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
+          <el-table-column align='center' prop='supervisionDate' label='检查时间'></el-table-column>        
           <el-table-column
             label="状态"
             align='center'>
             <template slot-scope="scope">
                 <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
-               <el-button v-show="scope.row.status === 1" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
+               <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
                 <el-button v-show="scope.row.status === 3" type="warning" icon="el-icon-edit" plain size="small" @click="goRecieve(scope.row)">待验收</el-button>
-                <span v-show="scope.row.status === 5"  >已验收</span>
+                <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
             </template>
             </el-table-column>
           </el-table>
@@ -156,11 +155,11 @@
                     </el-card>
                 </div>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button type="danger" @click="noreciveInfo">不通过</el-button>
-                <el-button type="primary"  @click="reciveInfo">通 过</el-button>
-            </el-form-item>
             </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
+                <el-button type="danger" @click="noreciveInfo">打 回</el-button>
+                <el-button type="primary"  @click="reciveInfo">通 过</el-button>
+            </div>
             </div>
             </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
@@ -203,21 +202,34 @@
           <el-row style="height:370px" >
               <el-table
               stripe
+              v-loading='problemLoading'
             :data='problemrecord'
             style="width: 100%"
             max-height="590">
+                    <el-table-column
+                    prop="auditTime"
+                    label="检查时间">
+                </el-table-column>
                     <el-table-column
                     prop="companyName"
                     width='250'
                     label="公司名称">
                 </el-table-column>
-                <!-- <el-table-column
-                    prop="safeStaffName"
+                <el-table-column
+                    prop="itemName"
+                    label="检查项">
+                </el-table-column>
+                <el-table-column
+                    prop="auditor"
                     label="检查人">
-                </el-table-column> -->
+                </el-table-column>
                   <el-table-column
                     prop="problemDescription"
                     label="问题描述">
+                </el-table-column>
+                <el-table-column
+                    prop="problemSource"
+                    label="问题来源">
                 </el-table-column>
                 <el-table-column
                     fixed="right"
@@ -227,7 +239,7 @@
                     <template slot-scope="scope">
                         <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"   >待整改</el-button>
                         <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit" plain size="small" @click="goProRecieve(scope.row)">待验收</el-button>
-                        <span v-show="scope.row.status === '已整改'"  >已验收</span>
+                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small" >已整改</el-button>
                     </template>
                     </el-table-column>       
             </el-table>
@@ -243,11 +255,11 @@
             <el-form-item label='整改情况:'>
                <span>{{detailPro.situation}}</span>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button type="danger" @click="norecivePro">不通过</el-button>
-                <el-button type="primary"  @click="recivePro">通 过</el-button>
-            </el-form-item>
             </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
+                 <el-button type="danger" @click="norecivePro">打回</el-button>
+                <el-button type="primary"  @click="recivePro">通 过</el-button>
+            </div>
             </div>
             </el-dialog>
   </div>
@@ -321,6 +333,7 @@ export default {
        },
        goRecieve(data) {
           this.detail.reformCase = data.reformCase
+          this.detail.img = []
           if(data.affix4){
              this.detail.img.push('http://39.98.173.131:9000/api'+ data.affix4)
              this.detail.img.push('http://39.98.173.131:9000/api'+ data.affix3)
@@ -394,6 +407,7 @@ export default {
            updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'已整改'}).then(res => {
                console.log(res)
                this.recieveProShow = false
+               this.$message.success('验收成功')
                this.getProblemDescription()
            })
         })
@@ -441,7 +455,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
-            _this.dangerLoading = true        
+                
             if (_this.date) {
                start = _this.dateH[0]
                end = _this.dateH[1]
@@ -454,11 +468,15 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyId = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyId) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+            _this.dangerLoading = true    
             _this.dangerBtn = true
            baseurl  = _this.getUrl('/api/query_quality_dangerrecord',form)
            queryDangerrecord(baseurl,form).then(res => {
                _this.dangerrecord = res.data.list
-               console.log(res.data)
                if(res.data.list.length === 0) {
                    this.$notify({
                     title: '温馨提示',
@@ -498,7 +516,7 @@ export default {
             let form = {}
             let start,end         
             let _this = this
-            _this.problemLoading = true
+           
             if (_this.date) {
                start = _this.dateQ[0]
                end = _this.dateQ[1]
@@ -511,6 +529,11 @@ export default {
             if (_this.checkForm.companyId.length !== 0) {
                 form.companyCode = _this.checkForm.companyId[_this.checkForm.companyId.length - 1]
             }
+            if(!form.companyCode) {
+                _this.$message.warning('请选择公司')
+                return
+            }
+             _this.problemLoading = true
             _this.proBtn = true
            baseurl  = _this.getUrl('/api/query_quality_problemDescription',form)
            queryProblemDescription(baseurl,form).then(res => {
@@ -544,7 +567,6 @@ export default {
    mounted() {     
        this.getRecentTime()
        this.getCompanyList()
-       this.searchDanger()
    },
 }
 </script>
