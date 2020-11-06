@@ -134,9 +134,24 @@ export const getDayReport = (data) => {
   })
 }
 //结束按钮
-export const endPlan = (data) => {
-  return request(`/api/endPlan?planId=${data.monitorPlanID}`, {
-    method:'delete',
+export const endMonitorPlan  = (data) => {
+  return request(`/api/endMonitorPlan?planId=${data.monitorPlanID}`, {
+    method:'get',
     data
   })
+}
+
+// 手动录入远程计划细节
+export const createNewDetail = (data) => {
+    return request(`/api/createNewDetail`, {
+        method:'post',
+        data
+    })
+}
+
+// 获取录入总数
+export const getTotalInputTime = (planId) => {
+    return request(`/api/getTotalInputTime?planId=${planId}`, {
+        method:'get',
+    })
 }

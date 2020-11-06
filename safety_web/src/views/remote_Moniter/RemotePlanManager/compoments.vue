@@ -126,6 +126,16 @@
                                           placeholder="请输入内容">
                                 </el-input>
                             </el-form-item>
+                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
+                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
+                                          placeholder="请输入内容">
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="项目类别:" prop="itemCategory" style="margin-bottom:1px">
+                                <el-input type="text" label="项目类别:" class="resizeNone" v-model="resData.itemCategory"
+                                          placeholder="请输入内容">
+                                </el-input>
+                            </el-form-item>
                             <el-form-item label="项目名称:" prop="projectName" style="margin-bottom:1px">
                                 <el-input type="text" label="项目名称: " class="resizeNone" v-model="resData.projectName"
                                           placeholder="请输入内容"></el-input>
@@ -140,11 +150,7 @@
                                           placeholder="请输入内容">
                                 </el-input>
                             </el-form-item>
-                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
-                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
+
                         </el-col>
                         <el-col :span="24">
                             <el-form-item>
@@ -167,6 +173,7 @@
     import {uploadMonitorPlanExcel} from "../../../services/remote";//上传excel
     import {updateMonitorPlanDetail} from "../../../services/remote";//修改细节
     import {deletePlanDetail} from "../../../services/remote";//删除细节
+    import {createNewDetail} from "../../../services/remote"
     // import { downloadMonitorDetailExcelTemplate}from "../../../services/remotenew";
 
     export default {
@@ -186,7 +193,17 @@
             confirmCheckIn() {
                 // 确认录入
                 console.log(this.resData, 555555)
+                this.resData.monitorPlanID = this.$route.params.monitorPlanID
                 // 等后端的接口了
+                createNewDetail(this.resData).then(res=>{
+                    console.log(res, 384)
+                    getDetails(this.$route.params).then(res => {
+                        this.listData = res.data;
+                        this.filterMethods(this.listData)
+                    })
+                }).catch(err=>{
+                    console.log(err, 2214)
+                })
                 this.isCheckIn = false;
             }
             ,
@@ -197,7 +214,8 @@
                 //设置数据来源和数据格式
                 option.datas = [{
                     sheetData: this.downloadData,
-                    sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "电话", "基层单位"]
+//                    sheetHeader: ["设备编号", "自编号", "项目名称", "负责人", "电话", "基层单位"]
+                    sheetHeader: ["设备编号", "自编号", "基层单位", "项目类别", "项目名称", "负责人", "电话"]
                 }];
                 //导出
                 var toExcel = new ExportJsonExcel(option);
