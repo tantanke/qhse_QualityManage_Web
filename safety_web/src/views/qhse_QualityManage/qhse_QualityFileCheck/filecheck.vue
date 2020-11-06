@@ -109,13 +109,13 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') "  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' "
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -123,7 +123,7 @@
                <el-button
               type="danger"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' "
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -191,7 +191,12 @@
                           inactive-text="不通过">
                   </el-switch>
               </el-form-item>
-              <el-form-item label='问题选择:' labelWidth='100px' v-if="fileRecord.pass === '不通过'">
+               <el-form-item label='操作:' labelWidth='100px'  style="margin-bottom:30px;" v-if="fileRecord.pass === '不通过'">
+               <el-radio v-model="reason" label="问题">录入问题</el-radio> 
+               <el-radio v-model="reason" label="违章">录入违章</el-radio>            
+               <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
+            </el-form-item>
+              <el-form-item label='问题选择:' labelWidth='100px' v-show='reason === "问题" && fileRecord.pass === "不通过"'>
                 <el-checkbox-group v-model="selectProblem" >
                   <el-checkbox v-for="(item,index) in problem" :key="index" :label="item">                   
                   </el-checkbox>
@@ -217,7 +222,7 @@
           </div>
       </el-dialog>
       <!-- 查看文件审核详情 -->
-      <el-dialog title="文件审核详情查看" :visible.sync="detaildialogVisible" center style="height:850px" :close-on-click-modal='false'>
+      <el-dialog title="文件审核详情查看"  :visible.sync="detaildialogVisible" center  :close-on-click-modal='false'>
         <div v-loading='eviLoaind'>
         <el-form   label-width="140px" :model="detailData" style="width:100%;" >
           <el-row >
@@ -238,15 +243,8 @@
             <el-col :span="12" >
               <el-form-item label="隐患违章状态：" v-show="detailData.noPassReason"
               style="margin-bottom:5px"
-              >
-              未录入
+              >已录入{{detailData.noPassReason}}
                </el-form-item>
-               <el-form-item label="隐患违章状态：" v-show="detailData.pass === '不通过' &&  !detailData.noPassReason"
-              style="margin-bottom:10px"
-              >
-              已录入
-               </el-form-item>
-               <el-form-item label="未录入原因：" v-show="detailData.noPassReason" style="margin-bottom:1px">{{detailData.noPassReason}}</el-form-item>
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
               >
@@ -282,37 +280,6 @@
           </div>
           </div>
       </el-dialog>
-      <el-dialog
-        :close-on-click-modal='false'
-        :show-close='false'
-          width="30%"
-           title="违章隐患录入"
-          :visible.sync="noinnerVisible"
-          >
-          <div v-loading='questionLoading'>
-          <el-form>
-            <el-form-item  style="margin-bottom:30px;">
-               <el-radio v-model="reason" label="不录入">不录入</el-radio> 
-               <el-radio v-model="reason" label="违章">录入违章</el-radio>            
-               <el-radio v-model="reason" label="隐患">录入隐患</el-radio>
-            </el-form-item>
-            <el-form-item v-show="reason === '不录入'">
-               <el-input
-                  type="textarea"
-                  :rows="3"
-                  placeholder="请输入不录入隐患违章原因"
-                  v-model="noPassReasonForm.noPassReason">
-                </el-input>
-           </el-form-item>
-             <el-form-item v-if="reason === '不录入'">
-            <el-button type="primary" @click="addnoPassReasonFileAudit">确 定</el-button>
-           </el-form-item>
-           <el-form-item v-else>
-            <el-button type="primary" @click="checkNopass">确 定</el-button>
-           </el-form-item>
-          </el-form>
-         </div>
-        </el-dialog>
     </div>
   </div>
 </template>
@@ -395,7 +362,7 @@ export default {
       detailData: {},
       treeData: [],
       initData:[],
-      reason:'不录入',
+      reason:'问题',
       editdata: '',
       nodialogVisible: false,
       nopass: {},
@@ -743,13 +710,9 @@ export default {
        _this.addQuestionForm.problemDescription = `${_this.proTextarea} ${str}`
        // 先获取到id之后再进行添加问题
        _this.noPassReasonForm.code = _this.addQuestionForm.code
-       queryRecordId({fileAuditId:_this.addQuestionForm.qHSE_FileAudit_ID,code:_this.addQuestionForm.code})
-       .then((res) => {
-         _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.data[0].qHSE_FileAudit_RecordID
-         _this.goHidden.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
-         localStorage.setItem('sourcedata',JSON.stringify(_this.goHidden))
-         return addProblemDescription(_this.addQuestionForm)
-       }).then(() => {     
+       localStorage.setItem('sourcedata',JSON.stringify(_this.goHidden))
+        addProblemDescription(_this.addQuestionForm)
+       .then(() => {     
          _this.questionLoading = false
        }).catch(err => {
         this.$message.error(err)
@@ -757,28 +720,14 @@ export default {
       })
     },
     // 不录入时候的原因
-    addnoPassReasonFileAudit(){
-        if(this.noPassReasonForm.noPassReason === ''){
-          this.$message.error('请输入不录入原因！')
-          return
-        }
-        noPassReasonFileAudit(this.noPassReasonForm).then(() => {
-          this.$message.success('录入成功！')
-          this.noPassReasonForm.noPassReason = ''
-          this.noinnerVisible = false
-        }).catch(err => {
-        this.$message.error(err)
-        this.noinnerVisible = false
-      })
-    },
-    // 删除文件审核记录
     updataFileAudit() {
       // 上传文件审核记录
       let _this = this
       if(_this.fileRecord.codeScore === '' || _this.fileRecord.pass === '' ) {
         _this.$message.error('请填写正确的审核内容')
         return
-        } else if (_this.proTextarea === '' &&  _this.selectProblem.length === 0 && _this.fileRecord.pass === '不通过') {
+        } else if (_this.proTextarea === '' &&  _this.selectProblem.length === 0 && _this.fileRecord.pass === '不通过' && _this.reason === 
+        '问题') {
           _this.$message.error('请填写具体问题内容')
           return
         } else if (_this.fileRecord.codeScore > Number(_this.detailData.initialScore) || _this.fileRecord.codeScore < 0) {
@@ -789,16 +738,28 @@ export default {
       _this.status = _this.fileRecord.pass
       _this.updateCheckForm.fileCheckStatus = _this.fileRecord.pass
       // 再添加文件审核记录
-      addFileaduitrecord(_this.fileRecord).then(() => {
+      addFileaduitrecord(_this.fileRecord).then((res) => {
+         _this.addQuestionForm.qHSE_FileAuditRecord_ID  = res.key
+         _this.goHidden.qHSE_FileAuditRecord_ID = res.key
         _this.goHidden.code = _this.fileRecord.code
               // 先更新状态
-        return updateCheckstatus(_this.updateCheckForm)
-      }).then(() => {
+        _this.noPassReasonForm.code = _this.fileRecord.code
+        _this.noPassReasonForm.noPassReason = _this.reason
+        return noPassReasonFileAudit(this.noPassReasonForm)
+        })
+       .then(() =>{
+         return updateCheckstatus(_this.updateCheckForm)
+       })
+      .then(() => {
+        this.noPassReasonForm.noPassReason = ''
         // 这里应该返回文件审核记录的recordID
         if(_this.status === '不通过') {
-          _this.noinnerVisible = true
-          _this.questionLoading = true
-         _this.addQuestion()     
+          if(_this.reason === '问题'){
+            _this.addQuestion()   
+          } else{
+            _this.noScore()
+          }
+           
         }  
         _this.$message.success('添加成功！')
         _this.addLoading = false
@@ -829,7 +790,7 @@ export default {
       let _this = this
       // 新增不成功
       
-      if (_this.reason === '不录入') _this.noinnerVisible = false
+      if (_this.reason === '问题') _this.noinnerVisible = false
       else if (_this.reason === '隐患'){
            _this.$router.push({
             path: '/hidden_danger/input',

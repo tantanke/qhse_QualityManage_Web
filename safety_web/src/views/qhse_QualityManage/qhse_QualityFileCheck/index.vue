@@ -3,7 +3,7 @@
     <div class="page-title" style="width:100%">QHSE文件审核</div>
     <div class="page-content">
       <el-row>
-        <el-form label-width="130px" :inline="true" :model="filterQuery">
+        <el-form label-width="130px" :inline="true" :model="filterQuery" >
           <el-form-item label="选择公司：">
             <treeselect
               :multiple="false"

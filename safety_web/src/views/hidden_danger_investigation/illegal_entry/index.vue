@@ -259,7 +259,6 @@ export default {
         description: '',
         consequenceID: '',
         type: '',
-        ok:1,
         position:'',
         score:'',
         recordDate: '',

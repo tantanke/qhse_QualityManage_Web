@@ -220,6 +220,9 @@
                 <el-form-item label="限期整改时间:">
                     <span>{{ props.row.limitDate }}</span>
                 </el-form-item>
+                <el-form-item label="是否立即验收:">
+                    <span>{{ props.row.ok == '1'?'是':'否'}}</span>
+                </el-form-item>
                 <el-form-item label="隐患级别:">
                     <span>{{ props.row.rank }}</span>
                 </el-form-item>
@@ -227,7 +230,8 @@
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
                 <el-form-item label="隐患状态:">
-                <span v-show=" props.row.status === 1" >待整改</span>
+                <span v-show=" props.row.status === 1 && !props.row.refuseReason" >待整改</span>
+                <span v-show=" props.row.status === 1 && props.row.refuseReason" >被打回</span>
                 <span v-show=" props.row.status === 3" >待验收</span>
                 <span v-show=" props.row.status === 5"  >已验收</span>
                 </el-form-item>
@@ -258,7 +262,8 @@
             fixed="right"
             >
             <template slot-scope="scope">
-              <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
+              <el-button v-show="scope.row.status === 1 && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
+               <el-button v-show="scope.row.status === 1 && scope.row.refuseReason " style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small">被打回</el-button>
                 <el-button v-show="scope.row.status === 3"  type="warning" icon="el-icon-edit" plain size="small" >验收中</el-button>
                 <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
             </template>
@@ -346,7 +351,8 @@
                     label="问题状态"
                     align='center'>
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && scope.row.refuseReason" style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small"  >被打回</el-button>
                         <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
                         <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
                     </template>
