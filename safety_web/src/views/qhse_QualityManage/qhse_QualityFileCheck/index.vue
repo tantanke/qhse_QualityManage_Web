@@ -3,7 +3,7 @@
     <div class="page-title" style="width:100%">QHSE文件审核</div>
     <div class="page-content">
       <el-row>
-        <el-form label-width="130px" :inline="true" :model="filterQuery">
+        <el-form label-width="130px" :inline="true" :model="filterQuery" >
           <el-form-item label="选择公司：">
             <treeselect
               :multiple="false"
@@ -47,7 +47,7 @@
           <el-table-column prop="auditTime" label="审核时间"></el-table-column>
           <el-table-column prop="auditName" label="审核名称"></el-table-column>
           <el-table-column prop="auditType" label="审核类别"></el-table-column>
-          <el-table-column label="操作" width="200" align="center">
+          <el-table-column label="操作" width="200" align="center" fixed="right">
             <template slot-scope="scope">
               <el-button type='danger' size="mini" style='margin-right:20px' icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
               <router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>        

@@ -86,11 +86,20 @@
                 <el-form-item label="限期整改时间:">
                     <span>{{ props.row.limitDate }}</span>
                 </el-form-item>
+                <el-form-item label="是否立即验收:">
+                    <span>{{ props.row.ok == '1'?'是':'否'}}</span>
+                </el-form-item>
                 <el-form-item label="隐患级别:">
                     <span>{{ props.row.rank }}</span>
                 </el-form-item>
                 <el-form-item label="隐患描述:">
                     <span>{{ props.row.description }}</span>
+                </el-form-item>
+                <el-form-item label="隐患状态:">
+                <span v-show=" props.row.status === 1 && !props.row.refuseReason" >待整改</span>
+                <span v-show=" props.row.status === 1 && props.row.refuseReason" >被打回</span>
+                <span v-show=" props.row.status === 3" >待验收</span>
+                <span v-show=" props.row.status === 5"  >已验收</span>
                 </el-form-item>
                 <el-form-item v-if="props.row.affix1" label="证据图片1:" >
                     <a  :href="'http://39.98.173.131:9000/api' + props.row.affix1" target="_blank">证据图片1</a>
@@ -118,7 +127,8 @@
             align='center'>
             <template slot-scope="scope">
                 <!-- <el-button @click="testedit(scope.row)">测试</el-button> -->
-                <el-button v-show="scope.row.status === 1" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small" @click="goEdit(scope.row)">待整改</el-button>
+                <el-button v-show="scope.row.status === 1 && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small" @click="goEdit(scope.row)">待整改</el-button>
+                <el-button v-show="scope.row.status === 1 && scope.row.refuseReason " style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small" @click="goEdit(scope.row)">被打回</el-button>
                 <el-button v-show="scope.row.status === 3"  type="warning" icon="el-icon-edit" plain size="small" >验收中</el-button>
                 <el-button v-show="scope.row.status === 5" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
                 
@@ -137,6 +147,12 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="reformForm.reformCase" style="width:55%"></el-input>
             </el-form-item>
+            <el-form-item label='整改进度:' v-show="hiddenPassInfo.refuseReason">
+               <span>被打回</span>
+            </el-form-item>
+            <el-form-item label='打回原因:' v-show="hiddenPassInfo.refuseReason">
+               <span>{{hiddenPassInfo.refuseReason}}</span>
+            </el-form-item> 
             <el-form-item label='整改图片:'>
                <el-upload
                  ref="upload"
@@ -151,12 +167,12 @@
                 <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
             </el-form-item>
-            <el-form-item style="margin-left:70%;margin-top:40px">
-                <el-button @click="editShow = false">取 消</el-button>
-                <el-button type="primary" @click="editInfo">确 定</el-button>
-            </el-form-item>
             </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align:right">
+           <el-button @click="editShow = false">取 消</el-button>
+                <el-button type="primary" @click="editInfo">确 定</el-button>
             </div>
+             </div>
             </el-dialog>
       <el-row v-show="listcate === 'QHSE问题清单'">
           <el-form>
@@ -233,7 +249,8 @@
                     align='center'
                     width="200">
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status === '未整改'" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  @click="goEditPage(scope.row)" >待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  @click="goEditPage(scope.row)">待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && scope.row.refuseReason" style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small"  @click="goEditPage(scope.row)">被打回</el-button>
                         <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
                         <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
                     </template>
@@ -251,11 +268,17 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="proForm.situation" style="width:70%"></el-input>
             </el-form-item>
-            <el-form-item style="margin-left:50%;margin-top:40px">
-                <el-button @click="editProShow= false">取 消</el-button>
-                <el-button type="primary" @click="goEditPro">确 定</el-button>
+            <el-form-item label='整改情况:' v-show="passInfo.refuseReason">
+               <span>被打回</span>
             </el-form-item>
+            <el-form-item label='打回原因:' v-show="passInfo.refuseReason">
+               <span>{{passInfo.refuseReason}}</span>
+            </el-form-item> 
             </el-form>
+             <div slot="footer" class="dialog-footer" style="text-align:right">
+           <el-button @click="editProShow= false">取 消</el-button>
+            <el-button type="primary" @click="goEditPro">确 定</el-button>
+          </div>
             </div>
             </el-dialog>
   </div>
@@ -319,6 +342,12 @@ export default {
               situation:'',
               status:'验收中'
            },
+           passInfo:{
+               refuseReason:'',
+           },
+           hiddenPassInfo:{
+               refuseReason:'',
+           }
 
        }
    },
@@ -362,6 +391,7 @@ export default {
           _this.editShow = true
           _this.form = {...data}
           _this.form.status = 3
+          this.hiddenPassInfo.refuseReason = data.refuseReason
           _this.$refs['upload'].clearFiles()
           _this.reformForm.reformCase = ''
           _this.fileNum = 2
@@ -403,8 +433,10 @@ export default {
           
        },
        goEditPage(data){
+           console.log(data)
            this.qHSE_AuditProblemRecord_ID = data.qHSE_AuditProblemRecord_ID
            this.editProShow = true
+           this.passInfo.refuseReason = data.refuseReason
             this.proForm.situation = ''
        }, 
        // 问题验证
@@ -415,10 +447,6 @@ export default {
                _this.$message.warning('请输入整改情况')
                return
            }
-           /* if(_this.fileNumPro === 0){
-               _this.$message.warning('请至少提交一个证明附件！')
-               return
-           }   */
            _this.$confirm('确认提交整改情况吗？','提示',{
             confirmButtonText: '确定',
             cancelButtonText: '取消',

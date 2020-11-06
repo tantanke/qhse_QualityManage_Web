@@ -54,6 +54,7 @@
                             </el-form>
                         </template>
                     </el-table-column>
+
                     <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
                     <el-table-column prop="deviceNo" label="设备编号" width="100" align="center"></el-table-column>
                     <el-table-column prop="myNo" label="自编号" width="100" align="center"></el-table-column>

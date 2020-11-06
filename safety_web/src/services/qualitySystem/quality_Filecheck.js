@@ -7,8 +7,14 @@ export const addFileaduit = (data) => {
       })
   }
 
+  export const noPassReasonFileAudit = (data) => {
+    return request('/api/quality_noPassReasonFileAudit',{
+        method: 'put',
+        data
+      })
+  }
 export const queryFileaduit = (data) => {
-  return request('/api/query_qualityfileaduit?year='+data.year/* +'&companyName='+data.companyName */, {
+  return request('/api/query_qualityfileaduit?year='+data.year, {
       method: 'get',
       data
     })
@@ -17,11 +23,6 @@ export const queryFileaduit2 = (data) => {
   return request(`/api/query_qualityfileaduit?companyName=${data.companyName}&year=${data.year}`, {
       method: 'get',
       data
-    })
-}
-export const queryFileaduit3 = () => {
-  return request('/api/query_qualityfileaduit', {
-      method: 'get'
     })
 }
 export const querryQhseElement = (data) => {

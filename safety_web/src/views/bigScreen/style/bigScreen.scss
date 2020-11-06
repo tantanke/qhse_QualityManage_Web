@@ -23,8 +23,16 @@ html{
            
            .head{//头部
             margin-top: 8px;
+            .company{
+                color: #C4D6E9;
+                p{
+                    margin-top: 10%;
+                    margin-left: 40%;
+                    font-size: 0.8vw;
+                }
+            }
                .title{
-                   margin-left: 41.4%;
+                   margin-left: 20.4%;
                    font-size: 2.4vw;
                    color:#00FFFF ;
                }
@@ -111,27 +119,38 @@ html{
                                 height: 100%;
                                 border-bottom: 2px gray solid ;
                                 margin-left: 5px;
+                                p{
+                                    position: absolute;
+                                    top: -24px;
+                                    text-align: center;
+                                    width: 100%;                                       
+                                }
                                 .zhu1{
                                     position: relative;
                                      background: $jihua-color;
+                                     
                                     
                                 }
                                 .point{
-                                    div{
-                                        width: 11px;
-                                        height: 11px;
-                                        margin-left: 40%;  
-                                        margin-top: 20%;
-                                        border-radius: 50%;
-                                    }
+                                    position: relative;
+                                    top: -15%;
                                     span{
                                         font-size: 0.2vw;
-                                        margin-left: 24%;
                                         color: gray;
                                     }
+                                    .rateArea{
+                                        position: relative;
+                                        text-align: center;
                                     .finishrate{
                                         background: linear-gradient(#0250c5, #d43f8d);
+                                        
+                                        width: 11px;
+                                        height: 11px;
+                                        margin-left: 35%;  
+                                        border-radius: 50%;
+                                        
                                     }
+                                }
                                 }
                                 .zhu2{
                                     background:$wancheng-color;
@@ -159,7 +178,7 @@ html{
                         .date{
                             color: $title-color;
                             font-size: 0.7vw;
-                            margin-left: 42.4%;
+                            margin-left: 40%;
                         }
                         .tags{
                             margin-top: 1%;
@@ -171,6 +190,7 @@ html{
                                 margin-right: 3px;
                             }
                             .will{
+                                
                                 background: linear-gradient(#5ee7df, #b490ca);
                             }
                             .finish{
@@ -252,9 +272,9 @@ html{
                             color: $title-color;
                             margin-right: 8px;
                             ul{
-                                height: 18%;
+                                height: 19.5%;
                                 position: relative;
-                                top:10px;
+                                top:-8px;
                                 li{
                                     text-align: right;
                                     span{
@@ -265,6 +285,12 @@ html{
                             }
                         }
                         .zhuImage{
+                            p{
+                                position: absolute;
+                                top: -24px;
+                                text-align: center;
+                                width: 100%;                                       
+                            }
                             height: 100%;
                             border-bottom: 2px gray solid ;
                             margin-left: 5px;
@@ -274,21 +300,23 @@ html{
                                 
                             }
                             .point{
-                                div{
+                                position: relative;
+                                top:-14%;
+                                span{
+                                    font-size: 0.2vw;
+                                    color: gray;
+                                }
+                                .rateArea{
+                                    position: relative;
+                                text-align: center;
+                                .finishrate{
+                                    background: linear-gradient(#0250c5, #d43f8d);
                                     width: 11px;
                                     height: 11px;
                                     margin-left: 40%;  
-                                    margin-top: 20%;
                                     border-radius: 50%;
                                 }
-                                span{
-                                    font-size: 0.2vw;
-                                    margin-left: 24%;
-                                    color: gray;
-                                }
-                                .finishrate{
-                                    background: linear-gradient(#0250c5, #d43f8d);
-                                }
+                            }
                             }
                             .zhu2{
                                 background:$wancheng-color;
@@ -305,9 +333,9 @@ html{
                             color: $title-color;
                             
                             ul{
-                                height: 18%;
+                                height: 19.5%;
                                 position: relative;
-                                top:10px;
+                                top:-8px;
                                 margin-left: 10px;
                                 li{
                                     text-align: left;
@@ -328,7 +356,7 @@ html{
                     color: $title-color;
                 }
                 .tags{
-                    width: 75%;
+                    width: 80%;
                     font-size: 0.5vw;
                     margin-top: 2%;
                     color: $title-color;
@@ -394,9 +422,9 @@ html{
                                 color: $title-color;
                                 margin-right: 8px;
                                 ul{
-                                    height: 16%;
-                                    position: relative;
-                                    top:30px;
+                                    height: 19.5%;
+                                position: relative;
+                                top:-8px;
                                     li{
                                         text-align: right;
                                         span{
@@ -407,6 +435,12 @@ html{
                                 }
                             }
                             .zhuImage{
+                                p{
+                                    position: absolute;
+                                    top: -24px;
+                                    text-align: center;
+                                    width: 100%;                                       
+                                }
                                 height: 100%;
                                 border-bottom: 2px gray solid ;
                                 margin-left: 5px;
@@ -416,21 +450,23 @@ html{
                                     
                                 }
                                 .point{
-                                    div{
+                                    position: relative;
+                                    top: -14%;
+                                    span{
+                                        font-size: 0.2vw;
+                                        color: gray;
+                                    }
+                                    .rateArea{
+                                        position: relative;
+                                        text-align: center;
+                                    .finishrate{
+                                        background: linear-gradient(#0250c5, #d43f8d);
                                         width: 11px;
                                         height: 11px;
                                         margin-left: 40%;  
-                                        margin-top: 20%;
                                         border-radius: 50%;
                                     }
-                                    span{
-                                        font-size: 0.2vw;
-                                        margin-left: 24%;
-                                        color: gray;
-                                    }
-                                    .finishrate{
-                                        background: linear-gradient(#0250c5, #d43f8d);
-                                    }
+                                }
                                 }
                                 .zhu2{
                                     background:$wancheng-color;
@@ -441,9 +477,9 @@ html{
                                 height: 100%;
                                 color: $title-color;
                                 ul{
-                                    height: 16%;
+                                    height: 19.5%;
                                     position: relative;
-                                    top:30px;
+                                    top:-8px;
                                     margin-left: 10px;
                                     li{
                                         text-align: left;
@@ -459,7 +495,7 @@ html{
                         .date{
                             color: $title-color;
                             font-size: 0.7vw;
-                            margin-left: 42.4%;
+                            margin-left: 40%;
                         }
                         .tags{
                             margin-top: 1%;

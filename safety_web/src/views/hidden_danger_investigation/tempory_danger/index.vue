@@ -166,8 +166,8 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="是否立即验收" style="margin-top:114px">
-                   <el-radio v-model="form.ok" label="1">是</el-radio> 
-                   <el-radio v-model="form.ok" label="0">否</el-radio>    
+                   <el-radio v-model="form.ok" label="是">是</el-radio> 
+                   <el-radio v-model="form.ok" label="否">否</el-radio>    
               </el-form-item>
                <br />
           <el-form-item label="操作" >
@@ -208,7 +208,7 @@ export default {
         reformPerson: null,//整改负责人
         reformPersonID: null,//整改负责人ID
         limitDate: '',//限制时间
-        ok: '1', //提交状态
+        ok: '是', //提交状态
         status: 1,
         consequenceID: '',//可能后果
         recordDate: '',

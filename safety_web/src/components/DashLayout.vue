@@ -111,16 +111,32 @@
                 div 切换系统
       el-main
         <router-view/>
-        <el-dialog :visible.sync="dialogTableVisible" :close-on-click-modal='false' :close-on-press-escape='false' :show-close='false'>
-          span 请选择对应的系统：
-          <el-button style="width:40%" type='primary' @click='goSafe'>QHSE安全系统</el-button> 
-          <el-button style="width:40%" @click='goQuality'>QHSE质量系统</el-button> 
+        <el-dialog style='overflow:hidden;height:43.5%;'    :visible.sync="dialogTableVisible" :close-on-click-modal='false' :close-on-press-escape='false' :show-close='false' >
+        <div  class="chooseSys">
+          <img  class='backimg'  src='./img/back.jpg'>
+          <img @click="goSafe()" class='safeimg' src='./img/safe.jpg'>
+          <img @click="goQuality()" class='qualityimg' src='./img/quality.jpg'> </div>  
         </el-dialog>
+        <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
+        <el-form :inline="true" >
+        <el-form-item label='选择单位：' labelWidth='120px'>
+         <el-cascader :clearable='true' ref='company' v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" >             
+          </el-cascader>
+           </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dashBoardVisible = false">取 消</el-button>
+            <el-button  type="primary" @click="changeScreen">确 定</el-button>
+          </div>
+        </el-dialog>
+        
   </el-container>
+  
 </template>
 
 <script>
 // import {updateMessage,notReadMessage} from '../services/message'
+import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
@@ -144,7 +160,12 @@ Vue.use(VueCookies)
 
 export default {
   data() {
-    return {
+    return {//记录即将去往的公司
+      companyId:'',
+        chooseItem:'',
+      searchForm:{companyCode:''},
+      companyList:[],
+      dashBoardVisible: false,
       qhse:'QHSE管理系统',
       close1:false,
       changeS:false,
@@ -164,11 +185,20 @@ export default {
       messageText:'',
       messageDate:'',
       messageId:'',
+      routerForm:{},
       value1:'',
       value2:'',
       timer:'',
-      nav:''
-
+      nav:'',
+      //图片路径
+      backgroundImage1: "url(" + require("./img/safe.jpg") + ")",
+      backgroundImage2: "url(" + require("./img/quality.jpg") + ")",
+      imgBack:{
+        backgroundImage3: "url(" + require("./img/back.jpg") + ")",
+        backgroundRepeat: "no-repeat",
+        backgroundSize:"100% 100%",
+      }
+      
     }
   },
   beforeMount () {
@@ -210,11 +240,29 @@ export default {
     }
   },
   methods: {
+     handleChange(){
+        this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
+      },
+     getCompany(){
+        GetqhseCompanytree().then(res =>{
+               this.companyList = res.data
+               this.dashBoardVisible = true
+               console.log(res.data)
+        }).catch((err) =>{
+          this.$message.error(err.message)
+        })
+      },
+      changeScreen(){
+        this.routerForm.companyCode = this.searchForm.companyCode
+        this.routerForm.companyName = this.$refs.company.inputValue
+        const {href} = this.$router.resolve({
+        name: "qhseBigScreen",
+        query: this.routerForm
+        });
+          window.open(href, '_blank');
+      },
     goScreen(){
-       const {href} = this.$router.resolve({
-      name: "qhseBigScreen",
-      });
-        window.open(href, '_blank');
+      this.getCompany()
     },
     changeSys() {
       let _this = this
@@ -376,7 +424,7 @@ export default {
 			this.$message.error(err.message)
 		})
         this.$router.push({name: 'Login'})
-      }
+      } 
     },
     handleDropCommand (cmd) {
       this[cmd]()
@@ -430,9 +478,41 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+
+.chooseSys{
+    background-color: #0070A2;
+    position: absolute;
+    left: 0vw;
+    top: -2vw;
+    width: 100%;
+    height: 40vw;
+  }
+  .backimg{
+     position: absolute;
+     left: 25%;
+     width: 60%;
+    height: 39%;
+  }
+   .safeimg{
+    position: absolute;
+    left: 45%;
+    top: 8%;
+    width: 17%;
+    height: 28%;
+    cursor: pointer;
+  }
+   .qualityimg{
+    position: absolute;
+    left: 20%;
+    top: 8%;
+    cursor: pointer;
+    width: 17%;
+    height: 28%;
+  }
 .layout-base {
   background: #F4F4F4;
   height: 100vh;
+  
    .changeSys{
      font-size:5px;color:gray;cursor:pointer
    }
