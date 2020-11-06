@@ -61,8 +61,8 @@
 				<el-table-column prop="finishDate" label="(整改/验证)完成时间" align="center" width="120"></el-table-column>
                 <el-table-column label="操作" align="center" width="120" fixed="right">
                     <template slot-scope="scope">
-                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="jumpProblemRectify(scope.row)" v-if="scope.row.isPush === '已推送' && scope.row.issued === '已下达'">问题整改</el-button>
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="jumpProblemRectify(scope.row)" v-else>查看信息</el-button>
+                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="jumpProblemRectify(scope.row)" v-if="scope.row.isPush === '已推送' && scope.row.issued === '已下达'">整改</el-button>
+                        <el-button type="warning" icon="el-icon-success" size="mini" @click="jumpProblemRectify(scope.row)" v-else>查看</el-button>
                     </template>
                 </el-table-column>
             </el-table>
