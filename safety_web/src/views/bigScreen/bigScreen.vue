@@ -3,6 +3,9 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)">
      <el-row class="head">
+       <el-col class="company"  :span='5'><span></span>
+            <p>数据来源：{{showName}}</p>
+          </el-col>
           <el-col class="title"  :span='5'>
             <p>安检院QHSE看板</p>
           </el-col>
@@ -438,6 +441,8 @@ export default {
   },
   screenLoading:true,
   finishnum:1,
+  // 公司名称
+  showName:'全部'
  }
   },
   methods: {
@@ -482,7 +487,7 @@ export default {
       let { monthFinishRate,updateTime,monthFinishNum,monthPlanNum } = data[0]
       // 数值
       _this.getYnum(monthPlanNum,'qualitylistdata',10)
-      _this.rates.qualityzhu = monthFinishRate + "%"
+      _this.rates.qualityzhu = monthFinishRate.toFixed(2) + "%"
       _this.values.qualityzhu1 = monthPlanNum 
       _this.values.qualityzhu2 = monthFinishNum
       // 计算柱状图1
@@ -508,7 +513,7 @@ export default {
       let {weeklyCollectNum,weeklyNormalNum,weeklySupervisionNum,weeklyUsageRate} = data[0]
       // 数值
       _this.getYnum(weeklyCollectNum,'recordinglistdata',10)
-      _this.rates.recordingzhu = weeklyUsageRate*100 + "%"
+      _this.rates.recordingzhu = (weeklyUsageRate*100).toFixed(2) + "%"
       _this.values.recordingzhu1 = weeklyCollectNum
       _this.values.recordingzhu2 = weeklyNormalNum
       _this.values.recordingzhu3 = weeklySupervisionNum
@@ -541,9 +546,9 @@ export default {
      _this.getYnum(planNum,'firstlistdata',10)
      //百分比
      _this.standardDate = updateTime
-      _this.rates.firstzhu = firstDraftFinishRate*100 + "%"
-      _this.rates.passzhu = reviewPassRate*100 + "%"
-      _this.rates.handoutzhu = standardReleaseRate*100 + "%"
+      _this.rates.firstzhu = (firstDraftFinishRate*100).toFixed(2) + "%"
+      _this.rates.passzhu = (reviewPassRate*100).toFixed(2) + "%"
+      _this.rates.handoutzhu = (standardReleaseRate*100).toFixed(2) + "%"
        //柱状图的值
       _this.values.firstzhu1 = planNum
       _this.values. handoutzhu1 = planNum
@@ -600,6 +605,9 @@ export default {
     }
   },
   mounted() {
+    if(this.$route.query.companyName){
+       this.showName = this.$route.query.companyName
+    }
     let _this = this
     _this.confirmToken()
     _this.updateTime()

@@ -120,7 +120,7 @@
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
         <el-form :inline="true" >
         <el-form-item label='选择单位：' labelWidth='120px'>
-         <el-cascader v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" ref="cascaderAddr" >             
+         <el-cascader :clearable='true' ref='company' v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" >             
           </el-cascader>
            </el-form-item>
           </el-form>
@@ -185,6 +185,7 @@ export default {
       messageText:'',
       messageDate:'',
       messageId:'',
+      routerForm:{},
       value1:'',
       value2:'',
       timer:'',
@@ -252,9 +253,11 @@ export default {
         })
       },
       changeScreen(){
+        this.routerForm.companyCode = this.searchForm.companyCode
+        this.routerForm.companyName = this.$refs.company.inputValue
         const {href} = this.$router.resolve({
         name: "qhseBigScreen",
-        query: this.searchForm
+        query: this.routerForm
         });
           window.open(href, '_blank');
       },
