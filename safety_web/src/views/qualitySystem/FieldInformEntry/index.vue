@@ -62,7 +62,7 @@
 						<template slot-scope="scope">
 							<el-button type="primary" size="mini" icon="el-icon-plus" @click="addInfo(scope.row)">基本信息录入</el-button>
 							<el-button type="primary" size="mini" @click="audit(scope.row)" icon="el-icon-edit" v-if="scope.row.isPush==='已推送'&&scope.row.issued==='未下达'">审核</el-button>
-							<el-button type="success" size="mini" icon="el-icon-search" @click="audit(scope.row)" v-else>查看</el-button>
+							<el-button type="warning" size="mini" icon="el-icon-success" @click="audit(scope.row)" v-else>查看</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -136,7 +136,7 @@
 					<el-button type="primary" @click="addInfoClick">提 交</el-button>
 				</span>
 			</el-dialog>
-			<el-dialog title="基本信息录入" :visible.sync="addInfoDialog">
+			<el-dialog title="基本信息录入" :visible.sync="addInfoDialog" :close-on-click-modal="false">
 				<el-form :inline="true" :model="editInfoForm" label-width="100px" label-position="right">
 					<el-form-item label="检测项目">
 						<el-input clearable v-model="editInfoForm.checkProject" width="100%" placeholder="请输入检测项目"></el-input>
@@ -168,8 +168,8 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="addInfoDialog = false">取消</el-button>
-					<el-button type="primary" @click="addBeasedInfo">保存</el-button>
+					<el-button icon="el-icon-refresh-left" @click="addInfoDialog = false">取 消</el-button>
+					<el-button icon="el-icon-check" type="primary" @click="addBeasedInfo">保 存</el-button>
 				</span>
 			</el-dialog>
 		</div>
@@ -182,7 +182,8 @@
 		queryTableByYearAndComAndPush,
 		queryCheckTreeByID,
 		queryAllTable,
-		addQualityCheck
+		addQualityCheck,
+		updateQualityCheck
 	} from "../../../services/qualitySystem/FieldInformEntry.js"
 	import {
 		GetEmployee
@@ -651,13 +652,13 @@
 				console.log('final', this.editInfoForm)
 				updateQualityCheck(this.editInfoForm).then(res => {
 					if (res.code == '1000') {
-						this.select()
 						this.$message.success('基本信息录入成功!')
+						this.select()
 					} else {
 						this.$message.error('基本信息录入失败！')
 					}
 				}).catch(err => {
-					return this.$message.error(err.message)
+					this.$message.error(err.message)
 				})
 			},
 			select() {
