@@ -22,8 +22,8 @@
 				</el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '审核已通过' || scope.row.isPush === '审核已打回'">查看</el-button>
-                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemViewCheck(scope.row)" v-else>复审</el-button>
+                        <el-button type="warning" icon="el-icon-success" size="mini" @click="problemViewLook(scope.row)" v-if="scope.row.isPush === '审核已通过' || scope.row.isPush === '审核已打回'">查看</el-button>
+                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="problemViewCheck(scope.row)" v-else>复审</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -31,10 +31,11 @@
         <!-- 问题审核对话框 -->
             <el-dialog
                 title="问题复审"
+                :close-on-click-modal="false"
                 :visible.sync="problemCheckDialogVisible"
                 width="50%" @close="problemCheckDialogClose">
                 <!-- 问题审核表单 -->
-                <el-form :model="problemCheckForm" label-width="130px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
+                <el-form :model="problemCheckForm" label-width="140px" :rules="problemCheckFormRule" ref="problemCheckFormRef" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                        <el-tab-pane label="基本信息" name="0">
                             <el-form-item label="要素名称">
@@ -108,19 +109,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准号">
+                            <el-form-item label="不符合标准条款号">
                                 <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准内容">
+                            <el-form-item label="不符合标准条款内容">
                                 <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款">
+                            <el-form-item label="不符合文件">
                                 <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款号">
+                            <el-form-item label="不符合文件条款号">
                                 <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款内容">
+                            <el-form-item label="不符合文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -148,19 +149,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准号">
+                            <el-form-item label="不符合标准条款号">
                                 <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准内容">
+                            <el-form-item label="不符合标准条款内容">
                                 <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款">
+                            <el-form-item label="不符合文件">
                                 <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款号">
+                            <el-form-item label="不符合文件条款号">
                                 <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款内容">
+                            <el-form-item label="不符合文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -209,9 +210,9 @@
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="danger" @click="refuseProblemReview" v-if="isBelongToPart === true">打 回</el-button>
-                    <el-button type="primary" @click="acceptProblemReview" v-if="isBelongToPart === true">通 过</el-button>
-                    <el-button @click="problemCheckDialogVisible = false" v-else>关 闭</el-button>
+                    <el-button type="danger" icon="el-icon-close" @click="refuseProblemReview" v-if="isBelongToPart === true">打 回</el-button>
+                    <el-button type="primary" icon="el-icon-check" @click="acceptProblemReview" v-if="isBelongToPart === true">通 过</el-button>
+                    <el-button @click="problemCheckDialogVisible = false" v-else icon="el-icon-refresh-left">关 闭</el-button>
                 </span>
             </el-dialog>
         </div>

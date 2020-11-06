@@ -22,8 +22,8 @@
 				</el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="success" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '问题已整改' || scope.row.isPush === '审核已通过' || scope.row.isPush === '验证已通过'">查看</el-button>
-                        <el-button type="warning" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)" v-else>整改</el-button>
+                        <el-button type="warning" icon="el-icon-success" size="mini" @click="problemLook(scope.row)" v-if="scope.row.isPush === '问题已整改' || scope.row.isPush === '审核已通过' || scope.row.isPush === '验证已通过'">查看</el-button>
+                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="problemRectify(scope.row)" v-else>整改</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -31,9 +31,9 @@
             <el-dialog
                 title="整改项"
                 :visible.sync="problemRectifyDialogVisible"
-                width="50%" @close="problemRectifyDialogClose">
+                width="50%" @close="problemRectifyDialogClose" :close-on-click-modal="false">
                 <!-- 问题整改表单 -->
-                <el-form :model="rectifyForm" label-width="130px" >
+                <el-form :model="rectifyForm" label-width="140px" >
                     <el-tabs v-model="activeIndex" :tab-position="'left'">
                         <el-tab-pane label="基本信息" name="0">
                             <el-form-item label="要素名称">
@@ -109,19 +109,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准号">
+                            <el-form-item label="不符合标准条款号">
                                 <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准内容">
+                            <el-form-item label="不符合标准条款内容">
                                 <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款">
+                            <el-form-item label="不符合文件">
                                 <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款号">
+                            <el-form-item label="不符合文件条款号">
                                 <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款内容">
+                            <el-form-item label="不符合文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -149,19 +149,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准号">
+                            <el-form-item label="不符合标准条款号">
                                 <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准内容">
+                            <el-form-item label="不符合标准条款内容">
                                 <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款">
+                            <el-form-item label="不符合文件">
                                 <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款号">
+                            <el-form-item label="不符合文件条款号">
                                 <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合条款内容">
+                            <el-form-item label="不符合文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -216,7 +216,7 @@
                                 accept=".jpg,.jpeg,.png"
                                 :headers="headers"
                                 v-if="isBelongToPart === true">
-                                <el-button size="small" type="primary">点击上传图片</el-button>
+                                <el-button size="small" type="primary" icon="el-icon-upload">点击上传图片</el-button>
                                 </el-upload>
                             </el-form-item>
                             <el-form-item label="纠正附件">
@@ -228,7 +228,7 @@
                                 :on-remove="handleFileRemove"
                                 :on-success="handleFileSuccess"
                                 v-if="isBelongToPart === true">
-                                <el-button size="small" type="success">点击上传文件</el-button>
+                                <el-button size="small" type="success" icon="el-icon-upload">点击上传文件</el-button>
                                 </el-upload>
                             </el-form-item>
                             <el-form-item label="历史纠正图片">
@@ -256,8 +256,8 @@
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true">保 存</el-button>
-                    <el-button @click="problemRectifyDialogVisible = false" v-else>关闭</el-button>
+                    <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true" icon="el-icon-folder">保 存</el-button>
+                    <el-button @click="problemRectifyDialogVisible = false" v-else icon="el-icon-refresh-left">关闭</el-button>
                     
                 </span>
             </el-dialog>
