@@ -30,10 +30,10 @@
                 <li>总体完成情况</li>
                 <li ><img src="./img/jiankong.png" alt=""></li>
                 <li >本年累计完成</li>
-                <li>{{100 + " "}}个</li>
+                <li>{{values.qualityzhu2}}个</li>
                 <li><img src="./img/yunwei.png" alt=""></li>
                 <li>完成进度</li>
-                <li>{{100 + " "}}%</li>
+                <li>{{rates.qualityzhu}}</li>
               </ul>
           </el-col>
            <el-col :span='18'>

@@ -255,9 +255,9 @@
                     align='center'
                     width="200">
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >未整改</el-button>
                         <el-button v-show="scope.row.status === '未整改' && scope.row.refuseReason" style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small"  >被打回</el-button>
-                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit" plain size="small" @click="goProRecieve(scope.row)">待验收</el-button>
+                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit" plain size="small" @click="goProRecieve(scope.row)">验收中</el-button>
                         <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small" >已整改</el-button>
                     </template>
                     </el-table-column>       

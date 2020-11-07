@@ -81,9 +81,6 @@
                 <el-form-item label="归属部门:">
                     <span>{{ props.row.factorDepartment }}</span>
                 </el-form-item>
-                <el-form-item label="整改负责人:">
-                    <span>{{ props.row.punish }}</span>
-                </el-form-item>
                 <el-form-item label="用工性质:">
                     <span>{{ props.row.employeeCharacter }}</span>
                 </el-form-item>
@@ -257,9 +254,8 @@
           <el-table-column align='center' prop='dangerSource' label='隐患来源'></el-table-column>    
           <el-table-column align='center'  prop='supervisionDate' label='检查时间'></el-table-column>
           <el-table-column
-            label="隐患状态"
+            label="状态"
             align='center'
-            fixed="right"
             >
             <template slot-scope="scope">
               <el-button v-show="scope.row.status === 1 && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small">待整改</el-button>
@@ -348,13 +344,13 @@
                 </el-table-column>
                 <el-table-column
                     fixed="right"
-                    label="问题状态"
+                    label="状态"
                     align='center'>
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >待整改</el-button>
+                        <el-button v-show="scope.row.status === '未整改' && !scope.row.refuseReason" style="margin-left:9px" type="primary" icon="el-icon-search" plain size="small"  >未整改</el-button>
                         <el-button v-show="scope.row.status === '未整改' && scope.row.refuseReason" style="margin-left:9px" type="danger" icon="el-icon-search" plain size="small"  >被打回</el-button>
-                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">待验收</el-button>
-                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已验收</el-button>
+                        <el-button v-show="scope.row.status === '验收中'" type="warning" icon="el-icon-edit"  plain size="small">验收中</el-button>
+                        <el-button v-show="scope.row.status === '已整改'" type="success" icon="el-icon-check" plain size="small">已整改</el-button>
                     </template>
                     </el-table-column> 
             </el-table>

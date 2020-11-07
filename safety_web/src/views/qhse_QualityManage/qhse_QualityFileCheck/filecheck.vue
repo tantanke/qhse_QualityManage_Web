@@ -109,13 +109,13 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') "  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
               type="success"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' "
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -123,7 +123,7 @@
                <el-button
               type="danger"
               size="mini"
-              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' "
+              v-if="scope.row.childNode.length === 0 && scope.row.fileCheckStatus === '不通过' && scope.row.status === '备案待查'"
               @click="detaileFile(scope.row)" icon="el-icon-search"
               >
               查看详情  
@@ -215,6 +215,7 @@
             </el-col>
           </el-row>         
         </el-form>     
+        
         <div style='margin-left:60%'>
             <el-button type="primary" @click="updataFileAudit">确定</el-button>
             <el-button @click="resetQuestion">取 消</el-button>
@@ -222,7 +223,7 @@
           </div>
       </el-dialog>
       <!-- 查看文件审核详情 -->
-      <el-dialog title="文件审核详情查看"  :visible.sync="detaildialogVisible" center  :close-on-click-modal='false'>
+      <el-dialog title="文件审核详情查看"  :visible.sync="detaildialogVisible" center  :close-on-click-modal='false' >
         <div v-loading='eviLoaind'>
         <el-form   label-width="140px" :model="detailData" style="width:100%;" >
           <el-row >
@@ -232,18 +233,21 @@
               <el-form-item label="初始分数：" style="margin-bottom:1px">{{detailData.initialScore}}</el-form-item>
               <el-form-item label="实际得分：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.codeScore}}</el-button></el-form-item>
               <el-form-item label="计算公式：" style="margin-bottom:1px">{{detailData.formula}}</el-form-item>
-              <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' type='primary'>{{detailData.pass}}</el-button></el-form-item> 
+              <el-form-item label="审核状态：" style="margin-bottom:1px"><el-button size='mini' v-if="detailData.pass === '通过'" type='success'>{{detailData.pass}}</el-button>
+              <el-button size='mini' v-if="detailData.pass === '不通过'" type='danger'>{{detailData.pass}}</el-button>
+              </el-form-item> 
               <el-form-item label="审核时间：" v-show="detailData.auditTime"  style="margin-bottom:1px">{{detailData.auditTime}}</el-form-item> 
               
-              <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.pass === '不通过'">
-                <el-button @click="goRegulation" size='mini' type="warning">录入违章</el-button>
-                <el-button @click="goDanger" size='mini' type="danger" >录入隐患</el-button>
+              <el-form-item label="操作：" style="margin-bottom:1px" v-if="detailData.noPassReason">
+                <el-button v-if="detailData.noPassReason === '隐患'" @click="goDanger" size='mini' type="warning">补录隐患</el-button>
+                <el-button v-if="detailData.noPassReason === '违章'" @click="goRegulation" size='mini' type="warning" >补录违章</el-button>
+                <el-button v-if="detailData.noPassReason === '问题'" @click="goProblem" size='mini' type="warning" >补录问题</el-button>
                 </el-form-item>      
             </el-col>
             <el-col :span="12" >
-              <el-form-item label="隐患违章状态：" v-show="detailData.noPassReason"
+              <el-form-item label="不通过原因：" v-show="detailData.noPassReason"
               style="margin-bottom:5px"
-              >已录入{{detailData.noPassReason}}
+              >存在{{detailData.noPassReason}}
                </el-form-item>
               <el-form-item label="证据图片：" 
               style="margin-bottom:10px"
@@ -275,11 +279,32 @@
             </el-col>
           </el-row>
         </el-form>       
-        <div style="margin-left:55px">
-            
           </div>
-          </div>
+           <el-dialog title="问题补录"  :visible.sync="problemdialogVisible" center  append-to-body :close-on-click-modal='false'>
+             <div v-loading='editQuestionLoadind'>
+             <el-checkbox-group v-model="selectProblem" >
+                  <el-checkbox v-for="(item,index) in problem" :key="index" :label="item">                   
+                  </el-checkbox>
+                  </el-checkbox-group>
+                  <el-checkbox  v-model="elsePro">其他</el-checkbox>
+                  <el-input
+                    type="textarea"
+                    v-if="elsePro"
+                    :rows="2"
+                    placeholder="请输入具体问题"
+                    v-model="proTextarea">
+                  </el-input>
+                  <p style="margin-top;10px"></p>
+                  <div slot="footer" class="dialog-footer" style="text-align:right;margin-top;10px">
+                 <el-button type="danger"  @click="problemdialogVisible = false" >取消</el-button>
+                 <el-button type="primary"  @click="confirmEdit" >确定</el-button>
+            </div>
+            </div>
+           </el-dialog>
       </el-dialog>
+             
+          
+        
     </div>
   </div>
 </template>
@@ -292,6 +317,7 @@ import { show_elementReviewer,downloadElementFile } from"../../../services/qhse_
 export default {
   data() {
     return {
+      editQuestionLoadind:false,
       noProblem: '暂无',
       search: '',
       checkType: '树形审核',
@@ -387,6 +413,19 @@ export default {
       noTotal: 0,
       allTotal: 0,
       finishAudit: false,
+      problemdialogVisible: false,
+      addMorePro:{
+        qHSE_FileAudit_ID: '', //
+        qHSE_FileAuditRecord_ID: '',//
+        code: '', //
+        problemDescription: '',
+        companyCode: '', //
+        companyName: '', //
+        auditTime: '', //
+        auditor:'', //
+        itemName:'',//
+        problemSource:'文件审核'
+      },
       // 跳转到隐患违章页面所需要的数据
       goHidden:{code:'',qHSE_FileAudit_ID:'',qHSE_FileAuditRecord_ID:''}
     };
@@ -401,23 +440,47 @@ export default {
     }
   },
   methods: {
-    async downloadRes(url, name) {
-    let response = await fetch(url)
-    // 内容转变成blob地址
-    let blob = await response.blob()
-    // 创建隐藏的可下载链接
-    let objectUrl = window.URL.createObjectURL(blob)
-    let a = document.createElement('a')
-    //地址
-    a.href = objectUrl
-    //修改文件名
-    a.download = name
-    // 触发点击
-    document.body.appendChild(a)
-    a.click()
-    //移除
-    setTimeout(() => document.body.removeChild(a), 1000)
-},
+    confirmEdit(){
+       let _this = this
+       let str = ''
+       _this.addMorePro.problemDescription = _this.proTextarea
+       _this.selectProblem.forEach(item => {
+          str = str + item + ' '
+       })
+       _this.addMorePro.problemDescription = `${_this.proTextarea}-${str}`
+       if(_this.addMorePro.problemDescription === '-'){
+         _this.$message.warning('请填写具体问题！')
+         return
+       }
+       _this.editQuestionLoadind = true;
+       // 先获取到id之后再进行添加问题
+       console.log(_this.addMorePro)
+       addProblemDescription(_this.addMorePro)
+       .then(() => {     
+         _this.editQuestionLoadind = false
+         _this.problemdialogVisible = false
+         this.$message.success("添加成功")
+       }).catch(err => {
+        this.$message.error(err)
+        _this.editQuestionLoadind = false
+      })
+    },
+    goProblem(){
+      let _this = this
+        _this.problemdialogVisible = true
+        _this.problem = []
+        _this.proTextarea = ''
+         querryQHSEproblemDiscription({code:_this.addMorePro.code}).then(res => {
+        if(res.data.length !== 0){
+        res.data.forEach(item => {
+          if(!item.description.includes('其他')){
+          _this.problem.push(item.description)
+          }
+        })
+        }
+        this.problemdialogVisible = true
+      })     
+    },
     // 获取当前时间
     getTime() {
       let nowDate = new Date()
@@ -429,6 +492,7 @@ export default {
       }
       this.fileRecord.auditTime = `${nowDate.getFullYear()}-${month}-${nowDate.getDate()}`
       this.addQuestionForm.auditTime = this.fileRecord.auditTime
+      this.addMorePro.auditTime = this.fileRecord.auditTime
     },
     // 筛选树形图叶子结点信息
     async deepTree (treedata) {
@@ -473,6 +537,7 @@ export default {
       _this.querryTree.companyCode = initData.companyCode
       // 新增审核记录表单
       _this.addQuestionForm.qHSE_FileAudit_ID = initData.fileAuditId
+      _this.addMorePro.qHSE_FileAudit_ID = initData.fileAuditId
       _this.fileRecord.fileAuditId = initData.fileAuditId
       _this.fileRecord.additor = initData.additor
       // 获取审核状态表单
@@ -484,6 +549,9 @@ export default {
       _this.addQuestionForm.companyCode = initData.companyCode
       _this.addQuestionForm.companyName = initData.companyName
       _this.addQuestionForm.auditor = initData.additor
+      _this.addMorePro.companyCode = initData.companyCode
+      _this.addMorePro.companyName = initData.companyName
+      _this.addMorePro.auditor = initData.additor
       
     },
     handleCellClick(row, cell, column) {
@@ -561,9 +629,11 @@ export default {
         _this.detailData.codeScore = ''
         _this.detailData.pass = ''
         if(res.data.length > 0){
+          console.log(res.data)
         _this.detailData.codeScore = res.data[0].codeScore
         _this.detailData.auditTime = res.data[0].auditTime
         _this.detailData.pass = res.data[0].pass
+        _this.addMorePro.qHSE_FileAuditRecord_ID = res.data[0].qHSE_FileAudit_RecordID
         _this.detailData.noPassReason = res.data[0].noPassReason
         _this.detaildialogVisible = true
         }
@@ -586,7 +656,8 @@ export default {
       _this.selectProblem = []
       // 获取证据图片 
       _this.eviLoaind = true
-      console.log(data.name)
+      _this.addMorePro.code = data.code
+      _this.addMorePro.itemName = data.name
       _this.detaildialogVisible = true
       _this.getEvidence(data)  
       //  获取分数与状态填充
