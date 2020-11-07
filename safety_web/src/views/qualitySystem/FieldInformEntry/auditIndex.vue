@@ -653,12 +653,7 @@
 							required: 'true',
 							message: '请输入工作年限',
 							trigger: 'blur'
-						},
-						{
-							type: 'number',
-							message: '工作年限必须为数字'
-						}
-					],
+						}],
 					//学历
 					education: [{
 						required: 'true',
