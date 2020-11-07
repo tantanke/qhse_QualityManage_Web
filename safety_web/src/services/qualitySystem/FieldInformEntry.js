@@ -11,9 +11,12 @@ export const queryCheckTreeByID =(param)=>{
 	return request('/api/queryCheckTreeByID/'+param,{method:'GET'})
 }
 //添加质量检查记录
-
 export const addCheckRecord=(data)=>{
 	return request('/api/qulity_check_record_add',{method:'post',data})
+}
+//修改审核计划
+export const updateQualityCheck=(data)=>{
+	return request('/api/updateQualityCheck',{method:'put',data})
 }
 //根据id查询质量检查记录
 export const queryCheckRecord=(param)=>{
@@ -56,4 +59,8 @@ export const getOriginFileName=(param)=>{
 //查询处于所有状态的表
 export const queryAllTable=()=>{
 	return request('/api/queryAllTable',{method:'get'})
+}
+//零星录入
+export const addOddQualityCheck=(data)=>{
+	return request('/api/addOddQualityCheck',{method:'post',data})
 }

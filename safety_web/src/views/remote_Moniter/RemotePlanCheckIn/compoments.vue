@@ -117,7 +117,7 @@
                                           placeholder="请输入内容">
                                 </el-input>
                             </el-form-item>
-                            <el-form-item label="是否关闭:" prop="closeIn" style="margin-bottom:5px">
+                            <el-form-item label="是否关闭:" prop="closeIn" style="margin-bottom:5px" v-if="resData.condition==='在用'">
                                 <el-switch style="margin-right:10px" v-model="resData.closeIn" active-color="#13ce66"
                                            inactive-color="#ff4949" active-text="否" inactive-text="是"
                                            active-value="否" inactive-value="是"
@@ -150,6 +150,7 @@
     import {updateInputtedDetailInfo} from "../../../services/remote";//录入当天细节
     import {deletePlanDetail} from "../../../services/remote";//录入当天细节
     import {uploadScreenShot} from "../../../services/remotenew";//录入图片
+    import {getTotalInputTime} from "../../../services/remote"; // 获取总的录入次数
 
     export default {
         name: '',
@@ -222,9 +223,17 @@
                 }
                 this.lists = this.listData;
                 console.log('最开始查询', this.listData)
-                this.checkInCountSum = this.listData.reduce((count, d)=>{
-                    return count + d.linearray.length
-                }, 0)
+//                一开始是在前端统计，现在改为从后端获取
+//                this.checkInCountSum = this.listData.reduce((count, d)=>{
+//                    return count + d.linearray.length
+//                }, 0)
+                getTotalInputTime(this.$route.params.monitorPlanID).then(res=>{
+                    console.log(res, 1,2, 2)
+                    console.alert(res)
+                })
+
+
+
                 // 因为表格中有部分数据是后面添加的，所以表格显示的时候有部分数据需要点击表格才会更新显示
                 // 所以在填充完数据后，用代码模拟点击一下，将新添加的数据显示出来
                 let row = document.getElementsByClassName("el-table__row")[0]

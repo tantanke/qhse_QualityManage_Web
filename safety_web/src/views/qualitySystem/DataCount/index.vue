@@ -16,7 +16,7 @@
 					<el-button icon="el-icon-download" type="warning" @click="openDownloadOption()">下载</el-button>
 				</el-form-item>
 			</el-form>
-			<el-table border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
+			<el-table ref="table" border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
 				<el-table-column type="expand" fixed="left">
 					<template slot-scope="prop">
 						<el-form label-width="150px" :label-position="left" inline class="demo-table-expand">
@@ -63,19 +63,19 @@
 									<el-form-item label="不符合标准">
 										<span>{{prop.row.nonConformityStd}}</span>
 									</el-form-item>
-									<el-form-item label="不符合标准号">
+									<el-form-item label="标准条款号">
 										<span>{{prop.row.nonConformityStdNo}}</span>
 									</el-form-item>
-									<el-form-item label="不符合标准内容">
+									<el-form-item label="标准条款内容">
 										<span>{{prop.row.nonConformityStdContent}}</span>
 									</el-form-item>
-									<el-form-item label="不符合条款">
+									<el-form-item label="不符合文件">
 										<span>{{prop.row.nonConformClause}}</span>
 									</el-form-item>
-									<el-form-item label="不符合条款号">
+									<el-form-item label="文件条款号">
 										<span>{{prop.row.nonConformClauseNo}}</span>
 									</el-form-item>
-									<el-form-item label="不符合条款内容">
+									<el-form-item label="文件条款内容">
 										<span>{{prop.row.nonConformClauseContent}}</span>
 									</el-form-item>
 								</el-col>
@@ -255,11 +255,11 @@
 					<el-checkbox class="checkBoxClass" label="不符合性质" v-model="nonConformityNature.status" @change="getOption($event,nonConformityNature)"></el-checkbox>
 					<el-checkbox class="checkBoxClass" label="不符合原因" v-model="nonConformSource.status" @change="getOption($event,nonConformSource)"></el-checkbox>
 					<el-checkbox class="checkBoxClass" label="不符合标准" v-model="nonConformityStd.status" @change="getOption($event,nonConformityStd)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="不符合标准号" v-model="nonConformityStdNo.status" @change="getOption($event,nonConformityStdNo)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="不符合标准内容" v-model="nonConformityStdContent.status" @change="getOption($event,nonConformityStdContent)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="不符合条款" v-model="nonConformClause.status" @change="getOption($event,nonConformClause)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="不符合条款号" v-model="nonConformClauseNo.status" @change="getOption($event,nonConformClauseNo)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="不符合条款内容" v-model="nonConformClauseContent.status" @change="getOption($event,nonConformClauseContent)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="标准条款号" v-model="nonConformityStdNo.status" @change="getOption($event,nonConformityStdNo)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="标准条款内容" v-model="nonConformityStdContent.status" @change="getOption($event,nonConformityStdContent)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="不符合文件" v-model="nonConformClause.status" @change="getOption($event,nonConformClause)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="文件条款号" v-model="nonConformClauseNo.status" @change="getOption($event,nonConformClauseNo)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="文件条款内容" v-model="nonConformClauseContent.status" @change="getOption($event,nonConformClauseContent)"></el-checkbox>
 				</el-row>
 				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
 				<el-row>
@@ -327,6 +327,7 @@
 				qualityRecordList: [],
 				qualityCheckTree: [],
 				checkRecordList: [],
+				downloadSource:[],
 				tableData: [],
 				companyList: [],
 				companyName: '',
@@ -341,86 +342,11 @@
 				groupLeaderFilter: [],
 				projectFilter: [],
 				projectLeaderFilter: [],
-				natureFilter: [{
-						text: '建议项',
-						value: '建议项'
-					},
-					{
-						text: '观察项',
-						value: '观察项'
-					},
-					{
-						text: '问题项',
-						value: '问题项'
-					},
-					{
-						text: '不符合',
-						value: '不符合'
-					},
-					{
-						text: '违章项',
-						value: '违章项'
-					}
-				],
-				checkCategoryFilter: [{
-						value: '内审',
-						text: '内审'
-					},
-					{
-						value: '外审',
-						text: '外审'
-					},
-					{
-						value: '管理评审',
-						text: '管理评审'
-					}
-				],
-				checkBasisFilter: [{
-						value: 'CNAS',
-						text: 'CNAS'
-					},
-					{
-						value: 'ISO-9000',
-						text: 'ISO-9000'
-					},
-					{
-						value: 'API-Q2',
-						text: 'API-Q2'
-					},
-					{
-						value: 'CMA',
-						text: 'CMA'
-					},
-					{
-						value: '检验机构',
-						text: '检验机构'
-					},
-					{
-						value: '特种设备',
-						text: '特种设备'
-					}
-				],
-				checkMethodFilter: [{
-						value: '现场审核',
-						text: '现场审核'
-					},
-					{
-						value: '远程监控',
-						text: '远程监控'
-					},
-					{
-						value: '专项检查',
-						text: '专项检查'
-					},
-					{
-						value: '自改自查',
-						text: '自改自查'
-					},
-					{
-						value: '其他',
-						text: '其他'
-					}
-				],
+				natureFilter: [],
+				checkCategoryFilter: [],
+				checkBasisFilter: [],
+				checkMethodFilter: [],
+				checkPersonFilter:[],
 				//下载用数组
 				downloadList: [],
 				downloadEnglishList: [],
@@ -613,31 +539,31 @@
 					englishName: 'nonConformityStdNo',
 					status: false,
 					number: 30,
-					chineseName: '不符合标准号'
+					chineseName: '标准条款号'
 				},
 				nonConformityStdContent: {
 					englishName: 'nonConformityStdContent',
 					status: false,
 					number: 31,
-					chineseName: '不符合标准内容'
+					chineseName: '标准条款内容'
 				},
 				nonConformClause: {
 					englishName: 'nonConformClause',
 					status: false,
 					number: 32,
-					chineseName: '不符合条款'
+					chineseName: '不符合文件'
 				},
 				nonConformClauseNo: {
 					englishName: 'nonConformClauseNo',
 					status: false,
 					number: 33,
-					chineseName: '不符合条款号'
+					chineseName: '文件条款号'
 				},
 				nonConformClauseContent: {
 					englishName: 'nonConformClauseContent',
 					status: false,
 					number: 34,
-					chineseName: '不符合条款内容'
+					chineseName: '文件条款内容'
 				},
 				//违章信息，第五项
 				punishmentBasis: {
@@ -1077,10 +1003,8 @@
 						this.downloadEnglishList.push(this.downloadList[i].englishName)
 						this.downloadChineseList.push(this.downloadList[i].chineseName)
 					}
-					console.log('chinese', this.downloadChineseList)
-					console.log('english', this.downloadEnglishList)
 					this.downloadOptionDialog = false
-					//this.download()
+					this.download()
 				})
 
 			},
@@ -1090,14 +1014,19 @@
 				})
 			},
 			filterHandler(value, row, column) {
+				console.log(value,row,column)
+				
 				const property = column['property'];
-				return row[property] === value;
+				this.downloadSource=this.downloadSource.filter(item=>{
+					return item[property]===value
+				})
+				return row[property] === value
 			},
 			download() {
 				var option = {}
 				option.fileName = "质量专项检查记录统计表"
 				option.datas = [{
-					sheetData: this.checkRecordList,
+					sheetData: this.downloadSource,
 					sheetFilter: this.downloadEnglishList,
 					sheetHeader: this.downloadChineseList
 				}]
@@ -1106,7 +1035,6 @@
 			},
 			queryAllPassTable() {
 				queryAllPassTable().then(res => {
-					console.log('queryAllPassTable', res.data)
 					this.qualityCheckList = res.data
 					if (this.qualityCheckList) {
 						this.qualityRecordList = []
@@ -1140,7 +1068,6 @@
 				if (qualityCheckID) {
 					queryQualityRecordList(qualityCheckID).then(res => {
 						this.qualityRecordList.push(res.data)
-						console.log(this.qualityRecordList)
 					}).catch(err => {
 						this.$message.error(err.message)
 					})
@@ -1154,7 +1081,6 @@
 				if (qualityCheckID) {
 					queryCheckTreeByID(qualityCheckID).then(res => {
 						this.qualityCheckTree.push(res.data)
-						console.log(this.qualityCheckTree)
 					}).catch(err => {
 						this.$message.error(err.message)
 					})
@@ -1168,15 +1094,51 @@
 				for (var i = 0; i < this.qualityCheckList.length; i++) {
 					this.combineData(this.qualityCheckList[i], this.qualityRecordList[i], this.qualityCheckTree[i])
 				}
+				this.companyFilter= []
+				this.companyLeaderFilter= []
+				this.groupFilter=[]
+				this.groupLeaderFilter= []
+				this.projectFilter= []
+				this.projectLeaderFilter= []
+				this.natureFilter= []
+				this.checkCategoryFilter= []
+				this.checkBasisFilter=[]
+				this.checkMethodFilter= []
+				this.checkPersonFilter=[]
+				for(var i=0;i<this.checkRecordList.length;i++){
+					this.pushItem(this.checkRecordList[i].checkCategory,this.checkCategoryFilter)
+					this.pushItem(this.checkRecordList[i].checkBasis,this.checkBasisFilter)
+					this.pushItem(this.checkRecordList[i].checkMethod,this.checkMethodFilter)
+					this.pushItem(this.checkRecordList[i].nature,this.natureFilter)
+					this.pushItem(this.checkRecordList[i].checkedCompanyName,this.companyFilter)
+					this.pushItem(this.checkRecordList[i].checkedPersonName,this.companyLeaderFilter)
+					this.pushItem(this.checkRecordList[i].group,this.groupFilter)
+					this.pushItem(this.checkRecordList[i].groupLeaderName,this.groupLeaderFilter)
+					this.pushItem(this.checkRecordList[i].projectName,this.projectFilter)
+					this.pushItem(this.checkRecordList[i].projectLeaderName,this.projectLeaderFilter)
+					this.pushItem(this.checkRecordList[i].checkPerson,this.checkPersonFilter)
+				}
+				this.downloadSource=this.checkRecordList
+			},
+			pushItem(pushItem,targetArray){
+				let temp={
+					text:'',
+					value:''
+				}
+				temp.text=pushItem
+				temp.value=pushItem
+				console.log(pushItem)
+				let tempArray=[]
+				tempArray=targetArray.filter(item=>{
+					return item.value===temp.value
+				})
+				if(tempArray.length==0){
+					targetArray.push(temp)
+				}
 			},
 			select() {
 				this.loading = true
 				this.getCombineData()
-				if (this.taskType) {
-					this.checkRecordList = this.checkRecordList.filter(item => {
-						return item.taskType == this.taskType
-					})
-				}
 				if (this.companyId) {
 					this.changeCompanyIdTocompanyName(this.companyList, this.companyId)
 					this.checkRecordList = this.checkRecordList.filter(item => {
@@ -1189,16 +1151,6 @@
 							return item.checkDate >= this.dateRange[0] && item.checkDate <= this.dateRange[1]
 						})
 					}
-				}
-				if (this.checkResult) {
-					this.checkRecordList = this.checkRecordList.filter(item => {
-						return item.checkResult == this.checkResult
-					})
-				}
-				if (this.nature) {
-					this.checkRecordList = this.checkRecordList.filter(item => {
-						return item.nature == this.nature
-					})
 				}
 				this.checkRecordList = this.sortData(this.checkRecordList)
 				this.loading = false

@@ -124,7 +124,7 @@
     import {createNewMonitorPlan} from "../../../services/remote";//新建
     import {getMonitorPlanList} from "../../../services/remote";//查询
     import {deletePlan} from "../../../services/remote";//删除
-    import {getDetails, endPlan} from "../../../services/remote";//查询细节
+    import {getDetails, endMonitorPlan} from "../../../services/remote";//查询细节
 
     export default {
         data() {
@@ -143,7 +143,7 @@
         },
         methods: {
             endplans(data) {
-                endPlan(data).then(res => {
+                endMonitorPlan(data).then(res => {
                     console.log('结束结果', res);
                     this.$message.success('成功结束任务');
                     //再次查询
