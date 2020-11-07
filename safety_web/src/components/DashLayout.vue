@@ -120,7 +120,7 @@
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
         <el-form :inline="true" >
         <el-form-item label='选择单位：' labelWidth='120px'>
-         <el-cascader :clearable='true' ref='company' v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" >             
+         <el-cascader  placeholder="请选择(空则查询年度记录)" :clearable='true' ref='company' v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" >             
           </el-cascader>
            </el-form-item>
           </el-form>

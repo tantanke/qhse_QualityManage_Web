@@ -11,6 +11,7 @@
                         v-model="chooseItem"
                         :options="companyList"
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+                         placeholder="请选择(空则查询年度记录)"
                         :show-all-levels="false"
                         @change="handleChange"
                         ref="cascaderAddr"  
@@ -45,12 +46,24 @@
                         max-height="560"
                         highlight-current-row
                         border>
-                        <el-table-column align='center' prop='companyName' label='单位名称'></el-table-column>
+                        <el-table-column
+                        label="单位名称"
+                        align='center'>
+                        <template slot-scope="scope">                
+                           <span>{{scope.row.companyName?scope.row.companyName:'全部单位'}}</span>
+                        </template>
+                        </el-table-column>
                         <el-table-column align='center' prop='weeklyCollectNum' label='周领用数'></el-table-column>
                         <el-table-column align='center' prop='weeklyNormalNum' label='周领用数'></el-table-column>
                         <el-table-column align='center' prop='weeklyUsageRate' label='使用比'></el-table-column>
                         <el-table-column align='center' prop='weeklySupervisionNum' label='监督监看数'></el-table-column>
-                        <el-table-column align='center' prop='updateTime' label='填报时间'></el-table-column>
+                        <el-table-column
+                        label="填报时间"
+                        align='center'>
+                        <template slot-scope="scope">                
+                           <span>{{scope.row.updateTime?scope.row.updateTime:year}}</span>
+                        </template>
+                        </el-table-column>
                       </el-table>
             </el-row>
       </div>
@@ -63,6 +76,7 @@ import {queryDashboardRecorderManagement,GetqhseCompanytree,downloadDashboardRec
 export default {
     data() {
       return {
+        year:'',
         selectdate: '',
         chooseItem:'',
         companyId:'',
@@ -77,6 +91,8 @@ export default {
     methods: {
       searchData(){
         this.loading = true
+        let date = new Date()
+        this.year = `${date.getFullYear()}年度`,
         queryDashboardRecorderManagement(this.searchForm).then(res => {
           this.loading = false
           this.listData = res.data

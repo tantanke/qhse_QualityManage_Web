@@ -397,7 +397,8 @@ export default {
            dialogImageUrl:'',
            //map数据 根据不同的数据导出
            regulationMap:'',
-           dangerMap:''
+           dangerMap:'',
+           proMap:''
        }
    },
    methods: {
@@ -410,6 +411,7 @@ export default {
        initMap(){
           this.initregulationMap()
           this.initDangerMap()
+          this.initProMap()
        },
        initDangerMap(){
            let _this = this
@@ -424,6 +426,17 @@ export default {
            )
            //数据库表中的所有字段
            _this.dangerMap = m
+       },
+       initProMap(){
+           let _this = this
+           let m = new Map(
+               [
+                  ['auditor','审核人'],['auditTime','审核日期'],['companyName','公司名称'],['itemName','检查项目'],
+                   ['problemDescription','问题描述'],['problemSource','问题来源'],['status','整改情况'],['situation','整改描述']
+               ]
+           )
+           //数据库表中的所有字段
+           _this.proMap = m
        },
        initregulationMap(){
            let _this = this
@@ -463,7 +476,7 @@ export default {
                    pData.push(pItem)
                })
                console.log(pData)
-               option.fileName = 'QHSE违章清单'
+               option.fileName = 'QHSE违章列表'
                option.datas = [{
 							sheetData: pData,
                             sheetHeader: ['违章类别','检查人员id','检查人员','违章人员ID','违章人员','作业项目','施工队伍id','施工队伍','检查日期',
@@ -502,7 +515,7 @@ export default {
                             pData.push(pItem)
                         })
                         console.log(pData)
-                        option.fileName = 'QHSE隐患清单'
+                        option.fileName = 'QHSE隐患列表'
                         option.datas = [{
                                         sheetData: pData,
                                         sheetHeader: ['隐患类别','检查人员id','检查人员','作业项目','施工队伍id','施工队伍','检查日期','隐患描述','整改负责人id','整改负责人','限制时间',
@@ -518,7 +531,38 @@ export default {
                     }
        },
        downloadPro () {
-
+          let _this = this
+           if(_this.problemrecord.length > 0) {
+              let option = {}
+               let priData = _this.problemrecord
+               let m = _this.proMap
+               let pData = []
+               priData.forEach(item => {
+                   let pItem = {}
+                   Object.keys(item).forEach(i => {
+                       let value  = m.get(i)
+                       if(value){
+                           if(item[i]){
+                              pItem[value] = item[i]
+                           }else{
+                               pItem[value] = '暂未录入'
+                           }
+                       }
+                   })
+                   pData.push(pItem)
+               })
+               console.log(pData)
+               option.fileName = 'QHSE问题列表'
+               option.datas = [{
+							sheetData: pData,
+                            sheetHeader: ['问题描述','审核人','公司名称','整改情况','整改描述','检查项目','审核日期','问题来源',]
+                        }];
+                // 导出数据
+                var toExcel = new ExportJsonExcel(option);
+				toExcel.saveExcel();
+           } else {
+               _this.$message.warning('无记录可下载！')
+           }
        },
        getRecentTime() {
           let date = new Date().getTime()

@@ -11,6 +11,7 @@
                         :options="companyList"
                         :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
                         :show-all-levels="false"
+                         placeholder="请选择(空则查询年度记录)"
                         @change="handleChange"
                         ref="cascaderAddr"  
                         :clearable='true'        
@@ -37,6 +38,7 @@
                         v-loading='loading'
                         :data="listData"
                         element-loading-text="查询中"
+                        
                         style="width: 100%;text-align:center"
                         ref="treeTable"
                         row-key="code"
@@ -44,11 +46,23 @@
                         max-height="560"
                         highlight-current-row
                         border>               
-                        <el-table-column align='center' prop='companyName' label='单位名称'></el-table-column>
+                        <el-table-column
+                        label="单位名称"
+                        align='center'>
+                        <template slot-scope="scope">                
+                           <span>{{scope.row.companyName?scope.row.companyName:'全部单位'}}</span>
+                        </template>
+                        </el-table-column>
                         <el-table-column align='center' prop='monthPlanNum' label='月计划数'></el-table-column>
                         <el-table-column align='center' prop='monthFinishNum' label='月度完成数'></el-table-column>
                         <el-table-column align='center' prop='monthFinishRate' label='月度完成率'></el-table-column>
-                        <el-table-column align='center' prop='updateTime' label='填报时间'></el-table-column>
+                        <el-table-column
+                        label="填报时间"
+                        align='center'>
+                        <template slot-scope="scope">                
+                           <span>{{scope.row.updateTime?scope.row.updateTime:year}}</span>
+                        </template>
+                        </el-table-column>
                       </el-table>                   
             </el-row>
       </div>
@@ -62,6 +76,7 @@ export default {
     data() {
       return {
         selectdate: '',
+        year:'',
         chooseItem:'',
         companyId:'',
         searchForm:{companyCode:""},
@@ -75,6 +90,8 @@ export default {
     methods: {
      searchData(){
        this.loading = true
+        let date = new Date()
+        this.year = `${date.getFullYear()}年度`,
         queryDashboardQualityManagement(this.searchForm).then(res => {
            this.loading = false
           this.listData = res.data
