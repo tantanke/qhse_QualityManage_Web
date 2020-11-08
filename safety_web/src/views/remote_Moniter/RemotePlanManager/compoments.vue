@@ -264,6 +264,7 @@
             changeres() {//确认修改
                 updateMonitorPlanDetail(this.resData).then(res => {
                     console.log('修改成功', res)
+                    this.$message.success("修改成功")
                     this.ifchange = false
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
@@ -271,6 +272,7 @@
                     })
                 }).catch(err => {
                     console.log('修改失败', err)
+                    this.$message.error("修改失败")
                 })
             },
             // 用于筛选项目名称列的方法

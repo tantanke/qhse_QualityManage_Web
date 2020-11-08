@@ -151,7 +151,8 @@
                         console.log('查询结果', res)
                         this.listData = res.data
                         // 每次查询，都要对任务的状态进行统计
-                        status_count(this.listData)
+
+                        this.status_count(this.listData)
                     }).catch(err => {
                         console.log('查询失败', err)
                     })
@@ -178,7 +179,8 @@
                     console.log('查询结果', res)
                     this.listData = res.data
                     // 每次查询，都要对任务的状态进行统计
-                    status_count(this.listData)
+                    this.status_count(this.listData)
+
 
                     // 该api(getMonitorPlanList)查询所有的计划，然后由前端通过日期进行过滤
                     if (this.selectdate.length != 0) {
@@ -242,7 +244,7 @@
                         console.log('查询结果', res)
                         this.listData = res.data
                         // 每次查询，都要对任务的状态进行统计
-                        status_count(this.listData)
+                        this.status_count(this.listData)
                     }).catch(err => {
                         console.log('查询失败', err)
                     })
