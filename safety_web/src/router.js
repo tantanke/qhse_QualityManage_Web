@@ -698,6 +698,16 @@ export default new Router({
           name: 'Rcompoments4',
           component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/countlist.vue'], resolve)
         },
+        {
+            path: '/remote_Moniter/RemotePlanStatistics/planData',
+            name: 'planData',
+            component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/planData.vue'], resolve)
+        },
+        {
+            path: '/remote_Moniter/RemotePlanStatistics/planDataDetail',
+            name: 'planDataDetail',
+            component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/planDataDetail.vue'], resolve)
+        },
         //质量体系运行
         //待办任务
         { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qualitySystem/taskList/index.vue'],resolve)},

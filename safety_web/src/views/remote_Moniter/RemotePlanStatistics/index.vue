@@ -1,6 +1,14 @@
 <template>
   <div>
-    <div class="page-title" style="width:100%">远程计划统计</div>
+    <div class="page-title" style="width:100%;justify-content: flex-start;">
+      <span style="cursor: pointer">
+        远程计划统计
+      </span>
+      <span style="padding:0 20px">|</span>
+      <span style="color: #ccc; cursor: pointer" @click="gotoPlanData()">
+        远程计划监控数据
+      </span>
+    </div>
     <div class="page-content">
       <el-row>
         <el-form label-width="130px" :inline="true">
@@ -206,6 +214,14 @@ export default {
         }
       }
     },
+    // 跳转到远程计划监控数据
+    gotoPlanData(){
+        this.$router.push({
+            name: 'planData',
+            // 暂时不知道这里需要什么路径参数
+            params: {}
+        })
+    }
   },
   mounted () {
     console.log('统计bug开始滴滴滴滴')
