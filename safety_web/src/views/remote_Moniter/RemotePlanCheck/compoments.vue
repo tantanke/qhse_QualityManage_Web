@@ -188,7 +188,7 @@
                     getNeedToCheckedDetails(this.$route.params).then(res => {
                         for (var i = 0; i < res.data.length; i++) {
                             // 为了方便，直接将所有的数据，再赋值给linearray
-                            res.data[i].linearray = [res.data[i]]
+                            res.data[i].linearray = [{...res.data[i]}]
 
                             this.listData.push(res.data[i]);
                         }
@@ -313,7 +313,7 @@
                 }
                 this.resData.checkPersonId = GetCurrentUser().employeeId;
                 this.resData.checkPersonName = GetCurrentUser().employeeName;
-                console.log(this.resData)
+                console.log(this.resData, "上午那个bug，看看参数呢")
                 updateInputtedDetailInfo(this.resData).then(res => {
                     console.log('审核成功', res)
                     this.$message.success('核查成功')
@@ -326,7 +326,7 @@
                 getNeedToCheckedDetails(this.$route.params).then(res => {
                     for (var i = 0; i < res.data.length; i++) {
                         // 为了方便，直接将所有的数据，再赋值给linearray
-                        res.data[i].linearray = [res.data[i]]
+                        res.data[i].linearray = [{...res.data[i]}]
 
                         this.listData.push(res.data[i]);
                     }
@@ -371,7 +371,7 @@
             getNeedToCheckedDetails(this.$route.params).then(res => {
                 for (var i = 0; i < res.data.length; i++) {
                     // 为了方便，直接将所有的数据，再赋值给linearray
-                    res.data[i].linearray = [res.data[i]]
+                    res.data[i].linearray = [{...res.data[i]}]
 
                     this.listData.push(res.data[i]);
                     this.options.push({value: res.data[i].myNo, label: res.data[i].myNo});

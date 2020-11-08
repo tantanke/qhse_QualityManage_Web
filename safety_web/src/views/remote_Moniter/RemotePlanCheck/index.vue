@@ -105,6 +105,8 @@ export default {
         //导出
         var toExcel = new ExportJsonExcel(option);
         toExcel.saveExcel();
+
+        this.table = false;
       })
     },
     parseTreeToTable (node) {//转换格式
