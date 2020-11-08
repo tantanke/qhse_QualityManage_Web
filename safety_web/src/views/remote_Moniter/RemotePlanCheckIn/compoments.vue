@@ -18,7 +18,7 @@
                         <el-button type="danger" @click="handleCancel">返回</el-button>
                     </el-form-item>
                     <el-form-item style="float: right;">
-                        <span style="font-size: 16px; color: cornflowerblue">录入次数: {{checkInCountSum}}</span>
+                        <span style="font-size: 16px; color: cornflowerblue">录入次数: {{checkInCountSum?checkInCountSum:'0'}}</span>
                     </el-form-item>
                     <!-- <el-form-item style="float:right">
                       <el-button  type="primary" @click="handlePost">保存</el-button>

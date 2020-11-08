@@ -44,10 +44,10 @@
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
                                     <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
-                                    <el-table-column prop="description" label="核查情况描述" align="center"></el-table-column>
-                                    <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
+                                    <el-table-column prop="check" label="核查情况描述" align="center"></el-table-column>
+                                    <el-table-column prop="disposeCheck" label="处置情况" align="center"></el-table-column>
                                     <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
-                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
+                                    <el-table-column prop="checkDate" label="核查时间" align="center"></el-table-column>
                                     <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
                                 </el-table>
                             </el-form>
