@@ -44,11 +44,10 @@
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
                                     <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
-                                    <el-table-column prop="description" label="核查情况描述" align="center"></el-table-column>
-                                    <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
-                                    <!--监控人员，暂时还没有确定名字-->
-                                    <el-table-column prop="MonitorWorker" label="监控人员" align="center"></el-table-column>
-                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
+                                    <el-table-column prop="check" label="核查情况描述" align="center"></el-table-column>
+                                    <el-table-column prop="disposeCheck" label="处置情况" align="center"></el-table-column>
+                                    <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
+                                    <el-table-column prop="checkDate" label="核查时间" align="center"></el-table-column>
                                     <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
                                 </el-table>
                             </el-form>
@@ -188,6 +187,9 @@
                     this.listData = [];
                     getNeedToCheckedDetails(this.$route.params).then(res => {
                         for (var i = 0; i < res.data.length; i++) {
+                            // 为了方便，直接将所有的数据，再赋值给linearray
+                            res.data[i].linearray = [{...res.data[i]}]
+
                             this.listData.push(res.data[i]);
                         }
                     })
@@ -305,24 +307,27 @@
                 })
             },
             addDetail() {//录入细节
-                if (this.resData.check == '' || this.resData.disposeCheck == '') {
+                if ( !this.resData.check || !this.resData.disposeCheck) {
                     this.$message.error('信息录入不全！');
+                    return
                 }
                 this.resData.checkPersonId = GetCurrentUser().employeeId;
                 this.resData.checkPersonName = GetCurrentUser().employeeName;
-                console.log(this.resData)
+                console.log(this.resData, "上午那个bug，看看参数呢")
                 updateInputtedDetailInfo(this.resData).then(res => {
                     console.log('审核成功', res)
                     this.$message.success('核查成功')
 
                     this.table = false;
-                })
-                    .catch(err => {
+                }).catch(err => {
                         console.log('审核失败', err)
-                    })
+                })
                 this.listData = [];
                 getNeedToCheckedDetails(this.$route.params).then(res => {
                     for (var i = 0; i < res.data.length; i++) {
+                        // 为了方便，直接将所有的数据，再赋值给linearray
+                        res.data[i].linearray = [{...res.data[i]}]
+
                         this.listData.push(res.data[i]);
                     }
                 })
@@ -365,6 +370,9 @@
             console.log('核查细节页面报错')
             getNeedToCheckedDetails(this.$route.params).then(res => {
                 for (var i = 0; i < res.data.length; i++) {
+                    // 为了方便，直接将所有的数据，再赋值给linearray
+                    res.data[i].linearray = [{...res.data[i]}]
+
                     this.listData.push(res.data[i]);
                     this.options.push({value: res.data[i].myNo, label: res.data[i].myNo});
                     console.log(this.options)

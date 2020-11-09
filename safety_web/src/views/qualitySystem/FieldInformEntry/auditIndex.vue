@@ -653,12 +653,7 @@
 							required: 'true',
 							message: '请输入工作年限',
 							trigger: 'blur'
-						},
-						{
-							type: 'number',
-							message: '工作年限必须为数字'
-						}
-					],
+						}],
 					//学历
 					education: [{
 						required: 'true',
@@ -1277,17 +1272,17 @@
 				}
 				console.log('addQualityInformAndAttach', data)
 				this.loading = true
-				// addQualityInformAndAttach(data).then(res => {
-				// 	if (res.code == '1000') {
-				// 		this.$message.success('保存成功')
-				// 		this.loading = false
-				// 	} else {
-				// 		this.$message.error('保存失败')
-				// 		this.loading = false
-				// 	}
-				// }).catch(err => {
-				// 	this.$message.error(err.message)
-				// })
+				addQualityInformAndAttach(data).then(res => {
+					if (res.code == '1000') {
+						this.$message.success('保存成功')
+						this.loading = false
+					} else {
+						this.$message.error('保存失败')
+						this.loading = false
+					}
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
 			},
 			//增加质量检查记录
 			addCheckRecord(data) {
@@ -1297,17 +1292,17 @@
 				}
 				console.log('addCheckRecord', data)
 				this.loading = true
-				// addCheckRecord(data).then(res => {
-				// 	if (res.code == '1000') {
-				// 		this.$message.success('问题项保存成功')
-				// 		this.loading = false
-				// 	} else {
-				// 		this.$message.error('保存失败')
-				// 		this.loading = false
-				// 	}
-				// }).catch(err => {
-				// 	this.$message.error(err.message)
-				// })
+				addCheckRecord(data).then(res => {
+					if (res.code == '1000') {
+						this.$message.success('问题项保存成功')
+						this.loading = false
+					} else {
+						this.$message.error('保存失败')
+						this.loading = false
+					}
+				}).catch(err => {
+					this.$message.error(err.message)
+				})
 			},
 			//点击审核或者更新按钮的响应事件
 			handleClick() {

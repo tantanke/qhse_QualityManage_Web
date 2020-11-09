@@ -192,17 +192,18 @@
 
             confirmCheckIn() {
                 // 确认录入
-                console.log(this.resData, 555555)
+
                 this.resData.monitorPlanID = this.$route.params.monitorPlanID
-                // 等后端的接口了
+                console.log(this.resData, '确认录入的表单数据')
                 createNewDetail(this.resData).then(res=>{
-                    console.log(res, 384)
+                    this.$message.success("手动录入成功")
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
                         this.filterMethods(this.listData)
                     })
+
                 }).catch(err=>{
-                    console.log(err, 2214)
+                    this.$message.error("手动录入失败")
                 })
                 this.isCheckIn = false;
             }
@@ -263,6 +264,7 @@
             changeres() {//确认修改
                 updateMonitorPlanDetail(this.resData).then(res => {
                     console.log('修改成功', res)
+                    this.$message.success("修改成功")
                     this.ifchange = false
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
@@ -270,6 +272,7 @@
                     })
                 }).catch(err => {
                     console.log('修改失败', err)
+                    this.$message.error("修改失败")
                 })
             },
             // 用于筛选项目名称列的方法
