@@ -4,7 +4,7 @@
     element-loading-background="rgba(0, 0, 0, 0.8)">
      <el-row class="head">
        <el-col class="company"  :span='5'><span></span>
-            <p>数据来源：{{showName}}</p>
+            <p>{{showName}}</p>
           </el-col>
           <el-col class="title"  :span='5'>
             <p>安检院QHSE看板</p>
@@ -606,7 +606,7 @@ export default {
   },
   mounted() {
     if(this.$route.query.companyName){
-       this.showName = this.$route.query.companyName
+      this.showName = this.$route.query.companyName.length > 10 ?this.$route.query.companyName.split('（')[0]:this.$route.query.companyName
     }
     let _this = this
     _this.confirmToken()
@@ -614,9 +614,20 @@ export default {
     axios.all([queryDashboardScheduleManagement(_this.serForm),queryDashboardQualityManagement(_this.serForm)
     ,queryDashboardRecorderManagement(_this.serForm)]) .then(axios.spread(function (progressData,qualityData, recordData,) {
     // 两个请求现在都执行完成
+    if(qualityData.data.length>0 &&recordData.data.length>0 &&progressData.data.length>0){
     _this.initQualityBarchart(qualityData.data)
     _this.initRecordingBarchart(recordData.data)
     _this.initProgresstBarchart(progressData.data)
+    } else{
+      _this.$alert('该单位数据未录入完全！请录入之后重试！', '温馨提示', {
+          confirmButtonText: '确定',
+          type: 'warning',
+          showClose:false,
+          callback: () => {
+               window.open("about:blank","_self").close()
+          }
+        });
+    }
    })).catch((err) => {
      this.$message.error(err.message)
    })

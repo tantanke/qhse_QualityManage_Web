@@ -305,7 +305,7 @@ export default {
           }
         })
         localStorage.setItem('sysCate','安全')
-        _this.qhse = 'QHSE安全系统'
+        _this.qhse = 'QHSE安全模块'
          this.$router.push({name: 'mainPath'})
         _this.checkTaskList(_this.navs)
         console.log(_this.navs)
@@ -363,7 +363,7 @@ export default {
           }
         })
         localStorage.setItem('sysCate','质量')
-        _this.qhse = 'QHSE质量系统'
+        _this.qhse = 'QHSE质量模块'
          this.$router.push({name: 'mainPath'})
         _this.changeS = false
         _this.dialogTableVisible = false
