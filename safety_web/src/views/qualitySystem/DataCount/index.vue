@@ -174,8 +174,10 @@
 					</template>
 				</el-table-column>
 				<el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
-				<el-table-column prop="qualityCheckName" label="审核任务名称" width="200" align="center"></el-table-column>
-				<el-table-column prop="checkListName" label="审核要素名" width="200" align="center"></el-table-column>
+				<el-table-column prop="qualityCheckName" label="审核任务名称" width="200" align="center"
+				:filters="qualityCheckNameFilter" :filter-method="filterHandler"></el-table-column>
+				<el-table-column prop="checkListName" label="审核要素名" width="200" align="center"
+				:filters="checkListNameFilter" :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="checkCategory" label="审核类别" align="center" width="120" :filters="checkCategoryFilter"
 				 :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="checkBasis" label="审核依据" align="center" width="120" :filters="checkBasisFilter"
@@ -183,8 +185,8 @@
 				<el-table-column prop="checkMethod" label="审核方式" align="center" width="120" :filters="checkMethodFilter"
 				 :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="checkDate" label="审核时间" width="120" align="center"></el-table-column>
-				<el-table-column prop="checkResult" label="审核结果" align="center" width="100" :filters="[{text:'符合',value:'符合'},{text:'不符合',value:'不符合'}]"
-				 :filter-method="filterHandler"></el-table-column>
+				<el-table-column prop="checkResult" label="审核结果" align="center" width="100" 
+				:filters="checkResultFilter" :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="resultDescription" label="结果描述" align="center" width="200" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="nature" label="问题分类" align="center" width="100" :filters="natureFilter" :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" show-overflow-tooltip></el-table-column>
@@ -336,6 +338,8 @@
 				taskType: '',
 				checkResult: '',
 				nature: '',
+				qualityCheckNameFilter:[],
+				checkListNameFilter:[],
 				companyFilter: [],
 				companyLeaderFilter: [],
 				groupFilter: [],
@@ -346,6 +350,7 @@
 				checkCategoryFilter: [],
 				checkBasisFilter: [],
 				checkMethodFilter: [],
+				checkResultFilter:[],
 				checkPersonFilter:[],
 				//下载用数组
 				downloadList: [],
@@ -903,7 +908,6 @@
 						this.downloadList.push(chosenOne)
 					}
 				} else {
-					console.log('pop item', chosenOne.englishName)
 					this.downloadList.splice(this.downloadList.indexOf(chosenOne), 1)
 				}
 			},
@@ -1014,8 +1018,6 @@
 				})
 			},
 			filterHandler(value, row, column) {
-				console.log(value,row,column)
-				
 				const property = column['property'];
 				this.downloadSource=this.downloadSource.filter(item=>{
 					return item[property]===value
@@ -1050,7 +1052,6 @@
 			},
 			queryAllTable() {
 				queryAllTable().then(res => {
-					console.log(res.data)
 					this.qualityCheckList = res.data
 					if (this.qualityCheckList) {
 						this.qualityRecordList = []
@@ -1094,21 +1095,28 @@
 				for (var i = 0; i < this.qualityCheckList.length; i++) {
 					this.combineData(this.qualityCheckList[i], this.qualityRecordList[i], this.qualityCheckTree[i])
 				}
+				
+				this.qualityCheckNameFilter=[]
+				this.checkListNameFilter=[]
 				this.companyFilter= []
 				this.companyLeaderFilter= []
 				this.groupFilter=[]
 				this.groupLeaderFilter= []
 				this.projectFilter= []
 				this.projectLeaderFilter= []
+				this.checkResultFilter=[]
 				this.natureFilter= []
 				this.checkCategoryFilter= []
 				this.checkBasisFilter=[]
 				this.checkMethodFilter= []
 				this.checkPersonFilter=[]
 				for(var i=0;i<this.checkRecordList.length;i++){
+					this.pushItem(this.checkRecordList[i].qualityCheckName,this.qualityCheckNameFilter)
+					this.pushItem(this.checkRecordList[i].checkListName,this.checkListNameFilter)
 					this.pushItem(this.checkRecordList[i].checkCategory,this.checkCategoryFilter)
 					this.pushItem(this.checkRecordList[i].checkBasis,this.checkBasisFilter)
 					this.pushItem(this.checkRecordList[i].checkMethod,this.checkMethodFilter)
+					this.pushItem(this.checkRecordList[i].checkResult,this.checkResultFilter)
 					this.pushItem(this.checkRecordList[i].nature,this.natureFilter)
 					this.pushItem(this.checkRecordList[i].checkedCompanyName,this.companyFilter)
 					this.pushItem(this.checkRecordList[i].checkedPersonName,this.companyLeaderFilter)
@@ -1127,7 +1135,6 @@
 				}
 				temp.text=pushItem
 				temp.value=pushItem
-				console.log(pushItem)
 				let tempArray=[]
 				tempArray=targetArray.filter(item=>{
 					return item.value===temp.value
@@ -1183,6 +1190,7 @@
 				}
 			},
 			combineData(qualityCheckList, qualityRecordList, qualityCheckTree) {
+				console.log('qualityCheckTree',qualityCheckTree)
 				for (var i = 0; i < qualityCheckTree.length; i++) {
 					if (!qualityCheckTree[i].children) {
 						var checkRecordItem = {
@@ -1295,7 +1303,7 @@
 							//纠正附件
 							correctPic: [],
 						}
-						checkRecordItem.checkListName = qualityCheckTree[i].checkListName
+						checkRecordItem.checkListName = qualityCheckTree[i].qualityCheckName
 						checkRecordItem.checkResult = qualityCheckTree[i].checkResult
 						checkRecordItem.resultDescription = qualityCheckTree[i].description
 						checkRecordItem.attach = this.splitFilePath(qualityCheckTree[i].attach)
@@ -1304,7 +1312,7 @@
 						checkRecordItem.checkCategory=qualityCheckList.checkCategory
 						checkRecordItem.checkBasis=qualityCheckList.checkBasis
 						checkRecordItem.checkMethod=qualityCheckList.checkMethod
-						checkRecordItem.checkListName = qualityCheckList.qualityCheckName
+						checkRecordItem.qualityCheckName = qualityCheckList.qualityCheckName
 						checkRecordItem.checkDate = qualityCheckList.checkDate
 						checkRecordItem.checkPerson = qualityCheckList.checkPerson
 						checkRecordItem.checkedCompanyName = qualityCheckList.checkedCompanyName
