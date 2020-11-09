@@ -58,7 +58,6 @@
                                      :filters="filterCompanyNameList"
                                      :filter-method="filterCompanyName"
                     ></el-table-column>
-                    <!--项目类别，暂时还没确定名字-->
                     <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
                     <el-table-column prop="projectName" label="项目名称" align="center"
                                      :filters="filterProjectNameList"

@@ -29,9 +29,6 @@
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新建</el-button>
-                    </el-form-item>
                     <el-form-item style="float:right;  color:cornflowerblue">
                         <span style="font-size:16px;">执行中: {{status_processing}}</span>
                         &nbsp;
@@ -50,6 +47,16 @@
                         max-height="560"
                         highlight-current-row
                         border>
+                    <el-table-column type="expand" @expand-change="test">
+                        <template slot-scope="props">
+                            <el-form label-width="150px" :inline='true'>
+                                <el-table :stripe="true" :header-cell-style="tableHeaderColor"
+                                          :data="props.row.linearray"
+                                          ref="treeTable" :indent="30" max-height="560" border>
+                                </el-table>
+                            </el-form>
+                        </template>
+                    </el-table-column>
                     <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
                     <el-table-column prop="startDate" label="计划开始时间" width="150" align="center"></el-table-column>
                     <el-table-column prop="endDate" label="计划结束时间" width="150" align="center"></el-table-column>
@@ -59,10 +66,11 @@
                     <el-table-column label="操作" width="300" align="center">
                         <template slot-scope="scope">
                             <el-button
+                                    disabled
                                     type="primary"
                                     size="mini"
                                     @click="readfile(scope.row)"
-                            >详情
+                            >暂时无用
                             </el-button>
                         </template>
                     </el-table-column>
@@ -81,6 +89,7 @@
     import {getMonitorPlanList} from "../../../services/remote";//查询
     import {deletePlan} from "../../../services/remote";//删除
     import {getDetails, endMonitorPlan} from "../../../services/remote";//查询细节
+    import {getInputAndCheckDetail} from "../../../services/remote"
 
     export default {
         data() {
@@ -93,6 +102,15 @@
             }
         },
         methods: {
+            //设置表头行的样式
+            tableHeaderColor({row, column, rowIndex, columnIndex}) {
+                return 'background-color:lightblue;color:#fff;font-family:"楷体";font-size:18px;text-align:center'
+
+            },
+            test(p){
+                alert("展开了")
+                console.log(p, 1232324)
+            },
             getNowFormatDate() {
                 var date = new Date();
                 var seperator1 = "-";
@@ -168,6 +186,11 @@
             console.log('这是远程计划的bug开始')
             this.nowdate = this.getNowFormatDate();
             this.handleClick();
+            getInputAndCheckDetail('100').then(res=>{
+                console.log(res, '看看全部数据有哪些')
+            }).catch(err=>{
+                console.log(err, '看看报了哪些错')
+            })
         }
     }
 </script>
