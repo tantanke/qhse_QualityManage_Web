@@ -171,7 +171,17 @@
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item>
                         </el-tab-pane>
+						
                         <el-tab-pane label="整改信息" name="5">
+							<el-form-item label="责任单位验证时间">
+							    <el-input v-model="problemCheckForm.resVerifyDate" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="责任单位验证人">
+							    <el-input v-model="problemCheckForm.resVerifierName" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="责任单位验证意见">
+							    <el-input v-model="problemCheckForm.resVerifyAdvice" readonly></el-input>
+							</el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="problemCheckForm.nonConformCorrect" readonly></el-input>
                             </el-form-item>
@@ -200,12 +210,12 @@
                              <el-form-item label="验证人">
                                  <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
                              </el-form-item>
-                             <el-form-item label="跟综验证">
-                                <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证"></el-input>
-                            </el-form-item>
-                            <el-form-item label="验证意见">
+							 <el-form-item label="验证意见">
                                  <el-input v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
                              </el-form-item>
+                             <el-form-item label="跟综验证">
+                                <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
+                            </el-form-item>
                          </el-tab-pane>
                     </el-tabs>
                 </el-form>
