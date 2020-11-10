@@ -157,8 +157,8 @@ export const getTotalInputTime = (planId) => {
 }
 
 // 远程计划监控数据 使用，用于获取录入和审核的全部细节
-export const getInputAndCheckDetail = (planId) => {
-    return request(`/api/getInputAndCheckDetail?planId=${planId}`, {
+export const getInputAndCheckDetail = (planDetailId) => {
+    return request(`/api/getInputAndCheckDetail?planDetailId=${planDetailId}`, {
         method:'get',
     })
 }

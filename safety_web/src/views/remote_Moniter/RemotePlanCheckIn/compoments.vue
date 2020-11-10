@@ -44,7 +44,6 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
-                                    <!--监控人员，暂时还没有确定名字-->
                                     <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
                                     <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
                                     <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
