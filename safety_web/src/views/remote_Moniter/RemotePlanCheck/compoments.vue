@@ -117,6 +117,11 @@
                                 <el-input type="text" label="处置情况 ：" class="resizeNone" v-model="resData.disposeCheck"
                                           placeholder="请输入内容"></el-input>
                             </el-form-item>
+                            <el-form-item label="核查结论:" prop="result" style="margin-bottom:5px"
+                                          v-if="this.selecttime==this.selectdate">
+                                <el-input type="text" label="处置情况 ：" class="resizeNone" v-model="resData.result"
+                                          placeholder="请输入内容"></el-input>
+                            </el-form-item>
                             <el-form-item label="是否关闭(核查):" prop="closeCheck" style="margin-bottom:5px"
                                           v-if="this.selecttime==this.selectdate">
                                 <el-switch
@@ -159,7 +164,7 @@
         data() {
             return {
                 listData: [],
-                resData: {closeCheck: '是', disposeCheck: '', check: '', description: '', picNo: '', condition: ''},
+                resData: {closeCheck: '是', disposeCheck: '', check: '', description: '', picNo: '', condition: '', result: ''},
                 ifchange: false,
                 ifnew: 0,
                 table: false,
@@ -307,13 +312,12 @@
                 })
             },
             addDetail() {//录入细节
-                if ( !this.resData.check || !this.resData.disposeCheck) {
+                if ( !this.resData.check || !this.resData.disposeCheck || !this.resData.result) {
                     this.$message.error('信息录入不全！');
                     return
                 }
                 this.resData.checkPersonId = GetCurrentUser().employeeId;
                 this.resData.checkPersonName = GetCurrentUser().employeeName;
-                console.log(this.resData, "上午那个bug，看看参数呢")
                 updateInputtedDetailInfo(this.resData).then(res => {
                     console.log('审核成功', res)
                     this.$message.success('核查成功')
@@ -325,9 +329,7 @@
                 this.listData = [];
                 getNeedToCheckedDetails(this.$route.params).then(res => {
                     for (var i = 0; i < res.data.length; i++) {
-                        // 为了方便，直接将所有的数据，再赋值给linearray
                         res.data[i].linearray = [{...res.data[i]}]
-
                         this.listData.push(res.data[i]);
                     }
                 })
