@@ -97,6 +97,7 @@
                   :headers="header"
                   :limit="2"            
                   :on-exceed="handleExceed"
+                  accept=".jpg, .png, .bmp"
                 >
                 <el-button size="small" type="primary">浏览文件</el-button>
                 <span> 最多两张，格式为jpg,png,bmp</span>

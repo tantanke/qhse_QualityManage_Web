@@ -109,7 +109,7 @@
                 type="primary"
                 size="mini"
                 @click="goUpdateFile(scope.row)"
-                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查'"  
+                v-if="scope.row.childNode.length === 0 && (!scope.row.fileCheckStatus || scope.row.fileCheckStatus === '未审核') && scope.row.status === '备案待查' "  
                 icon="el-icon-edit"
               >开始审核</el-button>
               <el-button
@@ -169,7 +169,10 @@
               >
                <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                    <a  :download="download[index]" target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
+                  <!-- <a   style="max-width:600px;height:auto" >{{item + download[index]}}</a> -->
+                    <span style="text-decoration: underline;color:blue;margin-right:8px">{{download[index]}}</span>
+                    <el-button @click="previewFile(item)" type="text">预览</el-button>
+                    <el-button  @click="downloadFile(item)" type="text">下载</el-button>
                 </div>
               </el-form-item>
             </el-col>
@@ -273,7 +276,9 @@
               >
                 <span v-show="files.length === 0">无文件附件记录！</span>
                 <div v-for="(item,index) in files" :key="index">
-                     <a  :download="download[index]" target='_blank' style="max-width:600px;height:auto" :href="item">{{download[index]}}</a>
+                    <span style="text-decoration: underline;color:blue;margin-right:8px">{{download[index]}}</span>
+                    <el-button @click="previewFile(item)" type="text">预览</el-button>
+                    <el-button  @click="downloadFile(item)" type="text">下载</el-button>
                 </div>
               </el-form-item>
             </el-col>
@@ -440,6 +445,13 @@ export default {
     }
   },
   methods: {
+    previewFile(data){
+      console.log(data)
+      window.open('http://view.xdocin.com/xdoc?_xdoc='+data)
+    },
+    downloadFile(data){
+      window.open(data)
+    },
     confirmEdit(){
        let _this = this
        let str = ''
