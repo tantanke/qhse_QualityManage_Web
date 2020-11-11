@@ -130,6 +130,11 @@
                         p.linearray.forEach(a=>{
                             a.closeInOrCheck = a.condition==='备用'?a.closeCheck:a.closeIn
                             a.disposeInOrCheck = a.condition==='备用'?a.disposeCheck:a.disposeIn
+
+                            if (a.condition === '备用') {
+                                a.closeInOrCheck = a.closeInOrCheck?a.closeInOrCheck:'未核查'
+                                a.disposeInOrCheck = a.closeInOrCheck?a.closeInOrCheck:'未核查'
+                            }
                         })
 
                         console.log(res.data, '当前展开的表格的数据')
