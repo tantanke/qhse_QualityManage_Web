@@ -44,7 +44,6 @@
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
-                                    <!--监控人员，暂时还没有确定名字-->
                                     <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
                                     <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
                                     <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
@@ -58,7 +57,6 @@
                                      :filters="filterCompanyNameList"
                                      :filter-method="filterCompanyName"
                     ></el-table-column>
-                    <!--项目类别，暂时还没确定名字-->
                     <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
                     <el-table-column prop="projectName" label="项目名称" align="center"
                                      :filters="filterProjectNameList"

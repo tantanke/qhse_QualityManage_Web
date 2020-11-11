@@ -51,6 +51,9 @@
                             <el-form-item label="问题性质">
                                 <el-input v-model="rectifyForm.nature" readonly></el-input>
                             </el-form-item>
+			    <el-form-item label="问题附件">
+				<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
+                            </el-form-item>
                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 5px"
@@ -59,11 +62,26 @@
                                     v-for="(item, index) in imageList" :key="index">
                                 </el-image>
                             </el-form-item>
-                            <el-form-item label="问题附件">
-								<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
-                            </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="违章信息" name="1" v-if="rectifyForm.nature === '违章项'">
+						<el-form-item label="不符合标准">
+						    <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
+						</el-form-item>
+						<el-form-item label="标准条款号">
+						    <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
+						</el-form-item>
+						<el-form-item label="标准条款内容">
+						    <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
+						</el-form-item>
+						<el-form-item label="不符合文件">
+						    <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
+						</el-form-item>
+						<el-form-item label="文件条款号">
+						    <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
+						</el-form-item>
+						<el-form-item label="文件条款内容">
+						    <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
+						</el-form-item>	
                         <el-form-item label="处罚依据">
                         <el-input v-model="rectifyForm.punishmentBasis" readonly></el-input>
                     </el-form-item>
@@ -109,19 +127,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款号">
+                            <el-form-item label="标准条款号">
                                 <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
+                            <el-form-item label="标准条款内容">
                                 <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合文件">
                                 <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款号">
+                            <el-form-item label="文件条款号">
                                 <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款内容">
+                            <el-form-item label="文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -149,19 +167,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款号">
+                            <el-form-item label="标准条款号">
                                 <el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
+                            <el-form-item label="标准条款内容">
                                 <el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合文件">
                                 <el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款号">
+                            <el-form-item label="文件条款号">
                                 <el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款内容">
+                            <el-form-item label="文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -171,39 +189,32 @@
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
                         </el-tab-pane>
-                         <el-tab-pane label="验证信息" name="5">
-                            <el-form-item label="审核验证时间">
-                                 <el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
-                             </el-form-item>
-                             <el-form-item label="审核验证人">
-                                 <el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
-                             </el-form-item>
-                             <el-form-item label="审核验证意见">
-                                 <el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
-                             </el-form-item>
-                             <el-form-item label="责任单位验证时间">
-                                <el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
-                            </el-form-item>
-							<el-form-item label="责任单位验证人">
-                                <el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
-                            </el-form-item>
-							<el-form-item label="责任单位验证意见">
-                                <el-input v-model="rectifyForm.resVerifyAdvice" readonly></el-input>
-                            </el-form-item>
-                        </el-tab-pane>
+                         
                         <el-tab-pane label="整改信息" name="6">
-                            <el-form-item label="整改完成时间">
-                                <el-input v-model="rectifyForm.reformDate" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="跟综验证">
-                                <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="rectifyForm.nonConformCorrect" placeholder="请填写纠正"></el-input>
                             </el-form-item>
                             <el-form-item label="纠正措施">
                                 <el-input v-model="rectifyForm.nonConformCorrectMeasure" type="textarea" placeholder="请填写纠正措施"></el-input>
                             </el-form-item>
+			    <el-form-item label="跟综验证">
+                                <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
+                            </el-form-item>
+			     <el-form-item label="整改完成时间">
+                                <el-input v-model="rectifyForm.reformDate" readonly></el-input>
+                            </el-form-item>
+			    <el-form-item label="纠正附件">
+							    <el-upload
+							    ref="uploadFile"
+							    action="/api/addQualityAttach"
+							    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+							    :headers="headers"
+							    :on-remove="handleFileRemove"
+							    :on-success="handleFileSuccess"
+							    v-if="isBelongToPart === true">
+							    <el-button size="small" type="success" icon="el-icon-upload">点击上传文件</el-button>
+							    </el-upload>
+			    </el-form-item>
                             <el-form-item label="纠正图片">
                                 <el-upload
                                 ref="uploadPic"
@@ -219,17 +230,13 @@
                                 <el-button size="small" type="primary" icon="el-icon-upload">点击上传图片</el-button>
                                 </el-upload>
                             </el-form-item>
-                            <el-form-item label="纠正附件">
-                                <el-upload
-                                ref="uploadFile"
-                                action="/api/addQualityAttach"
-                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                                :headers="headers"
-                                :on-remove="handleFileRemove"
-                                :on-success="handleFileSuccess"
-                                v-if="isBelongToPart === true">
-                                <el-button size="small" type="success" icon="el-icon-upload">点击上传文件</el-button>
-                                </el-upload>
+                            <el-form-item label="历史纠正文件" class="historyfile">
+                                <div class="historyFile" v-for="(item, index) in historyFileList" :key="index" >
+                                    <a :href="item.url" class="filelinks">{{item.fileName}}</a>
+                                    <el-button type="text" size="mini" @click="deleteFile(item.url)">
+                                        <i class="el-icon-close"></i>
+                                    </el-button>
+                                </div>
                             </el-form-item>
                             <el-form-item label="历史纠正图片">
                                 <div  v-for="(item, index) in historyImageList" :key="index" class="historyPic">
@@ -243,16 +250,28 @@
                                     </el-button>
                                 </div>
                             </el-form-item>
-                            <el-form-item label="历史纠正文件" class="historyfile">
-                                <div class="historyFile" v-for="(item, index) in historyFileList" :key="index" >
-                                    <a :href="item.url" class="filelinks">{{item.fileName}}</a>
-                                    <el-button type="text" size="mini" @click="deleteFile(item.url)">
-                                        <i class="el-icon-close"></i>
-                                    </el-button>
-                                </div>
-                            </el-form-item>
+                           
                         </el-tab-pane>
-                       
+                       <el-tab-pane label="验证信息" name="5">
+                           <el-form-item label="审核验证时间">
+                                <el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="审核验证人">
+                                <el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="审核验证意见">
+                                <el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="责任单位验证时间">
+                               <el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
+                           </el-form-item>
+                       	<el-form-item label="责任单位验证人">
+                               <el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
+                           </el-form-item>
+                       	<el-form-item label="责任单位验证意见">
+                               <el-input v-model="rectifyForm.resVerifyAdvice" readonly></el-input>
+                           </el-form-item>
+                       </el-tab-pane>
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">

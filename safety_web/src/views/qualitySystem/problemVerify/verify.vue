@@ -122,19 +122,19 @@
 							<el-form-item label="不符合标准">
 								<el-input v-model="rectifyForm.nonConformityStd" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合标准条款号">
+							<el-form-item label="标准条款号">
 								<el-input v-model="rectifyForm.nonConformityStdNo" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合标准条款内容">
+							<el-form-item label="标准条款内容">
 								<el-input v-model="rectifyForm.nonConformityStdContent" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="不符合文件">
 								<el-input v-model="rectifyForm.nonConformClause" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件条款号">
+							<el-form-item label="文件条款号">
 								<el-input v-model="rectifyForm.nonConformClauseNo" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件条款内容">
+							<el-form-item label="文件条款内容">
 								<el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="不符合原因">

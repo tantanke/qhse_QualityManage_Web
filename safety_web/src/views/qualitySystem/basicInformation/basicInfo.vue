@@ -113,7 +113,7 @@
 						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择受审单位" style="min-width: 230px;max-width:560px ; width:fit-content "
 						 :options="companyList" v-model="checkedCompanyId"></treeselect>
 					</el-form-item>
-					<el-form-item label="单位负责人" prop="checkedPersonID">
+					<el-form-item label="单位负责人">
 						<el-select v-model="addInfoForm.checkedPersonID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
@@ -128,7 +128,7 @@
 						</el-select> -->
 						<el-input clearable v-model="addInfoForm.group" placeholder="请输入" style="width: 100%"></el-input>
 					</el-form-item>
-					<el-form-item label="室组长" prop="groupLeaderID">
+					<el-form-item label="室组长">
 						<el-select v-model="addInfoForm.groupLeaderID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
@@ -137,7 +137,7 @@
 					<el-form-item label="作业项目名称" prop="projectName">
 						<el-input clearable v-model="addInfoForm.projectName" style="width: 100%" placeholder="请输入"></el-input>
 					</el-form-item>
-					<el-form-item label="项目组长" prop="projectLeaderID">
+					<el-form-item label="项目组长">
 						<el-select v-model="addInfoForm.projectLeaderID" style="width: 100%" placeholder="请选择" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>

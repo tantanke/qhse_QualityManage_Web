@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- 此页面暂时未被使用 -->
         <div class="page-title" style="width:100%">远程计划监控数据细节</div>
         <div class="page-content">
             <el-row>
@@ -53,6 +54,6 @@
     }
 </script>
 
-<style lang="stylus" rel="stylesheet/stylus">
+<style>
 
 </style>
