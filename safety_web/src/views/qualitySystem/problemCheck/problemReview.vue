@@ -53,6 +53,9 @@
                             <el-form-item label="问题性质">
                                 <el-input v-model="problemCheckForm.nature" readonly></el-input>
                             </el-form-item>
+			     <el-form-item label="问题附件">
+                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">{{item.fileName}}</a>
+                            </el-form-item>
                              <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 15px"
@@ -61,11 +64,26 @@
                                     v-for="(item, index) in imageList" :key="index">
                                 </el-image>
                             </el-form-item>
-                            <el-form-item label="问题附件">
-                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">{{item.fileName}}</a>
-                            </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="违章信息" name="1" v-if="problemCheckForm.nature === '违章项'">
+			<el-form-item label="不符合标准">
+                                <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="标准条款号">
+                                <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="标准条款内容">
+                                <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="不符合文件">
+                                <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="文件条款号">
+                                <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="文件条款内容">
+                                <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
+                            </el-form-item>
                      <el-form-item label="处罚依据">
                         <el-input v-model="problemCheckForm.punishmentBasis" readonly></el-input>
                     </el-form-item>
@@ -109,19 +127,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款号">
+                            <el-form-item label="标准条款号">
                                 <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
+                            <el-form-item label="标准条款内容">
                                 <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合文件">
                                 <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款号">
+                            <el-form-item label="文件条款号">
                                 <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款内容">
+                            <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -149,19 +167,19 @@
                             <el-form-item label="不符合标准">
                                 <el-input v-model="problemCheckForm.nonConformityStd" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款号">
+                            <el-form-item label="标准条款号">
                                 <el-input v-model="problemCheckForm.nonConformityStdNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合标准条款内容">
+                            <el-form-item label="标准条款内容">
                                 <el-input v-model="problemCheckForm.nonConformityStdContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合文件">
                                 <el-input v-model="problemCheckForm.nonConformClause" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款号">
+                            <el-form-item label="文件条款号">
                                 <el-input v-model="problemCheckForm.nonConformClauseNo" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合文件条款内容">
+                            <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="不符合原因">
@@ -191,6 +209,9 @@
                             <el-form-item label="整改完成时间">
                                 <el-input v-model="problemCheckForm.reformDate" readonly></el-input>
                             </el-form-item>
+			    <el-form-item label="纠正附件">
+                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
+                            </el-form-item>
                             <el-form-item label="纠正图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 15px"
@@ -199,18 +220,15 @@
                                     v-for="(item, index) in imageCorrectList" :key="index">
                                 </el-image>
                             </el-form-item>
-                            <el-form-item label="纠正附件">
-                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
-                            </el-form-item>
                         </el-tab-pane>
                          <el-tab-pane label="验证信息" name="6">
-                             <el-form-item label="验证时间">
+                             <el-form-item label="审核验证时间">
                                  <el-input v-model="problemCheckForm.cheVerifyDate" readonly></el-input>
                              </el-form-item>
-                             <el-form-item label="验证人">
+                             <el-form-item label="审核验证人">
                                  <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
                              </el-form-item>
-							 <el-form-item label="验证意见">
+			     <el-form-item label="审核验证意见">
                                  <el-input v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
                              </el-form-item>
                              <el-form-item label="跟综验证">
