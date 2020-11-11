@@ -51,6 +51,9 @@
                             <el-form-item label="问题性质">
                                 <el-input v-model="rectifyForm.nature" readonly></el-input>
                             </el-form-item>
+			    <el-form-item label="问题附件">
+				<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
+                            </el-form-item>
                             <el-form-item label="问题图片">
                                 <el-image 
                                     style="width: 100px; height: 100px; margin: 0 5px"
@@ -58,9 +61,6 @@
                                     :preview-src-list="imageList"
                                     v-for="(item, index) in imageList" :key="index">
                                 </el-image>
-                            </el-form-item>
-                            <el-form-item label="问题附件">
-								<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
                             </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane label="违章信息" name="1" v-if="rectifyForm.nature === '违章项'">
@@ -191,19 +191,19 @@
                         </el-tab-pane>
                          
                         <el-tab-pane label="整改信息" name="6">
-                            <el-form-item label="整改完成时间">
-                                <el-input v-model="rectifyForm.reformDate" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="跟综验证">
-                                <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="rectifyForm.nonConformCorrect" placeholder="请填写纠正"></el-input>
                             </el-form-item>
                             <el-form-item label="纠正措施">
                                 <el-input v-model="rectifyForm.nonConformCorrectMeasure" type="textarea" placeholder="请填写纠正措施"></el-input>
                             </el-form-item>
-							<el-form-item label="纠正附件">
+			    <el-form-item label="跟综验证">
+                                <el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
+                            </el-form-item>
+			     <el-form-item label="整改完成时间">
+                                <el-input v-model="rectifyForm.reformDate" readonly></el-input>
+                            </el-form-item>
+			    <el-form-item label="纠正附件">
 							    <el-upload
 							    ref="uploadFile"
 							    action="/api/addQualityAttach"
@@ -214,7 +214,7 @@
 							    v-if="isBelongToPart === true">
 							    <el-button size="small" type="success" icon="el-icon-upload">点击上传文件</el-button>
 							    </el-upload>
-							</el-form-item>
+			    </el-form-item>
                             <el-form-item label="纠正图片">
                                 <el-upload
                                 ref="uploadPic"
