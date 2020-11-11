@@ -12,6 +12,11 @@ export default new Router({
       component: resolve => require(['./views/Login.vue'], resolve)
     },
     {
+      path: '/sys_choose',
+      name: 'sysChoose',
+      component: resolve => require(['./components/sysChoose.vue'], resolve)
+    },
+    {
       path: '/qhseDashboard',
       name: 'qhseBigScreen',
       component: resolve => require(['./views/bigScreen/bigScreen.vue'], resolve)
@@ -21,12 +26,7 @@ export default new Router({
       name: 'mainPath',
       // redirect: 'firstPage',
       component: resolve => require(['./components/DashLayout.vue'], resolve),
-      children: [{
-          path: '/index',
-          name: 'firstPage',
-          component: resolve => require(['./views/index.vue'], resolve)
-        },
-
+      children: [
         {
           path: '/components/index',
           name: 'index',

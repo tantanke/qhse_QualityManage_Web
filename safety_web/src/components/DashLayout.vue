@@ -111,12 +111,6 @@
                 div 切换系统
       el-main
         <router-view/>
-        <el-dialog style='overflow:hidden;height:43.5%;'    :visible.sync="dialogTableVisible" :close-on-click-modal='false' :close-on-press-escape='false' :show-close='false' >
-        <div  class="chooseSys">
-          <img  class='backimg'  src='./img/back.jpg'>
-          <img @click="goSafe()" class='safeimg' src='./img/safe.jpg'>
-          <img @click="goQuality()" class='qualityimg' src='./img/quality.jpg'> </div>  
-        </el-dialog>
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
         <el-form :inline="true" >
         <el-form-item label='选择单位：' labelWidth='120px'>
@@ -191,13 +185,6 @@ export default {
       timer:'',
       nav:'',
       //图片路径
-      backgroundImage1: "url(" + require("./img/safe.jpg") + ")",
-      backgroundImage2: "url(" + require("./img/quality.jpg") + ")",
-      imgBack:{
-        backgroundImage3: "url(" + require("./img/back.jpg") + ")",
-        backgroundRepeat: "no-repeat",
-        backgroundSize:"100% 100%",
-      }
       
     }
   },
@@ -205,16 +192,8 @@ export default {
     this.checkUser()
   },
   mounted () {
-    let sysCate = localStorage.getItem('sysCate')
-    if(sysCate){
-      if(sysCate === '安全'){
-        this.goSafe()
-      } else {
-        this.goQuality()
-      }
-    } else{
-      this.dialogTableVisible = true
-    }
+   this.chooseSys()
+    this.checkSys()
     //定时刷新消息数量
     if(this.timer){
       clearInterval(this.timer)
@@ -240,6 +219,25 @@ export default {
     }
   },
   methods: {
+    chooseSys(){
+       if(this.$route.params.sysId === 0){
+          this.goSafe()
+       }
+       if(this.$route.params.sysId === 1){
+          this.goQuality()
+       }
+    },
+    // 校验当前系统
+    checkSys(){
+      let sysCate = localStorage.getItem('sysCate')
+      if(sysCate){
+        if(sysCate === '安全'){
+          this.goSafe()
+        } else {
+          this.goQuality()
+        }
+      }
+    },
      handleChange(){
         this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
       },
@@ -266,8 +264,8 @@ export default {
     },
     changeSys() {
       let _this = this
-      if(_this.qhse == 'QHSE质量系统') {
-        _this.$confirm("确定切换到QHSE安全系统吗?", '提示', {
+      if(_this.qhse == 'QHSE质量模块') {
+        _this.$confirm("确定切换到QHSE安全模块吗?", '提示', {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
               type:"warning"
@@ -277,7 +275,7 @@ export default {
               })
               }
           else {
-           _this.$confirm("确定切换到QHSE质量系统吗?", '提示', {
+           _this.$confirm("确定切换到QHSE质量模块吗?", '提示', {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
               type:"warning"

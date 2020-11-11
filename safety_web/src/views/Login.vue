@@ -61,7 +61,7 @@ export default {
       SignIn(this.formData).then((res) => {
         CurrentUser.set(res.data)
         localStorage.removeItem('sysCate')
-        this.$router.push({name: 'mainPath'})
+        this.$router.push({name: 'sysChoose'})
         console.log('进入页面')
       }).catch((err) => {
         this.$message.error(err.message)
