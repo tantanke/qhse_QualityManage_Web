@@ -42,44 +42,49 @@
                         max-height="560"
                         highlight-current-row
                         border>
-                    <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
-                    <el-table-column prop="startDate" label="计划开始时间" width="150" align="center"></el-table-column>
-                    <el-table-column prop="endDate" label="计划结束时间" width="150" align="center"></el-table-column>
-                    <el-table-column prop="planName" label="计划名称" align="center"></el-table-column>
-                    <el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center"></el-table-column>
-                    <el-table-column prop="status" label="计划状态" width="120" align="center"></el-table-column>
-                    <el-table-column label="操作" width="300" align="center">
+                    <el-table-column type="index" label="序号" width="80" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="startDate" label="计划开始时间" width="150" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="endDate" label="计划结束时间" width="150" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="status" label="计划状态" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" width="340" align="center" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <el-button
                                     type="primary"
                                     size="mini"
+                                    icon="el-icon-more"
                                     @click="readfile(scope.row)"
                             >详情
                             </el-button>
+                            
                             <el-button
-                                    type="danger"
+                                    type="warning"
                                     size="mini"
-                                    @click="deletefile(scope.row)"
-                            >删除
-                            </el-button>
-                            <el-button
-                                    type="success"
-                                    size="mini"
+                                    icon="el-icon-download"
                                     @click="pushfile(scope.row)"
                             >导出
                             </el-button>
                             <el-button
                                     type="info"
                                     size="mini"
+                                    icon="el-icon-video-pause"
                                     @click="endplans(scope.row)"
                             >结束
+                            </el-button>
+                            <el-button
+                                    type="danger"
+                                    size="mini"
+                                    icon="el-icon-delete"
+                                    @click="deletefile(scope.row)"
+                            >删除
                             </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
             </el-row>
             <!-- 新增计划表  -->
-            <el-dialog title="新增计划" :visible.sync="ifadd" center width="700px">
+            <el-dialog title="新增计划" :visible.sync="ifadd" width="700px" :close-on-click-modal="false">
                 <el-form label-width="120px" style="width:100%;">
                     <el-row>
                         <el-col :span="24">
@@ -101,16 +106,17 @@
                                           placeholder="请输入内容"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="24">
-                            <el-form-item>
-                                <el-button type="" style="margin-top:20px;margin-left:100px" @click="ifadd=false">取消
-                                </el-button>
-                                <el-button type="primary" style="margin-top:20px;" @click="addEvidenceFile">确定录入
-                                </el-button>
-                            </el-form-item>
-                        </el-col>
+                        
+                                
+                           
                     </el-row>
                 </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="" @click="ifadd=false" icon="el-icon-refresh-left">取 消
+                                </el-button>
+                                <el-button type="primary" @click="addEvidenceFile" icon="el-icon-check">录 入
+                                </el-button>
+                </span>
             </el-dialog>
         </div>
     </div>

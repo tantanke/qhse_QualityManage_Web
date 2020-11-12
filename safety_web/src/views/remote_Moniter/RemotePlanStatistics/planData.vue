@@ -18,7 +18,7 @@
             <!-- 计划列表 -->
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
                 <!-- 展开事件要放在被展开行所属的表上 -->
-                <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30"
+                <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30" max-height="560px"
                           @expand-change="expandLoad"
                           highlight-current-row border>
                     <el-table-column type="expand" >
@@ -27,43 +27,43 @@
                                 <el-table :stripe="true" :header-cell-style="tableHeaderColor"
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
-                                    <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
-                                    <el-table-column prop="description" label="视频监控描述" align="center"></el-table-column>
-                                    <el-table-column prop="picNo" label="截图编号" align="center">
+                                    <el-table-column prop="condition" label="记录仪使用情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="description" label="视频监控描述" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="picNo" label="截图编号" align="center" show-overflow-tooltip>
                                         <template slot-scope="scope">>
                                             <a href="#" @click="handlePictureCardPreview2(scope.row)">{{scope.row.picNo}}</a>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="disposeInOrCheck" label="处置情况" align="center"></el-table-column>
-                                    <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
-                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
-                                    <el-table-column prop="checkDate" label="核查时间" align="center"></el-table-column>
-                                    <el-table-column prop="result" label="核查结论" align="center"></el-table-column>
-                                    <el-table-column prop="closeInOrCheck" label="是否关闭" align="center"></el-table-column>
+                                    <el-table-column prop="disposeInOrCheck" label="处置情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="inputDate" label="录入时间" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="checkDate" label="核查时间" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="result" label="核查结论" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="closeInOrCheck" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
                                 </el-table>
                             </el-form>
                         </template>
                     </el-table-column>
-                    <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center"></el-table-column>
-                    <el-table-column prop="myNo" label="自编号" width="120" align="center"></el-table-column>
-                    <el-table-column prop="planName" label="计划名称" width="120" align="center"
+                    <el-table-column type="index" label="序号" width="50" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="myNo" label="自编号" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="planName" label="计划名称" width="120" align="center" show-overflow-tooltip
                                      :filters="filterPlanNameList"
                                      :filter-method="filterPlanName"
                     ></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="120" align="center"
+                    <el-table-column prop="companyName" label="基层单位" width="120" align="center" show-overflow-tooltip
                                      :filters="filterCompanyNameList"
                                      :filter-method="filterCompanyName"
                     ></el-table-column>
-                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center"
+                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称" align="center" show-overflow-tooltip
                                      :filters="filterProjectNameList"
                                      :filter-method="filterProjectName"
                     ></el-table-column>
-                    <el-table-column prop="charger" label="负责人" width="120" align="center"></el-table-column>
-                    <el-table-column prop="tel" label="电话" width="120" align="center"></el-table-column>
-                    <el-table-column prop="projectProgress" label="项目进度" width="120" align="center"></el-table-column>
-                    <el-table-column label="操作" width="200" align="center">
+                    <el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="tel" label="电话" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="projectProgress" label="项目进度" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="操作" width="200" align="center" show-overflow-tooltip>
                         <!--<template slot-scope="scope">-->
                             <!--<el-button type="primary" size="mini" @click="handelcelChange(scope.row)">编辑</el-button>-->
                             <!--<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)">删除</el-button>-->
@@ -72,7 +72,7 @@
                     </el-table-column>
                 </el-table>
             </el-row>
-            <el-dialog :visible.sync="dialogVisible2">
+            <el-dialog :visible.sync="dialogVisible2" :close-on-click-modal="false">
                 <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
         </div>
