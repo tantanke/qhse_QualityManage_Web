@@ -2,8 +2,7 @@
   <div>
     <div class="page-title" style="width:100%">QHSE文件审核</div>
     <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true" :model="filterQuery" >
+        <el-form :inline="true" :model="filterQuery" >
           <el-form-item label="选择公司：">
             <treeselect
               :multiple="false"
@@ -25,34 +24,32 @@
               style="width:200px">
               </el-date-picker>
           </el-form-item>
-
-          &nbsp;&nbsp;&nbsp;
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
-            <el-button type="primary" icon="el-icon-search" style="margin-left:30px" @click="addNewFile">新建</el-button>
+            <el-button type="primary" icon="el-icon-plus" style="margin-left:30px" @click="addNewFile">新建</el-button>
           </el-form-item>
         </el-form>
-      </el-row>
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         <el-table
           :data="tableData"
           style="width: 100%"
-          max-height="537"
+          max-height="560"
           highlight-current-row
           border
           v-loading="loading">
-          <el-table-column prop="year" label="年份" width="120" align="center"></el-table-column>
-          <el-table-column prop="companyName" label="公司名称"></el-table-column>
-          <el-table-column prop="additor" label="审核人"></el-table-column>
-          <el-table-column prop="auditTime" label="审核时间"></el-table-column>
-          <el-table-column prop="auditName" label="审核名称"></el-table-column>
-          <el-table-column prop="auditType" label="审核类别"></el-table-column>
-          <el-table-column label="操作" width="200" align="center" fixed="right">
+          <el-table-column prop="year" label="年份" width="120" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="companyName" label="公司名称" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="additor" label="审核人" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="auditTime" label="审核时间" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="auditName" label="审核名称" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="auditType" label="审核类别" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column label="操作" width="200" align="center" fixed="right" show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button type='danger' size="mini" style='margin-right:20px' icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
-              <router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>        
-                <el-button type="primary" size="mini" icon="el-icon-edit" >审核</el-button>
-              </router-link>
+				<router-link :to='{name: "FileCheckIndex", params: {data:scope.row}}'>
+				  <el-button type="primary" style='margin-right:20px' size="mini" icon="el-icon-edit" >审核</el-button>
+				</router-link>
+              <el-button type='danger' size="mini" icon="el-icon-delete" @click="deleteFile(scope.row)">删除</el-button>
+              
             </template>
           </el-table-column>
         </el-table>

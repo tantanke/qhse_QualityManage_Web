@@ -2,30 +2,30 @@
 	<div>
 		<div class="page-title" style="width: 100%">文件宣贯发送</div>
 		<div class="page-content" v-loading="loading">
+			<el-form :inline="true">
+				<el-form-item label="选择公司:" style="margin: 1px;">
+					<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 230px;" :options="companyList" v-model="selectData.selectCompanyId"></treeselect>
+				</el-form-item>
+				<el-form-item label="选择时间">
+					<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
+					 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
+				</el-form-item>&nbsp;
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="select()">查询</el-button>
+					<el-button type="primary" icon="el-icon-plus" @click="openInsertPropagationDialog()">新增</el-button>
+				</el-form-item>
+			</el-form>
 			<!-- 文件名，发起单位name，宣贯时间，描述，发起员工姓名 -->
 			<el-row>
-				<el-form label-width="130px" :inline="true" style="">
-					<el-form-item label="选择公司:" style="margin: 1px;">
-						<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 230px;" :options="companyList" v-model="selectData.selectCompanyId"></treeselect>
-					</el-form-item>
-					<el-form-item label="选择时间" style="">
-						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
-						 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
-					</el-form-item>&nbsp;
-					<el-form-item>
-						<el-button type="primary" icon="el-icon-search" @click="select()">查询</el-button>
-						<el-button type="primary" icon="el-icon-plus" @click="openInsertPropagationDialog()">新增</el-button>
-					</el-form-item>
-				</el-form>
 				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-					<el-table style="width: 100%" max-height="560" border v-loading="loading" :data="filterQuery.putSelected">
-						<el-table-column type="index" label="序号" width="60%" align="center"></el-table-column>
-						<el-table-column prop="fileName" label="记录名" width="200%" align="center"></el-table-column>
-						<el-table-column prop="companyName" label="发起单位" width="200%" align="center"></el-table-column>
-						<el-table-column prop="staffName" label="发起人" width="130%" align="center"></el-table-column>
-						<el-table-column prop="propagationDate" label="宣贯时间" width="120%" align="center"></el-table-column>
+					<el-table stripe style="width: 100%" max-height="560" border v-loading="loading" :data="filterQuery.putSelected">
+						<el-table-column type="index" label="序号" width="60%" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="fileName" label="记录名" width="200%" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="companyName" label="发起单位" width="200%" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="staffName" label="发起人" width="130%" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="propagationDate" label="宣贯时间" width="120%" align="center" show-overflow-tooltip></el-table-column>
 						<el-table-column prop="description" label="描述" width="200%" align="center" show-overflow-tooltip="true"></el-table-column>
-						<el-table-column label="操作" width="330%" align="center">
+						<el-table-column label="操作" width="330%" align="center" show-overflow-tooltip>
 							<template slot-scope="scope">
 								<el-button type="primary" size="mini" icon="el-icon-edit" @click="openConfigDialog(scope.row)">配置</el-button>
 								<el-button type="info" size="mini" icon="el-icon-message" @click="openStatisticsDialog(scope.row)">统计</el-button>
@@ -54,8 +54,9 @@
 						</el-form-item>
 						<el-form-item label="上传文件">
 							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.filePath"
-							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove">
-								<el-button type="primary" icon="el-icon-upload">点击上传</el-button>
+							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
+							 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+								<el-button type="success" icon="el-icon-upload">点击上传</el-button>
 							</el-upload>
 						</el-form-item>
 					</el-col>
@@ -83,13 +84,13 @@
 					</el-form-item>
 				</el-form>
 				<el-row>
-					<el-table style="width: 100%" ref="employeeList" max-height="560" border v-loading="loading" :data="employeeSelected"
+					<el-table style="width: 100%" stripe ref="employeeList" max-height="560" border v-loading="loading" :data="employeeSelected"
 					 @select="handleSelectionChange">
-						<el-table-column type="selection"></el-table-column>
-						<el-table-column type="index" label="序号" align="center"></el-table-column>
-						<el-table-column prop="companyName" label="所属单位" align="center"></el-table-column>
-						<el-table-column prop="empGroup" label="下属部门" align="center" :filters="selectFilter" :filter-method="filterHandler"></el-table-column>
-						<el-table-column prop="name" label="姓名" align="center"></el-table-column>
+						<el-table-column type="selection" show-overflow-tooltip></el-table-column>
+						<el-table-column type="index" label="序号" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="companyName" label="所属单位" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="empGroup" label="下属部门" show-overflow-tooltip align="center" :filters="selectFilter" :filter-method="filterHandler"></el-table-column>
+						<el-table-column prop="name" label="姓名" align="center" show-overflow-tooltip></el-table-column>
 					</el-table>
 				</el-row>
 				<div slot="footer" class="dialog-footer">
@@ -98,17 +99,17 @@
 				</div>
 			</el-dialog>
 			<el-dialog title="文件宣贯统计" :visible.sync="statisticsDialog" width="66%" align="left">
-				<el-table style="width: 100%" max-height="560" border v-loading="loading" :data="statisticsTableData">
-					<el-table-column type="index" label="序号" width="100%" align="center"></el-table-column>
-					<el-table-column prop="companyName" label="推送单位" width="200%" align="center"></el-table-column>
-					<el-table-column prop="department" label="推送部门" width="200%" align="center"></el-table-column>
-					<el-table-column prop="staffName" label="推送人" width="160%" align="center"></el-table-column>
-					<el-table-column prop="readTime" label="阅读时间" width="200%" align="center"></el-table-column>
-					<el-table-column prop="status" label="状态" width="100%" align="center"></el-table-column>
+				<el-table style="width: 100%" stripe max-height="560" border v-loading="loading" :data="statisticsTableData">
+					<el-table-column type="index" label="序号" width="100%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="推送单位" width="200%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="department" label="推送部门" width="200%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="staffName" label="推送人" width="160%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="readTime" label="阅读时间" width="200%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="status" label="状态" width="100%" align="center" show-overflow-tooltip></el-table-column>
 				</el-table>
 				<div slot="footer" class="dialog-footer">
+					<el-button icon='el-icon-refresh-left' @click="statisticsDialog=false">关闭</el-button>
 					<el-button type="warning" icon="el-icon-download" @click="downloadStatisticsFile">导出</el-button>
-					<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="statisticsDialog=false">关闭</el-button>
 				</div>
 			</el-dialog>
 		</div>
