@@ -2,8 +2,7 @@
     <div>
         <div class="page-title" style="width:100%">要素证据审核</div>
         <div class="page-content">
-            <el-row>
-                <el-form label-width="130px" :inline="true" :model="filterQuery">
+                <el-form :inline="true" :model="filterQuery">
                     <el-form-item label="选择公司：">
                         <treeselect
                                 :disable-branch-nodes="true"
@@ -22,15 +21,13 @@
                                 style="width:200px">
                         </el-date-picker>
                     </el-form-item>
-                    &nbsp;&nbsp;&nbsp;
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
                     <el-form-item style="float: right;">
-                        <el-button type="primary" icon="el-icon-s-promotion" @click="confirmAnalysis">确认审核</el-button>
+                        <el-button type="success" icon="el-icon-success" @click="confirmAnalysis">确认审核</el-button>
                     </el-form-item>
                 </el-form>
-            </el-row>
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
                 <div style="margin:15px 0px">
                    <span style="margin-right:15px">请选择批准方式:</span>
@@ -222,11 +219,11 @@
                     </el-table-column>
                 </el-table>
             </el-row>
-            <el-dialog title="详细内容" :visible.sync="dialogVisible" center width="1200px" :close-on-click-modal=false>
-                <el-form label-width="140px" :model="detailData" style="width:100%;">
+            <el-dialog title="详细内容" :visible.sync="dialogVisible" width="70%" :close-on-click-modal="false">
+                <el-form label-width="100px" :label-postion="right" :model="detailData" style="width:100%;">
                     <el-row>
                         <el-col :span="24">
-                            <el-form-item style="margin-left:300px;text-align:left">
+                            <el-form-item label="审核结果:">
                                 <el-switch
                                         style="margin-right:10px"
                                         v-model="upstatus"
@@ -235,7 +232,7 @@
                                         active-text="通过"
                                         inactive-text="不通过">
                                 </el-switch>
-                                <el-button :disabled="curCheckStatus !== 1" type="primary" @click="passornot">确认审核</el-button>
+                                <el-button icon="el-icon-check" :disabled="curCheckStatus !== 1" type="primary" @click="passornot">确认审核</el-button>
                             </el-form-item>
                             <el-form-item v-if="!upstatus" label="驳回意见：" style="margin-bottom:1px">
                                 <el-input ype="text" label="驳回意见 ：" class="resizeNone" v-model="unpasstext"
@@ -279,7 +276,6 @@
         </div>
     </div>
 </template>
-
 <script>
 
     import {qhse_company_tree} from "../../../services/qhse_EvidenceCheck";//获取公司及诶单数
