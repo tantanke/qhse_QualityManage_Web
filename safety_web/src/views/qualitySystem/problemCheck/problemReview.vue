@@ -17,7 +17,7 @@
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
                 <el-table-column label="操作" align="center">

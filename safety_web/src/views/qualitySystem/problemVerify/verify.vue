@@ -21,7 +21,7 @@
 				<el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
 				<el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" align="center">
@@ -233,7 +233,7 @@
 					 icon="el-icon-close">打 回</el-button>
 					<el-button type="primary" @click="problemVerifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true"
 					 icon="el-icon-check">通 过</el-button>
-					<el-button @click="problemVerifyDialogVisible = false" v-else icon="el-icon-refresh-left">关闭</el-button>
+					<el-button @click="problemVerifyDialogVisible = false" v-else icon="el-icon-refresh-left">关 闭</el-button>
 
 				</span>
 			</el-dialog>
