@@ -245,7 +245,7 @@
                                     :src="item"
                                     :preview-src-list="historyImageList">
                                 </el-image>
-                                <el-button type="text" size="mini" @click="deleteImage(item)" class="iconBtns">
+                                <el-button type="text" size="mini" @click="deleteImage(item)" class="iconBtns" >
                                     <i class="el-icon-close"></i>
                                     </el-button>
                                 </div>
