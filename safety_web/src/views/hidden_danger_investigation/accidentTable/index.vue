@@ -33,7 +33,7 @@
           stripe
           style="width: 100%"
           max-height="560">
-          <el-table-column prop='occurrentTime' label='发生时间' show-overflow-tooltip align="center"></el-table-column>
+          <el-table-column prop='occurrentTime' label='发生时间' show-overflow-tooltip align="center" ></el-table-column>
           <el-table-column prop='address' label='地点' show-overflow-tooltip align="center"></el-table-column>
           <el-table-column prop='emergencyHandler' label='应急处置' show-overflow-tooltip align="center"></el-table-column>
           <el-table-column prop='briefDescription' label='简要经过' show-overflow-tooltip align="center"></el-table-column>    

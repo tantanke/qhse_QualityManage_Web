@@ -13,7 +13,7 @@
 					<el-button icon="el-icon-download" type="primary" style="font-size: 16px" @click="downloadDialog">下载</el-button>
 				</span></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
-			<el-table :data="problemVerifyList" border stripe>
+			<el-table :data="problemVerifyList" border stripe max-height="560px">
 				<el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
 				<el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
 				<el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>

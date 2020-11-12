@@ -9,7 +9,7 @@
         <div class="page-title" style="width: 100%">问题复审<span class="boxNew" v-if="isBelongToPart === true"><span class="progressData">{{progress}}</span><el-button type="success" style="font-size: 16px" @click="finishReview">审核完成</el-button></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 		<!-- 问题复审列表区域 -->
-            <el-table :data="problemReviewList" border stripe>
+            <el-table :data="problemReviewList" border stripe max-height="560px">
                 <el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
                 <el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
