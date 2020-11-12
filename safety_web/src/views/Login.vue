@@ -4,6 +4,9 @@
       .title
         //- img.logo(:src='imgs.Logo')
         font QHSE管理系统
+        img(:src='back.back' style="display:none")
+        img(:src='back.safebtn' style="display:none")
+        img(:src='back.qualitybtn' style="display:none")
       br
       el-form(:model='formData', @submit.native.prevent="handleSignIn")
         el-form-item(prop='userName', :rules="{required: true, message: '必填', trigger: 'blur'}")
@@ -11,6 +14,7 @@
             template(slot="prefix")
               .prefix-content
                 img(:src='imgs.IconUser')
+                
         el-form-item(prop='psw', :rules="{required: true, message: '必填', trigger: 'blur'}")
           el-input(v-model='formData.psw', type='password', placeholder='密码', size='large')
             template(slot="prefix")
@@ -27,6 +31,9 @@ import {SignIn} from '../services/session'
 import IconUser from '../assets/icons/user.svg'
 import IconPassword from '../assets/icons/password.svg'
 import Logo from '../assets/resources/logo.jpg'
+import back from '../components/img/back.png'
+import safebtn from '../components/img/back.png'
+import qualitybtn from '../components/img/back.png'
 
 export default {
   components: {
@@ -34,6 +41,7 @@ export default {
   },
   data () {
     return {
+      back:{back,safebtn,qualitybtn},
       submiting: false,
       formData: {
         userName: '',

@@ -111,12 +111,12 @@
                 div 切换系统
       el-main
         <router-view/>
-        <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="30%">
+        <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="34%">
         <el-form :inline="true" >
-        <el-form-item label='选择单位：' labelWidth='120px'>
-         <el-cascader  placeholder="请选择(空则查询年度记录)" :clearable='true' ref='company' v-model="chooseItem" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}":show-all-levels="false" @change="handleChange" >             
-          </el-cascader>
-           </el-form-item>
+        <el-select v-model="value" placeholder="请选择" style='width:80%' ref="company" filterable>
+          <el-option v-for="(item,index) in listdata" :key="index":label="item.label":value="item.value">
+          </el-option>
+        </el-select>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dashBoardVisible = false">取 消</el-button>
@@ -155,10 +155,12 @@ Vue.use(VueCookies)
 export default {
   data() {
     return {//记录即将去往的公司
+    value:'',
       companyId:'',
-        chooseItem:'',
+      chooseItem:'',
       searchForm:{companyCode:''},
       companyList:[],
+      listdata:[],
       dashBoardVisible: false,
       qhse:'QHSE管理系统',
       close1:false,
@@ -241,18 +243,38 @@ export default {
      handleChange(){
         this.searchForm.companyCode = this.chooseItem[this.chooseItem.length - 1] 
       },
+      async getList(data){
+          data.forEach((item) => {
+            if (!item.children) {
+                  this.listdata.push({value:item.nodeCode,label:item.label})
+                } else {
+                    this.getList(item.children)
+                }
+          })
+          return true
+      },
      getCompany(){
+       this.listdata = []
         GetqhseCompanytree().then(res =>{
                this.companyList = res.data
-               this.dashBoardVisible = true
                console.log(res.data)
-        }).catch((err) =>{
+               this.listdata.push({value:res.data[0].nodeCode,label:res.data[0].label})
+               return  this.getList(res.data)
+               
+        }).then(() => {
+          console.log(this.listdata)
+          this.dashBoardVisible = true
+        })
+        .catch((err) =>{
           this.$message.error(err.message)
         })
       },
       changeScreen(){
-        this.routerForm.companyCode = this.searchForm.companyCode
-        this.routerForm.companyName = this.$refs.company.inputValue
+        this.routerForm = {}
+        if(this.value !== '00'){
+            this.routerForm.companyCode = this.value
+            this.routerForm.companyName = this.$refs.company.selectedLabel
+        }
         const {href} = this.$router.resolve({
         name: "qhseBigScreen",
         query: this.routerForm
@@ -262,10 +284,10 @@ export default {
     goScreen(){
       this.getCompany()
     },
-    changeSys() {
+    changeSys() { 
       let _this = this
-      if(_this.qhse == 'QHSE质量模块') {
-        _this.$confirm("确定切换到QHSE安全模块吗?", '提示', {
+      if(_this.qhse == 'QHSE质量板块') {
+        _this.$confirm("确定切换到QHSE安全板块吗?", '提示', {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
               type:"warning"
@@ -275,7 +297,7 @@ export default {
               })
               }
           else {
-           _this.$confirm("确定切换到QHSE质量模块吗?", '提示', {
+           _this.$confirm("确定切换到QHSE质量板块吗?", '提示', {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
               type:"warning"
@@ -303,7 +325,7 @@ export default {
           }
         })
         localStorage.setItem('sysCate','安全')
-        _this.qhse = 'QHSE安全模块'
+        _this.qhse = 'QHSE安全板块'
          this.$router.push({name: 'mainPath'})
         _this.checkTaskList(_this.navs)
         console.log(_this.navs)
@@ -361,7 +383,7 @@ export default {
           }
         })
         localStorage.setItem('sysCate','质量')
-        _this.qhse = 'QHSE质量模块'
+        _this.qhse = 'QHSE质量板块'
          this.$router.push({name: 'mainPath'})
         _this.changeS = false
         _this.dialogTableVisible = false
@@ -567,6 +589,7 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
+  
 
 }
  img.logo {

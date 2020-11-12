@@ -3,11 +3,11 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)">
      <el-row class="head">
-       <el-col class="company"  :span='5'><span></span>
+       <el-col class="company"  :span='6'><span></span>
             <p>{{showName}}</p>
           </el-col>
-          <el-col class="title"  :span='5'>
-            <p>安检院QHSE看板</p>
+          <el-col class="title"  :span='4'>
+            <p>QHSE看板</p>
           </el-col>
           <el-col class="time"  :span='3'>
             <span>时间：{{nowTime}}</span>
@@ -442,7 +442,7 @@ export default {
   screenLoading:true,
   finishnum:1,
   // 公司名称
-  showName:'全部'
+  showName:'安全环保质量监督检测研究院'
  }
   },
   methods: {
