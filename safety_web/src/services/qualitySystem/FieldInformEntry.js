@@ -16,7 +16,7 @@ export const addCheckRecord=(data)=>{
 }
 //修改审核计划
 export const updateQualityCheck=(data)=>{
-	return request('/api/updateQualityCheck',{method:'put',data})
+	return request('/api/updateQualityCheck/'+'0',{method:'put',data})
 }
 //根据id查询质量检查记录
 export const queryCheckRecord=(param)=>{
