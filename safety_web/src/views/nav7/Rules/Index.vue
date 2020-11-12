@@ -53,19 +53,19 @@
         </el-form-item>
       </el-form>
 
-      <el-table :data="tableData" v-loading="loading" border style="width: 100%" >
-        <el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" align="center"></el-table-column>
-        <el-table-column label="文号" prop="documentSymbol" header-align="center"> </el-table-column>
-        <el-table-column label="名称" prop="regName" header-align="center"> </el-table-column>
-        <el-table-column label="发布机构" prop="publishComName" header-align="center"> </el-table-column>
-        <el-table-column label="文件类型" prop="typeName" header-align="center" width="120"> </el-table-column>
-        <el-table-column label="开始执行时间" prop="beginDate" header-align="center" width="160" sortable> </el-table-column>
-        <el-table-column label="上传时间" prop="uploadDate" header-align="center" width="160"> </el-table-column>
-        <el-table-column label="操作" align="center" header-align="center" width="250%">
+      <el-table :data="tableData" v-loading="loading" border style="width: 100%" max-height="560px">
+        <el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" show-overflow-tooltip align="center"></el-table-column>
+        <el-table-column label="文号" prop="documentSymbol" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="名称" prop="regName" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="发布机构" prop="publishComName" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="文件类型" prop="typeName" header-align="center" width="120" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="开始执行时间" prop="beginDate" header-align="center" width="160" show-overflow-tooltip sortable> </el-table-column>
+        <el-table-column label="上传时间" prop="uploadDate" header-align="center" width="160" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="操作" align="center" header-align="center" width="250%" show-overflow-tooltip>
           <template slot-scope="scope">
             <div class="inline-td">
               <el-button size="mini" type="primary" icon='el-icon-search' @click="handleGetWord(scope.row)">文件预览</el-button>
-              <el-button size="mini" type="primary" icon='el-icon-download' @click="handleDownloadWord(scope.row)">文件下载</el-button>
+              <el-button size="mini" type="warning" icon='el-icon-download' @click="handleDownloadWord(scope.row)">文件下载</el-button>
             </div>
           </template>
         </el-table-column>
