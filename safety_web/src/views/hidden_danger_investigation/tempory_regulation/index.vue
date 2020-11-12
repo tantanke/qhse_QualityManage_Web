@@ -140,7 +140,7 @@
                   :on-exceed="handleExceed"
                    accept=".jpg, .png, .bmp"
                 >
-                <el-button size="small" type="primary">浏览文件</el-button>
+                <el-button type="primary" icon="el-icon-upload">浏览文件</el-button>
                 <span> 最多两张，格式为jpg,png,bmp</span>
                 </el-upload>
               </el-form-item>
@@ -221,8 +221,8 @@
                 <el-input v-model="form.punish" placeholder="请填写" />
               </el-form-item>
               <el-form-item  label="操作">
-                <el-button type="primary" style="width:100px" @click="onSubmit">确认</el-button>
-                <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>
+                <el-button type="primary" style="width:100px" @click="onSubmit" icon="el-icon-check">确认</el-button>
+                <el-button type="danger" style="width:100px" @click="$router.go(-1)" icon="el-icon-refresh-left">取消</el-button>
               </el-form-item>
             </el-col>
           </el-row>

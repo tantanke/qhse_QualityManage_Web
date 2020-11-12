@@ -15,7 +15,7 @@
 					<el-button type="primary" icon="el-icon-search" style="margin-right: 15px;" @click="select()">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增表</el-button>
+					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增检查项</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="`/api/check_list_excel_upload`" :on-preview="handlePreview" :on-remove="handleRemove"
@@ -58,8 +58,8 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="addEventdialogVisible=false">取 消</el-button>
-					<el-button type="primary" @click="insertNode()">确 定</el-button>
+					<el-button @click="addEventdialogVisible=false" icon="el-icon-refresh-left">取 消</el-button>
+					<el-button type="primary" @click="insertNode()" icon="el-icon-check">确 定</el-button>
 				</span>
 			</el-dialog>
 			<el-dialog title="编辑检查项" :visible.sync="configEventDialog" width="30%">
