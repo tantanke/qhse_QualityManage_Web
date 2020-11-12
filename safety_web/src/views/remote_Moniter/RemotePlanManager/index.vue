@@ -48,7 +48,7 @@
                     <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center" show-overflow-tooltip></el-table-column>
                     <el-table-column prop="status" label="计划状态" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="操作" width="340" align="center" show-overflow-tooltip>
+                    <el-table-column label="操作" width="400" align="center" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <el-button
                                     type="primary"
@@ -241,7 +241,15 @@
                     params: data
                 })
             },
-            deletefile(data) {//删除
+            async deletefile(data) {//删除
+            const confirmResult = await this.$confirm('此操作将永久删除该记录，是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).catch(err => err)
+                    if (confirmResult !== 'confirm') {
+                        return this.$message.info('已取消此操作')
+                    }
                 console.log(data.monitorPlanID)
                 deletePlan(data).then(res => {
                     console.log('删除结果', res);

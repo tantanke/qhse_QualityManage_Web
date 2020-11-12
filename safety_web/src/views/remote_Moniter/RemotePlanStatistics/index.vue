@@ -53,9 +53,9 @@
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
           max-height="560" highlight-current-row border>
-          <el-table-column type="index" label="序号" width="120" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
           <el-table-column prop="time" label="统计时间" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column label="操作" width="300" align="center" show-overflow-tooltip>
+          <el-table-column label="操作" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-more">详情</el-button>
               <el-button type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出</el-button>
