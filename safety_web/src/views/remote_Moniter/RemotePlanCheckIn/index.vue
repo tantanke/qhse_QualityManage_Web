@@ -19,15 +19,15 @@
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
           max-height="560" highlight-current-row border>
-          <el-table-column type="index" label="序号" width="120" align="center"></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center"> </el-table-column>
-          <el-table-column prop="startDate" label="开始时间" width="200" align="center"> </el-table-column>
-          <el-table-column prop="endDate" label="结束时间" width="200" align="center"> </el-table-column>
-          <el-table-column label="编辑" width="200" align="center">
+          <el-table-column type="index" label="序号" width="120" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="startDate" label="开始时间" width="200" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="endDate" label="结束时间" width="200" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column label="编辑" width="200" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)">录入
+              <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-plus">录入
               </el-button>
-              <el-button v-if="ifcanwrite(scope.row)" type="success" size="mini" @click="pushfile(scope.row)">导出当天数据
+              <el-button v-if="ifcanwrite(scope.row)" type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出当天数据
               </el-button>
             </template>
           </el-table-column>
@@ -44,7 +44,7 @@
         </el-table>
       </el-row>
 
-      <el-dialog title="录入计划" :visible.sync="table" center width="500px">
+      <el-dialog title="录入计划" :visible.sync="table" width="500px" :close-on-click-modal="false">
         <el-form label-width="120px" style="width:100%;">
           <el-form-item label='选择时间：' labelWidth='120px'>
             <el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px">
@@ -54,10 +54,11 @@
                 </el-option>
               </el-option-group>
             </el-select>
-
-            <el-button type="primary" size="mini" @click="choosetime">进入录入</el-button>
           </el-form-item>
         </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" icon="el-icon-check" @click="choosetime">录 入</el-button>
+        </span>
       </el-dialog>
 
     </div>

@@ -13,7 +13,7 @@
 					<el-button icon="el-icon-download" type="primary" style="font-size: 16px" @click="downloadDialog">下载</el-button>
 				</span></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
-			<el-table :data="problemVerifyList" border stripe>
+			<el-table :data="problemVerifyList" border stripe max-height="560px">
 				<el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
 				<el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
 				<el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
@@ -21,7 +21,7 @@
 				<el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
 				<el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" align="center">
@@ -233,7 +233,7 @@
 					 icon="el-icon-close">打 回</el-button>
 					<el-button type="primary" @click="problemVerifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true"
 					 icon="el-icon-check">通 过</el-button>
-					<el-button @click="problemVerifyDialogVisible = false" v-else icon="el-icon-refresh-left">关闭</el-button>
+					<el-button @click="problemVerifyDialogVisible = false" v-else icon="el-icon-refresh-left">关 闭</el-button>
 
 				</span>
 			</el-dialog>

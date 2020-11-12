@@ -12,10 +12,10 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="choosemyNo">查询</el-button>
+                        <el-button type="primary" @click="choosemyNo" icon="el-icon-search">查询</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="handleCancel">返回</el-button>
+                        <el-button @click="handleCancel" icon="el-icon-refresh-left">返回</el-button>
                     </el-form-item>
                     <el-form-item style="float: right;">
                         <span style="font-size: 16px; color: cornflowerblue">录入次数: {{checkInCountSum?checkInCountSum:'0'}}</span>
@@ -30,43 +30,43 @@
                 <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30"
                           max-height="560"
                           highlight-current-row border>
-                    <el-table-column type="expand">
+                    <el-table-column type="expand" show-overflow-tooltip>
                         <template slot-scope="props">
                             <el-form label-width="150px" :inline='true'>
                                 <el-table :stripe="true" :header-cell-style="tableHeaderColor"
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
-                                    <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
-                                    <el-table-column prop="description" label="视频监控描述" align="center"></el-table-column>
-                                    <el-table-column prop="picNo" label="截图编号" align="center">
+                                    <el-table-column prop="condition" label="记录仪使用情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="description" label="视频监控描述" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="picNo" label="截图编号" align="center" show-overflow-tooltip>
                                         <template slot-scope="scope">>
                                             <a href="#" @click="handlePictureCardPreview2(scope.row)">{{scope.row.picNo}}</a>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="disposeIn" label="处置情况" align="center"></el-table-column>
-                                    <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
-                                    <el-table-column prop="inputDate" label="录入时间" align="center"></el-table-column>
-                                    <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
+                                    <el-table-column prop="disposeIn" label="处置情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="inputDate" label="录入时间" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="closeIn" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
                                 </el-table>
                             </el-form>
                         </template>
                     </el-table-column>
-                    <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-                    <el-table-column prop="myNo" label="自编号" width="100" align="center"></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="120" align="center"
+                    <el-table-column type="index" label="序号" width="50" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="myNo" label="自编号" width="100" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="120" align="center" show-overflow-tooltip
                                      :filters="filterCompanyNameList"
                                      :filter-method="filterCompanyName"
                     ></el-table-column>
-                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center"
+                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称" align="center" show-overflow-tooltip
                                      :filters="filterProjectNameList"
                                      :filter-method="filterProjectName"
                     ></el-table-column>
-                    <el-table-column prop="charger" label="负责人" width="120" align="center"></el-table-column>
-                    <el-table-column prop="tel" label="电话" width="120" align="center"></el-table-column>
+                    <el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="tel" label="电话" width="120" align="center" show-overflow-tooltip></el-table-column>
 
-                    <el-table-column prop="checkInCount" label="录入次数" width="120" align="center"></el-table-column>
-                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center"></el-table-column>
+                    <el-table-column prop="checkInCount" label="录入次数" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center" show-overflow-tooltip></el-table-column>
 
 
 
@@ -74,10 +74,10 @@
                     <!-- <el-table-column prop="condition" label="记录仪使用情况" width="150" align="center">
                         <template slot-scope="scope"  v-if="scope.row.condition==null">在</template>
                       </el-table-column> -->
-                    <el-table-column label="操作" width="180" align="center">
+                    <el-table-column label="操作" width="180" align="center" show-overflow-tooltip>
                         <template slot-scope="scope">
-                            <el-button type="primary" size="mini" @click="handelcelChange(scope.row)">录入</el-button>
-                            <el-button type="danger" size="mini" @click="handelcelDelete(scope.row)">删除</el-button>
+                            <el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-plus">录入</el-button>
+                            <el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
                         </template>
                     </el-table-column>
 
@@ -85,7 +85,7 @@
             </el-row>
 
             <!-- 新增计划表  -->
-            <el-dialog title="录入数据" :visible.sync="table" center width="700px">
+            <el-dialog title="录入数据" :visible.sync="table" width="700px" :close-on-click-modal="false">
                 <el-form label-width="120px" style="width:100%;">
                     <el-row>
                         <el-col :span="24">
@@ -104,7 +104,7 @@
                                            :auto-upload="true"
                                            :show-file-list="false"
                                            accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button type="primary" icon="el-icon-upload">点击上传文件</el-button>
                                 </el-upload>
                                 <a href="#" @click="handlePictureCardPreview()" class="pic">{{resData.picNo}}</a>
 
@@ -123,15 +123,14 @@
                                 </el-switch>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="24">
-                            <el-form-item>
-                                <el-button type="" style="margin-top:20px;margin-left:100px" @click="table=false">取消
-                                </el-button>
-                                <el-button type="primary" style="margin-top:20px;" @click="addDetail">录入</el-button>
-                            </el-form-item>
-                        </el-col>
+                               
                     </el-row>
                 </el-form>
+                <span slot="footer" class="dialog-footer">
+                     <el-button @click="table=false" icon="el-icon-refresh-left">取 消
+                    </el-button>
+                    <el-button type="primary" @click="addDetail" icon="el-icon-check">录 入</el-button>
+                </span>
             </el-dialog>
 
             <el-dialog :visible.sync="dialogVisible2">

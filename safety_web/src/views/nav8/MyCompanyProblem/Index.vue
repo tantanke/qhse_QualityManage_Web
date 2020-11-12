@@ -54,7 +54,7 @@
               <el-button type="primary" native-type='submit' icon='el-icon-search'>查询</el-button>
             </el-form-item>
             <el-form-item>
-              <el-button style="background-color:#3399CC;color:#FFFFFF;width:100%" @click="export2Excel ()">导出Excel</el-button>
+              <el-button @click="export2Excel ()" icon="el-icon-download" type="warning">导出Excel</el-button>
             </el-form-item>
         </el-row>    
       </el-form>
@@ -64,7 +64,7 @@
         border
         @row-click="clickTable"
         ref="refTable"
-        style="width:100%">
+        style="width:100%" max-height="560px">
         <el-table-column type="expand" style="width:100%">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand" label-width="140px">

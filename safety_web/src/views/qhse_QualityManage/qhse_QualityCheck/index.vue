@@ -2,28 +2,24 @@
   <div>
     <div class="page-title" style="width:100%">要素证据录入</div>
     <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true" :model="filterQuery">
-          <el-form-item label="选择公司：" prop="companyCode">
+        <el-form :inline="true" :model="filterQuery">
+          <el-form-item label="选择公司:" prop="companyCode">
             <treeselect :disable-branch-nodes="true" :multiple="false" :options="companyList" placeholder="请选择公司单位"
               @select="selectDepart" style="width:200px" />
           </el-form-item>
-          <el-form-item label="选择年份：">
+          <el-form-item label="选择年份:">
             <el-date-picker v-model="filterQuery.year" type="year" placeholder="选择年份" style="width:200px">
             </el-date-picker>
           </el-form-item>
-          &nbsp;&nbsp;&nbsp;
-          
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
           </el-form-item>
           <el-form-item style="float: right;">
-            <el-button type="primary" icon="el-icon-s-promotion" @click="confirmSubmit">确认提交</el-button>
+            <el-button type="success" icon="el-icon-success" @click="confirmSubmit">确认提交</el-button>
           </el-form-item>
         </el-form>
-      </el-row>
 
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+      <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
         <div style="margin:15px 0px">
           <span style="margin-right:15px">请选择录入方式:</span>
           <el-radio v-model="checkType" label="树形录入">树形录入</el-radio>
@@ -53,7 +49,7 @@
           </el-table-column>
           <el-table-column label="操作" width="150" align="center">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="updateScore(scope.row)"
+              <el-button type="primary" size="mini" icon="el-icon-plus" @click="updateScore(scope.row)"
                 v-if="scope.row.childNode.length === 0">
                 录入
               </el-button>
@@ -61,8 +57,7 @@
           </el-table-column>
         </el-table>
       </el-row>
-
-      <el-dialog title="添加附件" :visible.sync="dialogVisible3" center width="1200px" :close-on-click-modal=false
+      <el-dialog title="添加附件" :visible.sync="dialogVisible3" width="70%" :close-on-click-modal=false
         id="addAttach">
         <el-form label-width="120px" style="width:100%;">
           <el-row>
@@ -76,6 +71,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="24" class="col_border">
+				<el-form-item label="证据文件：" style="margin-bottom:10px">
+				  <div v-for="(item,index) in files" :key="index">
+				    <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
+				    <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除
+				    </el-button>
+				  </div>
+				</el-form-item>
               <el-form-item label="证据图片：" style="margin-bottom:10px">
                 <div v-for="(item,index) in attachs" :key="index"
                   style="position: relative;width:100px;height:140px;text-align:center;float:left; margin:10px">
@@ -95,26 +97,19 @@
                   </el-button>
                 </div>
               </el-form-item>
-              <el-form-item label="证据文件：" style="margin-bottom:10px">
-                <div v-for="(item,index) in files" :key="index">
-                  <a :href="item" style="max-width:600px;height:auto" :download="strings[index]">{{strings[index]}}</a>
-                  <el-button @click="deletefile(index)" size="mini" style="margin-left: 10px;">删除
-                  </el-button>
-                </div>
-              </el-form-item>
             </el-col>
             <el-col :span="24" class="col_border">
 
-              <el-form-item label="上传文件">
+              <el-form-item label="录入文件:">
                 <!-- 原来这里是show-file-list="show", 但是导致了第一次上传文件不显示的bug，故更改为true -->
                 <el-upload :show-file-list="true" :on-remove="removeFile" v-model="form.fileID" :headers="headers"
                   multiple ref="uploads" style="float:left" :on-success="handleFilerSuccess"
                   :action="accidentOrEventUploadAddress">
-                  <div class="span1">浏览附件</div>
+                  <el-button icon="el-icon-upload" type="success">上传附件</el-button>
                 </el-upload>
                 <!--<div style="float:left;margin-left:10px;line-height:60px">限制上传数量为1</div>-->
               </el-form-item>
-              <el-form-item label="上传图片">
+              <el-form-item label="录入图片:">
                 <el-upload :action="accidentOrEventUploadAddress" :headers="headers" list-type="picture-card" clearable
                   ref="upload" :on-success="handleAvatarSuccess"
                   accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.JPG,.JPEG,.PBG,.GIF,.BMP,.PDF">
@@ -135,23 +130,22 @@
                   <img style="max-width:100%;" :src="dialogImageUrl" alt="">
                 </el-dialog>
               </el-form-item>
-              <el-form-item label="附件描述：" prop="desc" style="margin-bottom:1px">
-                <el-input type="textarea" label="附件描述  ：" class="resizeNone" v-model="form.attachDescrption"
+              <el-form-item label="附件描述:" prop="desc" style="margin-bottom:1px">
+                <el-input type="textarea" label="附件描述:" class="resizeNone" v-model="form.attachDescrption"
                   placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item>
-                <el-button type="" style="margin-top:10px;margin-left:380px;float:left" @click="dialogVisible3=false">取消
-                </el-button>
-                <el-button :disabled="curStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
-                </el-button>
-                <el-button :disabled="curStatus !== 0" type="info" style="margin-top:10px;" @click="pushnull">不涉及
-                </el-button>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
+		<div slot="footer" class="dialog-footer">
+			<el-button icon="el-icon-refresh-left" style="margin-top:10px;margin-left:380px;" @click="dialogVisible3=false">取消
+			</el-button>
+			<el-button icon="el-icon-scissors" :disabled="curStatus !== 0" type="info" style="margin-top:10px;" @click="pushnull">不涉及
+			</el-button>
+			<el-button icon="el-icon-check" :disabled="curStatus !== 0" type="primary" style="margin-top:10px;" @click="addEvidenceFile">确定录入
+			</el-button>
+			
+		</div>
       </el-dialog>
 
     </div>
