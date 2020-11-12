@@ -4,9 +4,7 @@
       .title
         //- img.logo(:src='imgs.Logo')
         font QHSE管理系统
-        img(:src='back.back' style="display:none")
-        img(:src='back.safebtn' style="display:none")
-        img(:src='back.qualitybtn' style="display:none")
+        
       br
       el-form(:model='formData', @submit.native.prevent="handleSignIn")
         el-form-item(prop='userName', :rules="{required: true, message: '必填', trigger: 'blur'}")
@@ -22,6 +20,9 @@
                 img.input-img(:src='imgs.IconPassword')
         el-form-item 
           el-button(type='primary', size='large', native-type="submit", :loading='submiting', plain, style="width: 100%;" ) 登&nbsp;&nbsp;录
+          img(:src='back.back' style="display:none")
+        img(:src='back.safebtn' style="display:none")
+        img(:src='back.qualitybtn' style="display:none")
 </template>
 
 <script>
