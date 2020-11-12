@@ -19,7 +19,7 @@
 				</el-form-item>
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-				<el-table :data="selected" style="width: 100%" max-height="560" border>
+				<el-table :data="selected" style="width: 100%" max-height="560px" border>
 					<el-table-column type="expand">
 						<template slot-scope="props">
 							<el-form label-width="150px" :label-position="left" inline='true' class="demo-table-expand">
@@ -48,8 +48,8 @@
 					<el-table-column prop="status" label="任务状态" width="100%" align="center"></el-table-column>
 					<el-table-column label="操作" width="430%" align="center">
 						<template slot-scope="scope">
-							<el-button type="primary" icon="el-icon-more" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
-							<el-button type="primary" icon="el-icon-bottom" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
+							<el-button type="primary" icon="el-icon-edit" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
+							<el-button type="primary" icon="el-icon-plus" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
 							<el-button type="info" icon="el-icon-message" size="mini" @click="openStatisticsDialog(scope.row)">任务统计</el-button>
 							<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteTable(scope.row)">删除</el-button>
 						</template>
@@ -72,8 +72,8 @@
 						<br />
 					</el-form>
 					<div slot="footer" class="dialog-footer">
-						<el-button icon='el-icon-refresh-left' @click="insertCheckListDialog=false">取消</el-button>
-						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新增</el-button>
+						<el-button icon='el-icon-refresh-left' @click="insertCheckListDialog=false">取 消</el-button>
+						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新 增</el-button>
 					</div>
 				</el-dialog>
 				<el-dialog title="要素配置" :visible.sync="annCheckListDialog" width="50%" align="left">
@@ -90,7 +90,7 @@
 									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
 								</el-form-item>
 								&nbsp;
-								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement" v-if="!chosenReceiveID()">保存</el-button>
+								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement" v-if="!chosenReceiveID()">保 存</el-button>
 								<el-button type="success" icon="el-icon-check" ref="button" @click="annCheckListDialog=false" v-else>已下达任务</el-button>
 							</el-form>
 						</el-row>
@@ -126,8 +126,8 @@
 						</el-form-item>
 					</el-form>
 					<span slot="footer" class="dialog-footer">
-						<el-button icon="el-icon-refresh-left" @click="assignTaskoDialog=false">取消</el-button>
-						<el-button icon="el-icon-bottom" type="primary" @click="assignTask()">下达任务</el-button>
+						<el-button icon="el-icon-refresh-left" @click="assignTaskoDialog=false">取 消</el-button>
+						<el-button icon="el-icon-check" type="primary" @click="assignTask()">下达任务</el-button>
 					</span>
 				</el-dialog>
 				<el-dialog title="任务统计" :visible.sync="statisticsDialog" align="left" width="40%">
@@ -142,8 +142,9 @@
 						<div id="bar-containerFir" style="border: 1px solid black;width:100%;height:300px;aligin:center"></div>
 					</el-row>
 					<span slot="footer" class="dialog-footer">
-						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导出</el-button>
-						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关闭</el-button>
+						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关 闭</el-button>
+						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导 出</el-button>
+						
 					</span>
 				</el-dialog>
 			</el-row>
