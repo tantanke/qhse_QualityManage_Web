@@ -311,22 +311,26 @@
                     this.$message.error('删除失败', err)
                 })
             },
-            addDetail() {//录入细节
+            async addDetail() {//录入细节
                 if ( !this.resData.check || !this.resData.disposeCheck || !this.resData.result) {
                     this.$message.error('信息录入不全！');
                     return
                 }
                 this.resData.checkPersonId = GetCurrentUser().employeeId;
                 this.resData.checkPersonName = GetCurrentUser().employeeName;
-                updateInputtedDetailInfo(this.resData).then(res => {
-                    console.log('审核成功', res)
-                    this.$message.success('核查成功')
 
+                let response = await updateInputtedDetailInfo(this.resData);
+
+                if (response.code === 1000){
+                    console.log('审核成功', response)
+                    this.$message.success('核查成功')
                     this.table = false;
-                }).catch(err => {
-                        console.log('审核失败', err)
-                })
+                } else {
+                    console.log('审核失败')
+                }
+
                 this.listData = [];
+
                 getNeedToCheckedDetails(this.$route.params).then(res => {
                     for (var i = 0; i < res.data.length; i++) {
                         res.data[i].linearray = [{...res.data[i]}]
