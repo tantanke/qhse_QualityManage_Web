@@ -1,68 +1,62 @@
 <template>
-  <div>
-    <div class="page-title" style="width:100%">监控数据录入</div>
-    <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true">
-          <el-form-item label='时间范围：' labelWidth='120px'>
-            <el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
-              start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
-            </el-date-picker>
-          </el-form-item>
-          &nbsp;&nbsp;&nbsp;
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <!-- 计划列表 -->
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-        <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
-          max-height="560" highlight-current-row border>
-          <el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="startDate" label="开始时间"  align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="endDate" label="结束时间"  align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column label="操作" align="center" show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-plus">录入
-              </el-button>
-              <el-button v-if="ifcanwrite(scope.row)" type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出当天数据
-              </el-button>
-            </template>
-          </el-table-column>
-          <!--取消操作栏-->
-          <!--<el-table-column label="操作" width="100" align="center">-->
-          <!--<template slot-scope="scope">-->
-          <!--<el-button -->
-          <!--type="danger"-->
-          <!--size="mini"-->
-          <!--@click="deletefile(scope.row)"-->
-          <!--&gt;删除</el-button>-->
-          <!--</template>-->
-          <!--</el-table-column> -->
-        </el-table>
-      </el-row>
-
-      <el-dialog title="录入计划" :visible.sync="table" width="500px" :close-on-click-modal="false">
-        <el-form label-width="120px" style="width:100%;">
-          <el-form-item label='选择时间：' labelWidth='120px'>
-            <el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px">
-              <el-option-group v-for="group in dates" :key="group.label" :label="group.label">
-                <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value"
-                  :disabled="item.disabled">
-                </el-option>
-              </el-option-group>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-            <el-button type="primary" icon="el-icon-check" @click="choosetime">录 入</el-button>
-        </span>
-      </el-dialog>
-
-    </div>
-  </div>
+	<div>
+		<div class="page-title" style="width:100%">监控数据录入</div>
+		<div class="page-content">
+			<el-form :inline="true">
+				<el-form-item label='时间范围:'>
+					<el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
+					 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
+				</el-form-item>
+			</el-form>
+			<!-- 计划列表 -->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
+				 max-height="560" highlight-current-row border>
+					<el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="startDate" label="开始时间" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="endDate" label="结束时间" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column label="操作" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-plus">录入
+							</el-button>
+							<el-button v-if="ifcanwrite(scope.row)" type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出当天数据
+							</el-button>
+						</template>
+					</el-table-column>
+					<!--取消操作栏-->
+					<!--<el-table-column label="操作" width="100" align="center">-->
+					<!--<template slot-scope="scope">-->
+					<!--<el-button -->
+					<!--type="danger"-->
+					<!--size="mini"-->
+					<!--@click="deletefile(scope.row)"-->
+					<!--&gt;删除</el-button>-->
+					<!--</template>-->
+					<!--</el-table-column> -->
+				</el-table>
+			</el-row>
+			<el-dialog title="录入计划" :visible.sync="table" width="500px" :close-on-click-modal="false">
+				<el-form label-width="120px" style="width:100%;">
+					<el-form-item label='选择时间：' labelWidth='120px'>
+						<el-select v-model="selecttime" placeholder="请选择" style="margin-right:20px">
+							<el-option-group v-for="group in dates" :key="group.label" :label="group.label">
+								<el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+								</el-option>
+							</el-option-group>
+						</el-select>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="primary" icon="el-icon-check" @click="choosetime">录 入</el-button>
+				</span>
+			</el-dialog>
+		</div>
+	</div>
 </template>
 <script>
 import ExportJsonExcel from "js-export-excel";
