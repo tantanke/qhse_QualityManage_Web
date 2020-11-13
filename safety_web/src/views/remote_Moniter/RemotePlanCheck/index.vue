@@ -2,9 +2,8 @@
   <div>
     <div class="page-title" style="width:100%">远程计划核查</div>
     <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true">
-          <el-form-item label='时间范围：' labelWidth='120px'>
+        <el-form :inline="true">
+          <el-form-item label='时间范围:'>
             <el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
               start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
             </el-date-picker>
@@ -44,7 +43,6 @@
           </el-table-column>
         </el-table>
       </el-row>
-
       <el-dialog :visible.sync="table" width="500px" :close-on-click-modal="false">
         <div v-if="choose=='hecha'" style="margin-left:39%;margin-bottom:30px;font-size:20px">核查计划</div>
         <div v-if="choose=='ribao'" style="margin-left:39%;margin-bottom:30px;font-size:20px">导出日报</div>
