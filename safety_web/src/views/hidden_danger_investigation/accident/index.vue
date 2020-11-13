@@ -41,8 +41,8 @@
                                 </el-upload>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" @click="submit">立即创建</el-button>
-                                <el-button>取消</el-button>
+                                <el-button type="primary" @click="submit" icon="el-icon-check">立即创建</el-button>
+                                <el-button icon="el-icon-refresh-left">取消</el-button>
                             </el-form-item>
                         </el-form>
                     </el-col>

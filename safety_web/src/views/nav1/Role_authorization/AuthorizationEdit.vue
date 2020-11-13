@@ -14,10 +14,10 @@
 						:default-checked-keys="[...nodeIdList]"  show-checkbox  ref="tree" highlight-current></el-tree>
 					</el-form-item>
 					<el-form-item>
-            <el-button type="primary" native-type="submit">确定</el-button>
+            <el-button type="primary" native-type="submit" icon="el-icon-check">确定</el-button>
             &nbsp;
             <a @click="$router.go(-1)">
-              <el-button native-type="button">取消</el-button>
+              <el-button native-type="button" type="danger" icon="el-icon-refresh-left">取消</el-button>
             </a>
           </el-form-item>
 				</el-form>

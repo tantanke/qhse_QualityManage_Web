@@ -8,7 +8,7 @@
               <el-button type="warning" icon="el-icon-upload "  @click="output()">导出</el-button>
           </el-form-item>
           <el-form-item style="float:right">
-            <el-button type="danger" @click="handleCancel">返回</el-button>
+            <el-button  @click="handleCancel" icon="el-icon-refresh-left">返回</el-button>
           </el-form-item>
         </el-form>
       </el-row>
@@ -22,36 +22,39 @@
           max-height="560"
           highlight-current-row
           border>
-          <el-table-column  type="index" label="序号" width="80" align="center"></el-table-column>
-          <el-table-column prop="sumDate" label="日期" align="center"> </el-table-column>
-          <el-table-column prop="companyName" label="基层单位" align="center"> </el-table-column>
-          <el-table-column prop="workNum" label="开工项目数量" width="100" align="center"> </el-table-column>
-          <el-table-column prop="dayReportNum" label="日报数量" align="center"> </el-table-column>
-          <el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="0" align="center"> </el-table-column>
-          <el-table-column prop="outStockNum" label="出库数量" width="100" align="center"> </el-table-column>
-          <el-table-column prop="powerOnNum" label="开机使用数量" align="center"> </el-table-column>
-          <el-table-column prop="backNum" label="备用数量" width="100" align="center"> </el-table-column>
-          <el-table-column prop="coverageRate" label="覆盖率" width="100" align="center"> </el-table-column>
-          <el-table-column prop="availableRate" label="利用率" width="100" align="center"> </el-table-column>
-          <el-table-column prop="useRate" label="使用率" width="100" align="center"> </el-table-column>
-          <el-table-column label="操作"  align="center" width="180">
+          <el-table-column  type="index" label="序号" width="80" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="sumDate" label="日期" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="companyName" label="基层单位" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="workNum" label="开工项目数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="dayReportNum" label="日报数量" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="0" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="outStockNum" label="出库数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="powerOnNum" label="开机使用数量" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="backNum" label="备用数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="coverageRate" label="覆盖率" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="availableRate" label="利用率" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="useRate" label="使用率" width="100" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column label="操作"  align="center" width="180" show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-button 
-              type="danger"
-              size="mini"
-              @click="handelcelDelete(scope.row)"
-              >删除</el-button>
+              
               <el-button 
               type="primary"
               size="mini"
+              icon="el-icon-edit"
               @click="handelcelchange(scope.row)"
               >编辑</el-button>
+              <el-button 
+              type="danger"
+              size="mini"
+              icon="el-icon-delete"
+              @click="handelcelDelete(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
             
         </el-table> 
       </el-row>
-       <el-dialog title="新增计划" :visible.sync="tochange" center width="700px">
+       <el-dialog title="新增计划" :visible.sync="tochange" width="700px" :close-on-click-modal="false">
           <el-form label-width="120px" style="width:100%;" >
            <el-row>
             <el-col :span="24">
@@ -80,14 +83,15 @@
                 <el-input type="text"   label="备用数量:"  class="resizeNone" v-model="resData.backNum" placeholder="请输入内容"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="24" >
-            <el-form-item>
-            <el-button type="" style="margin-top:20px;margin-left:100px" @click="tochange=false">取消</el-button>
-            <el-button type="primary" style="margin-top:20px;" @click="changeres">确定修改</el-button>
-            </el-form-item>
-             </el-col>
+            
+            
+            
            </el-row>
           </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button type=""  @click="tochange=false" icon="el-icon-refresh-left">取 消</el-button>
+            <el-button type="primary" @click="changeres" icon="el-icon-check">确 定</el-button>
+          </span>
       </el-dialog>
     </div>
 </div>

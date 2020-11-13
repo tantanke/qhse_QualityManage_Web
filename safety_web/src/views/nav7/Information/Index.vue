@@ -21,7 +21,7 @@
         </el-form-item>
       </el-form>
 
-      <el-dialog title="新增文件" :visible.sync="dialogFormVisible">
+      <el-dialog title="新增文件" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
         <el-form label-width="140px" :model="formData" style="width:80%">
           <el-form-item label="文件名称">
             <el-input v-model="formData.fileName"></el-input>
@@ -43,23 +43,23 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleSubmit()">确 定</el-button>
+          <el-button @click="dialogFormVisible = false" icon="el-icon-refresh-left">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit()" icon="el-icon-check">确 定</el-button>
         </div>
       </el-dialog>
 
-      <el-table :data="tableData" v-loading="loading" border style="width: 100%" >
-        <el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" align="center"></el-table-column>
-        <el-table-column label="文件名称" prop="fileName" header-align="center"> </el-table-column>
-        <el-table-column label="适用单位" prop="appliCom" header-align="center"> </el-table-column>
-        <el-table-column label="上传时间" prop="uploadDate" header-align="center" sortable> </el-table-column>
-        <el-table-column label="上传人" prop="uploadPerson" header-align="center"> </el-table-column>
-        <el-table-column label="文件简介" prop="summary" header-align="center"> </el-table-column>
-        <el-table-column label="操作" align="center" header-align="center" width="250%">
+      <el-table :data="tableData" v-loading="loading" border style="width: 100%" max-height="560">
+        <el-table-column type="index" width="50" header-align="center" label="序号" show-overflow-tooltip :index="this.indexStartNum" align="center"></el-table-column>
+        <el-table-column label="文件名称" prop="fileName" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="适用单位" prop="appliCom" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="上传时间" prop="uploadDate" header-align="center" show-overflow-tooltip sortable> </el-table-column>
+        <el-table-column label="上传人" prop="uploadPerson" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="文件简介" prop="summary" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="操作" align="center" header-align="center" width="250%" show-overflow-tooltip>
           <template slot-scope="scope">
             <div class="inline-td">
               <el-button size="mini" type="primary" icon='el-icon-search' @click="handleGetWord(scope.row)">文件预览</el-button>
-              <el-button size="mini" type="primary" icon='el-icon-download' @click="handleDownloadWord(scope.row)">文件下载</el-button>
+              <el-button size="mini" type="warning" icon='el-icon-download' @click="handleDownloadWord(scope.row)">文件下载</el-button>
             </div>
           </template>
         </el-table-column>

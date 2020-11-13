@@ -9,7 +9,7 @@
         label-position="right"
         >
         <el-row>
-          <el-col :span="4">
+          <el-col :span="5">
              <el-form-item>
               <treeselect
               :multiple="false"
@@ -21,7 +21,7 @@
               /> 
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="5">
             <el-form-item>
               <el-select
                 v-model="filterQuery.name"
@@ -42,7 +42,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="5">
           <el-form-item>
           <el-autocomplete 
           v-model="inputEmpGroup"
@@ -54,7 +54,7 @@
           </el-autocomplete>
         </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="5">
         <el-form-item prop="category">
               <el-select v-model="filterQuery.category" clearable placeholder="请选择员工类别" style="width:220px">
                 <el-option
@@ -66,7 +66,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="10">
             <el-form-item>
               <el-button native-type='submit' type="primary" icon='el-icon-search'>查询</el-button>
             </el-form-item>
@@ -76,13 +76,13 @@
               </router-link>
             </el-form-item>
             <el-form-item>
-              <el-button  style="background-color:#3399CC;color:#FFFFFF" @click="export2Excel ()">导出Excel</el-button>
+              <el-button  type="warning" icon="el-icon-download" @click="export2Excel ()">导出Excel</el-button>
             </el-form-item>
           </el-col>
         </el-row>
             <el-row>
             <el-form-item>
-              <el-button   type="warning" icon='el-icon-download' @click="downLoad()" >下载Excel模板</el-button>
+              <el-button   type="warning"  icon='el-icon-download' @click="downLoad()" >下载Excel模板</el-button>
             </el-form-item>
             <el-form-item>
               <el-upload
@@ -96,7 +96,7 @@
               :auto-upload="false"
               accept=".excel,.xls,.xlsx"
               >
-              <el-button slot="trigger"  type="primary" >导入Excel文件</el-button>
+              <el-button slot="trigger"  type="success" icon="el-icon-upload">导入Excel文件</el-button>
               <el-button icon='el-icon-upload'  style="margin-left: 10px;background-color:#6699CC;color:#FFFFFF"   @click="submitUpload">上传到服务器</el-button>
               </el-upload>
             </el-form-item>
@@ -108,9 +108,10 @@
     v-loading="loading"
     border
     style="width:100%"
+    max-height="560"
     >   
     <!-- 表格下拉区 -->
-    <el-table-column type="expand">
+    <el-table-column type="expand" show-overflow-tooltip align="center">
       <template slot-scope="props">
         <el-form label-position="left" inline class="demo-table-expand" label-width="100px" >
           <el-form-item label="员工编号">
@@ -143,66 +144,83 @@
     <el-table-column
       type="index"
       label="序号"
+      align="center"
       width="60px"
+      show-overflow-tooltip
      :index="this.indexStartNum"
      >
     </el-table-column>
     <el-table-column
       label="员工姓名"
+      align="center"
       prop="name"
-      width="100%">
+      show-overflow-tooltip
+      >
     </el-table-column>
     <el-table-column
       label="用户名"
       prop="uName"
-      width="300%">
+      align="center"
+      show-overflow-tooltip
+      >
     </el-table-column>
     <el-table-column
       label="角色"
+      align="center"
       prop="roleName"
-      width="120%">
+      show-overflow-tooltip
+      >
     </el-table-column>
     <el-table-column
       label="底层单位"
+      align="center"
       prop="companyName"
+      show-overflow-tooltip
       >
     </el-table-column>
     <el-table-column
       label="科室"
+      align="center"
       prop="empGroup"
-      width="150%">
+      show-overflow-tooltip
+      >
     </el-table-column>
     <el-table-column
       label="员工类别"
+      align="center"
       prop="category"
-      width="100%">
+      show-overflow-tooltip
+      >
     </el-table-column>
-    <el-table-column label="操作" align="center"  width="500%" fixed="right">
+    <el-table-column label="操作" align="center" show-overflow-tooltip width="500px">
         <template slot-scope="scope">
+          
           <router-link :to='{name: "management_zhuceStaff",params: {id: scope.row.employeeID}}' v-if="scope.row.hasOwnProperty('uName') === false">
-            <el-button round size="mini" icon='el-icon-document' >注册</el-button>
+            <el-button  size="mini" icon='el-icon-document' >注册</el-button>
           </router-link>
           <router-link :to='{}' v-else>
-            <el-button round size="mini" icon='el-icon-document'  @click="resetPassword({uName:scope.row.uName})" >重置密码</el-button>
+            <el-button  size="mini" icon='el-icon-document' type="info" @click="resetPassword({uName:scope.row.uName})" >重置密码</el-button>
           </router-link>
           &nbsp;
-          <el-button round size="mini" icon="el-icon-edit" @click="roleChange(scope.row.employeeID)" v-if="scope.row.hasOwnProperty('uName') === true">修改</el-button>
-          <el-button round size="mini" icon="el-icon-edit" :disabled=true v-else>修改</el-button>
+          <el-button  size="mini" icon="el-icon-edit" type="warning" @click="roleChange(scope.row.employeeID)" v-if="scope.row.hasOwnProperty('uName') === true">修改</el-button>
+          <el-button  size="mini" icon="el-icon-edit" :disabled=true v-else type="warning">修改</el-button>
             &nbsp;
           <router-link :to='{name: "management_MoveStaff",params: {id: scope.row.employeeID}}' >
-            <el-button round size="mini" icon='el-icon-sort'>调动</el-button>
+            <el-button  size="mini" icon='el-icon-sort' type="success">调动</el-button>
           </router-link>
             &nbsp;
           <router-link :to='{name: "management_EditStaff",params: {id: scope.row.employeeID}}' >
-          <el-button round size="mini"  @click="dialogEditVisible = true" icon="el-icon-edit-outline">编辑</el-button>
+          <el-button  size="mini"  @click="dialogEditVisible = true" type="primary" icon="el-icon-edit-outline">编辑</el-button>
           </router-link>
           &nbsp;
-          <el-button  type="danger"  round size="mini"  @click="handleDeleteStaff(scope.row) " icon="el-icon-delete" >删除</el-button>
+          <el-button  type="danger"  size="mini"  @click="handleDeleteStaff(scope.row) " icon="el-icon-delete" >删除</el-button>
         </template>
    </el-table-column>
   </el-table> 
   <!--新增事件节点分类弹窗-->
     <el-dialog
+    :close-on-click-modal="false"
+
       title="员工账号详情修改"
       :visible.sync="addEventdialogVisible">
       <el-form ref="addEventForm" :model="changeRole" label-position="right" label-width="200px">
@@ -225,8 +243,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer" >
-        <el-button @click="addEventdialogVisible=false">取 消</el-button>
-        <el-button type="primary"  @click="handleSubmit()">确 定</el-button>
+        <el-button @click="addEventdialogVisible=false" icon="el-icon-refresh-left">取 消</el-button>
+        <el-button type="primary"  @click="handleSubmit()" icon="el-icon-check">确 定</el-button>
       </span>
     </el-dialog>
       <!-- 分页 -->

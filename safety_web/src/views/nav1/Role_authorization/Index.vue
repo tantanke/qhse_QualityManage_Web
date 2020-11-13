@@ -16,10 +16,10 @@
 				</el-form-item>
         <el-form-item>
 					<router-link :to='{name: "AuthorizationEdit", params: {id: this.value}}' v-if="this.value !== ''">
-						<el-button type="primary">授权</el-button>
+						<el-button type="primary" icon="el-icon-check">授权</el-button>
 					</router-link>
 					<router-link :to='{}' v-else>
-						<el-button type="primary" :disabled=true>授权</el-button>
+						<el-button type="primary" :disabled="true" icon="el-icon-check">授权</el-button>
 					</router-link>
 				</el-form-item>
 			</el-form>

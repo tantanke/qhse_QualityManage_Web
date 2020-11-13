@@ -22,11 +22,11 @@
         </el-form-item>
         <el-form-item>
           <router-link :to='{name: "SysRolesNew"}' >
-            <el-button   icon='el-icon-plus' native-type='button'>新增</el-button>
+            <el-button  icon='el-icon-plus' native-type='button' type="primary">新增</el-button>
           </router-link>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="export2Excel()">导出Excel</el-button>
+          <el-button type="warning" @click="export2Excel()" icon="el-icon-download">导出Excel</el-button>
         </el-form-item>
       </el-form>
 <!-- 问题描述列表table -->
@@ -34,17 +34,18 @@
         :data="tableData"
         v-loading="loading"
         border
+        max-height="560px"
         ref="refTable"
         style="width: 100%">
-        <el-table-column label="序号" width="100px" header-align="center" align="center">
+        <el-table-column label="序号" width="100px" header-align="center" align="center" show-overflow-tooltip>
           <template slot-scope="scope">
             <font>{{scope.$index + 1}}</font>
           </template>
         </el-table-column>
         <!-- <el-table-column label="角色编码" prop="roleCode" width="200%" header-align="center"> </el-table-column> -->
-        <el-table-column label="角色名称" prop="name" width="250px" header-align="center"> </el-table-column>
+        <el-table-column label="角色名称" prop="name" width="250px" header-align="center" show-overflow-tooltip> </el-table-column>
         <el-table-column label="角色描述" prop="description" min-width="100%" header-align="center" show-overflow-tooltip> </el-table-column>
-        <el-table-column label="操作" align="center" header-align="center" width="250px">
+        <el-table-column label="操作" align="center" header-align="center" width="250px" show-overflow-tooltip>
         <template slot-scope="scope">
           <div class="inline-td">
             <router-link :to='{name: "SysRolesEdit", params: {id: scope.row.roleID}}' >

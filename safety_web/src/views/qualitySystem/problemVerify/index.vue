@@ -24,7 +24,7 @@
 					<el-button type="primary" icon="el-icon-search" @click="handleInquire">查询</el-button>
 				</el-form-item>
 			</el-form>
-			<el-table :data="problemList" border stripe>
+			<el-table :data="problemList" border stripe max-height="560px">
 				<el-table-column type="expand" label="详情" width="60px">
 					<template slot-scope="scope">
 						<el-row>

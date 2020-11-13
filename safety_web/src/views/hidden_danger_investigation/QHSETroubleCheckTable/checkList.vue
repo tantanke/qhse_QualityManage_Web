@@ -58,8 +58,8 @@
       </el-form>
       </el-row>
       <el-row> 
-        <el-button type="primary" :disabled="formControl" @click="addChecklist" ref="addNewCheck">生成检查单</el-button>
-        <el-button type="danger"  :disabled="!formControl" @click="cacelCheck">取消并返回</el-button> 
+        <el-button type="primary" :disabled="formControl" @click="addChecklist" ref="addNewCheck" icon="el-icon-check">生成检查单</el-button>
+        <el-button type="danger"  :disabled="!formControl" @click="cacelCheck" icon="el-icon-refresh-left">取消并返回</el-button> 
       </el-row>
       <!--树形检查单 常规检查单 -->
       

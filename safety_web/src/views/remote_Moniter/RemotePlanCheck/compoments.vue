@@ -15,14 +15,14 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="choosemyNo">查询</el-button>
+                        <el-button type="primary" @click="choosemyNo" icon="el-icon-search">查询</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="warning" @click="pushfile">导出
+                        <el-button type="warning" @click="pushfile" icon="el-icon-download" >导出
                         </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="danger" @click="handleCancel">返回</el-button>
+                        <el-button @click="handleCancel" icon="el-icon-refresh-left">返回</el-button>
                     </el-form-item>
                 </el-form>
             </el-row>
@@ -43,32 +43,32 @@
                                 <el-table :stripe="true" :header-cell-style="tableHeaderColor"
                                           :data="props.row.linearray"
                                           ref="treeTable" :indent="30" max-height="560" border>
-                                    <el-table-column prop="condition" label="记录仪使用情况" align="center"></el-table-column>
-                                    <el-table-column prop="check" label="核查情况描述" align="center"></el-table-column>
-                                    <el-table-column prop="disposeCheck" label="处置情况" align="center"></el-table-column>
-                                    <el-table-column prop="inputPersonName" label="监控人员" align="center"></el-table-column>
-                                    <el-table-column prop="checkDate" label="核查时间" align="center"></el-table-column>
-                                    <el-table-column prop="closeIn" label="是否关闭" align="center"></el-table-column>
+                                    <el-table-column prop="condition" label="记录仪使用情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="check" label="核查情况描述" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="disposeCheck" label="处置情况" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="checkDate" label="核查时间" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="closeIn" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
                                 </el-table>
                             </el-form>
                         </template>
                     </el-table-column>
 
-                    <el-table-column type="index" label="序号" width="50" align="center"></el-table-column>
-                    <el-table-column prop="deviceNo" label="设备编号" width="100" align="center"></el-table-column>
-                    <el-table-column prop="myNo" label="自编号" width="100" align="center"></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="140" align="center"
+                    <el-table-column type="index" label="序号" width="50" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="deviceNo" label="设备编号" width="100" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="myNo" label="自编号" width="100" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="companyName" label="基层单位" width="140" align="center" show-overflow-tooltip
                                      :filters="filterCompanyNameList"
                                      :filter-method="filterCompanyName"
                     ></el-table-column>
                     <!--项目类别，暂时还没确定名字-->
-                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center"></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center"
+                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称" align="center" show-overflow-tooltip
                                      :filters="filterProjectNameList"
                                      :filter-method="filterProjectName"
                     ></el-table-column>
-                    <el-table-column prop="charger" label="负责人" width="120" align="center"></el-table-column>
-                    <el-table-column prop="tel" label="电话" width="100" align="center"></el-table-column>
+                    <el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="tel" label="电话" width="100" align="center" show-overflow-tooltip></el-table-column>
 
                     <!--<el-table-column label="视频监控描述:" width="100" prop="description" style="margin-bottom:5px">-->
                         <!--{{resData.description}}-->
@@ -82,18 +82,20 @@
 
 
 
-                    <el-table-column label="操作" width="150" align="center">
+                    <el-table-column label="操作" width="150" align="center" show-overflow-tooltip>
                         <template slot-scope="scope">
                             <el-button
                                     v-if="$route.params.date==selectdate"
                                     type="primary"
                                     size="mini"
                                     @click="handelcelChange(scope.row)"
+                                    icon="el-icon-edit"
                             >核查
                             </el-button>
                             <el-button
                                     type="danger"
                                     size="mini"
+                                    icon="el-icon-delete"
                                     @click="handelcelDelete(scope.row)"
                             >删除
                             </el-button>
@@ -103,7 +105,7 @@
             </el-row>
 
             <!-- 新增计划表  -->
-            <el-dialog title="核查计划" :visible.sync="table" center width="700px">
+            <el-dialog title="核查计划" :visible.sync="table" width="700px" :close-on-click-modal="false">
                 <el-form label-width="120px" style="width:100%;">
                     <el-row>
                         <el-col :span="24">
@@ -137,15 +139,13 @@
                                 </el-switch>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="24">
-                            <el-form-item>
-                                <el-button type="" style="margin-top:20px;margin-left:100px" @click="table=false">取消
-                                </el-button>
-                                <el-button type="primary" style="margin-top:20px;" @click="addDetail">核查</el-button>
-                            </el-form-item>
-                        </el-col>
                     </el-row>
                 </el-form>
+                 <span slot="footer" class="dialog-footer">
+                     <el-button  @click="table=false" icon="el-icon-refresh-left">取 消
+                                </el-button>
+                                <el-button type="primary"  @click="addDetail" icon="el-icon-check">核 查</el-button>
+                 </span>
             </el-dialog>
         </div>
     </div>

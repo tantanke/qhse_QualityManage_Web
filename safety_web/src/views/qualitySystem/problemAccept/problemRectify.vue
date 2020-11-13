@@ -9,7 +9,7 @@
         <div class="page-title" style="width: 100%">问题整改  <span class="boxNew" v-if="isBelongToPart === true"><span class="progressData" >{{"进度："+ progress}}</span></span></div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
         <!-- 问题接收列表区域 -->
-            <el-table :data="problemRectifyList" border stripe>
+            <el-table :data="problemRectifyList" border stripe max-height="560px">
                 <el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
                 <el-table-column label="问题性质" prop="nature" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="问题描述" prop="description" show-overflow-tooltip align="center"></el-table-column>
@@ -17,7 +17,7 @@
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="warning">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
                 <el-table-column label="操作" align="center">
@@ -212,7 +212,7 @@
 							    :on-remove="handleFileRemove"
 							    :on-success="handleFileSuccess"
 							    v-if="isBelongToPart === true">
-							    <el-button size="small" type="success" icon="el-icon-upload">点击上传文件</el-button>
+							    <el-button type="success" icon="el-icon-upload">点击上传文件</el-button>
 							    </el-upload>
 			    </el-form-item>
                             <el-form-item label="纠正图片">
@@ -227,7 +227,7 @@
                                 accept=".jpg,.jpeg,.png"
                                 :headers="headers"
                                 v-if="isBelongToPart === true">
-                                <el-button size="small" type="primary" icon="el-icon-upload">点击上传图片</el-button>
+                                <el-button type="primary" icon="el-icon-upload">点击上传图片</el-button>
                                 </el-upload>
                             </el-form-item>
                             <el-form-item label="历史纠正文件" class="historyfile">
@@ -245,7 +245,7 @@
                                     :src="item"
                                     :preview-src-list="historyImageList">
                                 </el-image>
-                                <el-button type="text" size="mini" @click="deleteImage(item)" class="iconBtns">
+                                <el-button type="text" size="mini" @click="deleteImage(item)" class="iconBtns" >
                                     <i class="el-icon-close"></i>
                                     </el-button>
                                 </div>
@@ -276,7 +276,7 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button type="primary" @click="problemRectifySubmit(rectifyForm.qulity_CheckRecordID)" v-if="isBelongToPart === true" icon="el-icon-folder">保 存</el-button>
-                    <el-button @click="problemRectifyDialogVisible = false" v-else icon="el-icon-refresh-left">关闭</el-button>
+                    <el-button @click="problemRectifyDialogVisible = false" v-else icon="el-icon-refresh-left">关 闭</el-button>
                     
                 </span>
             </el-dialog>

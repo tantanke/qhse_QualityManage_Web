@@ -283,12 +283,11 @@
 						<el-col :span='20'>
 						<el-form-item label="附件浏览">
 							<div v-for="(item, index) in attachList" :key="index">
-								<a style="margin: 5px;" :href="item.url">
 									{{item.fileName}}
-								</a>
 								<el-button type="text" size="mini" @click="deleteAttach(item)" style="color: #000000;">
 									<i class="el-icon-close"></i>
 								</el-button>
+								<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
 							</div>
 						</el-form-item>
 						<el-form-item label="图片浏览">
@@ -696,6 +695,10 @@
 			this.queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID)
 		},
 		methods: {
+			preview(url){
+				console.log('url',url)
+				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
+			},
 			illegalPerson: function() {
 				if (this.formData.illegalPersonID) {
 					let temp = this.filtedEmployee.filter(item => {

@@ -20,7 +20,7 @@
 				</el-form-item>
 			</el-form>
 			<!-- 基本信息登记列表区域 -->
-			<el-table :data="basicInfoList" border stripe>
+			<el-table :data="basicInfoList" border stripe max-height="560px">
 				<el-table-column type="expand" label="详情" width="50px">
 					<template slot-scope="scope">
 						<el-row>

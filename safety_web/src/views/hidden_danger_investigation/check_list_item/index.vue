@@ -15,7 +15,7 @@
 					<el-button type="primary" icon="el-icon-search" style="margin-right: 15px;" @click="select()">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增表</el-button>
+					<el-button type="primary" @click="openAddDialog()" icon='el-icon-plus'>新增检查项</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-upload ref="upload" :action="`/api/check_list_excel_upload`" :on-preview="handlePreview" :on-remove="handleRemove"
@@ -48,7 +48,7 @@
 				</span>
 			</el-tree>
 			<!--新增事件节点分类弹窗-->
-			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible" width="30%">
+			<el-dialog title="新增检查项" :visible.sync="addEventdialogVisible" width="30%" :close-on-click-modal="false">
 				<el-form ref="addEventForm" :model="chosenData">
 					<el-form-item label="检查项">
 						<el-input v-model="chosenData.checkListName" placeholder="请输入检查项名称"></el-input>
@@ -58,19 +58,19 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="addEventdialogVisible=false">取 消</el-button>
-					<el-button type="primary" @click="insertNode()">确 定</el-button>
+					<el-button @click="addEventdialogVisible=false" icon="el-icon-refresh-left">取 消</el-button>
+					<el-button type="primary" @click="insertNode()" icon="el-icon-check">确 定</el-button>
 				</span>
 			</el-dialog>
-			<el-dialog title="编辑检查项" :visible.sync="configEventDialog" width="30%">
+			<el-dialog title="编辑检查项" :visible.sync="configEventDialog" width="30%" :close-on-click-modal="false">
 				<el-form :model="configData">
 					<el-form-item label="检查项">
 						<el-input v-model="configData.checkListName" placeholder="请输入检查项名称" type="textarea" autosize='true'></el-input>
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="configEventDialog=false">取 消</el-button>
-					<el-button type="primary" @click="configNode()">确 定</el-button>
+					<el-button @click="configEventDialog=false" icon="el-icon-refresh-left">取 消</el-button>
+					<el-button type="primary" @click="configNode()" icon="el-icon-check">确 定</el-button>
 				</span>
 			</el-dialog>
 			<el-dialog title="导出选择" :visible.sync="downloadChoice" width="30%" align="center">
@@ -403,7 +403,15 @@
 				this.configEventDialog = false
 			},
 			//更新节点状态
-			updateStatus(node) {
+			 async updateStatus(node) {
+				const confirmResult = await this.$confirm('确定要更新此节点的状态吗,是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).catch(err => err)
+                    if (confirmResult !== 'confirm') {
+                        return this.$message.info('已取消此操作')
+                    }
 				//调用接口，传入节点id，更新状态
 				updateNodeStatus(node.data.checkListID).then(res => {
 					if (res.code == '1000') {

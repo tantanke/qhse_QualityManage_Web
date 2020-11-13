@@ -1,27 +1,5 @@
 <template>
        <el-container>
-          <!-- <el-header class="main-header">
-            <el-row>
-              <el-col :offset='1' :span='2'>
-                <img class="logo" src="./img/logo.png"  alt="">
-              </el-col>
-              <el-col :offset='17' :span='3'>
-                  <el-row class="userinfo">
-                      <el-col :offset='19' :span='14'>
-                          <i class="el-icon-s-custom"></i>
-                          <el-dropdown @command='handleDropCommand'>
-                            <span class="el-dropdown-link">
-                               {{name}} <i class="el-icon-caret-bottom"></i>
-                            </span>
-                            <el-dropdown-menu slot="dropdown" >
-                                <el-dropdown-item command='handleLogout'>安全退出</el-dropdown-item>
-                            </el-dropdown-menu>
-                             </el-dropdown>
-                      </el-col>
-                  </el-row>
-              </el-col>
-            </el-row>
-          </el-header> -->
           <el-main class="sys-main" :style="back">
             <el-row >
               <el-col :offset='1' :span='4'>
@@ -49,6 +27,7 @@
        </el-container>
 </template>
 <script>
+import back from '@/components/img/back.png'
 import CurrentUser from '../store/CurrentUser'
 import {logout} from '../services/navisBar'
 import Vue from 'vue'

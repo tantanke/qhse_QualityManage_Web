@@ -22,7 +22,7 @@
 			</el-form-item>
          </el-form>
         <!-- 问题接收列表区域 -->
-            <el-table :data="problemList" border stripe>
+            <el-table :data="problemList" border stripe max-height="560px">
                 <el-table-column type="expand" label="详情" width="60px">
                     <template slot-scope="scope">
                         <el-row>

@@ -19,10 +19,10 @@
 				</el-form-item>
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-				<el-table :data="selected" style="width: 100%" max-height="560" border>
+				<el-table :data="selected" style="width: 100%" max-height="560px" border>
 					<el-table-column type="expand">
 						<template slot-scope="props">
-							<el-form label-width="150px" :label-position="left" inline='true' class="demo-table-expand">
+							<el-form label-width="150px" :label-position="left" :inline='true' class="demo-table-expand">
 								<el-form-item label="下达时间:">
 									<span>{{props.row.issuedDate}}</span>
 								</el-form-item>
@@ -41,15 +41,15 @@
 							</el-form>
 						</template>
 					</el-table-column>
-					<el-table-column type="index" label="序号" width="100%" align="center"></el-table-column>
-					<el-table-column prop="companyName" label="单位名称" width="220%" align="center"></el-table-column>
-					<el-table-column prop="year" label="年度" width="100%" align="center"></el-table-column>
-					<el-table-column prop="elementTableName" label="检查表名称" width="260%" align="center"></el-table-column>
-					<el-table-column prop="status" label="任务状态" width="100%" align="center"></el-table-column>
-					<el-table-column label="操作" width="430%" align="center">
+					<el-table-column type="index" label="序号" width="100%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="单位名称" width="220%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="year" label="年度" width="100%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="elementTableName" label="检查表名称" width="260%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="status" label="任务状态" width="100%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" width="430%" align="center" show-overflow-tooltip>
 						<template slot-scope="scope">
-							<el-button type="primary" icon="el-icon-more" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
-							<el-button type="primary" icon="el-icon-bottom" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
+							<el-button type="primary" icon="el-icon-edit" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
+							<el-button type="primary" icon="el-icon-plus" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
 							<el-button type="info" icon="el-icon-message" size="mini" @click="openStatisticsDialog(scope.row)">任务统计</el-button>
 							<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteTable(scope.row)">删除</el-button>
 						</template>
@@ -59,7 +59,7 @@
 				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="30%">
 					<el-form :inline="true" label-width="90px" :label-postion="left">
 						<el-form-item label="请选择公司:">
-							<treeselect :multiple="false" required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
+							<treeselect :multiple="false" :required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 							 v-model="insertCompanyId" :disable-branch-nodes="true"></treeselect>
 						</el-form-item>
 						<el-form-item label="请选择年份:">
@@ -72,8 +72,8 @@
 						<br />
 					</el-form>
 					<div slot="footer" class="dialog-footer">
-						<el-button icon='el-icon-refresh-left' @click="insertCheckListDialog=false">取消</el-button>
-						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新增</el-button>
+						<el-button icon='el-icon-refresh-left' @click="insertCheckListDialog=false">取 消</el-button>
+						<el-button icon='el-icon-plus' type="primary" @click="insertCheckList()">新 增</el-button>
 					</div>
 				</el-dialog>
 				<el-dialog title="要素配置" :visible.sync="annCheckListDialog" width="50%" align="left">
@@ -90,7 +90,7 @@
 									<el-input v-model="filterQuery.chosenYear" readonly="true"></el-input>
 								</el-form-item>
 								&nbsp;
-								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement" v-if="!chosenReceiveID()">保存</el-button>
+								<el-button type="primary" icon="el-icon-folder" ref="button" @click="addQHSEYearElement" v-if="!chosenReceiveID()">保 存</el-button>
 								<el-button type="success" icon="el-icon-check" ref="button" @click="annCheckListDialog=false" v-else>已下达任务</el-button>
 							</el-form>
 						</el-row>
@@ -126,8 +126,8 @@
 						</el-form-item>
 					</el-form>
 					<span slot="footer" class="dialog-footer">
-						<el-button icon="el-icon-refresh-left" @click="assignTaskoDialog=false">取消</el-button>
-						<el-button icon="el-icon-bottom" type="primary" @click="assignTask()">下达任务</el-button>
+						<el-button icon="el-icon-refresh-left" @click="assignTaskoDialog=false">取 消</el-button>
+						<el-button icon="el-icon-check" type="primary" @click="assignTask()">下达任务</el-button>
 					</span>
 				</el-dialog>
 				<el-dialog title="任务统计" :visible.sync="statisticsDialog" align="left" width="40%">
@@ -142,8 +142,9 @@
 						<div id="bar-containerFir" style="border: 1px solid black;width:100%;height:300px;aligin:center"></div>
 					</el-row>
 					<span slot="footer" class="dialog-footer">
-						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导出</el-button>
-						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关闭</el-button>
+						<el-button icon="el-icon-refresh-left" @click="statisticsDialog=false">关 闭</el-button>
+						<el-button icon="el-icon-bottom" type="warning" @click="downloadData()">导 出</el-button>
+						
 					</span>
 				</el-dialog>
 			</el-row>
@@ -172,6 +173,7 @@
 		GetCurrentUser
 	} from '../../../store/CurrentUser'
 	import echarts from 'echarts'
+	import ExportJsonExcel from "js-export-excel";
 	require('echarts/lib/chart/bar')
 	const DefaultQuery = {
 
@@ -204,6 +206,10 @@
 				annCheckListDialog: false,
 				assignTaskoDialog: false,
 				statisticsDialog: false,
+				//用于保存选中行数据
+				row:{},
+				//用于保存已选中的要素节点
+				chosenElement:[{id:'-1'}],
 				QhseElement: {
 					companyCode: '',
 					year: ''
@@ -304,6 +310,7 @@
 		mounted() {
 			this.GetCompany()
 			this.loadParams()
+			this.GetEmployee()
 		},
 		methods: {
 			//加载初始数据
@@ -376,18 +383,12 @@
 			chosenReceiveID() {
 				return this.chosenConlumn.receiveID
 			},
-			GetQhseTable() {
-
-			},
 			GetCompany() {
 				GetCompany().then(res => {
 					this.companyList = res.data
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
-			},
-			getOrderedTask() {
-
 			},
 			//绘制柱状图
 			initChartFir(id) {
@@ -426,7 +427,7 @@
 					//time：时间轴，适用于连续的时序数据；log：对数轴，适用于对数数据
 					xAxis: [{
 						type: 'category',
-						data: ['总要素', '证据录入', '证据审核', '证据审批']
+						data: ['总要素', '证据录入', '证据审核', '证据审批','文件审核']
 					}],
 					//纵坐标，type类型同横坐标
 					yAxis: [{
@@ -448,6 +449,8 @@
 					tableID: '',
 					status: ''
 				}
+				this.row=row
+				console.log('row',row)
 				//保存查询信息
 				queryData.tableID = row.tableID
 				queryData.status = row.status
@@ -473,35 +476,48 @@
 							this.statisticsDataItem.input = 0
 							this.statisticsDataItem.check = 0
 							this.statisticsDataItem.approve = 0
-							this.chartDataFir = [data.total, 0, 0, 0]
+							this.statisticsDataItem.fileCheck=0
+							this.chartDataFir = [data.total, 0, 0, 0,0]
 							break
 						case '录入证据中':
 							this.statisticsDataItem.total = data.total
 							this.statisticsDataItem.input = data.finished
 							this.statisticsDataItem.check = 0
 							this.statisticsDataItem.approve = 0
-							this.chartDataFir = [data.total, data.finished, 0, 0]
+							this.statisticsDataItem.fileCheck=0
+							this.chartDataFir = [data.total, data.finished, 0, 0,0]
 							break
 						case '审核中':
 							this.statisticsDataItem.total = data.total
 							this.statisticsDataItem.input = data.total
 							this.statisticsDataItem.check = data.finished
 							this.statisticsDataItem.approve = 0
-							this.chartDataFir = [data.total, data.total, data.finished, 0]
+							this.statisticsDataItem.fileCheck=0
+							this.chartDataFir = [data.total, data.total, data.finished, 0,0]
 							break
 						case '批准中':
 							this.statisticsDataItem.total = data.total
 							this.statisticsDataItem.input = data.total
 							this.statisticsDataItem.check = data.total
 							this.statisticsDataItem.approve = data.finished
-							this.chartDataFir = [data.total, data.total, data.total, data.finished]
+							this.statisticsDataItem.fileCheck=0
+							this.chartDataFir = [data.total, data.total, data.total, data.finished,0]
+							break
+						case '文件审核中':
+							this.statisticsDataItem.total = data.total
+							this.statisticsDataItem.input = data.total
+							this.statisticsDataItem.check = data.total
+							this.statisticsDataItem.approve = data.total
+							this.statisticsDataItem.fileCheck=data.finished
+							this.chartDataFir = [data.total, data.total, data.total, data.total,data.finished]
 							break
 						case '任务完成':
 							this.statisticsDataItem.total = data.total
 							this.statisticsDataItem.input = data.total
 							this.statisticsDataItem.check = data.total
 							this.statisticsDataItem.approve = data.total
-							this.chartDataFir = [data.total, data.total, data.total, data.total]
+							this.statisticsDataItem.fileCheck= data.total
+							this.chartDataFir = [data.total, data.total, data.total, data.total, data.total]
 							break
 					}
 					this.statisticsData.push(this.statisticsDataItem)
@@ -513,15 +529,24 @@
 				this.statisticsDialog = true
 			},
 			downloadData() {
+				console.log('statistic data',this.statisticsData)
+				var option={}
+				option.fileName=this.row.elementTableName+"任务进度统计表"
+				option.datas=[{
+					sheetData: this.statisticsData,
+					sheetFilter: ['total','input','check','approve','filecheck'],
+					sheetHeader: ['总计','录入证据中','审核中','审批中','文件审核中']
+				}]
+				var toExcel = new ExportJsonExcel(option);
+				toExcel.saveExcel();
 				this.statisticsDialog = false
 			},
-			//获得员工信息
-			getEmploee(companyName) {
-				GetEmployee().then(res => {
-					//调用接口返回员工表，并对员工表进行筛选，只返回属于该行公司的员工信息
-					this.emploee = res.data.filter(item => {
-						return item.companyName == companyName
-					})
+			//获取员工表
+			GetEmployee(){
+				GetEmployee().then(res=>{
+					this.emploee=res.data
+				}).catch(err => {
+						this.$message.error(err.message)
 				})
 			},
 			//打开新增任务对话框
@@ -530,34 +555,43 @@
 					this.$message.error('请勿重复发布任务')
 					return
 				}
-				//保存该行数据
-				this.QhseElement.companyCode = row.companyCode
-				this.QhseElement.year = row.year
-				//将已勾选的要素展示
-				querryQhseElement(this.QhseElement).then(res => {
-					//检查是否已经配置要素
-					if (res.data.length > 0) {
-						//装填员工信息
-						this.getEmploee(row.companyName)
-						//初始化新增任务列表
-						this.task.companyCode = row.companyCode
-						this.task.companyName = row.companyName
-						this.task.tableID = row.tableID
-						this.task.issuedID = this.GetCurrentUser().employeeId
-						this.task.issuedName = this.GetCurrentUser().employeeName
-						this.task.taskName = ''
-						//将date格式的时间改为“yyyy-MM-dd”类型的时间
-						//this.task.issuedDate =new Date().toISOString().substr(0,10)
-						this.task.receiveID = ''
-						this.task.receiveName = ''
-						this.task.planDate = ''
-						//打开新增任务对话框
-						this.assignTaskoDialog = true
-					} else {
-						//提示配置要素
-						this.$message.error('要素未配置，请配置后再配置任务')
-					}
+				//装填员工信息
+				this.emploee.filter(item => {
+					return item.companyName == row.companyName
 				})
+				//初始化新增任务列表
+				this.task.companyCode = row.companyCode
+				this.task.companyName = row.companyName
+				this.task.tableID = row.tableID
+				this.task.issuedID = this.GetCurrentUser().employeeId
+				this.task.issuedName = this.GetCurrentUser().employeeName
+				this.task.taskName = ''
+				//将date格式的时间改为“yyyy-MM-dd”类型的时间
+				//this.task.issuedDate =new Date().toISOString().substr(0,10)
+				this.task.receiveID = ''
+				this.task.receiveName = ''
+				this.task.planDate = ''
+				if(this.chosenElement[0].id=='-1'||this.QhseElement.companyCode!=row.companyCode){
+					console.log('chosen element',this.chosenElement)
+					//保存该行数据
+					this.QhseElement.companyCode = row.companyCode
+					this.QhseElement.year = row.year
+					//将已勾选的要素展示
+					querryQhseElement(this.QhseElement).then(res => {
+					//检查是否已经配置要素
+						if (res.data.length > 0) {
+							//打开新增任务对话框
+							this.assignTaskoDialog = true
+						} else {
+							//提示配置要素
+							this.$message.error('要素未配置，请配置后再配置任务')
+						}
+					})
+				}else{
+					//打开新增任务对话框
+					this.assignTaskoDialog = true
+				}
+				
 			},
 			//新增任务
 			assignTask() {
@@ -598,10 +632,6 @@
 			},
 			GetCurrentUser() {
 				return GetCurrentUser()
-			},
-			//组合数据
-			combineData(tableData, taskList) {
-
 			},
 			//实现查询按钮，根据公司名和年度查询对应记录
 			handleSelect() {
@@ -663,7 +693,7 @@
 				})
 				//将已勾选的要素展示
 				querryQhseElement(this.QhseElement).then(res => {
-					console.log(res)
+					this.chosenElement=res.data
 					var code = []
 					for (var i = 0; i < res.data.length; i++) {
 						code.push(res.data[i].code)

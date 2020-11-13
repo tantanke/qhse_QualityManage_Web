@@ -62,7 +62,7 @@
               <el-button type="primary" native-type='submit' icon='el-icon-search'>查询</el-button>
             </el-form-item>
             <el-form-item>
-              <el-button  style="background-color:#3399CC;color:#FFFFFF" @click="export2Excel ()">导出Excel</el-button>
+              <el-button  type="warning" icon="el-icon-download" @click="export2Excel ()">导出Excel</el-button>
             </el-form-item>
           <!-- </el-col> -->
         </el-row>
@@ -73,8 +73,9 @@
         border
         @row-click="clickTable"
         ref="refTable"
+        max-height="560"
         style="width: 100%" >
-        <el-table-column type="expand">
+        <el-table-column type="expand" show-overflow-tooltip align="center">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
              <el-form-item label="文档附件："><a :href="props.row.attach">下载文档</a></el-form-item>
@@ -126,20 +127,21 @@
         </el-table-column> -->
         <el-table-column
           type="index"
-          width="50"
+          show-overflow-tooltip
+          width="60"
           header-align="center"
           label="序号"
           :index="this.indexStartNum"
           align="center">
         </el-table-column>
-        <el-table-column label="事故名称" prop="accidentRecordName" header-align="center" ></el-table-column>
-        <el-table-column label="事故单位名称" prop="companyName" header-align="center" > </el-table-column>
-        <el-table-column label="作业项目" prop="workItem" header-align="center" > </el-table-column>
-        <el-table-column label="事故类别" prop="accidentRecordType" header-align="center" width=100%> </el-table-column>
-        <el-table-column label="事故级别" prop="accidentClass" header-align="center" > </el-table-column>
-        <el-table-column label="地点" prop="address" header-align="center"  > </el-table-column>
-        <el-table-column label="发生时间" prop="checkDate" header-align="center" width=100% > </el-table-column>        
-        <el-table-column label="事故描述" prop="description" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="事故名称" prop="accidentRecordName" show-overflow-tooltip header-align="center" ></el-table-column>
+        <el-table-column label="事故单位名称" prop="companyName" show-overflow-tooltip header-align="center" > </el-table-column>
+        <el-table-column label="作业项目" prop="workItem" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="事故类别" prop="accidentRecordType" header-align="center" width=100% show-overflow-tooltip> </el-table-column>
+        <el-table-column label="事故级别" prop="accidentClass" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="地点" prop="address" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="发生时间" prop="checkDate" header-align="center" width=100% show-overflow-tooltip> </el-table-column>        
+        <el-table-column label="事故描述" prop="description" header-align="center" show-overflow-tooltip > </el-table-column>
       </el-table>
       <div class="pagination-base">
         <el-pagination
