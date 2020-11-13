@@ -1,183 +1,127 @@
 <template>
-  <div v-loading='checkLoading' element-loading-text="拼命加载中"  style="height:550px">
-      <div class="page-title" style="width:100%">QHSE隐患排查</div>
-      <el-row >
-        <!--控制级联菜单 -->
-      <el-form :model='checkForm' style="width:90%" :disabled='formControl' >
-            <el-form-item label='检查类别：' >
-            <el-select v-model="checkForm.checkContent" placeholder="请选择" >
-            <el-option
-            v-for="item in checkType1"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-            </el-option>
-            </el-select>   
-            <el-select v-model="checkForm.checkType" style="margin-left:15px"
-             v-if="checkForm.checkContent !== ''" @focus="editCheckType" >
-            <el-option
-            v-for="item in checkType2"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-            </el-option>
-            </el-select>     
-            <el-select v-model="checkForm.checkListCode" style="margin-left:15px" v-if="checkForm.checkType !== '' " ref="selestCheck"  filterable>
-            <el-option
-            v-for="item in CheckList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-            </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label='检查单位:' >
-          <el-cascader
-                style="margin-left:10px"
-                v-model="checkForm.companyCode"
-                :options="companyList"
-                :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
-                :show-all-levels="false"
-                filterable
-                ref="cascaderAddr"
-                >
-                
-                </el-cascader>
-          </el-form-item>
-          <el-form-item label='检查时间:' >
-             <el-date-picker
-             style="margin-left:10px"
-                v-model="checkForm.checkDate"
-                type="date"
-                :clearable='false'
-                placeholder="选择日期"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd">
-             </el-date-picker>
-          </el-form-item>              
-      </el-form>
-      </el-row>
-      <el-row> 
-        <el-button type="primary" :disabled="formControl" @click="addChecklist" ref="addNewCheck" icon="el-icon-check">生成检查单</el-button>
-        <el-button type="danger"  :disabled="!formControl" @click="cacelCheck" icon="el-icon-refresh-left">取消并返回</el-button> 
-      </el-row>
-      <!--树形检查单 常规检查单 -->
-      
-      <el-row style="margin-top:15px; border-top: 2px dashed #dddddd" >
-    <div>
-        <!-- 列表检查-->
-    <el-table
-        v-loading='loading'
-        v-if="formControl"
-        :data="checkListData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-        style="width: 100%;height:500px"
-        row-key="checkRecordID"
-        highlight-current-row
-        border
-        max-height="490">
-        <el-table-column
-        prop="name"    
-        >
-        <template slot="header">
-        <span>检查名称</span>
-      </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
-            <template slot="header" slot-scope="scope">
-                <el-input
-                v-model="search"
-                :ref="scope.$index"
-                size="mini"
-                placeholder="输入关键字搜索"/>
-            </template>
-            <template slot-scope="scope" >
-                   <el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" icon='el-icon-edit-outline' size="mini" >检查</el-button>
-                   <el-button :type="scope.row.pass === '通过'? 'success': 'danger'" v-else @click="detailCheckRecord(scope.row)" size="mini" >查看记录</el-button>
-            </template>
-          </el-table-column>
-    </el-table>
-    </div>
-      </el-row>
-    <!--通过不通过选择 --> 
-     <el-dialog
-     center
-  :visible.sync="checkDialogVisible"
-  :close-on-click-modal='false'
-  width="30%"
-  >
-  <el-form>
-      <el-form-item label='通过详情：'>
-          <el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
-          <el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
-      </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过' &&  reason === '不录入'" label='原因描述：'>
-           <el-input            
-            type="textarea"
-            :rows="3"
-            placeholder="请输入原因"
-            v-model="checkRecordForm.reason">
-            </el-input>
-      </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'"  label='问题描述：'>
-           <el-input            
-            type="textarea"
-            :rows="3"
-            placeholder="请输入问题"
-            v-model="problemForm.problemDescription">
-            </el-input>
-      </el-form-item>
-      <el-form-item v-show="checkRecordForm.pass === '不通过'" label='检查记录：'>
-          <el-radio v-model="reason" label="不录入" style="width:12%">不录入</el-radio>
-          <el-radio v-model="reason" label="问题" style="width:15%">录入问题</el-radio>
-          <el-radio v-model="reason" label="隐患" style="width:15%">录入隐患</el-radio>
-          <el-radio v-model="reason" label="违章" style="width:15%">录入违章</el-radio>
-      </el-form-item>
-</el-form>
-  <span slot="footer" class="dialog-footer">
-    <el-button @click="cancelSub">取 消</el-button>
-    <el-button type="primary" @click="submitadd">确 定</el-button>
-  </span>
-</el-dialog>
-    <!--具体检查详情 --> 
-    <el-dialog
-  title="检查详情"
-  :visible.sync="detailDialogVisible"
-  width="30%">
-  <el-form label-width="140px" :model="detailForm" style="width:100%;" >
-          <el-row>
-              <el-form-item label="检查人：" style="margin-bottom:1px">{{detailForm.checkPerson}}</el-form-item>            
-              <el-form-item label="组织机构：" style="margin-bottom:1px">{{detailForm.companyName}}</el-form-item>
-              <el-form-item label="检查类型：" style="margin-bottom:1px">{{detailForm.checkType}}</el-form-item>
-              <el-form-item label="检查日期：" style="margin-bottom:1px">{{detailForm.checkDate}}</el-form-item>
-              <el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
-              <el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
-              <el-form-item v-show='detailForm.reason' label="原因描述：" style="margin-bottom:1px">{{detailForm.reason}}</el-form-item>
-              <el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
-                 <el-button size='mini' @click="questionEditfalse  = true">录入问题</el-button>
-                <el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
-                <el-button size='mini' type="danger" @click="addRegulation">录入违章</el-button>
-              </el-form-item>
-          </el-row>
-          
-        </el-form>
-</el-dialog>
-    <!--编辑检查记录 -->
-    <el-dialog title="添加问题"
-    :close-on-click-modal='false'
-  :visible.sync="questionEditfalse"
-  width="30%">
-  <el-form>
-     <el-form-item :model="problemForm"  label="请输入问题：">
-             <el-input v-model="problemForm.problemDescription" ></el-input>
-     </el-form-item>
-  </el-form>
-  <div style="text-align:right">
-    <el-button  type="primary" @click="questionEditfalse = false">取 消</el-button>
-    <el-button  type="primary" @click="submitEditQuestion()">确 定</el-button>
-    </div>
+	<div v-loading='checkLoading' element-loading-text="拼命加载中" style="height:550px">
+		<div class="page-title" style="width:100%">QHSE隐患排查</div>
+		<el-row>
+			<!--控制级联菜单 -->
+			<el-form :model='checkForm' style="width:90%" :disabled='formControl'>
+				<el-form-item label='检查类别：'>
+					<el-select v-model="checkForm.checkContent" placeholder="请选择">
+						<el-option v-for="item in checkType1" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
+					</el-select>
+					<el-select v-model="checkForm.checkType" style="margin-left:15px" v-if="checkForm.checkContent !== ''" @focus="editCheckType">
+						<el-option v-for="item in checkType2" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
+					</el-select>
+					<el-select v-model="checkForm.checkListCode" style="margin-left:15px" v-if="checkForm.checkType !== '' " ref="selestCheck"
+					 filterable>
+						<el-option v-for="item in CheckList" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label='检查单位:'>
+					<el-cascader style="margin-left:10px" v-model="checkForm.companyCode" :options="companyList" :props="{ expandTrigger: 'hover' ,value: 'nodeCode'}"
+					 :show-all-levels="false" filterable ref="cascaderAddr">
 
-    </el-dialog>
-  </div>
+					</el-cascader>
+				</el-form-item>
+				<el-form-item label='检查时间:'>
+					<el-date-picker style="margin-left:10px" v-model="checkForm.checkDate" type="date" :clearable='false' placeholder="选择日期"
+					 format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+					</el-date-picker>
+				</el-form-item>
+			</el-form>
+		</el-row>
+		<el-row>
+			<el-button type="primary" :disabled="formControl" @click="addChecklist" ref="addNewCheck" icon="el-icon-check">生成检查单</el-button>
+			<el-button type="danger" :disabled="!formControl" @click="cacelCheck" icon="el-icon-refresh-left">取消并返回</el-button>
+		</el-row>
+		<!--树形检查单 常规检查单 -->
+
+		<el-row style="margin-top:15px; border-top: 2px dashed #dddddd">
+			<div>
+				<!-- 列表检查-->
+				<el-table v-loading='loading' v-if="formControl" :data="checkListData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+				 style="width: 100%;height:500px" row-key="checkRecordID" highlight-current-row border max-height="490">
+					<el-table-column prop="name">
+						<template slot="header">
+							<span>检查名称</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="操作" width="150" align="center">
+						<template slot="header" slot-scope="scope">
+							<el-input v-model="search" :ref="scope.$index" size="mini" placeholder="输入关键字搜索" />
+						</template>
+						<template slot-scope="scope">
+							<el-button type="primary" v-if="!scope.row.pass" @click="addCheckRecord(scope.row)" icon='el-icon-edit-outline'
+							 size="mini">检查</el-button>
+							<el-button :type="scope.row.pass === '通过'? 'success': 'danger'" v-else @click="detailCheckRecord(scope.row)"
+							 size="mini">查看记录</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</div>
+		</el-row>
+		<!--通过不通过选择 -->
+		<el-dialog :visible.sync="checkDialogVisible" :close-on-click-modal='false' width="30%">
+			<el-form>
+				<el-form-item label='通过详情：'>
+					<el-radio v-model="checkRecordForm.pass" label="通过">通过</el-radio>
+					<el-radio v-model="checkRecordForm.pass" label="不通过">不通过</el-radio>
+				</el-form-item>
+				<el-form-item v-show="checkRecordForm.pass === '不通过' &&  reason === '不录入'" label='原因描述：'>
+					<el-input type="textarea" :rows="3" placeholder="请输入原因" v-model="checkRecordForm.reason">
+					</el-input>
+				</el-form-item>
+				<el-form-item v-show="checkRecordForm.pass === '不通过' && reason === '问题'" label='问题描述：'>
+					<el-input type="textarea" :rows="3" placeholder="请输入问题" v-model="problemForm.problemDescription">
+					</el-input>
+				</el-form-item>
+				<el-form-item v-show="checkRecordForm.pass === '不通过'" label='检查记录：'>
+					<el-radio v-model="reason" label="不录入" style="width:12%">不录入</el-radio>
+					<el-radio v-model="reason" label="问题" style="width:15%">录入问题</el-radio>
+					<el-radio v-model="reason" label="隐患" style="width:15%">录入隐患</el-radio>
+					<el-radio v-model="reason" label="违章" style="width:15%">录入违章</el-radio>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button icon="el-icon-refresh-left" @click="cancelSub">取 消</el-button>
+				<el-button type="primary" icon="el-icon-check" @click="submitadd">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!--具体检查详情 -->
+		<el-dialog title="检查详情" :visible.sync="detailDialogVisible" :close-on-click-modal='false' width="30%">
+			<el-form label-width="140px" :model="detailForm" style="width:100%;">
+				<el-row>
+					<el-form-item label="检查人：" style="margin-bottom:1px">{{detailForm.checkPerson}}</el-form-item>
+					<el-form-item label="组织机构：" style="margin-bottom:1px">{{detailForm.companyName}}</el-form-item>
+					<el-form-item label="检查类型：" style="margin-bottom:1px">{{detailForm.checkType}}</el-form-item>
+					<el-form-item label="检查日期：" style="margin-bottom:1px">{{detailForm.checkDate}}</el-form-item>
+					<el-form-item label="通过状态：" style="margin-bottom:1px">{{detailForm.pass}}</el-form-item>
+					<el-form-item v-show='detailForm.problems' label="问题描述：" style="margin-bottom:1px">{{detailForm.problems}}</el-form-item>
+					<el-form-item v-show='detailForm.reason' label="原因描述：" style="margin-bottom:1px">{{detailForm.reason}}</el-form-item>
+					<el-form-item label="操作：" style="margin-bottom:20px" v-show="detailForm.pass === '不通过'">
+						<el-button size='mini' @click="questionEditfalse  = true">录入问题</el-button>
+						<el-button size='mini' type="warning" @click="addHidden">录入隐患</el-button>
+						<el-button size='mini' type="danger" @click="addRegulation">录入违章</el-button>
+					</el-form-item>
+				</el-row>
+
+			</el-form>
+		</el-dialog>
+		<!--编辑检查记录 -->
+		<el-dialog title="添加问题" :close-on-click-modal='false' :visible.sync="questionEditfalse" width="30%">
+			<el-form>
+				<el-form-item :model="problemForm" label="请输入问题：">
+					<el-input v-model="problemForm.problemDescription"></el-input>
+				</el-form-item>
+			</el-form>
+			<div style="text-align:right">
+				<el-button icon="el-icon-refresh-left" @click="questionEditfalse = false">取 消</el-button>
+				<el-button type="primary" icon="el-icon-check" @click="submitEditQuestion()">确 定</el-button>
+			</div>
+		</el-dialog>
+	</div>
 </template>
 
 <script>
