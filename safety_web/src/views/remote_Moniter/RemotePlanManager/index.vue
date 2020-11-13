@@ -1,125 +1,74 @@
 <template>
-    <div>
-        <div class="page-title" style="width:100%">远程计划管理</div>
-        <div class="page-content">
-            <el-row>
-                <el-form label-width="130px" :inline="true">
-                    <el-form-item label='时间范围：' labelWidth='120px'>
-                        <el-date-picker
-                                v-model="selectdate"
-                                type="daterange"
-                                align="right"
-                                unlink-panels
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
-                    &nbsp;&nbsp;&nbsp;
-                    <el-form-item>
-                        <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新建</el-button>
-                    </el-form-item>
-                    <el-form-item style="float:right;  color:cornflowerblue">
-                        <span style="font-size:16px;">执行中: {{status_processing}}</span>
-                        &nbsp;
-                        <span style="font-size:16px;">完成: {{status_completed}}</span>
-                    </el-form-item>
-                </el-form>
-            </el-row>
-            <!-- 计划列表 -->
-            <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-                <el-table
-                        :data="listData"
-                        style="width: 100%;text-align:center"
-                        ref="treeTable"
-                        row-key="code"
-                        :indent="30"
-                        max-height="560"
-                        highlight-current-row
-                        border>
-                    <el-table-column type="index" label="序号" width="80" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="startDate" label="计划开始时间" width="150" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="endDate" label="计划结束时间" width="150" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="status" label="计划状态" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="操作" width="400" align="center" show-overflow-tooltip>
-                        <template slot-scope="scope">
-                            <el-button
-                                    type="primary"
-                                    size="mini"
-                                    icon="el-icon-more"
-                                    @click="readfile(scope.row)"
-                            >详情
-                            </el-button>
-                            
-                            <el-button
-                                    type="warning"
-                                    size="mini"
-                                    icon="el-icon-download"
-                                    @click="pushfile(scope.row)"
-                            >导出
-                            </el-button>
-                            <el-button
-                                    type="info"
-                                    size="mini"
-                                    icon="el-icon-video-pause"
-                                    @click="endplans(scope.row)"
-                            >结束
-                            </el-button>
-                            <el-button
-                                    type="danger"
-                                    size="mini"
-                                    icon="el-icon-delete"
-                                    @click="deletefile(scope.row)"
-                            >删除
-                            </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-row>
-            <!-- 新增计划表  -->
-            <el-dialog title="新增计划" :visible.sync="ifadd" width="700px" :close-on-click-modal="false">
-                <el-form label-width="120px" style="width:100%;">
-                    <el-row>
-                        <el-col :span="24">
-                            <el-form-item label='时间范围：' labelWidth='120px'>
-                                <el-date-picker
-                                        v-model="newdate"
-                                        type="daterange"
-                                        align="right"
-                                        unlink-panels
-                                        range-separator="至"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期"
-                                        value-format="yyyy-MM-dd"
-                                >
-                                </el-date-picker>
-                            </el-form-item>
-                            <el-form-item label="计划名称：" prop="desc" style="margin-bottom:1px">
-                                <el-input type="text" label="计划名称 ：" class="resizeNone" v-model="newname"
-                                          placeholder="请输入内容"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        
-                                
-                           
-                    </el-row>
-                </el-form>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="" @click="ifadd=false" icon="el-icon-refresh-left">取 消
-                                </el-button>
-                                <el-button type="primary" @click="addEvidenceFile" icon="el-icon-check">录 入
-                                </el-button>
-                </span>
-            </el-dialog>
-        </div>
-    </div>
+	<div>
+		<div class="page-title" style="width:100%">远程计划管理</div>
+		<div class="page-content">
+			<el-form :inline="true">
+				<el-form-item label='时间范围:'>
+					<el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
+					 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" style="margin-right: 10px;" @click="handleClick">查询</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-plus" @click="handleAdd">新建</el-button>
+				</el-form-item>
+				<el-form-item style="float:right;  color:cornflowerblue">
+					<span style="font-size:16px;">执行中: {{status_processing}}</span>
+					&nbsp;
+					<span style="font-size:16px;">完成: {{status_completed}}</span>
+				</el-form-item>
+			</el-form>
+			<!-- 计划列表 -->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
+				 max-height="560" highlight-current-row border>
+					<el-table-column type="index" label="序号" width="80" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="startDate" label="计划开始时间" width="150" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="endDate" label="计划结束时间" width="150" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="planPersonName" label="计划人姓名" width="150" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="status" label="计划状态" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" width="400" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" icon="el-icon-more" @click="readfile(scope.row)">详情
+							</el-button>
+							<el-button type="warning" size="mini" icon="el-icon-download" @click="pushfile(scope.row)">导出
+							</el-button>
+							<el-button type="info" size="mini" icon="el-icon-video-pause" @click="endplans(scope.row)">结束
+							</el-button>
+							<el-button type="danger" size="mini" icon="el-icon-delete" @click="deletefile(scope.row)">删除
+							</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-row>
+			<!-- 新增计划表  -->
+			<el-dialog title="新增计划" :visible.sync="ifadd" width="700px" :close-on-click-modal="false">
+				<el-form label-width="120px" style="width:100%;">
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label='时间范围：' labelWidth='120px'>
+								<el-date-picker v-model="newdate" type="daterange" align="right" unlink-panels range-separator="至"
+								 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
+								</el-date-picker>
+							</el-form-item>
+							<el-form-item label="计划名称：" prop="desc" style="margin-bottom:1px">
+								<el-input type="text" label="计划名称 ：" class="resizeNone" v-model="newname" placeholder="请输入内容"></el-input>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="" @click="ifadd=false" icon="el-icon-refresh-left">取 消
+					</el-button>
+					<el-button type="primary" @click="addEvidenceFile" icon="el-icon-check">录 入
+					</el-button>
+				</span>
+			</el-dialog>
+		</div>
+	</div>
 </template>
 
 <script>
