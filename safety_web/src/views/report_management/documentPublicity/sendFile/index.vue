@@ -3,8 +3,9 @@
 		<div class="page-title" style="width: 100%">文件宣贯发送</div>
 		<div class="page-content" v-loading="loading">
 			<el-form :inline="true">
-				<el-form-item label="选择公司:" style="margin: 1px;">
-					<treeselect :multiple="false" placeholder="请选择公司单位" style="width: 230px;" :options="companyList" v-model="selectData.selectCompanyId"></treeselect>
+				<el-form-item label="选择公司:">
+					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 230px;" :options="companyList"
+					 v-model="selectData.selectCompanyId"></treeselect>
 				</el-form-item>
 				<el-form-item label="选择时间">
 					<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
@@ -16,43 +17,35 @@
 				</el-form-item>
 			</el-form>
 			<!-- 文件名，发起单位name，宣贯时间，描述，发起员工姓名 -->
-			<el-row>
-				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-					<el-table stripe style="width: 100%" max-height="560" border v-loading="loading" :data="filterQuery.putSelected">
-						<el-table-column type="index" label="序号" width="60%" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="fileName" label="记录名" width="200%" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="companyName" label="发起单位" width="200%" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="staffName" label="发起人" width="130%" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="propagationDate" label="宣贯时间" width="120%" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="description" label="描述" width="200%" align="center" show-overflow-tooltip="true"></el-table-column>
-						<el-table-column label="操作" width="330%" align="center" show-overflow-tooltip>
-							<template slot-scope="scope">
-								<el-button type="primary" size="mini" icon="el-icon-edit" @click="openConfigDialog(scope.row)">配置</el-button>
-								<el-button type="info" size="mini" icon="el-icon-message" @click="openStatisticsDialog(scope.row)">统计</el-button>
-								<el-button type="danger" size="mini" icon="el-icon-close" @click="deletePropagationPlan(scope.row)">删除</el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-				</el-row>
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table stripe style="width: 100%" max-height="560px" stripe border v-loading="loading" :data="filterQuery.putSelected">
+					<el-table-column type="index" label="序号" width="60%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="fileName" label="记录名" width="200%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="发起单位" width="200%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="staffName" label="发起人" width="130%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="propagationDate" label="宣贯时间" width="120%" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="description" label="描述" width="200%" align="center" show-overflow-tooltip="true"></el-table-column>
+					<el-table-column label="操作" width="300%" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" icon="el-icon-edit" @click="openConfigDialog(scope.row)">配置</el-button>
+							<el-button type="info" size="mini" icon="el-icon-message" @click="openStatisticsDialog(scope.row)">统计</el-button>
+							<el-button type="danger" size="mini" icon="el-icon-close" @click="deletePropagationPlan(scope.row)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
 			</el-row>
 			<el-dialog title="新增宣贯记录" :visible.sync="insertPropagationDialog" width="60%" align="left">
-				<el-form :label-position='right' label-width="80px" :model="propagationPlan">
+				<el-form ref="addPlanForm" :label-position='right' label-width="80px" :model="propagationPlan" :rules="planRules">
 					<el-col :span="12">
-						<el-form-item label="记录名">
+						<el-form-item label="记录名" prop="fileName">
 							<el-input v-model="propagationPlan.fileName" style="width: 80%;" placeholder="请输入记录名"></el-input>
 						</el-form-item>
-						<!-- <el-form-item label="发起单位">
-							<el-input v-model="propagationPlan.companyName" style="width: 80%;" placeholder="请输入发起公司"></el-input>
-						</el-form-item>
-						<el-form-item label="发起人">
-							<el-input v-model="propagationPlan.staffName" style="width: 80%;" placeholder="请输入发起人姓名"></el-input>
-						</el-form-item> -->
-						<el-form-item label="宣贯时间">
+						<el-form-item label="宣贯时间" prop="propagationDate">
 							<el-date-picker type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:80%"
 							 v-model="propagationPlan.propagationDate">
 							</el-date-picker>
 						</el-form-item>
-						<el-form-item label="上传文件">
+						<el-form-item label="上传文件" prop="filePath">
 							<el-upload :action="'/api/propagationFileUpload'" :headers="headers" multiple show-file-list="true" :file-list="propagationPlan.filePath"
 							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
 							 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
@@ -89,7 +82,8 @@
 						<el-table-column type="selection" show-overflow-tooltip></el-table-column>
 						<el-table-column type="index" label="序号" align="center" show-overflow-tooltip></el-table-column>
 						<el-table-column prop="companyName" label="所属单位" align="center" show-overflow-tooltip></el-table-column>
-						<el-table-column prop="empGroup" label="下属部门" show-overflow-tooltip align="center" :filters="selectFilter" :filter-method="filterHandler"></el-table-column>
+						<el-table-column prop="empGroup" label="下属部门" show-overflow-tooltip align="center" :filters="selectFilter"
+						 :filter-method="filterHandler"></el-table-column>
 						<el-table-column prop="name" label="姓名" align="center" show-overflow-tooltip></el-table-column>
 					</el-table>
 				</el-row>
@@ -131,14 +125,17 @@
 		GetCurrentUser
 	} from '../../../../store/CurrentUser'
 	import ExportJsonExcel from "js-export-excel";
-	const headers1={
-		Accept:'application/json',
-		'Content-Type':'aplication/json;charset=utf-8'
+	const headers1 = {
+		Accept: 'application/json',
+		'Content-Type': 'aplication/json;charset=utf-8'
 	}
-	const newOptions={...headers1}
-	let user=GetCurrentUser()
-	if(user){
-		newOptions.headers={...newOptions.headers1,Authorization:user.token}
+	const newOptions = { ...headers1
+	}
+	let user = GetCurrentUser()
+	if (user) {
+		newOptions.headers = { ...newOptions.headers1,
+			Authorization: user.token
+		}
 	}
 	const DefaultQuery = {
 		putSelected: [],
@@ -148,7 +145,7 @@
 		data() {
 			return {
 				filterQuery: {},
-				headers:newOptions.headers,
+				headers: newOptions.headers,
 				companyId: null,
 				companyCode: '',
 				companyName: '',
@@ -205,6 +202,23 @@
 					staffId: '',
 					staffName: '',
 					filePath: []
+				},
+				planRules: {
+					fileName: [{
+						required: 'true',
+						message: '请输入记录名',
+						trigger: 'blur'
+					}],
+					propagationDate: [{
+						required: 'true',
+						message: '请选择宣贯时间',
+						trigger: 'blur'
+					}],
+					filePath: [{
+						required: 'true',
+						message: '请上传宣贯文件',
+						trigger: 'blur'
+					}]
 				},
 				propagationDetailList: [],
 				fileList: [],
@@ -306,41 +320,20 @@
 			//发送方查询功能，根据两个查询框数据分别进行判断，再查询合适的数据
 			select() {
 				this.isChild = true
+				this.filterQuery.putSelected = this.filterQuery.putTableData
 				//转换公司id
 				if (this.selectData.selectCompanyId) {
 					this.changeCompanyIdTocompanyName(this.companyList, this.selectData.selectCompanyId)
 					this.selectData.selectCompanyName = this.companyName
-					this.checkCompany(this.companyList, this.selectData.selectCompanyName)
-				}
-				//根据搜索框数据情况进行搜索
-				if (!this.selectData.selectCompanyId && !this.selectData.selectDateRange) {
-					this.filterQuery.putSelected = this.filterQuery.putTableData
-				} else if (!this.selectData.selectCompanyId && this.selectData.selectDateRange) {
-					this.filterQuery.putSelected = this.filterQuery.putTableData.filter(item => {
-						//“yyyy-MM-dd”型日期数据比较时日期更靠前的数据会更大，而日期更靠后的数据会更小
-						return item.propagationDate >= this.selectData.selectDateRange[0] && item.propagationDate <= this.selectData.selectDateRange[
-							1]
+					this.filterQuery.putSelected = this.filterQuery.putSelected.filter(item => {
+						return item.companyName == this.selectData.selectCompanyName
 					})
-				} else if (this.selectData.selectCompanyId && !this.selectData.selectDateRange) {
-					//不能查询非叶子公司节点
-					if (this.isChild == false) {
-						this.selectData.selectCompanyId = null
-						this.selectData.selectCompanyName = ''
-						this.$message.error('公司选择错误，请重新选择')
-					} else {
-						this.filterQuery.putSelected = this.filterQuery.putTableData.filter(item => {
-							return item.companyName == this.selectData.selectCompanyName
-						})
-					}
-				} else if (this.selectData.selectCompanyId && this.selectData.selectDateRange) {
-					if (this.isChild == false) {
-						this.selectData.selectCompanyId = null
-						this.selectData.selectCompanyName = ''
-						this.$message.error('公司选择错误，请重新选择')
-					} else {
-						this.filterQuery.putSelected = this.filterQuery.putTableData.filter(item => {
-							return item.companyName == this.selectData.selectCompanyName && (item.propagationDate >= this.selectData.selectDateRange[
-								0] && item.propagationDate <= this.selectData.selectDateRange[1])
+				}
+				if (this.selectData.selectDateRange) {
+					if (this.selectData.selectDateRange.length > 0) {
+						this.filterQuery.putSelected = this.filterQuery.putSelected.filter(item => {
+							return item.propagationDate >= this.selectData.selectDateRange[0] &&
+								item.propagationDate <= this.selectData.selectDateRange[1]
 						})
 					}
 				}
@@ -381,22 +374,6 @@
 					}
 				}
 			},
-			//递归检查公司是否为叶子节点方法
-			checkCompany(val, company) {
-				for (var i = 0; i < val.length; i++) {
-					if (val[i].label == company) {
-						if (val[i].children) {
-							this.isChild = false
-							break
-						} else {
-							this.isChild = true
-							break
-						}
-					} else if (val[i].children) {
-						this.checkCompany(val[i].children, company)
-					}
-				}
-			},
 			//查询“文件宣贯计划”表，返回所有记录
 			queryPropagationPlan() {
 				this.loading = true
@@ -409,16 +386,17 @@
 			},
 			//打开新增宣贯计划对话框
 			openInsertPropagationDialog() {
+				console.log('user', user)
 				//初始化新增宣贯计划数组
 				this.propagationPlan.description = ''
 				this.propagationPlan.fileName = ''
 				this.propagationPlan.propagationDate = ''
 				this.companyId = null
-				this.propagationPlan.companyCode = ''
-				this.propagationPlan.companyName = ''
+				this.propagationPlan.companyCode = user.companyCode
+				this.propagationPlan.companyName = user.companyName
 				this.propagationPlan.filePath = []
-				this.propagationPlan.staffName =''
-				this.propagationPlan.staffId =''
+				this.propagationPlan.staffName = user.employeeName
+				this.propagationPlan.staffId = user.employeeId
 				this.insertPropagationDialog = true
 			},
 			//打开宣贯统计框，并加载对应记录的宣贯细节表
@@ -473,32 +451,34 @@
 			insertPropagation() {
 				this.isChild = true
 				//检查数据完整性
-				if (this.propagationPlan.fileName && this.propagationPlan.propagationDate && this.propagationPlan.filePath.length > 0) {
-						//调用接口新增数据
-					insertPropagationPlan(this.propagationPlan).then(res => {
-						if (res.code == '1000') {
-							queryPropagationPlan().then(res => {
-								this.filterQuery.putTableData = res.data
-								//调用搜索方法刷新页面
-								this.select()
-							}).catch(err => {
-								this.$message.error(err.message)
-							})
-							this.$message({
-								message: '添加成功',
-								type: 'success'
-							})
-						} else {
-							this.$message.error('添加失败')
+				this.$refs.addPlanForm.validate(valid => {
+					if (!valid) {
+						return this.$message.error('数据不完整')
+					} else {
+						let nowDate=new Date().toISOString().substr(0,10)
+						if(this.propagationPlan.propagationDate<nowDate){
+							this.propagationPlan.propagationDate=''
+							return this.$message.error('宣贯日期不能小于当前日期')
 						}
-					}).catch(err => {
-						this.$message.error(err.message)
-					})
-					//关闭新增宣贯计划框
-					this.insertPropagationDialog = false
-				} else {
-					this.$message.error('数据不完整')
-				}
+						console.log('plan data',this.propagationPlan)
+						insertPropagationPlan(this.propagationPlan).then(res => {
+							if (res.code == '1000') {
+								queryPropagationPlan().then(res => {
+									this.filterQuery.putTableData = res.data
+									//调用搜索方法刷新页面
+									this.select()
+								}).catch(err => {
+									this.$message.error(err.message)
+								})
+								this.$message.success('添加成功')
+							}
+						}).catch(err => {
+							this.$message.error(err.message)
+						})
+						//关闭新增宣贯计划框
+						this.insertPropagationDialog = false
+					}
+				})
 			},
 			//配置对话框搜索
 			chosenSelect() {
