@@ -1,176 +1,145 @@
 <template>
-    <div>
-        <el-breadcrumb separator="/" class="bread">
-            <el-breadcrumb-item :to="{ path: '/remote_Moniter/RemotePlanManager/index' }">远程计划管理</el-breadcrumb-item>
-            <el-breadcrumb-item>远程计划管理细节</el-breadcrumb-item>
-        </el-breadcrumb>
-        <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-        </el-row>
-        <div class="page-title" style="width:100%">远程计划管理细节</div>
-        <div class="page-content">
-            <el-row>
-                <el-form label-width="130px" :inline="true">
-                    <el-form-item>
-                        <a ref="download"></a>
-                        <el-button type="warning" icon="el-icon-download" @click="clickFile()">Excel模板下载</el-button>
-                    </el-form-item>
-                    <el-form-item>
-                        <!-- 除了提交文件外还需要提交id，所以没用默认的提交方式，而是在submit之前通过接口去提交 -->
-                        <el-upload action="/" :before-upload="handleClick" :data="this.id" ref="upload"
-                                   :auto-upload="false">
-                            <el-button type="success" icon="el-icon-upload ">excel导入
-                            </el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" icon="el-icon-check " @click="newSubmitForm()">确认</el-button>
-                    </el-form-item>
-                    <!--手动录入待完善-->
-                    <el-form-item>
-                        <!-- 显示出录入窗口，并且将数据清空，让用户重新录入 -->
-                        <el-button type="primary" icon="el-icon-upload " @click="isCheckIn=true;resData={}">手动录入
-                        </el-button>
-                    </el-form-item>
-                    <!-- <el-form-item style="float:right">
+	<div>
+		<el-breadcrumb separator="/" class="bread">
+			<el-breadcrumb-item :to="{ path: '/remote_Moniter/RemotePlanManager/index' }">远程计划管理</el-breadcrumb-item>
+			<el-breadcrumb-item>远程计划管理细节</el-breadcrumb-item>
+		</el-breadcrumb>
+		<div class="page-content">
+			<el-form :inline="true">
+				<el-form-item>
+					<a ref="download"></a>
+					<el-button type="warning" icon="el-icon-download" @click="clickFile()">Excel模板下载</el-button>
+				</el-form-item>
+				<el-form-item>
+					<!-- 除了提交文件外还需要提交id，所以没用默认的提交方式，而是在submit之前通过接口去提交 -->
+					<el-upload action="/" :before-upload="handleClick" :data="this.id" ref="upload" :auto-upload="false">
+						<el-button type="success" icon="el-icon-upload ">excel导入
+						</el-button>
+					</el-upload>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-check " @click="newSubmitForm()">确认</el-button>
+				</el-form-item>
+				<!--手动录入待完善-->
+				<el-form-item>
+					<!-- 显示出录入窗口，并且将数据清空，让用户重新录入 -->
+					<el-button type="primary" icon="el-icon-upload " @click="isCheckIn=true;resData={}">手动录入
+					</el-button>
+				</el-form-item>
+				<!-- <el-form-item style="float:right">
                         <el-button @click="handleCancel" icon="el-icon-refresh-left">返回</el-button>
                     </el-form-item> -->
-                    <!-- <el-form-item style="float:right">
+				<!-- <el-form-item style="float:right">
                       <el-button  type="primary" @click="handlePost">保存</el-button>
                     </el-form-item> -->
-                </el-form>
-            </el-row>
-            <!-- 计划列表 -->
-            <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-                <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30"
-                          max-height="560"
-                          highlight-current-row border>
-                    <el-table-column type="index" label="序号" width="50" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="deviceNo" label="设备编号" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="myNo" label="自编号" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="companyName" label="基层单位" width="120" align="center" show-overflow-tooltip
-                                     :filters="filterCompanyNameList"
-                                     :filter-method="filterCompanyName"
-                    ></el-table-column>
-                    <!--项目类别，暂时还没确定名字-->
-                    <el-table-column prop="itemCategory" label="项目类别" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="projectName" label="项目名称" align="center" show-overflow-tooltip
-                                     :filters="filterProjectNameList"
-                                     :filter-method="filterProjectName"
-                    ></el-table-column>
-                    <el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="tel" label="电话" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <!--项目进度，暂时还没确定名字-->
-                    <el-table-column prop="projectProgress" label="项目进度" width="120" align="center" show-overflow-tooltip></el-table-column>
-                    <el-table-column label="操作" width="200" align="center">
-                        <template slot-scope="scope">
-                            <el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-edit">编辑</el-button>
-                            <el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-row>
-
-            <!-- 编辑细节项目  -->
-            <el-dialog title="新增计划" :visible.sync="ifchange" width="700px">
-                <el-form label-width="120px" style="width:100%;">
-                    <el-row>
-                        <el-col :span="24">
-                            <el-form-item label="设备编号:" prop="deviceNo" style="margin-bottom:1px">
-                                <el-input type="text" label="设备编号:" class="resizeNone" v-model="resData.deviceNo"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="自编号:" prop="myNo" style="margin-bottom:1px">
-                                <el-input type="text" label="自编号:" class="resizeNone" v-model="resData.myNo"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="项目名称:" prop="projectName" style="margin-bottom:1px">
-                                <el-input type="text" label="项目名称: " class="resizeNone" v-model="resData.projectName"
-                                          placeholder="请输入内容"></el-input>
-                            </el-form-item>
-                            <el-form-item label="负责人:" prop="charger" style="margin-bottom:1px">
-                                <el-input type="text" label="负责人:" class="resizeNone" v-model="resData.charger"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="电话:" prop="tel" style="margin-bottom:1px">
-                                <el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
-                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                        </el-col>
-                      
-                         
-                    </el-row>
-                </el-form>
-                <span slot="footer" class="dialog-footer">
-                             <el-button @click="ifchange=false" icon="el-icon-refresh-left">
-                                    取 消
-                                </el-button>
-                                <el-button type="primary" @click="changeres" icon="el-icon-check">确 定</el-button>
-                </span>
-            </el-dialog>
-            <!-- 手动录入 -->
-            <el-dialog title="手动录入" :visible.sync="isCheckIn" width="700px" :close-on-click-modal="false">
-                <el-form label-width="120px" style="width:100%;">
-                    <el-row>
-                        <el-col :span="24">
-                            <el-form-item label="设备编号:" prop="deviceNo" style="margin-bottom:10px">
-                                <el-input type="text" label="设备编号:" class="resizeNone" v-model="resData.deviceNo"
-                                          placeholder="请输入内容"
-                                >
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="自编号:" prop="myNo" style="margin-bottom:10px">
-                                <el-input type="text" label="自编号:" class="resizeNone" v-model="resData.myNo"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="基层单位:" prop="companyName" style="margin-bottom:10px">
-                                <el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="项目类别:" prop="itemCategory" style="margin-bottom:10px">
-                                <el-input type="text" label="项目类别:" class="resizeNone" v-model="resData.itemCategory"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="项目名称:" prop="projectName" style="margin-bottom:10px">
-                                <el-input type="text" label="项目名称: " class="resizeNone" v-model="resData.projectName"
-                                          placeholder="请输入内容"></el-input>
-                            </el-form-item>
-                            <el-form-item label="负责人:" prop="charger" style="margin-bottom:10px">
-                                <el-input type="text" label="负责人:" class="resizeNone" v-model="resData.charger"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-                            <el-form-item label="电话:" prop="tel" style="margin-bottom:10px">
-                                <el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel"
-                                          placeholder="请输入内容">
-                                </el-input>
-                            </el-form-item>
-
-                        </el-col>
-                                
-                    </el-row>
-                </el-form>
-                <span slot="footer" class="dialog-footer">
-                    <el-button type="" @click="isCheckIn=false" icon="el-icon-refresh-left">
-                                    取 消
-                                </el-button>
-                                <el-button type="primary"  @click="confirmCheckIn" icon="el-icon-check">确 定
-                                </el-button>
-                </span>
-            </el-dialog>
-        </div>
-    </div>
+			</el-form>
+			<!-- 计划列表 -->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30" max-height="560"
+				 highlight-current-row border>
+					<el-table-column type="index" label="序号" width="50" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="deviceNo" label="设备编号" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="myNo" label="自编号" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="基层单位" width="120" align="center" show-overflow-tooltip :filters="filterCompanyNameList"
+					 :filter-method="filterCompanyName"></el-table-column>
+					<!--项目类别，暂时还没确定名字-->
+					<el-table-column prop="itemCategory" label="项目类别" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="projectName" label="项目名称" align="center" show-overflow-tooltip :filters="filterProjectNameList"
+					 :filter-method="filterProjectName"></el-table-column>
+					<el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="tel" label="电话" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<!--项目进度，暂时还没确定名字-->
+					<el-table-column prop="projectProgress" label="项目进度" width="120" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" width="200" align="center">
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-edit">编辑</el-button>
+							<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-row>
+			<!-- 编辑细节项目  -->
+			<el-dialog title="新增计划" :visible.sync="ifchange" width="700px">
+				<el-form label-width="120px" style="width:100%;">
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label="设备编号:" prop="deviceNo" style="margin-bottom:1px">
+								<el-input type="text" label="设备编号:" class="resizeNone" v-model="resData.deviceNo" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="自编号:" prop="myNo" style="margin-bottom:1px">
+								<el-input type="text" label="自编号:" class="resizeNone" v-model="resData.myNo" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="项目名称:" prop="projectName" style="margin-bottom:1px">
+								<el-input type="text" label="项目名称: " class="resizeNone" v-model="resData.projectName" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="负责人:" prop="charger" style="margin-bottom:1px">
+								<el-input type="text" label="负责人:" class="resizeNone" v-model="resData.charger" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="电话:" prop="tel" style="margin-bottom:1px">
+								<el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="基层单位:" prop="companyName" style="margin-bottom:1px">
+								<el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="ifchange=false" icon="el-icon-refresh-left">
+						取 消
+					</el-button>
+					<el-button type="primary" @click="changeres" icon="el-icon-check">确 定</el-button>
+				</span>
+			</el-dialog>
+			<!-- 手动录入 -->
+			<el-dialog title="手动录入" :visible.sync="isCheckIn" width="700px" :close-on-click-modal="false">
+				<el-form label-width="120px" style="width:100%;">
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label="设备编号:" prop="deviceNo" style="margin-bottom:10px">
+								<el-input type="text" label="设备编号:" class="resizeNone" v-model="resData.deviceNo" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="自编号:" prop="myNo" style="margin-bottom:10px">
+								<el-input type="text" label="自编号:" class="resizeNone" v-model="resData.myNo" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="基层单位:" prop="companyName" style="margin-bottom:10px">
+								<el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="项目类别:" prop="itemCategory" style="margin-bottom:10px">
+								<el-input type="text" label="项目类别:" class="resizeNone" v-model="resData.itemCategory" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="项目名称:" prop="projectName" style="margin-bottom:10px">
+								<el-input type="text" label="项目名称: " class="resizeNone" v-model="resData.projectName" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="负责人:" prop="charger" style="margin-bottom:10px">
+								<el-input type="text" label="负责人:" class="resizeNone" v-model="resData.charger" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+							<el-form-item label="电话:" prop="tel" style="margin-bottom:10px">
+								<el-input type="text" label="电话:" class="resizeNone" v-model="resData.tel" placeholder="请输入内容">
+								</el-input>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="" @click="isCheckIn=false" icon="el-icon-refresh-left">取 消
+					</el-button>
+					<el-button type="primary" @click="confirmCheckIn" icon="el-icon-check">确 定
+					</el-button>
+				</span>
+			</el-dialog>
+		</div>
+	</div>
 </template>
 <script>
     import ExportJsonExcel from "js-export-excel";
