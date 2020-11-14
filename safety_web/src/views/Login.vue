@@ -23,6 +23,7 @@
           img(:src='back.back' style="display:none")
         img(:src='back.safebtn' style="display:none")
         img(:src='back.qualitybtn' style="display:none")
+        img(:src='back.dashboard' style="display:none")
 </template>
 
 <script>
@@ -33,8 +34,9 @@ import IconUser from '../assets/icons/user.svg'
 import IconPassword from '../assets/icons/password.svg'
 import Logo from '../assets/resources/logo.jpg'
 import back from '../components/img/back.png'
-import safebtn from '../components/img/back.png'
-import qualitybtn from '../components/img/back.png'
+import safebtn from '../components/img/3.png'
+import qualitybtn from '../components/img/4.png'
+import dashboard from '../components/img/1aa.png'
 
 export default {
   components: {
@@ -42,7 +44,7 @@ export default {
   },
   data () {
     return {
-      back:{back,safebtn,qualitybtn},
+      back:{back,safebtn,qualitybtn,dashboard},
       submiting: false,
       formData: {
         userName: '',
