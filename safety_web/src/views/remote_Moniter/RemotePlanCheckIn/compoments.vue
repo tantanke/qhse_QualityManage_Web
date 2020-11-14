@@ -297,7 +297,7 @@
             handelcelDelete(data) {//删除
 
                 this.resData = data;
-                deleteInputInfo(this.resData.checkRecordId).then(res => {
+                deleteInputInfo(this.resData.monitorInputCheckRecordID).then(res => {
                     this.$message.success('删除成功', res)
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;

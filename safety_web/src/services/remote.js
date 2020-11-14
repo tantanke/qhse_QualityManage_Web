@@ -178,8 +178,8 @@ export const getItemNum = (planId ) => {
 }
 
 // 结束某一项监控细节
-export const endPlanDetail = (planId ) => {
-    return request(`/api/endPlanDetail?planId=${planId }`, {
+export const endPlanDetail = (planDetailId ) => {
+    return request(`/api/endPlanDetail?planDetailId=${planDetailId }`, {
         method:'get',
     })
 }

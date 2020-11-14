@@ -167,7 +167,7 @@
         methods: {
             endPlanDetails(row){
 
-				endPlanDetail(row.monitorPlanID).then(res=>{
+				endPlanDetail(row.monitorPlanDetailID).then(res=>{
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
                         this.filterMethods(this.listData)
