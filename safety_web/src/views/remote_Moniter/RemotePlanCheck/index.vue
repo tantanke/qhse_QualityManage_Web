@@ -2,9 +2,8 @@
   <div>
     <div class="page-title" style="width:100%">远程计划核查</div>
     <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true">
-          <el-form-item label='时间范围：' labelWidth='120px'>
+        <el-form :inline="true">
+          <el-form-item label='时间范围:'>
             <el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
               start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
             </el-date-picker>
@@ -19,17 +18,17 @@
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
           max-height="560" highlight-current-row border>
-          <el-table-column type="index" label="序号" width="120" align="center" show-overflow-tooltip></el-table-column>
+          <el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
           <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="startDate" label="开始时间" width="200" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="endDate" label="结束时间" width="200" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column label="编辑" width="100" align="center" show-overflow-tooltip>
+          <el-table-column prop="startDate" label="开始时间" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="endDate" label="结束时间" align="center" show-overflow-tooltip> </el-table-column>
+          <!-- <el-table-column label="操作" width="100" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-edit">核查
               </el-button>
             </template>
-          </el-table-column>
-          <el-table-column label="操作" width="200" align="center" show-overflow-tooltip>
+          </el-table-column> -->
+          <el-table-column label="操作" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <!--取消删除按钮-->
               <!--<el-button -->
@@ -37,12 +36,13 @@
               <!--size="mini"-->
               <!--@click="deletefile(scope.row)"-->
               <!--&gt;删除</el-button>-->
+              <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-edit">核查
+              </el-button>
               <el-button type="warning" size="mini" @click="inputfile(scope.row)" icon="el-icon-download">导出日报</el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
-
       <el-dialog :visible.sync="table" width="500px" :close-on-click-modal="false">
         <div v-if="choose=='hecha'" style="margin-left:39%;margin-bottom:30px;font-size:20px">核查计划</div>
         <div v-if="choose=='ribao'" style="margin-left:39%;margin-bottom:30px;font-size:20px">导出日报</div>

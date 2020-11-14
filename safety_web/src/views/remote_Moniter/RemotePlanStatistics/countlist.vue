@@ -1,100 +1,83 @@
 <template>
-<div>
-    <div class="page-title" style="width:100%">远程计划统计表</div>
-    <div class="page-content">
-        <el-row>
-        <el-form label-width="130px" :inline="true">
-          <el-form-item >
-              <el-button type="warning" icon="el-icon-upload "  @click="output()">导出</el-button>
-          </el-form-item>
-          <el-form-item style="float:right">
-            <el-button  @click="handleCancel" icon="el-icon-refresh-left">返回</el-button>
-          </el-form-item>
-        </el-form>
-      </el-row>
-        <!-- 计划列表 -->
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-          <el-table
-          :data="listData"
-          style="width: 100%;text-align:center"
-          ref="treeTable"
-          :indent="30"
-          max-height="560"
-          highlight-current-row
-          border>
-          <el-table-column  type="index" label="序号" width="80" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="sumDate" label="日期" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="companyName" label="基层单位" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="workNum" label="开工项目数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="dayReportNum" label="日报数量" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="0" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="outStockNum" label="出库数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="powerOnNum" label="开机使用数量" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="backNum" label="备用数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="coverageRate" label="覆盖率" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="availableRate" label="利用率" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column prop="useRate" label="使用率" width="100" align="center" show-overflow-tooltip> </el-table-column>
-          <el-table-column label="操作"  align="center" width="180" show-overflow-tooltip>
-            <template slot-scope="scope">
-              
-              <el-button 
-              type="primary"
-              size="mini"
-              icon="el-icon-edit"
-              @click="handelcelchange(scope.row)"
-              >编辑</el-button>
-              <el-button 
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click="handelcelDelete(scope.row)"
-              >删除</el-button>
-            </template>
-          </el-table-column>
-            
-        </el-table> 
-      </el-row>
-       <el-dialog title="新增计划" :visible.sync="tochange" width="700px" :close-on-click-modal="false">
-          <el-form label-width="120px" style="width:100%;" >
-           <el-row>
-            <el-col :span="24">
-              <el-form-item label="日期:"  prop="sumDate" style="margin-bottom:1px">
-                <el-input type="text"   label="日期:"  class="resizeNone" v-model="resData.sumDate" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="基层单位:"  prop="companyName" style="margin-bottom:1px">
-                <el-input type="text"   label="基层单位:"  class="resizeNone" v-model="resData.companyName" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="开工项目数量:"  prop="workNum" style="margin-bottom:1px">
-                <el-input type="text"   label="开工项目数量:"  class="resizeNone" v-model="resData.workNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="日报数量:"  prop="dayReportNum" style="margin-bottom:1px">
-                <el-input type="text"   label="日报数量: "  class="resizeNone" v-model="resData.dayReportNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="配备记录仪数量:"  prop="recordDeviceNum" style="margin-bottom:1px">
-                <el-input type="text"   label="配备记录仪数量:"  class="resizeNone" v-model="resData.recordDeviceNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="出库数量:"  prop="outStockNum" style="margin-bottom:1px">
-                <el-input type="text"   label="出库数量:"  class="resizeNone" v-model="resData.outStockNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="开机使用数量:"  prop="powerOnNum" style="margin-bottom:1px">
-                <el-input type="text"   label="开机使用数量:"  class="resizeNone" v-model="resData.powerOnNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-              <el-form-item label="备用数量:"  prop="backNum" style="margin-bottom:1px">
-                <el-input type="text"   label="备用数量:"  class="resizeNone" v-model="resData.backNum" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </el-col>
-            
-            
-            
-           </el-row>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button type=""  @click="tochange=false" icon="el-icon-refresh-left">取 消</el-button>
-            <el-button type="primary" @click="changeres" icon="el-icon-check">确 定</el-button>
-          </span>
-      </el-dialog>
-    </div>
-</div>
+	<div>
+		<el-breadcrumb separator="/" style="margin-bottom: 20px;">
+			<el-breadcrumb-item :to="{ path: '/remote_Moniter/RemotePlanStatistics' }">远程计划统计</el-breadcrumb-item>
+			<el-breadcrumb-item>远程计划统计表</el-breadcrumb-item>
+		</el-breadcrumb>
+		<div class="page-content">
+			<el-row>
+				<el-form :inline="true">
+					<el-form-item style="float:right">
+						<el-button type="warning" icon="el-icon-download " @click="output()">导出</el-button>
+					</el-form-item>
+				</el-form>
+			</el-row>
+			<!-- 计划列表 -->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30" max-height="560"
+				 highlight-current-row border>
+					<el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="sumDate" label="日期" width="120" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="companyName" label="基层单位" width="200" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="workNum" label="开工项目数量" width="120" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="dayReportNum" label="日报数量" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="150" align="center" show-overflow-tooltip>
+					</el-table-column>
+					<el-table-column prop="outStockNum" label="出库数量" width="100" align="center" show-overflow-tooltip>
+					</el-table-column>
+					<el-table-column prop="powerOnNum" label="开机使用数量" width="150" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="backNum" label="备用数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column prop="coverageRate" label="覆盖率" width="100" align="center" show-overflow-tooltip>
+					</el-table-column>
+					<el-table-column prop="availableRate" label="利用率" width="100" align="center" show-overflow-tooltip>
+					</el-table-column>
+					<el-table-column prop="useRate" label="使用率" width="100" align="center" show-overflow-tooltip> </el-table-column>
+					<el-table-column label="操作" align="center" width="180" show-overflow-tooltip fixed="right">
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" icon="el-icon-edit" @click="handelcelchange(scope.row)">编辑</el-button>
+							<el-button type="danger" size="mini" icon="el-icon-delete" @click="handelcelDelete(scope.row)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-row>
+			<el-dialog title="新增计划" :visible.sync="tochange" width="700px" :close-on-click-modal="false">
+				<el-form label-width="120px" style="width:100%;">
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label="日期:" prop="sumDate">
+								<el-input type="text" label="日期:" class="resizeNone" v-model="resData.sumDate" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="基层单位:" prop="companyName">
+								<el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="开工项目数量:" prop="workNum">
+								<el-input type="text" label="开工项目数量:" class="resizeNone" v-model="resData.workNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="日报数量:" prop="dayReportNum">
+								<el-input type="text" label="日报数量: " class="resizeNone" v-model="resData.dayReportNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="配备记录仪数量:" prop="recordDeviceNum">
+								<el-input type="text" label="配备记录仪数量:" class="resizeNone" v-model="resData.recordDeviceNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="出库数量:" prop="outStockNum" >
+								<el-input type="text" label="出库数量:" class="resizeNone" v-model="resData.outStockNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="开机使用数量:" prop="powerOnNum" >
+								<el-input type="text" label="开机使用数量:" class="resizeNone" v-model="resData.powerOnNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+							<el-form-item label="备用数量:" prop="backNum">
+								<el-input type="text" label="备用数量:" class="resizeNone" v-model="resData.backNum" placeholder="请输入内容"></el-input>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button type="" @click="tochange=false" icon="el-icon-refresh-left">取 消</el-button>
+					<el-button type="primary" @click="changeres" icon="el-icon-check">确 定</el-button>
+				</span>
+			</el-dialog>
+		</div>
+	</div>
 </template>
 <script>
 import ExportJsonExcel from "js-export-excel";

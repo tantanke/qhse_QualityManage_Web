@@ -1,72 +1,63 @@
 <template>
-  <div>
-    <div class="page-title" style="width:100%;justify-content: flex-start;">
-      <span style="cursor: pointer">
-        远程计划统计
-      </span>
-      <span style="padding:0 20px">|</span>
-      <span style="color: #ccc; cursor: pointer" @click="gotoPlanData()">
-        远程计划监控数据
-      </span>
-    </div>
-    <div class="page-content">
-      <el-row>
-        <el-form label-width="130px" :inline="true">
-          <el-form-item label="统计时间：">
-            <el-date-picker v-model="selecttime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd"
-              style="width:200px">
-            </el-date-picker>
-          </el-form-item>
-          &nbsp;&nbsp;&nbsp;
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="warning" @click="choosetime=true" icon="el-icon-download">时间段导出</el-button>
-          </el-form-item>
-          <el-form-item style="float:right">
-            <el-button type="success" @click="newSubmitForm" icon="el-icon-check">确认上传</el-button>
-          </el-form-item>
-          <el-form-item style="float:right">
-            <el-upload action="/" :before-upload="handleupload" ref="upload" :auto-upload="false">
-              <el-button type="success" icon="el-icon-upload ">excel上传</el-button>
-            </el-upload>
-          </el-form-item>
-          <el-form-item style="float:right">
-            <el-button type="warning" icon="el-icon-download " @click="download()">下载Excel模板</el-button>
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <el-dialog title="录入数据" :visible.sync="choosetime" center width="700px" :close-on-click-modal="false">
-        <el-form label-width="130px" :inline="true">
-          <el-form-item label='时间范围：' labelWidth='120px'>
-            <el-date-picker v-model="selectdates" type="daterange" align="right" unlink-panels range-separator="至"
-              start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="warning" icon="el-icon-download " @click="timeupload()">下载</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-      <!-- 计划列表 -->
-      <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-        <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
-          max-height="560" highlight-current-row border>
-          <el-table-column type="index" label="序号" width="120" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="time" label="统计时间" align="center" show-overflow-tooltip></el-table-column>
-          <el-table-column label="操作" width="300" align="center" show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-more">详情</el-button>
-              <el-button type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出</el-button>
-              <el-button type="danger" size="mini" @click="deletefile(scope.row)" icon="el-icon-delete">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-row>
-
-    </div>
-  </div>
+	<div>
+		<div class="page-title" style="width:100%;justify-content: flex-start;">
+			<span style="cursor: pointer">远程计划统计</span>
+			<span style="padding:0 20px">|</span>
+			<span style="color: #ccc; cursor: pointer" @click="gotoPlanData()">远程计划监控数据</span>
+		</div>
+		<div class="page-content">
+			<el-form :inline="true">
+				<el-form-item label="统计时间:">
+					<el-date-picker v-model="selecttime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" style="width:200px">
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="warning" @click="choosetime=true" icon="el-icon-download">时间段导出</el-button>
+				</el-form-item>
+				<el-form-item style="float:right">
+					<el-button type="success" @click="newSubmitForm" icon="el-icon-check">确认上传</el-button>
+				</el-form-item>
+				<el-form-item style="float:right">
+					<el-upload action="/" :before-upload="handleupload" ref="upload" :auto-upload="false">
+						<el-button type="success" icon="el-icon-upload ">excel上传</el-button>
+					</el-upload>
+				</el-form-item>
+				<el-form-item style="float:right">
+					<el-button type="warning" icon="el-icon-download " @click="download()">下载Excel模板</el-button>
+				</el-form-item>
+			</el-form>
+			<el-dialog title="录入数据" :visible.sync="choosetime" center width="700px" :close-on-click-modal="false">
+				<el-form label-width="130px" :inline="true">
+					<el-form-item label='时间范围：' labelWidth='120px'>
+						<el-date-picker v-model="selectdates" type="daterange" align="right" unlink-panels range-separator="至"
+						 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd">
+						</el-date-picker>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="warning" icon="el-icon-download " @click="timeupload()">下载</el-button>
+					</el-form-item>
+				</el-form>
+			</el-dialog>
+			<!-- 计划列表 -->
+			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
+				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
+				 max-height="560" highlight-current-row border>
+					<el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="time" label="统计时间" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" align="center" show-overflow-tooltip>
+						<template slot-scope="scope">
+							<el-button type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-more">详情</el-button>
+							<el-button type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出</el-button>
+							<el-button type="danger" size="mini" @click="deletefile(scope.row)" icon="el-icon-delete">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-row>
+		</div>
+	</div>
 </template>
 <script>
 import ExportJsonExcel from "js-export-excel";

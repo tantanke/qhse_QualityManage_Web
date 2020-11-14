@@ -3,7 +3,7 @@
 		<div class="page-title" style="width: 100%">文件宣贯接收</div>
 		<div class="page-content" v-loading="loading">
 			<el-row>
-				<el-form label-width="130px" :inline="true">
+				<el-form :inline="true">
 					<el-form-item label="选择时间">
 						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
 						 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
@@ -29,7 +29,8 @@
 						<el-table-column prop="readDate" label="阅读时间" width="160%" align="center"></el-table-column>
 						<el-table-column label="操作" width="180%" align="center">
 							<template slot-scope="scope">
-								<el-button type="success" icon="el-icon-check" size="mini" @click="readedFile(scope.row)">已读</el-button>
+								<el-button type="primary" icon="el-icon-check" size="mini" v-if="scope.row.status==='未读'" @click="readedFile(scope.row)">接收</el-button>
+								<el-button type="success" icon="el-icon-success" size="mini" v-else @click="readedFile(scope.row)">已读</el-button>
 								<el-button type="warning" size="mini" icon="el-icon-download">
 									<a ref="download" href="" @click="download(scope.row)">下载</a>
 								</el-button>
@@ -38,17 +39,7 @@
 					</el-table>
 				</el-row>
 			</el-row>
-			<el-dialog title="宣贯文件阅读" :visible.sync="readFileDialog" width="60%" align="left">
-				<!-- 文件展示的超链接，可以下载 -->
-				<el-table>
-					<el-table-column type="index" label="序号"></el-table-column>
-					<el-table-column label </el-table> <div slot="footer" class="dialog-footer" :inline="true">
-						<el-button type="success" icon="el-icon-check" @click="readedFile">已读</el-button>
-						<el-button type="warning" icon="el-icon-download" @click="downloadFile">导出</el-button>
-						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="readFileDialog=false">关闭</el-button>
 		</div>
-		</el-dialog>
-	</div>
 	</div>
 </template>
 
@@ -141,7 +132,7 @@
 			queryPropagationPlan() {
 				queryPropagationPlan().then(res => {
 					this.propagationPlan = res.data
-					console.log(this.propagationPlan)
+					console.log('plan',this.propagationPlan)
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
@@ -152,44 +143,55 @@
 				this.tableData = []
 				//组装数据
 				for (var i = 0; i < this.tempDate.length; i++) {
-					this.tableDataItem.filePropagationId = this.tempDate[i].filePropagationId
-					this.tableDataItem.propagationDetailId = this.tempDate[i].filePropagationPlanDetailID
-					this.tableDataItem.status = this.tempDate[i].status
-					this.tableDataItem.readDate = this.tempDate[i].readTime
-					this.tableDataItem.description = this.tempDate[i].description
-					this.tableDataItem.filePath = this.tempDate[i].filePath
-					this.tableDataItem.fileName = this.tempDate[i].fileName
-					this.tableDataItem.propagationDate = this.tempDate[i].propagationDate
+					let tableDataItem={
+						filePropagationId: '',
+						propagationDetailId: '',
+						fileName: '',
+						pushCompanyName: '',
+						pushCompanyCode: '',
+						pushStaffName: '',
+						pushStaffId: '',
+						propagationDate: '',
+						description: '',
+						status: '',
+						readDate: '',
+						filePath: []
+					}
+					tableDataItem.filePropagationId = this.tempDate[i].filePropagationId
+					tableDataItem.propagationDetailId = this.tempDate[i].filePropagationPlanDetailID
+					tableDataItem.status = this.tempDate[i].status
+					tableDataItem.readDate = this.tempDate[i].readTime
+					tableDataItem.description = this.tempDate[i].description
+					tableDataItem.filePath = this.tempDate[i].filePath
+					tableDataItem.fileName = this.tempDate[i].fileName
+					tableDataItem.propagationDate = this.tempDate[i].propagationDate
 					var temp = this.propagationPlan.filter(item => {
-						return item.filePropagationID == this.tempDate[i].filePropagationID
+						return item.filePropagationID === this.tempDate[i].filePropagationId
 					})
-					this.tableDataItem.pushCompanyCode = temp.companyCode
-					this.tableDataItem.pushCompanyName = temp.companyName
-					this.tableDataItem.pushStaffId = temp.staffId
-					this.tableDataItem.pushStaffName = temp.staffName
-					this.tableData.push(this.tableDataItem)
+					tableDataItem.pushCompanyCode = temp[0].companyCode
+					tableDataItem.pushCompanyName = temp[0].companyName
+					tableDataItem.pushStaffId = temp[0].staffId
+					tableDataItem.pushStaffName = temp[0].staffName
+					this.tableData.push(tableDataItem)
 				}
 			},
 			//搜索
 			Select() {
 				//处理数据
 				this.processData()
+				this.Selected=this.tableData
 				//根据搜索框数据进行搜索
-				if (!this.selectData.selectDateRange && !this.selectData.selectStatus) {
-					this.Selected = this.tableData
-				} else if (this.selectData.selectDateRange && !this.selectData.selectStatus) {
-					this.Selected = this.tableData.filter(item => {
-						return item.propagationDate >= this.selectData.selectDateRange[0] && item.propagationDate <= this.selectData.selectDateRange[
-							1]
-					})
-				} else if (!this.selectData.selectDateRange && this.selectData.selectStatus) {
-					this.Selected = this.tableData.filter(item => {
+				if(this.selectData.selectDateRange){
+					if(this.selectData.selectDateRange.length>0){
+						this.Selected = this.Selected.filter(item => {
+							return item.propagationDate >= this.selectData.selectDateRange[0] &&
+							 item.propagationDate <= this.selectData.selectDateRange[1]
+						})
+					}
+				}
+				if(this.selectData.selectStatus){
+					this.Selected = this.Selected.filter(item => {
 						return item.status == this.selectData.selectStatus
-					})
-				} else {
-					this.Selected = this.tableData.filter(item => {
-						return item.status == this.selectData.selectStatus && (item.propagationDate >= this.selectData.selectDateRange[
-							0] && item.propagationDate <= this.selectData.selectDateRange[1])
 					})
 				}
 			},

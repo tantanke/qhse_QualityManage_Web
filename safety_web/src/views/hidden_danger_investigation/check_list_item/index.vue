@@ -69,8 +69,8 @@
 					</el-form-item>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="configEventDialog=false">取 消</el-button>
-					<el-button type="primary" @click="configNode()">确 定</el-button>
+					<el-button @click="configEventDialog=false" icon="el-icon-refresh-left">取 消</el-button>
+					<el-button type="primary" @click="configNode()" icon="el-icon-check">确 定</el-button>
 				</span>
 			</el-dialog>
 			<el-dialog title="导出选择" :visible.sync="downloadChoice" width="30%" align="center">
@@ -403,7 +403,15 @@
 				this.configEventDialog = false
 			},
 			//更新节点状态
-			updateStatus(node) {
+			 async updateStatus(node) {
+				const confirmResult = await this.$confirm('确定要更新此节点的状态吗,是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).catch(err => err)
+                    if (confirmResult !== 'confirm') {
+                        return this.$message.info('已取消此操作')
+                    }
 				//调用接口，传入节点id，更新状态
 				updateNodeStatus(node.data.checkListID).then(res => {
 					if (res.code == '1000') {

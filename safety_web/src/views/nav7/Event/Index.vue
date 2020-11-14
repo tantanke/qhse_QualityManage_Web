@@ -43,7 +43,7 @@
           <el-button type="primary" native-type='submit' icon='el-icon-search'>查询</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button  style="background-color:#3399CC;color:#FFFFFF" @click="export2Excel ()">导出Excel</el-button>
+          <el-button  type="warning" @click="export2Excel ()" icon="el-icon-download">导出Excel</el-button>
         </el-form-item>
           </el-row>
       </el-form>
@@ -52,8 +52,8 @@
         v-loading="loading"
         border
         @row-click="clickTable" ref="refTable"
-        style="width: 100%" >
-          <el-table-column type="expand">
+        style="width: 100%" max-height="560">
+          <el-table-column type="expand" show-overflow-tooltip>
             <template slot-scope="props">
               <el-form label-position="left" inline class="demo-table-expand">
                 <el-form-item label="文档附件："><a :href="props.row.attach">下载文档</a></el-form-item>
@@ -105,17 +105,17 @@
         </el-table-column> -->
          <el-table-column
           type="index"
-          width="70"
+          width="60"
           header-align="center"
-          label="序号"
+          label="序号" show-overflow-tooltip
           :index="this.indexStartNum"
           align="center">
         </el-table-column>
-        <el-table-column label="事件单位名称" prop="companyName" header-align="center"></el-table-column>
-        <el-table-column label="事件名称" prop="eventRecordName" header-align="center"> </el-table-column>
-        <el-table-column label="事件类别" prop="eventRecordType" header-align="center" width=100%> </el-table-column>
-        <el-table-column label="地点"     prop="address" header-align="center"> </el-table-column>
-        <el-table-column label="发生时间" prop="checkDate" header-align="center"  width=180%> </el-table-column>
+        <el-table-column label="事件单位名称" prop="companyName" header-align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column label="事件名称" prop="eventRecordName" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="事件类别" prop="eventRecordType" header-align="center" show-overflow-tooltip width=100%> </el-table-column>
+        <el-table-column label="地点"     prop="address" header-align="center" show-overflow-tooltip> </el-table-column>
+        <el-table-column label="发生时间" prop="checkDate" header-align="center" show-overflow-tooltip  width=180%> </el-table-column>
         <el-table-column label="事件描述" prop="description" header-align="center" show-overflow-tooltip> </el-table-column>
       </el-table>
     <div class="pagination-base">

@@ -2,7 +2,7 @@
 	<div>
 		<div class="page-title" style="width: 100%">待办任务</div>
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
-			<el-form label-width="90px" :inline="true">
+			<el-form :inline="true">
 				<el-form-item label="选择公司:">
 					<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 					 v-model="companyId"></treeselect>
@@ -21,20 +21,20 @@
 					<el-button type="primary" icon='el-icon-search' @click="select()">查询</el-button>
 				</el-form-item>
 			</el-form>
-			<el-table :data="selectedData" style="width: 100%" max-height="560" border fixed>
-				<el-table-column type="index" label="序号" width="60%" align="center"></el-table-column>
-				<el-table-column prop="companyName" label="任务单位" width="160%" align="center"></el-table-column>
-				<el-table-column prop="taskName" label="任务名称" width="260%" align="center"></el-table-column>
-				<el-table-column prop="issuedName" label="下达人" width="100%" align="center"></el-table-column>
-				<el-table-column prop="status" label="任务状态" width="100%" align="center"></el-table-column>
-				<el-table-column prop="issuedDate" label="下达时间" width="180%" align="center"></el-table-column>
-				<el-table-column prop="receiveDate" label="接收时间" width="180%" align="center"></el-table-column>
-				<el-table-column prop="planDate" label="证据备案截止时间" width="180%" align="center"></el-table-column>
-				<el-table-column prop="trueDate" label="证据备案完成时间" width="180%" align="center"></el-table-column>
-				<el-table-column label="操作" width="100%" align="center" fixed='right'>
+			<el-table :data="selectedData" style="width: 100%" max-height="560px" border fixed>
+				<el-table-column type="index" label="序号" width="60%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="companyName" label="任务单位" width="160%" align="center" show-overflow-tooltip></show-overflow-tooltip>></el-table-column>
+				<el-table-column prop="taskName" label="任务名称" width="260%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="issuedName" label="下达人" width="100%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="status" label="任务状态" width="100%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="issuedDate" label="下达时间" width="180%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="receiveDate" label="接收时间" width="180%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="planDate" label="证据备案截止时间" width="180%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="trueDate" label="证据备案完成时间" width="180%" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column label="操作" width="100%" align="center" fixed='right' show-overflow-tooltip>
 					<template slot-scope="scope">
 						<el-button ref="acceptButton" type="primary" icon="el-icon-check" size="mini" @click="accept(scope.row)" v-if="!scope.row.receiveDate">接收</el-button>
-						<el-button type="success" icon="el-icon-check" size="mini" v-else>已接收</el-button>
+						<el-button type="success" icon="el-icon-success" size="mini" v-else>已接收</el-button>
 					</template>
 				</el-table-column>
 			</el-table>

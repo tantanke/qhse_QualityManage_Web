@@ -21,7 +21,12 @@
 				<el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
 				<el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="success">{{scope.row.isPush}}</el-tag>
+						<el-tag type="warning" v-if=" scope.row.isPush === '未整改'">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success" v-else-if=" scope.row.isPush === '验证已通过'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="success" v-else-if=" scope.row.isPush === '审核已通过'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="danger" v-else-if=" scope.row.isPush === '审核已打回'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="danger" v-else-if=" scope.row.isPush === '验证已打回'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="success" v-else-if="scope.row.isPush === '问题已整改'">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" align="center">
@@ -53,7 +58,11 @@
 								<el-input v-model="rectifyForm.nature" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="问题附件">
-								<a :href="item.url" v-for="(item, index) in fileProblemList" :key="index" class="filelinks">{{item.fileName}}</a>
+								<div v-for="(item, index) in fileProblemList" :key="index">
+									<a :href="item.url" class="filelinks">{{item.fileName}}</a>
+									<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+									</div>
+								
 							</el-form-item>
 							<el-form-item label="问题图片">
 								<el-image style="width: 100px; height: 100px; margin: 0 5px" :src="item" :preview-src-list="imageList" v-for="(item, index) in imageList"
@@ -191,14 +200,18 @@
 							<el-form-item label="纠正措施">
 								<el-input v-model="rectifyForm.nonConformCorrectMeasure" type="textarea" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="跟综验证">
+							<el-form-item label="审核结论">
 								<el-input v-model="rectifyForm.nonConformCorrectMeasureVerify" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="整改完成时间">
 								<el-input v-model="rectifyForm.reformDate" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="纠正附件">
-								<a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
+								<div v-for="(item, index) in fileCorrectList" :key="index">
+									<a :href="item.url" class="filelinks" >{{item.fileName}}</a>
+									<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+								</div>
+								
 							</el-form-item>
 							<el-form-item label="纠正图片">
 								<el-image style="width: 100px; height: 100px; margin: 0 15px" :src="item" :preview-src-list="imageCorrectList"
@@ -207,23 +220,23 @@
 							</el-form-item>
 						</el-tab-pane>
 						<el-tab-pane label="验证信息" name="6">
-							<el-form-item label="审核验证时间">
-								<el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
-							</el-form-item>
-							<el-form-item label="审核验证人">
-								<el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
-							</el-form-item>
-							<el-form-item label="审核验证意见">
-								<el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
-							</el-form-item>
-							<el-form-item label="验证时间">
-								<el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
+							<el-form-item label="验证意见" prop="resVerifyAdvice">
+								<el-input v-model="rectifyForm.resVerifyAdvice" type="textarea" placeholder="请填写验证意见"></el-input>
 							</el-form-item>
 							<el-form-item label="验证人">
 								<el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="验证意见" prop="resVerifyAdvice">
-								<el-input v-model="rectifyForm.resVerifyAdvice" type="textarea" placeholder="请填写验证意见"></el-input>
+							<el-form-item label="验证时间">
+								<el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="审核验证意见">
+								<el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="审核验证人">
+								<el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="审核验证时间">
+								<el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
 							</el-form-item>
 						</el-tab-pane>
 					</el-tabs>
@@ -864,6 +877,11 @@
 				this.fileProblemList = []
 				this.imageCorrectList = []
 				this.fileCorrectList = []
+			},
+			preview(url){
+				// 文件预览
+				console.log('url',url)
+				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
 			},
 			downloadFile: function() {
 				// 下载表格

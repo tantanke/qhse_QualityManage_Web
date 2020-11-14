@@ -46,15 +46,15 @@
     <!--新增事件节点分类弹窗-->
       <el-dialog
       title="新增组织机构"
-      :visible.sync="addEventdialogVisible">
+      :visible.sync="addEventdialogVisible" :close-on-click-modal="false">
       <el-form ref="addEventForm" :model="addEventForm">
         <el-form-item label="组织机构名称" prop="categoryName" >
           <el-input v-model="addEventForm.categoryName"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer" >
-        <el-button @click="addEventdialogVisible=false">取 消</el-button>
-        <el-button type="primary" @click="addEventFormSubmitBtn(addEventForm)">确 定</el-button>
+        <el-button @click="addEventdialogVisible=false" icon="el-icon-refresh-left">取 消</el-button>
+        <el-button type="primary" @click="addEventFormSubmitBtn(addEventForm)" icon="el-icon-check">确 定</el-button>
       </span>
     </el-dialog>
   </div>

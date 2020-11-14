@@ -109,8 +109,8 @@
           </el-row>
           <el-row class="buttons">
             <el-form-item>
-              <el-button type="primary" style="width:100px" @click="handleSubmit">确认</el-button>   
-              <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>   
+              <el-button type="primary" style="width:100px" @click="handleSubmit" icon="el-icon-check">确认</el-button>   
+              <el-button type="danger" style="width:100px" @click="$router.go(-1)" icon="el-icon-refresh-left">取消</el-button>   
             </el-form-item>
           </el-row>
         </el-form>
@@ -136,8 +136,8 @@
           </el-row>
           <el-row class="buttons">
             <el-form-item>
-              <el-button type="primary" style="width:100px" @click="handleSubmitPassword()">确认</el-button>   
-              <el-button type="danger" style="width:100px" @click="$router.go(-1)">取消</el-button>   
+              <el-button type="primary" style="width:100px" @click="handleSubmitPassword()" icon="el-icon-check">确认</el-button>   
+              <el-button type="danger" style="width:100px" @click="$router.go(-1)" icon="el-icon-refresh-left">取消</el-button>   
             </el-form-item>
           </el-row>
         </el-form>

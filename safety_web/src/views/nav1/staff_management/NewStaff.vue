@@ -135,10 +135,10 @@
                  </el-col>      
                </el-row>
                <el-form-item>
-              <el-button type="primary" @click="handleSubmit('filterQuery')">确定</el-button>
+              <el-button type="primary" @click="handleSubmit('filterQuery')" icon="el-icon-check">确定</el-button>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <a @click="$router.go(-1)">
-              <el-button type="info" native-type="button">取消</el-button>
+              <el-button type="danger" native-type="button" icon="el-icon-refresh-left">取消</el-button>
             </a>
            </el-form-item>  
           </el-form>
