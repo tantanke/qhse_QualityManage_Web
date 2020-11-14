@@ -15,8 +15,14 @@
 				<el-form-item>
 					<el-button type="primary" @click="choosemyNo" icon="el-icon-search">查询</el-button>
 				</el-form-item>
+
+
 				<el-form-item style="float: right;">
 					<span style="font-size: 16px; color: cornflowerblue">录入次数: {{checkInCountSum?checkInCountSum:'0'}}</span>
+				</el-form-item>
+				&nbsp;&nbsp;
+				<el-form-item style="float: right;">
+					<span style="font-size: 16px; color: cornflowerblue">监控项目数: {{itemNum?itemNum:'0'}}</span>
 				</el-form-item>
 				<!-- <el-form-item style="float:right">
                       <el-button  type="primary" @click="handlePost">保存</el-button>
@@ -42,6 +48,11 @@
 									<el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
 									<el-table-column prop="inputDate" label="录入时间" align="center" show-overflow-tooltip></el-table-column>
 									<el-table-column prop="closeIn" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
+									<el-table-column label="操作" width="180" align="center" show-overflow-tooltip>
+										<template slot-scope="scope">
+											<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
+										</template>
+									</el-table-column>
 								</el-table>
 							</el-form>
 						</template>
@@ -63,7 +74,8 @@
 					<el-table-column label="操作" width="180" align="center" show-overflow-tooltip>
 						<template slot-scope="scope">
 							<el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-plus">录入</el-button>
-							<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
+							<!--删除录入的被取消，换成了删除录入细节-->
+							<!--<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>-->
 						</template>
 					</el-table-column>
 				</el-table>
@@ -114,13 +126,15 @@
 </template>
 <script>
     import {getDetails} from "../../../services/remote";//查询细节
-    import {getCheckDetail} from "../../../services/remote";//查询细节
-    import {getInputtedDetailInfo} from "../../../services/remote";//查询细节
+    import {getCheckDetail} from "../../../services/remote";//
+    import {getInputtedDetailInfo} from "../../../services/remote";//
     import {inputDetail} from "../../../services/remote";//录入当天细节
-    import {updateInputtedDetailInfo} from "../../../services/remote";//录入当天细节
-    import {deletePlanDetail} from "../../../services/remote";//录入当天细节
+    import {updateInputtedDetailInfo} from "../../../services/remote";//
+    import {deletePlanDetail} from "../../../services/remote";//
     import {uploadScreenShot} from "../../../services/remotenew";//录入图片
     import {getTotalInputTime} from "../../../services/remote"; // 获取总的录入次数
+    import {getItemNum} from "../../../services/remote"; // 获取监控项目数
+    import {deleteInputInfo} from "../../../services/remote"; // 删除录入细节
 
     export default {
         name: '',
@@ -149,6 +163,8 @@
                 checkInCountSum: 0, // 录入的总次数，即每个项下面表格的行数总和
                 filterProjectNameList: [],  // 用于对项目名称进行筛选的结构
                 filterCompanyNameList: [],  // 用于对基层单位进行筛选的结构
+                itemNum: 0,	// 监控的项目数，即行数
+
             }
         },
         methods: {
@@ -279,12 +295,16 @@
                 //获取总览数据
             },
             handelcelDelete(data) {//删除
+
                 this.resData = data;
-                deletePlanDetail(this.resData).then(res => {
+                deleteInputInfo(this.resData.checkRecordId).then(res => {
                     this.$message.success('删除成功', res)
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
                         this.filterMethods(this.listData)
+                    })
+                    getItemNum(this.$route.params.monitorPlanID).then(res=>{
+                        this.itemNum = res.data
                     })
                 }).catch(err => {
                     this.$message.error('删除失败', err)
@@ -345,7 +365,9 @@
         mounted() {
             console.log('细节页面报错')
             this.showlinedatas();
-
+            getItemNum(this.$route.params.monitorPlanID).then(res=>{
+                this.itemNum = res.data
+			})
         }
     }
 </script>

@@ -38,7 +38,7 @@
                                     <el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
                                     <el-table-column prop="inputDate" label="录入时间" align="center" show-overflow-tooltip></el-table-column>
                                     <el-table-column prop="checkDate" label="核查时间" align="center" show-overflow-tooltip></el-table-column>
-                                    <el-table-column prop="result" label="核查结论" align="center" show-overflow-tooltip></el-table-column>
+                                    <el-table-column prop="disposeCheck" label="核查情况" align="center" show-overflow-tooltip></el-table-column>
                                     <el-table-column prop="closeInOrCheck" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
                                 </el-table>
                             </el-form>

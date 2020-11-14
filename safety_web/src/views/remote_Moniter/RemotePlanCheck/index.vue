@@ -2,6 +2,7 @@
   <div>
     <div class="page-title" style="width:100%">远程计划核查</div>
     <div class="page-content">
+      <el-row>
         <el-form :inline="true">
           <el-form-item label='时间范围:'>
             <el-date-picker v-model="selectdate" type="daterange" align="right" unlink-panels range-separator="至"
@@ -22,6 +23,7 @@
           <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
           <el-table-column prop="startDate" label="开始时间" align="center" show-overflow-tooltip> </el-table-column>
           <el-table-column prop="endDate" label="结束时间" align="center" show-overflow-tooltip> </el-table-column>
+          <el-table-column prop="checkStatus" label="核查状态" align="center" show-overflow-tooltip> </el-table-column>
           <!-- <el-table-column label="操作" width="100" align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-edit">核查
