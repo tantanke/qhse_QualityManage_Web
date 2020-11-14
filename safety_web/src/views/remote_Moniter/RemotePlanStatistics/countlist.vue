@@ -23,7 +23,7 @@
 					<el-table-column prop="dayReportNum" label="日报数量" align="center" show-overflow-tooltip> </el-table-column>
 					<el-table-column prop="recordDeviceNum" label="配备记录仪数量" width="150" align="center" show-overflow-tooltip>
 					</el-table-column>
-					<el-table-column prop="outStockNum" label="出库数量" width="100" align="center" show-overflow-tooltip>
+					<el-table-column prop="outStockNum" 	 label="出库数量" width="100" align="center" show-overflow-tooltip>
 					</el-table-column>
 					<el-table-column prop="powerOnNum" label="开机使用数量" width="150" align="center" show-overflow-tooltip> </el-table-column>
 					<el-table-column prop="backNum" label="备用数量" width="100" align="center" show-overflow-tooltip> </el-table-column>
@@ -45,10 +45,10 @@
 					<el-row>
 						<el-col :span="24">
 							<el-form-item label="日期:" prop="sumDate">
-								<el-input type="text" label="日期:" class="resizeNone" v-model="resData.sumDate" placeholder="请输入内容"></el-input>
+								{{resData.sumDate}}
 							</el-form-item>
 							<el-form-item label="基层单位:" prop="companyName">
-								<el-input type="text" label="基层单位:" class="resizeNone" v-model="resData.companyName" placeholder="请输入内容"></el-input>
+								{{resData.companyName}}
 							</el-form-item>
 							<el-form-item label="开工项目数量:" prop="workNum">
 								<el-input type="text" label="开工项目数量:" class="resizeNone" v-model="resData.workNum" placeholder="请输入内容"></el-input>
@@ -56,7 +56,7 @@
 							<el-form-item label="日报数量:" prop="dayReportNum">
 								<el-input type="text" label="日报数量: " class="resizeNone" v-model="resData.dayReportNum" placeholder="请输入内容"></el-input>
 							</el-form-item>
-							<el-form-item label="配备记录仪数量:" prop="recordDeviceNum">
+							<!-- <el-form-item label="配备记录仪数量:" prop="recordDeviceNum">
 								<el-input type="text" label="配备记录仪数量:" class="resizeNone" v-model="resData.recordDeviceNum" placeholder="请输入内容"></el-input>
 							</el-form-item>
 							<el-form-item label="出库数量:" prop="outStockNum" >
@@ -67,7 +67,7 @@
 							</el-form-item>
 							<el-form-item label="备用数量:" prop="backNum">
 								<el-input type="text" label="备用数量:" class="resizeNone" v-model="resData.backNum" placeholder="请输入内容"></el-input>
-							</el-form-item>
+							</el-form-item> -->
 						</el-col>
 					</el-row>
 				</el-form>

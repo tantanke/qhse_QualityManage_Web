@@ -88,20 +88,22 @@ export default {
         //设置数据来源和数据格式
         option.datas = [{
           sheetData: this.downloadData,
-          sheetHeader: ["日期", "基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
+          // "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"
+          sheetHeader: ["日期", "基层单位", "开工项目数量", "日报数量","配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率" ]
         }];
         //导出
         var toExcel = new ExportJsonExcel(option);
         toExcel.saveExcel();
       })
     },
-    download () {
+    download () {//下载模板只下载这几个 其余的数量从别的地方获取
       var option = {};
       option.fileName = '远程计划统计模板';
       //设置数据来源和数据格式
       option.datas = [{
         sheetData: [],
-        sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
+        //  "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"
+        sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量",]
       }];
       //导出
       var toExcel = new ExportJsonExcel(option);
@@ -174,7 +176,8 @@ export default {
           //设置数据来源和数据格式
           option.datas = [{
             sheetData: this.downloadData,
-            sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"]
+            //  "配备记录仪数量", "出库数量", "开机使用数量", "备用数量", "覆盖率", "利用率", "使用率"
+            sheetHeader: ["日期","基层单位", "开工项目数量", "日报数量", ]
           }];
           //导出
           var toExcel = new ExportJsonExcel(option);

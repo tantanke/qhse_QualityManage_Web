@@ -708,6 +708,11 @@ export default new Router({
             name: 'planDataDetail',
             component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/planDataDetail.vue'], resolve)
         },
+        {//远程监控看板页面
+          path: '/remote_Moniter/DataApply/index',
+          name: 'DataApply',
+          component: resolve => require(['./views/remote_Moniter/DataApply/index.vue'], resolve)
+        },
         //质量体系运行
         //待办任务
         { path: '/qualitySystem/taskList', name:'QualityTask', component: resolve => require(['./views/qualitySystem/taskList/index.vue'],resolve)},
