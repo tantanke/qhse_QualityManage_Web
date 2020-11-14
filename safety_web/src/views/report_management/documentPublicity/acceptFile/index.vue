@@ -3,7 +3,7 @@
 		<div class="page-title" style="width: 100%">文件宣贯接收</div>
 		<div class="page-content" v-loading="loading">
 			<el-row>
-				<el-form label-width="130px" :inline="true">
+				<el-form :inline="true">
 					<el-form-item label="选择时间">
 						<el-date-picker v-model="selectData.selectDateRange" type="daterange" value-format="yyyy-MM-dd" range-separator="至"
 						 start-placeholder="开始日期" end-placeholder="结束日期" style="width: 300px"></el-date-picker>
@@ -39,17 +39,7 @@
 					</el-table>
 				</el-row>
 			</el-row>
-			<el-dialog title="宣贯文件阅读" :visible.sync="readFileDialog" width="60%" align="left">
-				<!-- 文件展示的超链接，可以下载 -->
-				<el-table>
-					<el-table-column type="index" label="序号"></el-table-column>
-					<el-table-column label </el-table> <div slot="footer" class="dialog-footer" :inline="true">
-						<el-button type="success" icon="el-icon-check" @click="readedFile">已读</el-button>
-						<el-button type="warning" icon="el-icon-download" @click="downloadFile">导出</el-button>
-						<el-button icon='el-icon-refresh-left' type="primary" style="color: #000000;background-color: white;" @click="readFileDialog=false">关闭</el-button>
 		</div>
-		</el-dialog>
-	</div>
 	</div>
 </template>
 
