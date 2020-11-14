@@ -17,7 +17,12 @@
                 <el-table-column label="负责人" prop="responsePersonName" show-overflow-tooltip align="center"></el-table-column>
                 <el-table-column label="状态" show-overflow-tooltip align="center">
 					<template slot-scope="scope">
-						<el-tag type="success">{{scope.row.isPush}}</el-tag>
+						<el-tag type="warning" v-if=" scope.row.isPush === '未整改'">{{scope.row.isPush}}</el-tag>
+						<el-tag type="success" v-else-if=" scope.row.isPush === '验证已通过'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="success" v-else-if=" scope.row.isPush === '审核已通过'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="danger" v-else-if=" scope.row.isPush === '审核已打回'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="danger" v-else-if=" scope.row.isPush === '验证已打回'">{{scope.row.isPush}}</el-tag>
+                        <el-tag type="success" v-else-if="scope.row.isPush === '问题已整改'">{{scope.row.isPush}}</el-tag>
 					</template>
 				</el-table-column>
                 <el-table-column label="操作" align="center">
@@ -54,7 +59,11 @@
                                 <el-input v-model="problemCheckForm.nature" readonly></el-input>
                             </el-form-item>
 			     <el-form-item label="问题附件">
-                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileProblemList" :key="index">{{item.fileName}}</a>
+                     <div v-for="(item, index) in fileProblemList" :key="index">
+                          <a :href="item.url" class="filelinks" >{{item.fileName}}</a>
+                          <el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+                     </div>
+                               
                             </el-form-item>
                              <el-form-item label="问题图片">
                                 <el-image 
@@ -210,7 +219,11 @@
                                 <el-input v-model="problemCheckForm.reformDate" readonly></el-input>
                             </el-form-item>
 			    <el-form-item label="纠正附件">
-                                <a :href="item.url" class="filelinks" v-for="(item, index) in fileCorrectList" :key="index">{{item.fileName}}</a>
+                    <div v-for="(item, index) in fileCorrectList" :key="index">
+                        <a :href="item.url" class="filelinks" >{{item.fileName}}</a>
+                        <el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+                        </div>
+                                
                             </el-form-item>
                             <el-form-item label="纠正图片">
                                 <el-image 
@@ -228,11 +241,11 @@
                              <el-form-item label="审核验证人">
                                  <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
                              </el-form-item>
-			     <el-form-item label="审核验证意见">
-                                 <el-input v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
+			     <el-form-item label="审核验证意见" >
+                                 <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
                              </el-form-item>
-                             <el-form-item label="跟综验证">
-                                <el-input v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
+                             <el-form-item label="审核结论" >
+                                <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
                             </el-form-item>
                          </el-tab-pane>
                     </el-tabs>
@@ -570,6 +583,11 @@ export default {
             console.log(str)
             return str
         },
+        preview(url){
+            // 文件预览
+			console.log('url',url)
+			window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
+		},
         getProgress: function () {
             // 获取进度
             for(let i in this.problemReviewList){
@@ -684,4 +702,5 @@ export default {
     font-size: 22px;
     margin-right: 20px;
 }
+
 </style>
