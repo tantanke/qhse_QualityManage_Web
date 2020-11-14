@@ -13,108 +13,16 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button icon="el-icon-search" type="primary" @click="select">查询</el-button>
+					<el-button icon="el-icon-search" type="primary" @click="openShowFilterDialog()">筛选</el-button>
 					<el-button icon="el-icon-download" type="warning" @click="openDownloadOption()">下载</el-button>
 				</el-form-item>
 			</el-form>
-			<el-table ref="table" border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
+			<el-table ref="table" stripe border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
 				<el-table-column type="expand" fixed="left">
 					<template slot-scope="prop">
 						<el-form label-width="150px" :label-position="left" inline class="demo-table-expand">
 							<el-row>
-								<el-col :span="10">
-									<el-form-item label="检测项目">
-										<span>{{prop.row.checkProject}}</span>
-									</el-form-item>
-									<el-form-item label="检测标准">
-										<span>{{prop.row.execStd}}</span>
-									</el-form-item>
-									<el-form-item label="业主">
-										<span>{{prop.row.owner}}</span>
-									</el-form-item>
-									<el-form-item label="承包商">
-										<span>{{prop.row.contractor}}</span>
-									</el-form-item>
-									<el-form-item label="作业地点">
-										<span>{{prop.row.workPlace}}</span>
-									</el-form-item>
-									<el-form-item label="承包商数量">
-										<span>{{prop.row.contractorNumber}}</span>
-									</el-form-item>
-									<el-form-item label="作业人数">
-										<span>{{prop.row.workerNumber}}</span>
-									</el-form-item>
-									<el-form-item label="ERP员工数量">
-										<span>{{prop.row.erpNumber}}</span>
-									</el-form-item>
-									<el-form-item label="外聘员工数量">
-										<span>{{prop.row.externalNumber}}</span>
-									</el-form-item>
-								</el-col>
-								<el-col  :span="10" v-if="prop.row.checkResult==='不符合'&&prop.row.nature==='不符合'">
-									<el-form-item label="不符合类型">
-										<span>{{prop.row.nonConformityType}}</span>
-									</el-form-item>
-									<el-form-item label="不符合性质" style="float: right;">
-										<span>{{prop.row.nonConformityNature}}</span>
-									</el-form-item>
-									<el-form-item label="不符合原因">
-										<span>{{prop.row.nonConformSource}}</span>
-									</el-form-item>
-									<el-form-item label="不符合标准">
-										<span>{{prop.row.nonConformityStd}}</span>
-									</el-form-item>
-									<el-form-item label="标准条款号">
-										<span>{{prop.row.nonConformityStdNo}}</span>
-									</el-form-item>
-									<el-form-item label="标准条款内容">
-										<span>{{prop.row.nonConformityStdContent}}</span>
-									</el-form-item>
-									<el-form-item label="不符合文件">
-										<span>{{prop.row.nonConformClause}}</span>
-									</el-form-item>
-									<el-form-item label="文件条款号">
-										<span>{{prop.row.nonConformClauseNo}}</span>
-									</el-form-item>
-									<el-form-item label="文件条款内容">
-										<span>{{prop.row.nonConformClauseContent}}</span>
-									</el-form-item>
-								</el-col>
-								<el-col :span="10" v-if="prop.row.checkResult==='不符合'&&prop.row.nature==='违章项'">
-									<el-form-item label="处罚依据">
-										<span>{{prop.row.punishmentBasis}}</span>
-									</el-form-item>
-									<el-form-item label="违章条款号">
-										<span>{{prop.row.violationClause}}</span>
-									</el-form-item>
-									<el-form-item label="违章条款内容">
-										<span>{{prop.row.violationClause}}</span>
-									</el-form-item>
-									<el-form-item label="违章扣款">
-										<span>{{prop.row.violationDeduction}}</span>
-									</el-form-item>
-									<el-form-item label="违章扣分">
-										<span>{{prop.row.violationScore}}</span>
-									</el-form-item>
-									<el-form-item label="违章人员">
-										<span>{{prop.row.illegalPerson}}</span>
-									</el-form-item>
-									<el-form-item label="岗位">
-										<span>{{prop.row.post}}</span>
-									</el-form-item>
-									<el-form-item label="岗位分类">
-										<span>{{prop.row.postType}}</span>
-									</el-form-item>
-									<el-form-item label="用工性质">
-										<span>{{prop.row.employmentProperty}}</span>
-									</el-form-item>
-									<el-form-item label="工作年限">
-										<span>{{prop.row.workingYears}}</span>
-									</el-form-item>
-									<el-form-item label="学历">
-										<span>{{prop.row.education}}</span>
-									</el-form-item>
-								</el-col>
-								<el-col :span="10" v-if="prop.row.checkResult==='不符合'">
+								<el-col :span="25" v-if="prop.row.checkResult==='不符合'">
 									<el-form-item label="纠正">
 										<span>{{prop.row.nonConformCorrect}}</span>
 									</el-form-item>
@@ -155,7 +63,7 @@
 										</div>
 									</el-form-item>
 								</el-col>
-								<el-col :span="10" v-if="prop.row.checkResult==='符合'">
+								<el-col :span="25" v-if="prop.row.checkResult==='符合'">
 									<el-form-item label="符合附件">
 										<div v-for="(item, index) in prop.row.attach" :key="index">
 											<a style="margin: 5px;" :href="item.url">
@@ -173,36 +81,105 @@
 						</el-form>
 					</template>
 				</el-table-column>
-				<el-table-column type="index" label="序号" width="60" align="center"></el-table-column>
-				<el-table-column prop="qualityCheckName" label="审核任务名称" width="200" align="center"
-				:filters="qualityCheckNameFilter" :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="checkListName" label="审核要素名" width="200" align="center"
-				:filters="checkListNameFilter" :filter-method="filterHandler"></el-table-column>
+				<el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="qualityCheckName" label="审核任务名称" width="200" align="center" :filters="qualityCheckNameFilter"
+				 :filter-method="filterHandler" v-if="showFilter.qualityCheckName" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkListName" label="审核要素名" width="200" align="center" :filters="checkListNameFilter"
+				 :filter-method="filterHandler" v-if="showFilter.checkListName" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkCategory" label="审核类别" align="center" width="120" :filters="checkCategoryFilter"
-				 :filter-method="filterHandler"></el-table-column>
+				 :filter-method="filterHandler" v-if="showFilter.checkCategory" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkBasis" label="审核依据" align="center" width="120" :filters="checkBasisFilter"
-				 :filter-method="filterHandler"></el-table-column>
+				 :filter-method="filterHandler" v-if="showFilter.checkBasis" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkMethod" label="审核方式" align="center" width="120" :filters="checkMethodFilter"
-				 :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="checkDate" label="审核时间" width="120" align="center"></el-table-column>
-				<el-table-column prop="checkResult" label="审核结果" align="center" width="100" 
-				:filters="checkResultFilter" :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="resultDescription" label="结果描述" align="center" width="200" show-overflow-tooltip></el-table-column>
-				<el-table-column prop="nature" label="问题分类" align="center" width="100" :filters="natureFilter" :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" show-overflow-tooltip></el-table-column>
+				 :filter-method="filterHandler" v-if="showFilter.checkMethod" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkDate" label="审核时间" width="120" align="center" v-if="showFilter.checkDate"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkResult" label="审核结果" align="center" width="100" :filters="checkResultFilter"
+				 :filter-method="filterHandler" v-if="showFilter.checkResult" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="resultDescription" label="结果描述" align="center" width="200" v-if="showFilter.resultDescription"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nature" label="问题分类" align="center" width="100" :filters="natureFilter" v-if="showFilter.nature"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" v-if="showFilter.problemDescription"
+				 show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkedCompanyName" label="受审单位" width="200" align="center" :filters="companyFilter"
-				 :filter-method="filterHandler"></el-table-column>
+				 :filter-method="filterHandler" v-if="showFilter.checkedCompanyName" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="checkedPersonName" label="受审单位负责人" width="140" align="center" :filters="companyLeaderFilter"
-				 :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="group" label="受审室组" align="center" width="200" :filters="groupFilter" :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="groupLeaderName" label="室组负责人" align="center" width="120" :filters="groupLeaderFilter"
-				 :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="projectName" label="作业项目名称" align="center" width="200" :filters="projectFilter"
-				 :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="projectLeaderName" label="项目组长" align="center" width="120" show-overflow-tooltip :filters="projectLeaderFilter"
-				 :filter-method="filterHandler"></el-table-column>
-				<el-table-column prop="checkPerson" label="审核人员" align="center" width="120" :filters="checkPersonFilter"
-				 :filter-method="filterHandler"></el-table-column>
+				 :filter-method="filterHandler" v-if="showFilter.checkedPersonName" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="group" label="受审室组" align="center" width="200" :filters="groupFilter" v-if="showFilter.group"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="groupLeaderName" label="室组负责人" align="center" width="120" v-if="showFilter.groupLeaderName"
+				 :filters="groupLeaderFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="projectName" label="作业项目名称" align="center" width="200" v-if="showFilter.projectName"
+				 :filters="projectFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="projectLeaderName" label="项目组长" align="center" width="120" v-if="showFilter.projectLeaderName"
+				 show-overflow-tooltip :filters="projectLeaderFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkPerson" label="审核人员" align="center" width="120" v-if="showFilter.checkPerson" :filters="checkPersonFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="checkProject" label="检测项目" width="120" align="center" v-if="showFilter.checkProject"
+				 :filters="checkProjectFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="execStd" label="检测标准" width="120" align="center" v-if="showFilter.execStd" :filters="execStdFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="owner" label="业主" width="120" align="center" v-if="showFilter.owner" :filters="ownerFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="contractor" label="承包商" width="120" align="center" v-if="showFilter.contractor" :filters="contractorFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="workPlace" label="作业地点" width="120" align="center" v-if="showFilter.workPlace" :filters="workPlaceFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+
+				<el-table-column prop="contractorNumber" label="承包商数量" width="100" align="center" v-if="showFilter.contractorNumber"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="workerNumber" label="作业人数" width="80" align="center" v-if="showFilter.workerNumber"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="erpNumber" label="ERP员工数量" width="110" align="center" v-if="showFilter.erpNumber"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="externalNumber" label="外聘员工数量" width="120" align="center" v-if="showFilter.externalNumber"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformityType" label="不符合类型" width="120" align="center" v-if="showFilter.nonConformityType"
+				 :filters="nonConformityTypeFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+
+				<el-table-column prop="nonConformityNature" label="不符合性质" width="120" align="center" v-if="showFilter.nonConformityNature"
+				 :filters="nonConformityNatureFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformSource" label="不符合原因" width="120" align="center" v-if="showFilter.nonConformSource"
+				 :filters="nonConformSourceFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformityStd" label="不符合标准" width="120" align="center" v-if="showFilter.nonConformityStd"
+				 :filters="nonConformityStdFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformityStdNo" label="标准条款号" width="120" align="center" v-if="showFilter.nonConformityStdNo"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformityStdContent" label="标准条款内容" width="150" align="center" v-if="showFilter.nonConformityStdContent"
+				 show-overflow-tooltip></el-table-column>
+
+				<el-table-column prop="nonConformClause" label="不符合文件" width="120" align="center" v-if="showFilter.nonConformClause"
+				 :filters="nonConformClauseFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformClauseNo" label="文件条款号" width="120" align="center" v-if="showFilter.nonConformClauseNo"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="nonConformClauseContent" label="文件条款内容" width="150" v-if="showFilter.nonConformClauseContent"
+				 align="center" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="punishmentBasis" label="处罚依据" width="120" align="center" v-if="showFilter.punishmentBasis"
+				 :filters="punishmentBasisFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="violationClause" label="违章条款号" width="120" align="center" v-if="showFilter.violationClause"
+				 show-overflow-tooltip></el-table-column>
+
+				<el-table-column prop="violationClause" label="违章条款内容" width="150" align="center" v-if="showFilter.violationClause"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="violationDeduction" label="违章扣款" width="100" align="center" v-if="showFilter.violationDeduction"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="violationScore" label="违章扣分" width="80" align="center" v-if="showFilter.violationScore"
+				 show-overflow-tooltip></el-table-column>
+				<el-table-column prop="illegalPerson" label="违章人员" width="120" align="center" v-if="showFilter.illegalPerson"
+				 :filters="illegalPersonFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="post" label="岗位" align="center" :filters="postFilter" v-if="showFilter.post" :filter-method="filterHandler"
+				 show-overflow-tooltip></el-table-column>
+
+				<el-table-column prop="postType" label="岗位分类" width="120" align="center" v-if="showFilter.postType" :filters="postTypeFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="employmentProperty" label="用工性质" width="120" v-if="showFilter.employmentProperty" align="center"
+				 :filters="employmentPropertyFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="workingYears" label="工作年限" width="120" align="center" v-if="showFilter.workingYears"
+				 :filters="workingYearsFilter" :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+				<el-table-column prop="education" label="学历" width="120" align="center" v-if="showFilter.education" :filters="educationFilter"
+				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
+
 			</el-table>
 			<el-dialog title="下载选项" :visible.sync="downloadOptionDialog" align="left" width="60%" :close-on-click-modal="false">
 				<el-row>
@@ -244,7 +221,9 @@
 					<br />
 					<el-checkbox class="checkBoxClass" label="审核要素名称" v-model="checkListName.status" @change="getOption($event,checkListName)"></el-checkbox>
 					<el-checkbox class="checkBoxClass" label="审核结果" v-model="checkResult.status" @change="getOption($event,checkResult)"></el-checkbox>
-					<el-checkbox class="checkBoxClass" label="问题描述" v-model="description.status" @change="getOption($event,description)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="结果描述"  v-model="resultDescription.status" @change="getOption($event,resultDescription)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="问题分类"  v-model="nature.status" @change="getOption($event,nature)"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="问题描述" v-model="problemDescription.status" @change="getOption($event,problemDescription)"></el-checkbox>
 					<el-checkbox class="checkBoxClass" label="责任单位" v-model="responsiCompanyName.status" @change="getOption($event,responsiCompanyName)"></el-checkbox>
 					<el-checkbox class="checkBoxClass" label="责任人" v-model="responsePersonName.status" @change="getOption($event,responsePersonName)"></el-checkbox>
 				</el-row>
@@ -298,8 +277,103 @@
 					<el-checkbox class="checkBoxClass" label="整改完成时间" v-model="reformDate.status" @change="getOption($event,reformDate)"></el-checkbox>
 				</el-row>
 				<span slot="footer" class="dialog-footer">
-					<el-button icon="el-icon-folder" type="primary" @click="saveOption">保存</el-button>
 					<el-button icon="el-icon-refresh-left" @click="downloadOptionDialog=false">关闭</el-button>
+					<el-button icon="el-icon-folder" type="primary" @click="saveDownloadFileterOption">保存</el-button>
+				</span>
+			</el-dialog>
+			<el-dialog title="列表展示列筛选" :visible.sync="showFilterOptionDialog" align="left" width="60%" :close-on-click-modal="false">
+				<el-row>
+					<span>审核计划基本信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="planBasisInfoCheckbox" @change="showFilterAllCheck($event,'planBasisInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="审核任务名称" v-model="showFilter.qualityCheckName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核类别" v-model="showFilter.checkCategory"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核依据" v-model="showFilter.checkBasis"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核方式" v-model="showFilter.checkMethod"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="受审单位" v-model="showFilter.checkedCompanyName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="受审单位负责人" v-model="showFilter.checkedPersonName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="受审室组" v-model="showFilter.group"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="室组负责人" v-model="showFilter.groupLeaderName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="作业项目名称" v-model="showFilter.projectName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="项目组长" v-model="showFilter.projectLeaderName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核人员" v-model="showFilter.checkPerson"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核时间" v-model="showFilter.checkDate"></el-checkbox>
+				</el-row>
+				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
+				<el-row>
+					<span>审核实施基本信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="impleBasisInfoCheckbox" @change="showFilterAllCheck($event,'impleBasisInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="检测项目" v-model="showFilter.checkProject"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="检测标准" v-model="showFilter.execStd"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="承包商" v-model="showFilter.contractor"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="承包商数量" v-model="showFilter.contractorNumber"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="业主" v-model="showFilter.owner"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="作业地点" v-model="showFilter.workPlace"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="作业人数" v-model="showFilter.workerNumber"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="ERP员工数量" v-model="showFilter.erpNumber"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="外聘员工数量" v-model="showFilter.externalNumber"></el-checkbox>
+				</el-row>
+				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
+				<el-row>
+					<span>审核要素问题信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="problemInfoCheckbox" @change="showFilterAllCheck($event,'problemInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="审核要素名称" v-model="showFilter.checkListName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核结果" v-model="showFilter.checkResult"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="结果描述" v-model="showFilter.resultDescription"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="问题分类" v-model="showFilter.nature"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="问题描述" v-model="showFilter.problemDescription"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="责任单位" v-model="showFilter.responsiCompanyName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="责任人" v-model="showFilter.responsePersonName"></el-checkbox>
+				</el-row>
+				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
+				<el-row>
+					<span>不符合信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="nonConformityInfoCheckbox" @change="showFilterAllCheck($event,'nonConformityInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="不符合类型" v-model="showFilter.nonConformityType"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="不符合性质" v-model="showFilter.nonConformityNature"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="不符合原因" v-model="showFilter.nonConformSource"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="不符合标准" v-model="showFilter.nonConformityStd"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="标准条款号" v-model="showFilter.nonConformityStdNo"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="标准条款内容" v-model="showFilter.nonConformityStdContent"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="不符合文件" v-model="showFilter.nonConformClause"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="文件条款号" v-model="showFilter.nonConformClauseNo"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="文件条款内容" v-model="showFilter.nonConformClauseContent"></el-checkbox>
+				</el-row>
+				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
+				<el-row>
+					<span>违章信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="violationInfoCheckbox" @change="showFilterAllCheck($event,'violationInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="处罚依据" v-model="showFilter.punishmentBasis"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="违章条款号" v-model="showFilter.violationClause"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="违章条款内容" v-model="showFilter.violationClauseContent"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="违章扣款" v-model="showFilter.violationDeduction"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="违章扣分" v-model="showFilter.violationScore"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="违章人员" v-model="showFilter.illegalPerson"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="岗位" v-model="showFilter.post"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="岗位分类" v-model="showFilter.postType"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="用工性质" v-model="showFilter.employmentProperty"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="工作年限" v-model="showFilter.workingYears"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="学历" v-model="showFilter.education"></el-checkbox>
+				</el-row>
+				<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center;margin-top: 15px;"></el-row>
+				<el-row>
+					<span>验证及纠正信息</span>
+					&nbsp;&nbsp;<el-checkbox class="checkBoxClass" label="全选" v-model="verifyAndcorInfoCheckbox" @change="showFilterAllCheck($event,'verifyAndcorInfo')"></el-checkbox>
+					<br />
+					<el-checkbox class="checkBoxClass" label="责任单位验证人" v-model="showFilter.resVerifierName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="责任单位验证时间" v-model="showFilter.resVerifyDate"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="责任单位验证意见" v-model="showFilter.resVerifyAdvice"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核验证人" v-model="showFilter.cheVerifierName"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核验证时间" v-model="showFilter.cheVerifyDate"></el-checkbox>
+					<el-checkbox class="checkBoxClass" label="审核验证意见" v-model="showFilter.cheVerifyAdvice"></el-checkbox>
+				</el-row>
+				<span slot="footer" class="dialog-footer">
+					<el-button icon="el-icon-refresh-left" @click="showFilterOptionDialog=false">关闭</el-button>
+					<el-button icon="el-icon-folder" type="primary" @click="saveShowFileterOption">保存</el-button>
 				</span>
 			</el-dialog>
 		</div>
@@ -323,13 +397,14 @@
 			return {
 				loading: false,
 				downloadOptionDialog: false,
+				showFilterOptionDialog: false,
 				dateRange: [],
 				path: 'http://39.98.173.131:7000/resources/QualityCheck/',
 				qualityCheckList: [],
 				qualityRecordList: [],
 				qualityCheckTree: [],
 				checkRecordList: [],
-				downloadSource:[],
+				downloadSource: [],
 				tableData: [],
 				companyList: [],
 				companyName: '',
@@ -338,8 +413,16 @@
 				taskType: '',
 				checkResult: '',
 				nature: '',
-				qualityCheckNameFilter:[],
-				checkListNameFilter:[],
+				//列表展示全选筛选变量
+				planBasisInfoCheckbox:false,
+				impleBasisInfoCheckbox:false,
+				problemInfoCheckbox:false,
+				violationInfoCheckbox:false,
+				nonConformityInfoCheckbox:false,
+				verifyAndcorInfoCheckbox:false,
+				//列表筛选数组
+				qualityCheckNameFilter: [],
+				checkListNameFilter: [],
 				companyFilter: [],
 				companyLeaderFilter: [],
 				groupFilter: [],
@@ -350,8 +433,129 @@
 				checkCategoryFilter: [],
 				checkBasisFilter: [],
 				checkMethodFilter: [],
-				checkResultFilter:[],
-				checkPersonFilter:[],
+				checkResultFilter: [],
+				checkPersonFilter: [],
+				checkProjectFilter: [],
+				execStdFilter: [],
+				contractorFilter: [],
+				ownerFilter: [],
+				workPlaceFilter: [],
+				nonConformClauseFilter: [],
+				nonConformSourceFilter: [],
+				nonConformityNatureFilter: [],
+				nonConformityTypeFilter: [],
+				nonConformityStdFilter: [],
+				punishmentBasisFilter: [],
+				illegalPersonFilter: [],
+				postFilter: [],
+				postTypeFilter: [],
+				employmentPropertyFilter: [],
+				workingYearsFilter: [],
+				educationFilter: [],
+
+				showFilter: {
+					qualityCheckName: true,
+					//审核要素名
+					checkListName: true,
+					//审核类别
+					checkCategory: true,
+					//审核依据
+					checkBasis: true,
+					//审核方式
+					checkMethod: true,
+					//受审核单位
+					checkedCompanyName: true,
+					//受审单位负责人
+					checkedPersonName: false,
+					//室组/受审核部门
+					group: false,
+					//室组负责人
+					groupLeaderName: false,
+					//作业项目
+					projectName: false,
+					//项目组长
+					projectLeaderName: false,
+					//责任单位/责任部门
+					responsiCompanyName: false,
+					//责任单位负责人
+					responsePersonName: false,
+					//监督时间/审核日期，格式：yyyy-mm-dd
+					checkDate: true,
+					//监督人员姓名
+					checkPerson: true,
+					//承包商
+					contractor: false,
+					//业主
+					owner: false,
+					//检测项目
+					checkProject: false,
+					//检测标准
+					execStd: false,
+					//作业人数
+					workerNumber: false,
+					//作业地点
+					workPlace: false,
+					//承包商人数
+					contractorNumber: false,
+					//ERP人数
+					erpNumber: false,
+					//外聘员工数量
+					externalNumber: false,
+					//检查结果
+					checkResult: true,
+					//问题描述\不符合事实描述
+					resultDescription: false,
+					//问题性质\问题分类
+					nature: true,
+					problemDescription:false,
+					//不符合类型
+					nonConformityType: false,
+					//不符合性质
+					nonConformityNature: false,
+					//不符合标准\文件名称
+					nonConformityStd: false,
+					//不符合标准号
+					nonConformityStdNo: false,
+					//不符合标准内容
+					nonConformityStdContent: false,
+					//不符合条款
+					nonConformClause: false,
+					//不符合标准条款号
+					nonConformClauseNo: false,
+					//不符合标准条款内容
+					nonConformClauseContent: false,
+					//不符合原因
+					nonConformSource: false,
+					//纠正（不符合）
+					nonConformCorrect: false,
+					//纠正措施（不符合）
+					nonConformCorrectMeasure: false,
+					//纠正措施跟踪验证（不符合）
+					nonConformCorrectMeasureVerify: false,
+					//处罚依据
+					punishmentBasis: false,
+					//违章条款
+					violationClause: false,
+					//违章条款内容
+					violationClauseContent: false,
+					//违章扣款
+					violationDeduction: false,
+					//违章扣分
+					violationScore: false,
+					//违章人员
+					illegalPerson: false,
+					post: false,
+					postType: false,
+					employmentProperty: false,
+					workingYears: false,
+					education: false,
+					resVerifierName: false,
+					resVerifyDate: false,
+					resVerifyAdvice: false,
+					cheVerifierName: false,
+					cheVerifyDate: false,
+					cheVerifyAdvice: false,
+				},
 				//下载用数组
 				downloadList: [],
 				downloadEnglishList: [],
@@ -491,14 +695,26 @@
 					number: 22,
 					chineseName: '审核要素名称'
 				},
-				checkResult:{
+				checkResult: {
 					englishName: 'checkResult',
 					status: false,
 					number: 22,
 					chineseName: '审核结果'
 				},
-				description: {
-					englishName: 'description',
+				resultDescription: {
+					englishName: 'resultDescription',
+					status: false,
+					number: 23,
+					chineseName: '结果描述'
+				},
+				nature:{
+					englishName: 'nature',
+					status: false,
+					number: 23,
+					chineseName: '问题分类'
+				},
+				problemDescription:{
+					englishName: 'problemDescription',
 					status: false,
 					number: 23,
 					chineseName: '问题描述'
@@ -803,7 +1019,9 @@
 						let problemInfo = [
 							this.checkListName,
 							this.checkResult,
-							this.description,
+							this.resultDescription,
+							this.nature,
+							this.problemDescription,
 							this.responsePersonName,
 							this.responsiCompanyName
 						]
@@ -899,6 +1117,164 @@
 						break
 				}
 			},
+			showFilterAllCheck(event, option) {
+				switch (option) {
+					case 'planBasisInfo':
+						if (event) {
+							this.showFilter.qualityCheckName = true
+							this.showFilter.checkCategory = true
+							this.showFilter.checkBasis = true
+							this.showFilter.checkMethod = true
+							this.showFilter.checkedCompanyName = true
+							this.showFilter.checkedPersonName = true
+							this.showFilter.group = true
+							this.showFilter.groupLeaderName = true
+							this.showFilter.projectName = true
+							this.showFilter.projectLeaderName = true
+							this.showFilter.checkPerson = true
+							this.showFilter.checkDate = true
+						} else {
+							this.showFilter.qualityCheckName = false
+							this.showFilter.checkCategory = false
+							this.showFilter.checkBasis = false
+							this.showFilter.checkMethod = false
+							this.showFilter.checkedCompanyName = false
+							this.showFilter.checkedPersonName = false
+							this.showFilter.group = false
+							this.showFilter.groupLeaderName = false
+							this.showFilter.projectName = false
+							this.showFilter.projectLeaderName = false
+							this.showFilter.checkPerson = false
+							this.showFilter.checkDate = false
+						}
+						break
+					case 'impleBasisInfo':
+						if (event) {
+							this.showFilter.checkProject = true
+							this.showFilter.execStd = true
+							this.showFilter.contractor = true
+							this.showFilter.contractorNumber = true
+							this.showFilter.owner = true
+							this.showFilter.workerNumber = true
+							this.showFilter.erpNumber = true
+							this.showFilter.externalNumber = true
+							this.showFilter.workPlace = true
+						} else {
+							this.showFilter.checkProject = false
+							this.showFilter.execStd = false
+							this.showFilter.contractor = false
+							this.showFilter.contractorNumber = false
+							this.showFilter.owner = false
+							this.showFilter.workerNumber = false
+							this.showFilter.erpNumber = false
+							this.showFilter.externalNumber = false
+							this.showFilter.workPlace = false
+						}
+						break
+					case 'problemInfo':
+						if (event) {
+							this.showFilter.checkListName = true
+							this.showFilter.checkResult = true
+							this.showFilter.resultDescription = true
+							this.showFilter.nature=true
+							this.showFilter.problemDescription=true
+							this.showFilter.responsePersonName = true
+							this.showFilter.responsiCompanyName = true
+						} else {
+							this.showFilter.checkListName = false
+							this.showFilter.checkResult = false
+							this.showFilter.description = false
+							this.showFilter.responsePersonName = false
+							this.showFilter.responsiCompanyName = false
+						}
+						break
+					case 'nonConformityInfo':
+						if (event) {
+							this.showFilter.nonConformClause = true
+							this.showFilter.nonConformClauseNo = true
+							this.showFilter.nonConformClauseContent = true
+							this.showFilter.nonConformityStd = true
+							this.showFilter.nonConformityStdNo = true
+							this.showFilter.nonConformityStdContent = true
+							this.showFilter.nonConformityNature = true
+							this.showFilter.nonConformityType = true
+							this.showFilter.nonConformSource = true
+						} else {
+							this.showFilter.nonConformClause = false
+							this.showFilter.nonConformClauseNo = false
+							this.showFilter.nonConformClauseContent = false
+							this.showFilter.nonConformityStd = false
+							this.showFilter.nonConformityStdNo = false
+							this.showFilter.nonConformityStdContent = false
+							this.showFilter.nonConformityNature = false
+							this.showFilter.nonConformityType = false
+							this.showFilter.nonConformSource = false
+						}
+						break
+					case 'violationInfo':
+						if (event) {
+							this.showFilter.punishmentBasis = true
+							this.showFilter.violationClause = true
+							this.showFilter.violationClauseContent = true
+							this.showFilter.violationDeduction = true
+							this.showFilter.violationScore = true
+							this.showFilter.illegalPerson = true
+							this.showFilter.post = true
+							this.showFilter.postType = true
+							this.showFilter.employmentProperty = true
+							this.showFilter.workingYears = true
+							this.showFilter.education = true
+						} else {
+							this.showFilter.punishmentBasis = false
+							this.showFilter.violationClause = false
+							this.showFilter.violationClauseContent = false
+							this.showFilter.violationDeduction = false
+							this.showFilter.violationScore = false
+							this.showFilter.illegalPerson = false
+							this.showFilter.post = false
+							this.showFilter.postType = false
+							this.showFilter.employmentProperty = false
+							this.showFilter.workingYears = false
+							this.showFilter.education = false
+						}
+						break
+					case 'verifyAndcorInfo':
+						if (event) {
+							this.showFilter.resVerifierName = true
+							this.showFilter.resVerifyDate = true
+							this.showFilter.resVerifyAdvice = true
+							this.showFilter.cheVerifierName = true
+							this.showFilter.cheVerifyDate = true
+							this.showFilter.cheVerifyAdvice = true
+							this.showFilter.nonConformCorrect = true
+							this.showFilter.nonConformCorrectMeasure = true
+							this.showFilter.nonConformCorrectMeasureVerify = true
+							this.showFilter.reformLimit = true
+							this.showFilter.reformDate = true
+						} else {
+							this.showFilter.resVerifierName = false
+							this.showFilter.resVerifyDate = false
+							this.showFilter.resVerifyAdvice = false
+							this.showFilter.cheVerifierName = false
+							this.showFilter.cheVerifyDate = false
+							this.showFilter.cheVerifyAdvice = false
+							this.showFilter.nonConformCorrect = false
+							this.showFilter.nonConformCorrectMeasure = false
+							this.showFilter.nonConformCorrectMeasureVerify = false
+							this.showFilter.reformLimit = false
+							this.showFilter.reformDate = false
+						}
+						break
+					default:
+						break
+				}
+			},
+			openShowFilterDialog() {
+				this.showFilterOptionDialog = true
+			},
+			saveShowFileterOption() {
+				this.showFilterOptionDialog = false
+			},
 			getOption(event, chosenOne) {
 				if (event == true) {
 					let temp = this.downloadList.filter(item => {
@@ -939,7 +1315,10 @@
 					// ]
 					// let checkProblemInfo=[
 					this.checkListName,
-					this.description,
+					this.checkResult,
+					this.resultDescription,
+					this.nature,
+					this.problemDescription,
 					this.responsePersonName,
 					this.responsiCompanyName,
 					// ]
@@ -988,7 +1367,7 @@
 				this.downloadChineseList = []
 				this.downloadOptionDialog = true
 			},
-			saveOption() {
+			saveDownloadFileterOption() {
 				this.$confirm('保存将会下载选中的字段，确定要执行吗？', '下载确认', {
 					confirmButtonText: '确认',
 					cancelButtonText: '取消',
@@ -1019,8 +1398,8 @@
 			},
 			filterHandler(value, row, column) {
 				const property = column['property'];
-				this.downloadSource=this.downloadSource.filter(item=>{
-					return item[property]===value
+				this.downloadSource = this.downloadSource.filter(item => {
+					return item[property] === value
 				})
 				return row[property] === value
 			},
@@ -1095,51 +1474,85 @@
 				for (var i = 0; i < this.qualityCheckList.length; i++) {
 					this.combineData(this.qualityCheckList[i], this.qualityRecordList[i], this.qualityCheckTree[i])
 				}
-				
-				this.qualityCheckNameFilter=[]
-				this.checkListNameFilter=[]
-				this.companyFilter= []
-				this.companyLeaderFilter= []
-				this.groupFilter=[]
-				this.groupLeaderFilter= []
-				this.projectFilter= []
-				this.projectLeaderFilter= []
-				this.checkResultFilter=[]
-				this.natureFilter= []
-				this.checkCategoryFilter= []
-				this.checkBasisFilter=[]
-				this.checkMethodFilter= []
-				this.checkPersonFilter=[]
-				for(var i=0;i<this.checkRecordList.length;i++){
-					this.pushItem(this.checkRecordList[i].qualityCheckName,this.qualityCheckNameFilter)
-					this.pushItem(this.checkRecordList[i].checkListName,this.checkListNameFilter)
-					this.pushItem(this.checkRecordList[i].checkCategory,this.checkCategoryFilter)
-					this.pushItem(this.checkRecordList[i].checkBasis,this.checkBasisFilter)
-					this.pushItem(this.checkRecordList[i].checkMethod,this.checkMethodFilter)
-					this.pushItem(this.checkRecordList[i].checkResult,this.checkResultFilter)
-					this.pushItem(this.checkRecordList[i].nature,this.natureFilter)
-					this.pushItem(this.checkRecordList[i].checkedCompanyName,this.companyFilter)
-					this.pushItem(this.checkRecordList[i].checkedPersonName,this.companyLeaderFilter)
-					this.pushItem(this.checkRecordList[i].group,this.groupFilter)
-					this.pushItem(this.checkRecordList[i].groupLeaderName,this.groupLeaderFilter)
-					this.pushItem(this.checkRecordList[i].projectName,this.projectFilter)
-					this.pushItem(this.checkRecordList[i].projectLeaderName,this.projectLeaderFilter)
-					this.pushItem(this.checkRecordList[i].checkPerson,this.checkPersonFilter)
+
+				this.qualityCheckNameFilter = []
+				this.checkListNameFilter = []
+				this.companyFilter = []
+				this.companyLeaderFilter = []
+				this.groupFilter = []
+				this.groupLeaderFilter = []
+				this.projectFilter = []
+				this.projectLeaderFilter = []
+				this.checkResultFilter = []
+				this.natureFilter = []
+				this.checkCategoryFilter = []
+				this.checkBasisFilter = []
+				this.checkMethodFilter = []
+				this.checkPersonFilter = []
+				this.checkProjectFilter = []
+				this.execStdFilter = []
+				this.contractorFilter = []
+				this.ownerFilter = []
+				this.workPlaceFilter = []
+				this.nonConformClauseFilter = []
+				this.nonConformSourceFilter = []
+				this.nonConformityNatureFilter = []
+				this.nonConformityTypeFilter = []
+				this.nonConformityStdFilter = []
+				this.punishmentBasisFilter = []
+				this.illegalPersonFilter = []
+				this.postFilter = []
+				this.postTypeFilter = []
+				this.employmentPropertyFilter = []
+				this.workingYearsFilter = []
+				this.educationFilter = []
+				for (var i = 0; i < this.checkRecordList.length; i++) {
+					this.pushItem(this.checkRecordList[i].qualityCheckName, this.qualityCheckNameFilter)
+					this.pushItem(this.checkRecordList[i].checkListName, this.checkListNameFilter)
+					this.pushItem(this.checkRecordList[i].checkCategory, this.checkCategoryFilter)
+					this.pushItem(this.checkRecordList[i].checkBasis, this.checkBasisFilter)
+					this.pushItem(this.checkRecordList[i].checkMethod, this.checkMethodFilter)
+					this.pushItem(this.checkRecordList[i].checkResult, this.checkResultFilter)
+					this.pushItem(this.checkRecordList[i].nature, this.natureFilter)
+					this.pushItem(this.checkRecordList[i].checkedCompanyName, this.companyFilter)
+					this.pushItem(this.checkRecordList[i].checkedPersonName, this.companyLeaderFilter)
+					this.pushItem(this.checkRecordList[i].group, this.groupFilter)
+					this.pushItem(this.checkRecordList[i].groupLeaderName, this.groupLeaderFilter)
+					this.pushItem(this.checkRecordList[i].projectName, this.projectFilter)
+					this.pushItem(this.checkRecordList[i].projectLeaderName, this.projectLeaderFilter)
+					this.pushItem(this.checkRecordList[i].checkPerson, this.checkPersonFilter)
+
+					this.pushItem(this.checkRecordList[i].checkProject, this.checkProjectFilter)
+					this.pushItem(this.checkRecordList[i].execStd, this.execStdFilter)
+					this.pushItem(this.checkRecordList[i].owner, this.ownerFilter)
+					this.pushItem(this.checkRecordList[i].workPlace, this.workPlaceFilter)
+					this.pushItem(this.checkRecordList[i].nonConformClause, this.nonConformClauseFilter)
+					this.pushItem(this.checkRecordList[i].nonConformityStd, this.nonConformityStdFilter)
+					this.pushItem(this.checkRecordList[i].nonConformityNature, this.nonConformityNatureFilter)
+					this.pushItem(this.checkRecordList[i].nonConformityType, this.nonConformityTypeFilter)
+					this.pushItem(this.checkRecordList[i].nonConformSource, this.nonConformSourceFilter)
+					this.pushItem(this.checkRecordList[i].punishmentBasis, this.punishmentBasisFilter)
+					this.pushItem(this.checkRecordList[i].illegalPerson, this.illegalPersonFilter)
+					this.pushItem(this.checkRecordList[i].post, this.postFilter)
+					this.pushItem(this.checkRecordList[i].postType, this.postTypeFilter)
+					this.pushItem(this.checkRecordList[i].employmentProperty, this.employmentPropertyFilter)
+					this.pushItem(this.checkRecordList[i].workingYears, this.workingYearsFilter)
+					this.pushItem(this.checkRecordList[i].education, this.educationFilter)
 				}
-				this.downloadSource=this.checkRecordList
+				this.downloadSource = this.checkRecordList
 			},
-			pushItem(pushItem,targetArray){
-				let temp={
-					text:'',
-					value:''
+			pushItem(pushItem, targetArray) {
+				let temp = {
+					text: '',
+					value: ''
 				}
-				temp.text=pushItem
-				temp.value=pushItem
-				let tempArray=[]
-				tempArray=targetArray.filter(item=>{
-					return item.value===temp.value
+				temp.text = pushItem
+				temp.value = pushItem
+				let tempArray = []
+				tempArray = targetArray.filter(item => {
+					return item.value === temp.value
 				})
-				if(tempArray.length==0){
+				if (tempArray.length == 0) {
 					targetArray.push(temp)
 				}
 			},
@@ -1190,32 +1603,35 @@
 				}
 			},
 			combineData(qualityCheckList, qualityRecordList, qualityCheckTree) {
-				console.log('qualityCheckTree',qualityCheckTree)
+				if (!qualityCheckTree || !qualityRecordList || !qualityCheckList) {
+					return 0
+				}
+				console.log('qualityCheckTree', qualityCheckTree)
 				for (var i = 0; i < qualityCheckTree.length; i++) {
 					if (!qualityCheckTree[i].children) {
 						var checkRecordItem = {
 							//审核任务名
-							qualityCheckName:'',
+							qualityCheckName: '',
 							//审核要素名
 							checkListName: '',
 							//审核类别
-							checkCategory:'',
+							checkCategory: '',
 							//审核依据
-							checkBasis:'',
+							checkBasis: '',
 							//审核方式
-							checkMethod:'',
+							checkMethod: '',
 							//受审核单位
 							checkedCompanyName: '',
 							//受审单位负责人
-							checkedPersonName:'',
+							checkedPersonName: '',
 							//室组/受审核部门
 							group: '',
 							//室组负责人
-							groupLeaderName:'',
+							groupLeaderName: '',
 							//作业项目
-							projectName:'',
+							projectName: '',
 							//项目组长
-							projectLeaderName:'',
+							projectLeaderName: '',
 							//责任单位/责任部门
 							responsiCompanyName: '',
 							//责任单位负责人
@@ -1233,21 +1649,22 @@
 							//检测标准
 							execStd: '',
 							//作业人数
-							workerNumber:'',
+							workerNumber: '',
 							//作业地点
-							workPlace:'',
+							workPlace: '',
 							//承包商人数
-							contractorNumber:'',
+							contractorNumber: '',
 							//ERP人数
-							erpNumber:'',
+							erpNumber: '',
 							//外聘员工数量
-							externalNumber:'',
+							externalNumber: '',
 							//检查结果
-							checkResult:'',
+							checkResult: '',
 							//问题描述\不符合事实描述
 							resultDescription: '',
 							//问题性质\问题分类
 							nature: '',
+							problemDescription:'',
 							//不符合类型
 							nonConformityType: '',
 							//不符合性质
@@ -1255,11 +1672,11 @@
 							//不符合标准\文件名称
 							nonConformityStd: '',
 							//不符合标准号
-							nonConformityStdNo:'',
+							nonConformityStdNo: '',
 							//不符合标准内容
-							nonConformityStdContent:'',
+							nonConformityStdContent: '',
 							//不符合条款
-							nonConformClause:'',
+							nonConformClause: '',
 							//不符合标准条款号
 							nonConformClauseNo: '',
 							//不符合标准条款内容
@@ -1289,6 +1706,13 @@
 							employmentProperty: '',
 							workingYears: '',
 							education: '',
+
+							resVerifierName: '',
+							resVerifyDate: '',
+							resVerifyAdvice: '',
+							cheVerifierName: '',
+							cheVerifyDate: '',
+							cheVerifyAdvice: '',
 							reformDate: '',
 							//整改完成时间
 							reformLimit: '',
@@ -1308,10 +1732,10 @@
 						checkRecordItem.resultDescription = qualityCheckTree[i].description
 						checkRecordItem.attach = this.splitFilePath(qualityCheckTree[i].attach)
 						checkRecordItem.pic = this.splitPicPath(qualityCheckTree[i].pic)
-						
-						checkRecordItem.checkCategory=qualityCheckList.checkCategory
-						checkRecordItem.checkBasis=qualityCheckList.checkBasis
-						checkRecordItem.checkMethod=qualityCheckList.checkMethod
+
+						checkRecordItem.checkCategory = qualityCheckList.checkCategory
+						checkRecordItem.checkBasis = qualityCheckList.checkBasis
+						checkRecordItem.checkMethod = qualityCheckList.checkMethod
 						checkRecordItem.qualityCheckName = qualityCheckList.qualityCheckName
 						checkRecordItem.checkDate = qualityCheckList.checkDate
 						checkRecordItem.checkPerson = qualityCheckList.checkPerson
@@ -1322,7 +1746,7 @@
 						checkRecordItem.projectName = qualityCheckList.projectName
 						checkRecordItem.projectLeaderName = qualityCheckList.projectLeaderName
 						checkRecordItem.contractor = qualityCheckList.contractor
-						checkRecordItem.contractorNumber= qualityCheckList.contractorNumber
+						checkRecordItem.contractorNumber = qualityCheckList.contractorNumber
 						checkRecordItem.owner = qualityCheckList.owner
 						checkRecordItem.checkProject = qualityCheckList.checkProject
 						checkRecordItem.workPlace = qualityCheckList.workPlace
@@ -1331,7 +1755,7 @@
 						checkRecordItem.externalNumber = qualityCheckList.externalNumber
 						checkRecordItem.execStd = qualityCheckList.execStd
 						checkRecordItem.progress = qualityCheckList.progress
-						
+
 						var temp = qualityRecordList.filter(item => {
 							return item.checkListCode == qualityCheckTree[i].checkListCode
 						})[0]
@@ -1341,14 +1765,14 @@
 							checkRecordItem.nonConformityType = temp.nonConformityType
 							checkRecordItem.nonConformityNature = temp.nonConformityNature
 							checkRecordItem.nonConformSource = temp.nonConformSource
-							
+
 							checkRecordItem.nonConformityStd = temp.nonConformityStd
 							checkRecordItem.nonConformityStdNo = temp.nonConformityStdNo
 							checkRecordItem.nonConformityStdContent = temp.nonConformityStdContent
 							checkRecordItem.nonConformClause = temp.nonConformClause
 							checkRecordItem.nonConformClauseNo = temp.nonConformClauseNo
 							checkRecordItem.nonConformClauseContent = temp.nonConformClauseContent
-							
+
 							checkRecordItem.nonConformCorrect = temp.nonConformCorrect
 							checkRecordItem.nonConformCorrectMeasure = temp.nonConformCorrectMeasure
 							checkRecordItem.nonConformCorrectMeasureVerify = temp.nonConformCorrectMeasureVerify
@@ -1365,7 +1789,7 @@
 							checkRecordItem.education = temp.education
 							checkRecordItem.reformDate = temp.reformDate
 							checkRecordItem.reformLimit = temp.reformLimit
-							
+
 							checkRecordItem.responsiCompanyName = temp.responsiCompanyName
 							checkRecordItem.responsePersonName = temp.responsePersonName
 							checkRecordItem.resVerifierName = temp.resVerifierName
