@@ -487,6 +487,7 @@ export default {
       let { monthFinishRate,updateTime,monthFinishNum,monthPlanNum } = data[0]
       // 数值
       _this.getYnum(monthPlanNum,'qualitylistdata',10)
+      monthFinishRate = monthFinishRate > 100 ? 100 : monthFinishRate
       _this.rates.qualityzhu = monthFinishRate.toFixed(2) + "%"
       _this.values.qualityzhu1 = monthPlanNum 
       _this.values.qualityzhu2 = monthFinishNum
@@ -513,6 +514,7 @@ export default {
       let {weeklyCollectNum,weeklyNormalNum,weeklySupervisionNum,weeklyUsageRate} = data[0]
       // 数值
       _this.getYnum(weeklyCollectNum,'recordinglistdata',10)
+      weeklyUsageRate = weeklyUsageRate*100 > 100 ? 1 : weeklyUsageRate
       _this.rates.recordingzhu = (weeklyUsageRate*100).toFixed(2) + "%"
       _this.values.recordingzhu1 = weeklyCollectNum
       _this.values.recordingzhu2 = weeklyNormalNum
@@ -546,6 +548,9 @@ export default {
      _this.getYnum(planNum,'firstlistdata',10)
      //百分比
      _this.standardDate = updateTime
+     firstDraftFinishRate = firstDraftFinishRate*100 > 100 ? 1 : firstDraftFinishRate
+     reviewPassRate = reviewPassRate*100 > 100 ? 1 : reviewPassRate
+     standardReleaseRate = standardReleaseRate*100 > 100 ? 1 : standardReleaseRate
       _this.rates.firstzhu = (firstDraftFinishRate*100).toFixed(2) + "%"
       _this.rates.passzhu = (reviewPassRate*100).toFixed(2) + "%"
       _this.rates.handoutzhu = (standardReleaseRate*100).toFixed(2) + "%"

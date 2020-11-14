@@ -94,21 +94,22 @@
         span
         span
         span
-        <el-button type="info" plain @click='goScreen'>QHSE看板</el-button>  
         <router-link :to='{name: "index"}'>
           <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
           //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
           </el-badge>
         </router-link>
           el-dropdown(@command='handleDropCommand')
-            span
+            span.userClick
               font {{this.currentUser ? this.currentUser.userName : ''}}
               i.el-icon-arrow-down.el-icon--right
             el-dropdown-menu(slot='dropdown')
               el-dropdown-item(command='handleLogout')
                 font 安全退出
               el-dropdown-item(command='changeSys')
-                div 切换系统
+                font 切换系统
+              el-dropdown-item(command='goScreen')
+                font 看板查看
       el-main
         <router-view/>
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="34%">
@@ -257,7 +258,6 @@ export default {
        this.listdata = []
         GetqhseCompanytree().then(res =>{
                this.companyList = res.data
-               console.log(res.data)
                this.listdata.push({value:res.data[0].nodeCode,label:res.data[0].label})
                return  this.getList(res.data)
                
@@ -498,7 +498,9 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
+.userClick{
+      cursor: pointer;
+    }
 .chooseSys{
     background-color: #0070A2;
     position: absolute;
@@ -553,7 +555,7 @@ export default {
       justify-content: flex-start;
       align-items: center;
     }
-
+    
     .layout-menu {
       flex: 1 1;
       border: none;
