@@ -168,6 +168,7 @@
             endPlanDetails(row){
 
 				endPlanDetail(row.monitorPlanDetailID).then(res=>{
+				    this.$message.success("结束成功")
                     getDetails(this.$route.params).then(res => {
                         this.listData = res.data;
                         this.filterMethods(this.listData)

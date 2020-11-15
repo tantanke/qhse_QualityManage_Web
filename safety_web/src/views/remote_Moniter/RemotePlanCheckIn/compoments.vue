@@ -299,10 +299,7 @@
                 this.resData = data;
                 deleteInputInfo(this.resData.monitorInputCheckRecordID).then(res => {
                     this.$message.success('删除成功', res)
-                    getDetails(this.$route.params).then(res => {
-                        this.listData = res.data;
-                        this.filterMethods(this.listData)
-                    })
+                    this.showlinedatas();
                     getItemNum(this.$route.params.monitorPlanID).then(res=>{
                         this.itemNum = res.data
                     })

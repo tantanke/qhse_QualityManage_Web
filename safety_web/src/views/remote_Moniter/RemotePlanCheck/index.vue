@@ -18,7 +18,9 @@
       <!-- 计划列表 -->
       <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
         <el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" row-key="code" :indent="30"
-          max-height="560" highlight-current-row border>
+          max-height="560" highlight-current-row border
+          :cell-style="cellStyle"
+        >
           <el-table-column type="index" label="序号" width="60" align="center" show-overflow-tooltip></el-table-column>
           <el-table-column prop="planName" label="计划名称" align="center" show-overflow-tooltip> </el-table-column>
           <el-table-column prop="startDate" label="开始时间" align="center" show-overflow-tooltip> </el-table-column>
@@ -92,6 +94,13 @@ export default {
     }
   },
   methods: {
+    cellStyle(row, column, rowIndex, columnIndex) {//根据报警级别显示颜色
+        if ( row.column.label==='核查状态' && row.row.checkStatus === "未核查") {
+            return 'color:red'
+        } else {
+            return ''
+        }
+    },
     inputdaily () {
       getDayReport({ monitorPlanID: this.monitorPlanID, date: this.selecttime }).then(res => {
         console.log(res.data)
