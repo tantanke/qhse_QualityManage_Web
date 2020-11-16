@@ -250,6 +250,7 @@ export default {
     return {
       selectdate: "",
       listData: [], // 渲染表格的初始数据结构
+      listData2:[],
       status_processing: 0, // 状态统计，执行中的数量
       status_completed: 0, // 状态统计，已完成的数量
       filterProjectNameList: [], // 用于对项目名称进行筛选的结构
@@ -289,6 +290,7 @@ export default {
     // 得到用于渲染表格的数据
     async getListData() {
       this.listData = [];
+      this.listData2 = [];
       let res = await getMonitorPlanList();
       if (res.code === 1000) {
         res.data.forEach((d) => {
@@ -336,7 +338,7 @@ export default {
                       a.monitorInputCheckRecordID;
                     oneline.picLink = a.picLink;
                     oneline.picNo = a.picNo;
-                    this.listData.push(oneline);
+                    this.listData2.push(oneline);
                   });
 
                   console.log(res.data, "当前展开的表格的数据");
@@ -356,6 +358,8 @@ export default {
             }
           });
         });
+        console.log('获取数据完成',this.listData2)
+        this.listData=this.listData2
       } else {
         console.log("远程计划监控数据getMonitorPlanList失败");
         this.$message.error("获取失败");
