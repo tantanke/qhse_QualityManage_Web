@@ -53,14 +53,19 @@
           </el-table-column>
         </el-table>
       </el-row>
-      <el-dialog v-if="seetrend">
-        <div id="main" style="width: 600px;height:400px;"></div>
+      <el-dialog 
+        title="导出数据"
+        :visible.sync="seetrend"
+        center
+        width="800px"
+        :close-on-click-modal="false">
+        <div id="chart1" ref="chart1" :style="{width: '90%', height: '500px',display:'inline-block'}"></div>
       </el-dialog>
     </div>
   </div>
 </template>
 <script>
-var echarts = require('echarts/lib/echarts');
+import { useDeviceTrend } from "../../../services/supervise"; //查询细节
 export default {
   name: "",
   components: {},
@@ -74,68 +79,38 @@ export default {
         { name: "监看账号统计" },
         { name: "监看频次统计" },
       ],
-      optiontrend:{
+      option:{
         title: {
-        text: '折线图堆叠'
-    },
-    tooltip: {
-        trigger: 'axis'
-    },
-    legend: {
-        data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
-    },
-    grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-    },
-    toolbox: {
-        feature: {
-            saveAsImage: {}
-        }
-    },
-    xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-    },
-    yAxis: {
-        type: 'value'
-    },
-    series: [
-        {
-            name: '邮件营销',
-            type: 'line',
-            stack: '总量',
-            data: [120, 132, 101, 134, 90, 230, 210]
+        text: '示例图'
         },
-        {
-            name: '联盟广告',
-            type: 'line',
-            stack: '总量',
-            data: [220, 182, 191, 234, 290, 330, 310]
+        tooltip: {
+            trigger: 'axis'
         },
-        {
-            name: '视频广告',
-            type: 'line',
-            stack: '总量',
-            data: [150, 232, 201, 154, 190, 330, 410]
+        legend: {
+            data: []
         },
-        {
-            name: '直接访问',
-            type: 'line',
-            stack: '总量',
-            data: [320, 332, 301, 334, 390, 330, 320]
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
         },
-        {
-            name: '搜索引擎',
-            type: 'line',
-            stack: '总量',
-            data: [820, 932, 901, 934, 1290, 1330, 1320]
-        }
-    ]
-    },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+        ]
+        },
       seetrend:false,
     };
   },
@@ -143,15 +118,24 @@ export default {
     gotoDataApply() {
       this.$router.push({
         name: "DataApply",
-        // 暂时不知道这里需要什么路径参数
         params: {},
       });
     },
     showlabel(data){
       if(data.name=='趋势图'){
         this.seetrend=true;
-        var myChart = echarts.init(document.getElementById('main'));
-        myChart.setOption(this.optiontrend);}
+        useDeviceTrend().then(res=>{
+          this.option.text="趋势图";
+          this.option.legend.data=res.data.time;//横坐标数据
+          this.option.xAxis.data=res.data.time;//横坐标数据
+          this.option.series=res.data.series;//总数据
+        })
+        this.$nextTick(()=>{
+          var chart1 = this.$refs.chart1;
+          var myChart = this.$echarts.init(chart1);
+          myChart.setOption(this.option);
+        })
+      }
     }
   },
   mounted() {
