@@ -53,19 +53,51 @@
           </el-table-column>
         </el-table>
       </el-row>
-      <el-dialog 
-        title="导出数据"
+      <el-dialog title="选择时间" :visible.sync="choosetime">
+        <el-form label-width="130px" :inline="true">
+          <el-form-item label="时间范围：" labelWidth="120px">
+            <el-date-picker
+              v-model="selectdates"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="sechart2()">选择</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <el-dialog
+        title="数据详情"
         :visible.sync="seetrend"
         center
         width="800px"
-        :close-on-click-modal="false">
-        <div id="chart1" ref="chart1" :style="{width: '90%', height: '500px',display:'inline-block'}"></div>
+        :close-on-click-modal="false"
+      >
+        <div
+          id="chart1"
+          ref="chart1"
+          v-if="choose == '趋势图'"
+          :style="{ width: '90%', height: '500px', display: 'inline-block' }"
+        ></div>
+        <div
+          id="chart2"
+          ref="chart2"
+          v-if="choose == '使用情况对比图'"
+          :style="{ width: '90%', height: '500px', display: 'inline-block' }"
+        ></div>
       </el-dialog>
     </div>
   </div>
 </template>
 <script>
-import { useDeviceTrend } from "../../../services/supervise"; //查询细节
+import { useDeviceTrend,deviceCompare} from "../../../services/supervise"; //查询细节
 export default {
   name: "",
   components: {},
@@ -81,7 +113,39 @@ export default {
       ],
       option:{
         title: {
-        text: '示例图'
+            text: '?'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: []
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+        ]
+        },
+      option2:{
+        title: {
+           text: '?'
         },
         tooltip: {
             trigger: 'axis'
@@ -112,6 +176,9 @@ export default {
         ]
         },
       seetrend:false,
+      choose:'',
+      selectdates:"",
+      choosetime:false,
     };
   },
   methods: {
@@ -121,25 +188,56 @@ export default {
         params: {},
       });
     },
-    showlabel(data){
-      if(data.name=='趋势图'){
-        this.seetrend=true;
-        useDeviceTrend().then(res=>{
-          this.option.text="趋势图";
-          this.option.legend.data=res.data.time;//横坐标数据
-          this.option.xAxis.data=res.data.time;//横坐标数据
-          this.option.series=res.data.series;//总数据
-        })
+    async sechart2(){
+      this.choosetime=false;
+      this.seetrend=true;
+       var that=this;
+       console.log(this.selectdates)
         this.$nextTick(()=>{
+           that.option2.title.text="使用情况对比图";
+            deviceCompare({starttime:this.selectdates[0],endtime:this.selectdates[1]}).then(res=>{
+            this.option2.legend.data=res.data.time;//横坐标数据
+            this.option2.xAxis.data=res.data.time;//横坐标数据
+            this.option2.series=res.data.series;//总数据
+          })
+          var chart2 = this.$refs.chart2;
+          var myChart = this.$echarts.init(chart2);
+          myChart.setOption(this.option2);
+        })
+    },
+    async showlabel(data){
+      this.choose=data.name;
+      if(data.name=='趋势图')
+      {
+        this.seetrend=true;
+        let that=this;
+         this.$nextTick(()=>{
+           that.option.title.text="趋势图"
+            this.option.legend.data=['开工项目数','配备记录仪项目数','开机使用数量']
+            useDeviceTrend().then(res=>{
+            this.option.xAxis.data=res.data.time;//横坐标数据
+            this.option.series=res.data.series;//总数据
+          })
           var chart1 = this.$refs.chart1;
           var myChart = this.$echarts.init(chart1);
           myChart.setOption(this.option);
-        })
+          }); 
+      }
+
+      else if(data.name=='使用情况对比图')
+      {
+        this.choosetime=true;
+      }
+
+      else if(data.name!='趋势图'&&data.name!='使用情况对比图')
+      {
+        this.$message.error('基层单位与用户尚未设置科室级别，无法统计')
       }
     }
   },
   mounted() {
-    console.log('监控总览bug')
+    console.log('监控总览bug');
+   
   },
 };
 </script>

@@ -328,6 +328,7 @@ export default {
   },
   mounted () {
     this.nowdate = this.getNowFormatDate();
+    this.handleClick();
   }
 }
 </script>

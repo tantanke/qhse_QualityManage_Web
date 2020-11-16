@@ -219,6 +219,7 @@ export default {
   },
   mounted () {
     console.log('统计bug开始滴滴滴滴')
+    this.handleClick();
   }
 }
 </script>

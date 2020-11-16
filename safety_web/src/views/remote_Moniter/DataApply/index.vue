@@ -130,11 +130,9 @@
             align="center"
             show-overflow-tooltip
           >
-            <template slot-scope="scope">
-              <a href="#" @click="handlePictureCardPreview2(scope.row)">{{
-                scope.row.picNo
-              }}</a>
-            </template>
+            <template slot-scope="scope">>
+                                            <a href="#" @click="handlePictureCardPreview2(scope.row)">{{scope.row.picNo}}</a>
+                                        </template>
           </el-table-column>
           <el-table-column
             prop="disposeInOrCheck"
@@ -231,6 +229,9 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+      <el-dialog :visible.sync="dialogVisible2" :close-on-click-modal="false">
+                <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
     </div>
   </div>
 </template>
@@ -265,10 +266,75 @@ export default {
       selectdates: "", //时间段
       selecttime: "", //时间天
       timetype: "选择某天",
+      downloadList:[],
+      downloadDataItem:{},
+      downloads:[]
     };
   },
   methods: 
-  {gotoPlanData(){//前往迷之页面
+  {
+    timeupload(){
+                var option = {};
+      this.downloadList=[];
+      this.listData.forEach(a => {
+        var time = a.inputDate.substring(0,10);
+        if(this.timetype=='选择某天')
+        {
+          option.fileName = this.selecttime+ '应用表';
+          if(time==this.selecttime)
+          this.downloadList.push(a);
+        }
+        if(this.timetype=='选择时间段')
+        {
+          option.fileName = this.selectdates[0]+'至'+this.selectdates[1]+ '应用表';
+          if(time<=this.selectdates[1]&&time>=this.selectdates[0])
+          this.downloadList.push(a);
+        }
+      });
+      console.log('打印的数据',this.downloadList);
+      this.parseTreeToTable(this.downloadList)
+                //设置数据来源和数据格式
+                option.datas = [{
+                    sheetData: this.downloads,
+                    sheetHeader: ["设备编号", "自编号", "计划名称","基层单位","项目类别","项目名称", "负责人", "负责人电话", "项目进度","记录仪使用情况", "视频监控描述", "截图编号", "处置情况(录入)", "监控人员", "录入时间", "核查时间", "核查情况","是否关闭"]
+                }];
+                //导出
+                var toExcel = new ExportJsonExcel(option);
+                toExcel.saveExcel();
+    },
+    parseTreeToTable(node) {//转换格式
+                //初始化下载数据项对象
+                this.downloadDataItem = {}
+                this.downloads=[];
+                //遍历当前节点，装填数据
+                for (var i = 0; i < node.length; i++) {
+                    //如果当前节点存在，装填数据
+                    if (node[i]) {
+                        this.downloadDataItem = {}
+                        this.downloadDataItem.deviceNo = node[i].deviceNo
+                        this.downloadDataItem.myNo = node[i].myNo
+                        this.downloadDataItem.planName = node[i].planName
+                        this.downloadDataItem.companyName = node[i].companyName
+                        this.downloadDataItem.itemCategory = node[i].itemCategory
+                        this.downloadDataItem.projectName = node[i].projectName
+                        this.downloadDataItem.charger = node[i].charger
+                        this.downloadDataItem.tel = node[i].tel
+                        this.downloadDataItem.projectProgress = node[i].projectProgress
+                        this.downloadDataItem.condition = node[i].condition
+                        this.downloadDataItem.description = node[i].description
+                        this.downloadDataItem.picNo = node[i].picNo
+                        this.downloadDataItem.disposeInOrCheck = node[i].disposeInOrCheck
+                        this.downloadDataItem.inputPersonName = node[i].inputPersonName
+                        this.downloadDataItem.inputDate = node[i].inputDate
+                        this.downloadDataItem.checkDate = node[i].checkDate
+                        this.downloadDataItem.result = node[i].result
+                        this.downloadDataItem.closeInOrCheck = node[i].closeInOrCheck
+                        //将数据项对象装入下载数据数组，保存
+                        this.downloads.push(this.downloadDataItem)
+                    }
+                }
+            },
+    gotoPlanData(){//前往迷之页面
         this.$router.push({
             name: 'supervise',
             // 暂时不知道这里需要什么路径参数
@@ -341,8 +407,6 @@ export default {
                     this.listData2.push(oneline);
                   });
 
-                  console.log(res.data, "当前展开的表格的数据");
-
                   // 由于表格不及时更新，需要点击表格一下
                   let row = document.getElementsByClassName("el-table__row");
                   for (let i = 0; i < row.length; i++) {
@@ -358,7 +422,6 @@ export default {
             }
           });
         });
-        console.log('获取数据完成',this.listData2)
         this.listData=this.listData2
       } else {
         console.log("远程计划监控数据getMonitorPlanList失败");
