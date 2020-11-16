@@ -333,7 +333,7 @@ export default {
       this.form.attach += this.attach;//加上图片attach
       this.form.attach += this.fileattach;//加上文件attach
       console.log(this.form);
-      if (this.form.attach == '' || this.form.attachDescrption == '' || this.form.evidenceDescription == '') {
+      if (this.form.attachDescrption == '' || this.form.evidenceDescription == '') {
         this.$message.error('请录入完全')
       }
       else {
@@ -608,21 +608,24 @@ export default {
                         tableID:this.tableID,
                         tag:0
                     });
-        querryYearElement(this.filterQuery)//获取到叶子节点信息
-          .then(res => {
-            this.treeData = res.data;
-            
+                    setTimeout(() => {
+                      querryYearElement(this.filterQuery)//获取到叶子节点信息
+                          .then(res => {
+                            this.treeData = res.data;
+                    
             // 将查询时获取到的tableID保存下来
-            this.tableID = this.treeData[0].tableID
-            this.checkstatus=this.treeData[0].checkstatus
-          })
-          .catch(err => {
-            console.log(err);
-            this.message.error(err.message);
-          });
-        this.listData = [];
-        this.deepTree(this.treeData);
-        this.$message.success('推送成功')
+                       this.tableID = this.treeData[0].tableID
+                        this.checkstatus=this.treeData[0].checkstatus
+                      })
+                      .catch(err => {
+                        console.log(err);
+                        this.message.error(err.message);
+                      });
+                    this.listData = [];
+                    this.deepTree(this.treeData);
+                    this.$message.success('推送成功')
+                    }, 1000);
+        
       }
       }
     },

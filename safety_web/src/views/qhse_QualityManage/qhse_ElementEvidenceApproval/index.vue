@@ -655,7 +655,9 @@
                         tag: 2
                     });
                     this.$message.success("提交成功");
-                    this.reshowdata();
+                    setTimeout(() => {
+                       this.reshowdata();
+                    }, 2000);
                 }
                 else
                     this.$message.error("未审核完成")
