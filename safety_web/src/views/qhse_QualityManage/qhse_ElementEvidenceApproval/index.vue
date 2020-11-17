@@ -555,7 +555,7 @@
                 this.loading = true;
             },
             async updateScore(data) {//显示出证据项的内容
-            
+               this.checkStatus=data.checkStatus
                 this.detailData = {};
                 this.detailData.name = data.name
                 this.detailData.code = data.code
@@ -656,6 +656,11 @@
                     }).then(res=>{
                     this.$message.success("提交成功");
                        this.reshowdata();
+                       this.curCheckStatus=3;
+                    })
+                    submitInputResult({
+                        tableID: this.tableID,
+                        tag: 2
                     })
                 }
                 else

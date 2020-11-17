@@ -401,6 +401,7 @@ export default {
     },
     async updateScore (data) {
       // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+      console.log(data.checkStatus)
       this.curStatus = data.checkStatus
 
       if (data.status == '不通过')
@@ -441,7 +442,6 @@ export default {
             this.form.attachDescrption = res.data.attachDescrption;//赋值附件描述
             this.form.evidenceDescription = res.data.evidenceDescription;//赋值证据描述
             this.form.negativeOpinion = res.data.negativeOpinion;
-            console.log(this.form.attach);
             //辨析图片
             this.node = data;
             //展示attachs图片数组url
@@ -608,13 +608,16 @@ export default {
                         tableID:this.tableID,
                         tag:0
                     }).then((res)=>{
- querryYearElement(this.filterQuery)//获取到叶子节点信息
+                     querryYearElement(this.filterQuery)//获取到叶子节点信息
                           .then(res => {
                             this.treeData = res.data;
                     
             // 将查询时获取到的tableID保存下来
                        this.tableID = this.treeData[0].tableID
-                        this.checkstatus=this.treeData[0].checkstatus
+                       this.listData=[];
+                        this.deepTree(this.treeData)
+                        this.checkstatus=1;
+                        console.log('?明明改了',this.checkstatus)
                       })
                       .catch(err => {
                         console.log(err);
@@ -624,6 +627,7 @@ export default {
                     this.deepTree(this.treeData);
                     this.$message.success('推送成功')
                     });
+                    
         
       }
       }

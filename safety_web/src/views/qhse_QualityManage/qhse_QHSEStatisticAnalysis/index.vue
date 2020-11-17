@@ -710,6 +710,7 @@
 
                     this.$message.success("提交成功")
                     this.reshowdata();
+                    this.curCheckStatus=2;
                     });
                     }
                     else
