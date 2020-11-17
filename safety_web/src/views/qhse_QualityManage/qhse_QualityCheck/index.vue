@@ -607,9 +607,8 @@ export default {
         submitInputResult({
                         tableID:this.tableID,
                         tag:0
-                    });
-                    setTimeout(() => {
-                      querryYearElement(this.filterQuery)//获取到叶子节点信息
+                    }).then((res)=>{
+ querryYearElement(this.filterQuery)//获取到叶子节点信息
                           .then(res => {
                             this.treeData = res.data;
                     
@@ -624,7 +623,7 @@ export default {
                     this.listData = [];
                     this.deepTree(this.treeData);
                     this.$message.success('推送成功')
-                    }, 1000);
+                    });
         
       }
       }

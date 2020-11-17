@@ -653,11 +653,10 @@
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 2
-                    });
+                    }).then(res=>{
                     this.$message.success("提交成功");
-                    setTimeout(() => {
                        this.reshowdata();
-                    }, 2000);
+                    })
                 }
                 else
                     this.$message.error("未审核完成")
