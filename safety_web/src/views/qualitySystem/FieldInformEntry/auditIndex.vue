@@ -105,10 +105,6 @@
 								<el-input placeholder="请输入观察描述" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.description"></el-input>
 							</el-form-item>
 							<br />
-							<el-form-item label="不符合原因">
-								<el-input placeholder="请输入不符合原因" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.nonConformSource"></el-input>
-							</el-form-item>
-							<br />
 							<el-form-item label="整改时限">
 								<el-date-picker placeholder="请选择整改时限" v-model="formData.reformLimit" value-format="yyyy-MM-dd" format="yyyy年MM月dd日"></el-date-picker>
 							</el-form-item>
@@ -138,10 +134,6 @@
 							</el-form-item>
 							<el-form-item label="整改时限" prop="reformLimit">
 								<el-date-picker placeholder="请选择整改时限" v-model="formData.reformLimit" value-format="yyyy-MM-dd" format="yyyy年MM月dd日"></el-date-picker>
-							</el-form-item>
-							<br />
-							<el-form-item label="不符合原因" prop="nonConformSource">
-								<el-input placeholder="请输入不符合原因" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.nonConformSource"></el-input>
 							</el-form-item>
 						</el-row>
 						<el-row v-if="formData.nature==='不符合'">
@@ -179,10 +171,6 @@
 							</el-form-item>
 							<el-form-item label="整改时限" prop="reformLimit">
 								<el-date-picker placeholder="请选择整改时限" v-model="formData.reformLimit" value-format="yyyy-MM-dd" format="yyyy年MM月dd日"></el-date-picker>
-							</el-form-item>
-							<br />
-							<el-form-item label="不符合原因" prop="nonConformSource">
-								<el-input placeholder="请输入不符合原因" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.nonConformSource"></el-input>
 							</el-form-item>
 						</el-row>
 						<el-row v-if="formData.nature==='违章项'">
@@ -284,15 +272,20 @@
 						<el-form-item label="附件浏览">
 							<div v-for="(item, index) in attachList" :key="index">
 									{{item.fileName}}
+								<a :href="item.url">
+									<el-button type="text" size="mini" style="margin-right: 5px;margin-left: 5px;">下载</el-button>
+								</a>
+								
+								<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>	
 								<el-button type="text" size="mini" @click="deleteAttach(item)" style="color: #000000;">
 									<i class="el-icon-close"></i>
 								</el-button>
-								<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+								
 							</div>
 						</el-form-item>
 						<el-form-item label="图片浏览">
 							<div v-for="(item, index) in picList" :key="index" style="float: left;">
-								<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="picList"></el-image>
+								<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="picList"></el-image>
 								<el-button type="text" @click="deletePic(item,index)" size="mini" style="color: #000000; position: relative;top: -90px;left: -20px;">
 									<i class="el-icon-close"></i>
 								</el-button>
@@ -383,8 +376,8 @@
 				},
 				//获取route数据
 				qualityCheckData: {},
-				natureOptions: [],
-				nonConformityTypeOptions: [],
+				
+				
 				//问题类型选择项
 				options: [{
 						value: '建议项',
@@ -407,6 +400,7 @@
 						label: '违章项'
 					}
 				],
+				nonConformityTypeOptions: [],
 				postOptions: [],
 				postTypeOptions: [],
 				employmentPropertyOptions: [],
@@ -692,9 +686,12 @@
 		mounted() {
 			this.getCompany()
 			this.getParams()
-			this.queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID)
+			this.initData('chosenData')
 		},
 		methods: {
+			download(url){
+				return url
+			},
 			preview(url){
 				console.log('url',url)
 				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
@@ -807,7 +804,6 @@
 			},
 			//打开审核对话框
 			check(row) {
-				this.dialogLoading = true
 				//chosendata赋值
 				this.chosenData.qualityCheckName = row.qualityCheckName
 				this.chosenData.qualityCheckTableRecordID = row.qualityCheckTableRecordID
@@ -877,12 +873,14 @@
 						return item.checkListCode == row.checkListCode && item.qulity_CheckID == this.qualityCheckData.qualityCheckID
 					})[0])
 					if (!this.formData.nature) {
-						this.queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID)
-						this.check(row)
+						queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID).then(res => {
+							this.checkRecordList = res.data
+							this.check(row)
+						}).catch(err => {
+							this.$message.error(err.message)
+						})
 					} else {
 						this.checkDialog = true
-						console.log('pic', this.pic)
-						console.log('attach', this.attach)
 						this.dialogLoading = false
 					}
 				} else if (row.checkResult == '符合') {
@@ -891,7 +889,6 @@
 					this.initFormdata()
 					this.formData.description = row.description
 					this.picList = this.splitPicPath(row.pic)
-					console.log('piclist', this.picList)
 					this.attachList = this.splitFilePath(row.attach)
 					this.checkDialog = true
 					this.dialogLoading = false
@@ -908,7 +905,6 @@
 				queryCheckRecordByCheckID(id).then(res => {
 					this.checkRecordList = res.data
 					this.loading = false
-					console.log('checkRecordList', this.checkRecordList)
 				}).catch(err => {
 					this.$message.error(err.message)
 					this.loading = false
@@ -927,11 +923,11 @@
 					}
 				}
 			},
-			//页面跳转后获取数据
+			//页面跳转后获取数据，该方法只是获取数据，不做数据清空
 			getParams() {
 				//开启页面加载
 				this.loading = true
-				this.initData('chosenData') //路由信息中有数据
+				//路由信息中有数据
 				if (this.qualityCheckData.qualityCheckID) {
 					if (this.qualityCheckData.isPush == '已推送' && this.qualityCheckData.issued == '未下达') {
 						this.isBelongToPart = true
@@ -951,16 +947,10 @@
 						this.progress = temp.length
 						console.log('tabledata', this.tableData)
 						console.log('treeData', this.treeData)
+						queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID).then(res => {
+							this.checkRecordList = res.data
+						})
 						this.loading = false
-					}).catch(err => {
-						this.$message.error(err.message)
-					})
-					//this.queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID)
-					this.loading = true
-					queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID).then(res => {
-						this.checkRecordList = res.data
-						this.loading = false
-						console.log('checkRecordList', this.checkRecordList)
 					}).catch(err => {
 						this.$message.error(err.message)
 						this.loading = false
@@ -970,7 +960,6 @@
 				else {
 					//获取主页面传过来的数据
 					this.qualityCheckData = this.$route.query.qualityCheckData
-					console.log(this.qualityCheckData)
 					//获取到了路由数据，重新调用该方法，执行另一个分支
 					if (this.qualityCheckData.qualityCheckID) {
 						this.getParams()
@@ -1056,24 +1045,14 @@
 				//向上层递归返回数据
 				return count
 			},
-			//正在上传文件的响应事件
-			onProgressFile() {
-				//this.$message.info('文件正在上传中，请稍候')
-			},
 			//删除文件的响应事件
 			onRemoveFile(file, res) {
 				this.attach.splice(this.attach.indexOf(file.response.data), 1)
-				console.log('attach remove', this.attach)
-				console.log('attach remove res', file)
 			},
 			//文件上传成功
 			onSuccessFile(file, res) {
 				this.attach.push(res.response.data)
 				this.$message.success('文件上传成功')
-			},
-			//图片上传过程中
-			onProgressPic() {
-				//this.$message.info('图片正在上传中，请稍候')
 			},
 			//图片上传成功
 			onSuccessPic(file, res) {
@@ -1086,7 +1065,6 @@
 			},
 			//成功上传问题文件
 			onSuccessProbFile(file, res) {
-				console.log('prob success attach', res)
 				this.attach.push(res.response.data)
 				this.$message.success('文件上传成功')
 			},
@@ -1096,7 +1074,6 @@
 			},
 			//成功上传问题图片
 			onSuccessProbPic(file, res) {
-				console.log('prob success pic', res)
 				this.pic.push(res.response.data)
 				this.$message.success('图片上传成功')
 			},
@@ -1151,12 +1128,12 @@
 					var targetArray = []
 					var temp = picPath.split(';')
 					for (var i = 0; i < temp.length; i++) {
-						let file = {
-							url: '',
-							fileName: ''
-						}
-						file.url = this.path + temp[i]
-						targetArray.push(file)
+						// let file = {
+						// 	url: '',
+						// 	fileName: ''
+						// }
+						// file.url = this.path + temp[i]
+						targetArray.push(this.path + temp[i])
 					}
 					return targetArray
 				}
@@ -1168,15 +1145,14 @@
 				有可能会使得该方法在调用接口前执行，从而使得存储在数据对象中的数据被初始化从而造成丢失，最后导致
 				一些不可预知的错误
 				*/
-				console.log('initformdata use')
 				//formdata装填主表id
 				this.formData.qulity_CheckID = this.qualityCheckData.qualityCheckID
 				//有传入参数时
 				if (checkRecord) {
-					console.log('checkRecord', checkRecord)
 					//组装附件和图片展示用url数组
 					this.picList = this.splitPicPath(checkRecord.problemPic)
 					this.attachList = this.splitFilePath(checkRecord.problemAttach)
+					console.log('pic',this.picList)
 					//保存这一条记录的id
 					this.chosenData.qualityCheckRecordID = checkRecord.qulity_CheckRecordID
 					//去除多余属性
@@ -1185,11 +1161,9 @@
 					this.formData = checkRecord
 					this.changeCompanyCodeToId(this.companyList, this.formData.responsiCompanyCode)
 					this.resCompanyID = this.companyId
-					console.log('checkrecord->formdata', this.formData)
 				}
 				//无传入参数时，formdata所有值为空
 				else {
-					console.log('init')
 					this.chosenData.qualityCheckRecordID = ''
 					this.formData.description = ''
 					this.formData.nature = ''
@@ -1264,7 +1238,6 @@
 					//展示附件和图片数组
 					this.picList = []
 					this.attachList = []
-					console.log('init->formdata', this.formData)
 				}
 			},
 			//修改树的数据
@@ -1356,6 +1329,7 @@
 								this.addQualityInformAndAttach(this.result)
 								this.addCheckRecord(this.formData)
 							}
+							this.getParams()
 						}
 						//已有审核结果为“不符合”
 						else {
@@ -1379,8 +1353,6 @@
 								//更新对应质量检查记录
 								this.formData.problemAttach = this.combinePath(this.attach, this.attachList)
 								this.formData.problemPic = this.combinePath(this.pic, this.picList)
-								console.log('update chosendata', this.chosenData)
-								console.log('update formdata', this.formData)
 								updateCheckRecord(this.chosenData.qualityCheckRecordID, this.formData).then(res => {
 									if (res.code == '1000') {
 										this.$message.success('更新信息成功')
@@ -1390,6 +1362,7 @@
 									this.$message.error(err.message)
 								})
 							}
+							this.getParams()
 						}
 					}
 					//无已有审核结果
@@ -1400,7 +1373,6 @@
 							this.formData.problemAttach = this.combinePath(this.attach)
 							this.formData.problemPic = this.combinePath(this.pic)
 							this.addQualityInformAndAttach(this.result)
-							console.log('problem record', this.formData)
 							this.addCheckRecord(this.formData)
 						}
 						//新增审核结果为“符合”
@@ -1411,6 +1383,7 @@
 							this.result.pic = this.combinePath(this.pic)
 							this.addQualityInformAndAttach(this.result)
 						}
+						this.getParams()
 					}
 					//重新获取数据，刷新页面
 					this.checkDialog = false
@@ -1535,7 +1508,6 @@
 			},
 			queryCheckRecord(id) {
 				queryCheckRecord(id).then(res => {
-					console.log('record', res.data)
 					this.initData(res.data)
 				})
 			},
