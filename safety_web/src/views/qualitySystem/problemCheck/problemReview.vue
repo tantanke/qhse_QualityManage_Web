@@ -232,18 +232,18 @@
                             </el-form-item>
                         </el-tab-pane>
                          <el-tab-pane label="验证信息" name="6">
+			  <el-form-item label="审核验证意见" >
+                                 <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
+                             </el-form-item>
+                             <el-form-item label="审核结论" >
+                                <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
+                            </el-form-item>
                              <el-form-item label="审核验证时间">
                                  <el-input v-model="problemCheckForm.cheVerifyDate" readonly></el-input>
                              </el-form-item>
                              <el-form-item label="审核验证人">
                                  <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
                              </el-form-item>
-			     <el-form-item label="审核验证意见" >
-                                 <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
-                             </el-form-item>
-                             <el-form-item label="审核结论" >
-                                <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
-                            </el-form-item>
                          </el-tab-pane>
                     </el-tabs>
                 </el-form>
