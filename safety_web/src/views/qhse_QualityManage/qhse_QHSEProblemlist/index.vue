@@ -66,7 +66,7 @@
                     <span>{{ props.row.workItem }}</span>
                 </el-form-item>
                 <el-form-item label="可能后果:">
-                    <span>{{ props.row.consequenceID }}</span>
+                    <span>{{ props.row.consequence }}</span>
                 </el-form-item>
                 <el-form-item label="对应体系要素:">
                     <span>{{ props.row.factorHSE }}</span>
@@ -89,9 +89,6 @@
                 </el-form-item>
                 <el-form-item label="岗位分类:">
                     <span>{{ props.row.position }}</span>
-                </el-form-item>
-                <el-form-item label="是否立即验收:">
-                    <span>{{ props.row.ok }}</span>
                 </el-form-item>
                 <el-form-item label="所属专业:">
                     <span>{{ props.row.profession }}</span>
@@ -206,7 +203,7 @@
                     <span>{{ props.row.factorDepartment }}</span>
                 </el-form-item>
                 <el-form-item label="可能后果:">
-                    <span>{{ props.row.consequenceID }}</span>
+                    <span>{{ props.row.consequence }}</span>
                 </el-form-item>
                 <el-form-item label="整改负责人:">
                     <span>{{ props.row.reformPerson }}</span>
@@ -419,7 +416,7 @@ export default {
                [
                    ['safeStaff_Name','检查人员'],['companyName','施工队伍'],['safeStaff_ID','检查人员id'],['workItem','作业项目'],['companyId','施工队伍id'],['supervisionDate','检查日期'],['type','隐患类别'],
                    ['description','隐患描述'],['reformPersonID','整改负责人id'],['reformPerson','整改负责人'],['limitDate','限制时间'],['recordDate','记录上传时间'],
-                   ['receptionDate','验收时间'],['reformCase','整改情况'],['ok','提交状态'],['consequenceID','可能后果'],['rank','隐患级别'],
+                   ['receptionDate','验收时间'],['reformCase','整改情况'],['ok','提交状态'],['consequenceID','可能后果id'],['rank','隐患级别'],
                    ['factorSource','原因'],['profession','所属专业'],['factorHSE','对应体系要素'],['factorDepartment','归属职能部门'],['consequence','产生的后果'],['dangerSource','隐患来源'],
                    ['location','位置区域'],['qHSE_CheckCategory','检查类别'],['qHSE_FileAudit_ID','文件审核id'],['qHSE_FileAuditRecord_ID','文件审核记录id'],['code','要素编码'],  
                ]
@@ -443,7 +440,7 @@ export default {
            let m = new Map(
                [
                    ['safeStaff_ID','检查人员id'],['workItem','作业项目'],['companyId','施工队伍id'],['supervisionDate','检查日期'],['type','违章类别'],
-                   ['description','违章描述'],['punish','罚款'],['ok','违章状态'],['consequenceID','后果'],['recordDate','上传记录时间'],
+                   ['description','违章描述'],['punish','罚款'],['ok','违章状态'],['consequenceID','后果id'],['recordDate','上传记录时间'],
                    ['score','扣分'],['employeeCharacter','用工性质'],['workSeniority','工种工龄'],['position','岗位分类'],['regulationCharacter','违章性质'],
                    ['factorSource','原因'],['profession','所属专业'],['factorHSE','对应体系要素'],['factorDepartment','归属部门'],['factorObserver','安全沟通类型'],
                    ['qHSE_CheckCategory','检查类别'],['qHSE_FileAudit_ID','文件审核id'],['qHSE_FileAuditRecord_ID','文件审核记录id'],['code','要素编码'],['regulationSource','违章来源'],

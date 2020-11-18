@@ -602,18 +602,9 @@ export default {
       this.$router.push({name: 'Login'})
     } 
     this.serForm.companyCode = this.$route.query.companyCode
-    }
-      },
-  computed: {
-    nowTime() {
-      return this.time
-    }
-  },
-  mounted() {
-    if(this.$route.query.companyName){
-      this.showName = this.$route.query.companyName.length > 10 ?this.$route.query.companyName.split('（')[0]:this.$route.query.companyName
-    }
-    let _this = this
+    },
+    getdata(){
+        let _this = this
     _this.confirmToken()
     _this.updateTime()
     axios.all([queryDashboardScheduleManagement(_this.serForm),queryDashboardQualityManagement(_this.serForm)
@@ -636,6 +627,28 @@ export default {
    })).catch((err) => {
      this.$message.error(err.message)
    })
+    },
+    updateData(){
+      setInterval(()=>{
+        this.getdata()
+      },10000)
+    },
+      },
+    
+  computed: {
+    nowTime() {
+      return this.time
+    }
+  },
+  mounted() {
+    if(this.$route.query.companyName){
+      this.showName = this.$route.query.companyName.length > 10 ?this.$route.query.companyName.split('（')[0]:this.$route.query.companyName
+    }
+            let _this = this
+    _this.confirmToken()
+    _this.updateTime()
+    _this.getdata()
+    _this.updateData()
   },
 }
 </script>

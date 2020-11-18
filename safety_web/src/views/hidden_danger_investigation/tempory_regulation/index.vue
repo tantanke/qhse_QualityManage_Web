@@ -122,6 +122,7 @@
                   placeholder="请选择"
                   filterable
                   loading-text="查询中..."
+                  ref="consequence"
                 >
                   <el-option
                     v-for="item in consequences"
@@ -257,6 +258,7 @@ export default {
         companyId: '',
         description: '',
         consequenceID: '',
+        consequence:null,
         type: '',
         ok:1,
         position:'',
@@ -465,6 +467,7 @@ export default {
       let info = this.person.split(' ')
       this.form.regulationName  = info[0]
       this.form.regulationID  = info[1]
+      this.form.consequence = this.$refs.consequence.query
     },
     deleteLocal() {
       // 去除本地数据

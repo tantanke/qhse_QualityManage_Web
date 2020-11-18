@@ -121,7 +121,7 @@
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
-  
+                  ref="consequence"
                   filterable
                   loading-text="查询中..."
                 >
@@ -259,6 +259,7 @@ export default {
         companyId: '',
         description: '',
         consequenceID: '',
+        consequence:null,
         type: '',
         position:'',
         score:'',
@@ -468,6 +469,7 @@ export default {
       let info = this.person.split(' ')
       this.form.regulationName  = info[0]
       this.form.regulationID  = info[1]
+      this.form.consequence = this.$refs.consequence.query
     },
     getSource() {
       let source, _this = this

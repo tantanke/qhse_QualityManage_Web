@@ -75,7 +75,7 @@
                     <span>{{ props.row.factorDepartment }}</span>
                 </el-form-item>
                 <el-form-item label="可能后果:">
-                    <span>{{ props.row.consequenceID }}</span>
+                    <span>{{ props.row.consequence }}</span>
                 </el-form-item>
                 <el-form-item label="整改负责人:">
                     <span>{{ props.row.reformPerson }}</span>
