@@ -151,17 +151,11 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
                         </el-tab-pane>
                         <el-tab-pane label="观察信息" name="3" v-else-if="rectifyForm.nature === '观察项'">
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
@@ -191,9 +185,6 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
@@ -219,6 +210,9 @@
                            </el-form-item>
                        </el-tab-pane>
                         <el-tab-pane label="整改信息" name="6">
+							<el-form-item label="不符合原因">
+								<el-input type="textarea" v-model="rectifyForm.nonConformSource" placeholder="请填写不符合原因" style="border:1px solid red;border-radius:5px"></el-input>
+							</el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="rectifyForm.nonConformCorrect" placeholder="请填写纠正" style="border:1px solid red;border-radius:5px"></el-input>
                             </el-form-item>
