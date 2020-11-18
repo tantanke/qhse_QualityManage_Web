@@ -151,15 +151,12 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item> 
                         </el-tab-pane>
                         <el-tab-pane label="观察信息" name="3" v-else-if="problemCheckForm.nature === '观察项'">
-                            <el-form-item label="不符合原因">
+                            <el-form-item label="观察描述">
                                 <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="整改时限">
@@ -191,9 +188,6 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item>
@@ -208,6 +202,9 @@
 							</el-form-item>
 							<el-form-item label="责任单位验证意见">
 							    <el-input v-model="problemCheckForm.resVerifyAdvice" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="不符合原因">
+							    <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
 							</el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="problemCheckForm.nonConformCorrect" readonly></el-input>
