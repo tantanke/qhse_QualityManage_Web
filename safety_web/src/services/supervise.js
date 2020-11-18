@@ -1,9 +1,10 @@
 import request from '../utils/request'
 
 //趋势图
-export const useDeviceTrend = () => {
+export const useDeviceTrend = (data) => {
     return request('/api/useDeviceTrend', {
-      method:'get'
+      method:'get',
+      data
     })
   }
 

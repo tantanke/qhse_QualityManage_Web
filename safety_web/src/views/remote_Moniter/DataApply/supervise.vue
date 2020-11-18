@@ -73,6 +73,18 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+
+      <el-dialog title="选择基层单位" :visible.sync="choosename">
+        <el-form label-width="130px" :inline="true">
+          <el-form-item label="公司名称：" labelWidth="120px">
+             <treeselect :disable-branch-nodes="true" :multiple="false" :options="companyList" placeholder="请选择公司单位"
+              @select="selectDepart" style="width:200px" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="sechart1()">选择</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
       <el-dialog
         title="数据详情"
         :visible.sync="seetrend"
@@ -97,6 +109,7 @@
   </div>
 </template>
 <script>
+import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck";//获取公司tree
 import { useDeviceTrend,deviceCompare} from "../../../services/supervise"; //查询细节
 export default {
   name: "",
@@ -179,15 +192,35 @@ export default {
       choose:'',
       selectdates:"",
       choosetime:false,
+      companyName:'',
+      choosename:false
     };
   },
   methods: {
+    selectDepart (val) {
+      this.companyName = val.label;
+    },
     gotoDataApply() {
       this.$router.push({
         name: "DataApply",
         params: {},
       });
     },
+    sechart1(){
+      this.choosename=false;
+      this.seetrend=true;
+        let that=this;
+         this.$nextTick(()=>{
+           that.option.title.text="趋势图"
+            this.option.legend.data=['开工项目数','配备记录仪项目数','开机使用数量']
+            useDeviceTrend({companyName:this.companyName}).then(res=>{
+            this.option.xAxis.data=res.data.time;//横坐标数据
+            this.option.series=res.data.series;//总数据
+          })
+          var chart1 = this.$refs.chart1;
+          var myChart = this.$echarts.init(chart1);
+          myChart.setOption(this.option);
+          }); },
     async sechart2(){
       this.choosetime=false;
       this.seetrend=true;
@@ -205,23 +238,18 @@ export default {
           myChart.setOption(this.option2);
         })
     },
+    handleGetCompany () {//获取到公司的名字 即在选择页面显示
+      qhse_company_tree().then(res => {
+        this.companyList = JSON.parse(JSON.stringify(res.data));
+      }).catch(err => {
+        this.$message.error(err.message);
+      });
+    },
     async showlabel(data){
       this.choose=data.name;
       if(data.name=='趋势图')
       {
-        this.seetrend=true;
-        let that=this;
-         this.$nextTick(()=>{
-           that.option.title.text="趋势图"
-            this.option.legend.data=['开工项目数','配备记录仪项目数','开机使用数量']
-            useDeviceTrend().then(res=>{
-            this.option.xAxis.data=res.data.time;//横坐标数据
-            this.option.series=res.data.series;//总数据
-          })
-          var chart1 = this.$refs.chart1;
-          var myChart = this.$echarts.init(chart1);
-          myChart.setOption(this.option);
-          }); 
+        this.choosename=true;
       }
 
       else if(data.name=='使用情况对比图')
@@ -237,6 +265,7 @@ export default {
   },
   mounted() {
     console.log('监控总览bug');
+    this.handleGetCompany();//第一个函数 获取到公司信息
    
   },
 };
