@@ -436,12 +436,15 @@ export default {
         .then(res => {
           //当数据不为空的时候
           if (res.data != null) {
+            console.log(this.form.attach)
             this.form.attach = res.data.attach;//赋值附件id
             this.form.attachID = res.data.attachID;//赋值附件id
             this.form.evidenceID = res.data.evidenceID;//赋值证据id
             this.form.attachDescrption = res.data.attachDescrption;//赋值附件描述
             this.form.evidenceDescription = res.data.evidenceDescription;//赋值证据描述
             this.form.negativeOpinion = res.data.negativeOpinion;
+            console.log('获取到的formattach',this.form.attach)
+            if(this.form.attach==null)this.form.attach="";
             //辨析图片
             this.node = data;
             //展示attachs图片数组url
