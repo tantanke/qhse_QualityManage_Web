@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import echarts from 'echarts'
 
 // import VueRouter from 'vue-router'
 import ElementUI from 'element-ui'
@@ -25,6 +26,7 @@ Vue.use(ElementUI, {
 Vue.component('treeselect', Treeselect)
 Vue.use(VueAxios, axios)
 Vue.use(plugins);
+Vue.prototype.$echarts = echarts
 
 new Vue({
   router,

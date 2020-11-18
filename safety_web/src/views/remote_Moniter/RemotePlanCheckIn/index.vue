@@ -24,7 +24,7 @@
 						<template slot-scope="scope">
 							<el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-plus">录入
 							</el-button>
-							<el-button v-if="ifcanwrite(scope.row)" type="warning" size="mini" @click="pushfile(scope.row)" icon="el-icon-download">导出当天数据
+							<el-button v-if="ifcanwrite(scope.row)" type="warning" size="mini" disabled @click="pushfile(scope.row)" icon="el-icon-download">导出当天数据
 							</el-button>
 						</template>
 					</el-table-column>
@@ -244,6 +244,7 @@ export default {
   },
   mounted () {
     this.nowdate = this.getNowFormatDate();
+    this.handleClick();
   }
 }
 </script>

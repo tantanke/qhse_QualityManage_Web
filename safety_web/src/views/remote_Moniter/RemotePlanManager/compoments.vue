@@ -50,9 +50,10 @@
 					<el-table-column prop="tel" label="电话" width="120" align="center" show-overflow-tooltip></el-table-column>
 					<!--项目进度，暂时还没确定名字-->
 					<el-table-column prop="projectProgress" label="项目进度" width="120" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column label="操作" width="200" align="center">
+					<el-table-column label="操作" width="300" align="center">
 						<template slot-scope="scope">
 							<el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-edit">编辑</el-button>
+							<el-button type="info" size="mini" icon="el-icon-video-pause" @click="endPlanDetails(scope.row)">结束</el-button>
 							<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
 						</template>
 					</el-table-column>
@@ -148,6 +149,7 @@
     import {updateMonitorPlanDetail} from "../../../services/remote";//修改细节
     import {deletePlanDetail} from "../../../services/remote";//删除细节
     import {createNewDetail} from "../../../services/remote"
+    import {endPlanDetail} from "../../../services/remote"
     // import { downloadMonitorDetailExcelTemplate}from "../../../services/remotenew";
 
     export default {
@@ -163,6 +165,16 @@
             }
         },
         methods: {
+            endPlanDetails(row){
+
+				endPlanDetail(row.monitorPlanDetailID).then(res=>{
+				    this.$message.success("结束成功")
+                    getDetails(this.$route.params).then(res => {
+                        this.listData = res.data;
+                        this.filterMethods(this.listData)
+                    })
+				})
+			},
 
             confirmCheckIn() {
                 // 确认录入
@@ -287,9 +299,7 @@
             this.id = {"planId": this.$route.params.monitorPlanID}
             getDetails(this.$route.params).then(res => {
                 this.listData = res.data;
-                console.log(this.listData, 7897879798)
                 this.filterMethods(this.listData)
-                console.log(this.listData, 123)
             })
         }
     }

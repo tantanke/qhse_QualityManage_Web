@@ -151,15 +151,12 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item> 
                         </el-tab-pane>
                         <el-tab-pane label="观察信息" name="3" v-else-if="problemCheckForm.nature === '观察项'">
-                            <el-form-item label="不符合原因">
+                            <el-form-item label="观察描述">
                                 <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
                             </el-form-item>
                             <el-form-item label="整改时限">
@@ -191,9 +188,6 @@
                             <el-form-item label="文件条款内容">
                                 <el-input v-model="problemCheckForm.nonConformClauseContent" readonly></el-input>
                             </el-form-item>
-                            <el-form-item label="不符合原因">
-                                <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
-                            </el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="problemCheckForm.reformLimit" readonly></el-input>
                             </el-form-item>
@@ -208,6 +202,9 @@
 							</el-form-item>
 							<el-form-item label="责任单位验证意见">
 							    <el-input v-model="problemCheckForm.resVerifyAdvice" readonly></el-input>
+							</el-form-item>
+							<el-form-item label="不符合原因">
+							    <el-input v-model="problemCheckForm.nonConformSource" readonly></el-input>
 							</el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="problemCheckForm.nonConformCorrect" readonly></el-input>
@@ -235,18 +232,18 @@
                             </el-form-item>
                         </el-tab-pane>
                          <el-tab-pane label="验证信息" name="6">
+			  <el-form-item label="审核验证意见" >
+                                 <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
+                             </el-form-item>
+                             <el-form-item label="审核结论" >
+                                <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
+                            </el-form-item>
                              <el-form-item label="审核验证时间">
                                  <el-input v-model="problemCheckForm.cheVerifyDate" readonly></el-input>
                              </el-form-item>
                              <el-form-item label="审核验证人">
                                  <el-input v-model="problemCheckForm.cheVerifierName" readonly></el-input>
                              </el-form-item>
-			     <el-form-item label="审核验证意见" >
-                                 <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.cheVerifyAdvice" placeholder="请填写验证意见" type="textarea"></el-input>
-                             </el-form-item>
-                             <el-form-item label="审核结论" >
-                                <el-input style="border:1px solid red;border-radius:5px" v-model="problemCheckForm.nonConformCorrectMeasureVerify" placeholder="请填写纠正措施跟综验证" type="textarea"></el-input>
-                            </el-form-item>
                          </el-tab-pane>
                     </el-tabs>
                 </el-form>

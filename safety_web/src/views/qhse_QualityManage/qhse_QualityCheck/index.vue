@@ -333,7 +333,7 @@ export default {
       this.form.attach += this.attach;//加上图片attach
       this.form.attach += this.fileattach;//加上文件attach
       console.log(this.form);
-      if (this.form.attach == '' || this.form.attachDescrption == '' || this.form.evidenceDescription == '') {
+      if (this.form.attachDescrption == '' || this.form.evidenceDescription == '') {
         this.$message.error('请录入完全')
       }
       else {
@@ -401,6 +401,7 @@ export default {
     },
     async updateScore (data) {
       // 点击查看或录入进入某个具体的要素时，保存这个要素的状态
+      console.log(data.checkStatus)
       this.curStatus = data.checkStatus
 
       if (data.status == '不通过')
@@ -435,13 +436,15 @@ export default {
         .then(res => {
           //当数据不为空的时候
           if (res.data != null) {
+            console.log(this.form.attach)
             this.form.attach = res.data.attach;//赋值附件id
             this.form.attachID = res.data.attachID;//赋值附件id
             this.form.evidenceID = res.data.evidenceID;//赋值证据id
             this.form.attachDescrption = res.data.attachDescrption;//赋值附件描述
             this.form.evidenceDescription = res.data.evidenceDescription;//赋值证据描述
             this.form.negativeOpinion = res.data.negativeOpinion;
-            console.log(this.form.attach);
+            console.log('获取到的formattach',this.form.attach)
+            if(this.form.attach==null)this.form.attach="";
             //辨析图片
             this.node = data;
             //展示attachs图片数组url
@@ -607,22 +610,28 @@ export default {
         submitInputResult({
                         tableID:this.tableID,
                         tag:0
-                    });
-        querryYearElement(this.filterQuery)//获取到叶子节点信息
-          .then(res => {
-            this.treeData = res.data;
-            
+                    }).then((res)=>{
+                     querryYearElement(this.filterQuery)//获取到叶子节点信息
+                          .then(res => {
+                            this.treeData = res.data;
+                    
             // 将查询时获取到的tableID保存下来
-            this.tableID = this.treeData[0].tableID
-            this.checkstatus=this.treeData[0].checkstatus
-          })
-          .catch(err => {
-            console.log(err);
-            this.message.error(err.message);
-          });
-        this.listData = [];
-        this.deepTree(this.treeData);
-        this.$message.success('推送成功')
+                       this.tableID = this.treeData[0].tableID
+                       this.listData=[];
+                        this.deepTree(this.treeData)
+                        this.checkstatus=1;
+                        console.log('?明明改了',this.checkstatus)
+                      })
+                      .catch(err => {
+                        console.log(err);
+                        this.message.error(err.message);
+                      });
+                    this.listData = [];
+                    this.deepTree(this.treeData);
+                    this.$message.success('推送成功')
+                    });
+                    
+        
       }
       }
     },

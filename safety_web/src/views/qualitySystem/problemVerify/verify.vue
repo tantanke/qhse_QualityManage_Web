@@ -146,15 +146,12 @@
 							<el-form-item label="文件条款内容">
 								<el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合原因">
-								<el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-							</el-form-item>
 							<el-form-item label="整改时限">
 								<el-input v-model="rectifyForm.reformLimit" readonly></el-input>
 							</el-form-item>
 						</el-tab-pane>
 						<el-tab-pane label="观察信息" name="3" v-else-if="rectifyForm.nature === '观察项'">
-							<el-form-item label="不符合原因">
+							<el-form-item label="观察描述">
 								<el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
 							</el-form-item>
 							<el-form-item label="整改时限">
@@ -186,14 +183,14 @@
 							<el-form-item label="文件条款内容">
 								<el-input v-model="rectifyForm.nonConformClauseContent" readonly></el-input>
 							</el-form-item>
-							<el-form-item label="不符合原因">
-								<el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
-							</el-form-item>
 							<el-form-item label="整改时限">
 								<el-input v-model="rectifyForm.reformLimit" readonly></el-input>
 							</el-form-item>
 						</el-tab-pane>
 						<el-tab-pane label="整改信息" name="5">
+							<el-form-item label="不符合原因">
+								<el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
+							</el-form-item>
 							<el-form-item label="纠正">
 								<el-input v-model="rectifyForm.nonConformCorrect" readonly></el-input>
 							</el-form-item>
@@ -211,7 +208,6 @@
 									<a :href="item.url" class="filelinks" >{{item.fileName}}</a>
 									<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
 								</div>
-								
 							</el-form-item>
 							<el-form-item label="纠正图片">
 								<el-image style="width: 100px; height: 100px; margin: 0 15px" :src="item" :preview-src-list="imageCorrectList"

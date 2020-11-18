@@ -63,12 +63,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -92,12 +100,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -121,12 +137,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -150,12 +174,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -179,12 +211,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -208,12 +248,20 @@
                     <el-table-column prop="status" label="状态" width="80" align="center"></el-table-column>
                     <el-table-column label="操作" width="150" align="center">
                         <template slot-scope="scope">
-                            <el-button
+                            <el-button icon="el-icon-edit"
                                     type="primary"
                                     size="mini"
                                     @click="updateScore(scope.row)"
-                                    v-if="scope.row.childNode.length === 0 "
-                            >{{scope.row.checkStatus === 1 ? '进入审核' : '查看'}}
+                                    v-if="scope.row.childNode.length === 0&scope.row.checkStatus == 1 "
+                            >进入审核
+                            </el-button>   
+                            <el-button
+                                     icon="el-icon-success"
+                                    type="primary"
+                                    size="mini"
+                                    @click="updateScore(scope.row)"
+                                    v-if="scope.row.childNode.length === 0 &scope.row.checkStatus != 1"
+                            >查看
                             </el-button>
                         </template>
                     </el-table-column>
@@ -658,9 +706,12 @@
                     submitInputResult({
                         tableID: this.tableID,
                         tag: 1
-                    });
+                    }).then(res=>{
+
                     this.$message.success("提交成功")
                     this.reshowdata();
+                    this.curCheckStatus=2;
+                    });
                     }
                     else
                     this.$message.error("未审核完成")

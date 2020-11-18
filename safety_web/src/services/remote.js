@@ -162,3 +162,30 @@ export const getInputAndCheckDetail = (planDetailId) => {
         method:'get',
     })
 }
+
+// 删除录入细节
+export const deleteInputInfo = (checkRecordId) => {
+    return request(`/api/deleteInputInfo?checkRecordId=${checkRecordId}`, {
+        method:'delete',
+    })
+}
+
+// 获取监控项目数
+export const getItemNum = (planId ) => {
+    return request(`/api/getItemNum?planId=${planId }`, {
+        method:'get',
+    })
+}
+
+// 结束某一项监控细节
+export const endPlanDetail = (detailId ) => {
+    return request(`/api/endPlanDetail?detailId=${detailId }`, {
+        method:'get',
+    })
+}
+// 导出填写数据
+export const downloadMonitorData = (data ) => {
+    return request(`/api/downloadMonitorData?date=${data.date}&planID=${data.monitorPlanID}`, {
+        method:'get',
+    })
+}
