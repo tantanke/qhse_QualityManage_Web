@@ -156,6 +156,9 @@
                             </el-form-item> 
                         </el-tab-pane>
                         <el-tab-pane label="观察信息" name="3" v-else-if="rectifyForm.nature === '观察项'">
+			<el-form-item label="观察描述">
+				<el-input v-model="rectifyForm.nonConformSource" readonly></el-input>
+			</el-form-item>
                             <el-form-item label="整改时限">
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
