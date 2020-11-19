@@ -192,30 +192,10 @@
                                 <el-input v-model="rectifyForm.reformLimit" readonly></el-input>
                             </el-form-item> 
                         </el-tab-pane>
-                          <el-tab-pane label="验证信息" name="5">
-                           <el-form-item label="审核验证时间">
-                                <el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="审核验证人">
-                                <el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="审核验证意见">
-                                <el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
-                            </el-form-item>
-                            <el-form-item label="责任单位验证时间">
-                               <el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
-                           </el-form-item>
-                       	<el-form-item label="责任单位验证人">
-                               <el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
-                           </el-form-item>
-                       	<el-form-item label="责任单位验证意见">
-                               <el-input v-model="rectifyForm.resVerifyAdvice" readonly></el-input>
-                           </el-form-item>
-                       </el-tab-pane>
                         <el-tab-pane label="整改信息" name="6">
-							<el-form-item label="不符合原因">
-								<el-input type="textarea" v-model="rectifyForm.nonConformSource" placeholder="请填写不符合原因" style="border:1px solid red;border-radius:5px"></el-input>
-							</el-form-item>
+			<el-form-item label="不符合原因">
+				<el-input type="textarea" v-model="rectifyForm.nonConformSource" placeholder="请填写不符合原因" style="border:1px solid red;border-radius:5px"></el-input>
+			</el-form-item>
                             <el-form-item label="纠正">
                                 <el-input v-model="rectifyForm.nonConformCorrect" placeholder="请填写纠正" style="border:1px solid red;border-radius:5px"></el-input>
                             </el-form-item>
@@ -276,8 +256,27 @@
                                     </el-button>
                                 </div>
                             </el-form-item>
-                           
                         </el-tab-pane>
+			<el-tab-pane label="验证信息" name="5">
+                           <el-form-item label="审核验证时间">
+                                <el-input v-model="rectifyForm.cheVerifyDate" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="审核验证人">
+                                <el-input v-model="rectifyForm.cheVerifierName" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="审核验证意见">
+                                <el-input v-model="rectifyForm.cheVerifyAdvice" readonly></el-input>
+                            </el-form-item>
+                            <el-form-item label="责任单位验证时间">
+                               <el-input v-model="rectifyForm.resVerifyDate" readonly></el-input>
+                           </el-form-item>
+                       	<el-form-item label="责任单位验证人">
+                               <el-input v-model="rectifyForm.resVerifierName" readonly></el-input>
+                           </el-form-item>
+                       	<el-form-item label="责任单位验证意见">
+                               <el-input v-model="rectifyForm.resVerifyAdvice" readonly></el-input>
+                           </el-form-item>
+                       </el-tab-pane>
                     </el-tabs>
                 </el-form>
                 <span slot="footer" class="dialog-footer">

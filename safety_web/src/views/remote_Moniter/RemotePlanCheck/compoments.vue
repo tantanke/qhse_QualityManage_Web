@@ -16,14 +16,16 @@
 					<el-button type="primary" @click="choosemyNo" icon="el-icon-search">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="warning" @click="pushfile" disabled icon="el-icon-download">导出
-					</el-button>
+					<!--暂时禁用的导出按钮-->
+					<!--<el-button type="warning" @click="pushfile" disabled icon="el-icon-download">导出</el-button>-->
 				</el-form-item>
 			</el-form>
 			<!-- 计划列表 -->
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table :data="listData" style="width: 100%;text-align:center" ref="treeTable" :indent="30" max-height="560"
-				 highlight-current-row border>
+						  highlight-current-row border
+						  :cell-style="cellStyle"
+				>
 					<!-- 从录入模块复制过来修改得到 -->
 					<el-table-column type="expand">
 						<template slot-scope="props">
@@ -51,6 +53,7 @@
 					 :filter-method="filterProjectName"></el-table-column>
 					<el-table-column prop="charger" label="负责人" width="120" align="center" show-overflow-tooltip></el-table-column>
 					<el-table-column prop="tel" label="电话" width="100" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="checkStatus" label="核查状态" align="center" show-overflow-tooltip> </el-table-column>
 					<!--<el-table-column label="视频监控描述:" width="100" prop="description" style="margin-bottom:5px">-->
 					<!--{{resData.description}}-->
 					<!--</el-table-column>-->
@@ -134,6 +137,14 @@
             }
         },
         methods: {
+            // 设置核查状态单元格的样式
+            cellStyle(row, column, rowIndex, columnIndex) {//根据报警级别显示颜色
+                if ( row.column.label==='核查状态' && row.row.checkStatus === "未核查") {
+                    return 'color:red'
+                } else {
+                    return ''
+                }
+            },
             //设置表头行的样式
             tableHeaderColor({row, column, rowIndex, columnIndex}) {
                 return 'background-color:lightblue;color:#fff;font-family:"楷体";font-size:18px;text-align:center'

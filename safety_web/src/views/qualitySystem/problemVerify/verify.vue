@@ -217,7 +217,7 @@
 						</el-tab-pane>
 						<el-tab-pane label="验证信息" name="6">
 							<el-form-item label="验证意见" prop="resVerifyAdvice">
-								<el-input v-model="rectifyForm.resVerifyAdvice" type="textarea" placeholder="请填写验证意见"></el-input>
+								<el-input v-model="rectifyForm.resVerifyAdvice" style="border:1px solid red;border-radius:5px" type="textarea" placeholder="请填写验证意见"></el-input>
 							</el-form-item>
 							<el-form-item label="验证人">
 								<el-input v-model="rectifyForm.resVerifierName" readonly></el-input>

@@ -77,7 +77,7 @@
 					</div>
 				</el-dialog>
 				<el-dialog title="要素配置" :visible.sync="annCheckListDialog" width="50%" align="left">
-					<div width="70%" align="left" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
+					<div width="70%" align="left" v-loading="dialogLoading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 						<el-row>
 							<el-form :inline="true">
 								<el-form-item label="单位:"></el-form-item>
@@ -188,6 +188,7 @@
 		data() {
 			return {
 				loading: false,
+				dialogLoading:false,
 				filterQuery: {},
 				selected: [],
 				companyId: null,
@@ -209,7 +210,7 @@
 				//用于保存选中行数据
 				row:{},
 				//用于保存已选中的要素节点
-				chosenElement:[{id:'-1'}],
+				chosenElement:[],
 				QhseElement: {
 					companyCode: '',
 					year: ''
@@ -551,6 +552,7 @@
 			},
 			//打开新增任务对话框
 			openAssignTaskDialog(row) {
+				console.log('click open dialog')
 				if (row.receiveID) {
 					this.$message.error('请勿重复发布任务')
 					return
@@ -571,18 +573,21 @@
 				this.task.receiveID = ''
 				this.task.receiveName = ''
 				this.task.planDate = ''
-				if(this.chosenElement[0].id=='-1'||this.QhseElement.companyCode!=row.companyCode){
+				if(this.QhseElement.companyCode!=row.companyCode){
 					console.log('chosen element',this.chosenElement)
 					//保存该行数据
 					this.QhseElement.companyCode = row.companyCode
 					this.QhseElement.year = row.year
+					this.loading=true
 					//将已勾选的要素展示
 					querryQhseElement(this.QhseElement).then(res => {
 					//检查是否已经配置要素
 						if (res.data.length > 0) {
 							//打开新增任务对话框
 							this.assignTaskoDialog = true
+							this.loading=false
 						} else {
+							this.loading=false
 							//提示配置要素
 							this.$message.error('要素未配置，请配置后再配置任务')
 						}
@@ -666,8 +671,8 @@
 			},
 			//点击列表中的某一列加载勾选要素表一二级节点
 			handlChosen(val) {
+				this.annCheckListDialog = true
 				this.loading = true
-				console.log(val)
 				//记录选中的该行数据
 				this.chosenConlumn.companyCode = val.companyCode
 				this.chosenConlumn.conpanyName = val.companyName
@@ -686,11 +691,11 @@
 					var temp = []
 					this.creatTree(res.data, temp)
 					this.filterQuery.elementTree = temp
-					console.log(this.filterQuery.elementTree)
 					this.loading = false
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				this.dialogLoading=true
 				//将已勾选的要素展示
 				querryQhseElement(this.QhseElement).then(res => {
 					this.chosenElement=res.data
@@ -699,9 +704,8 @@
 						code.push(res.data[i].code)
 					}
 					this.$refs.tree.setCheckedKeys(code, true)
-					this.loading = false
+					this.dialogLoading = false
 				})
-				this.annCheckListDialog = true
 			},
 			//构建要素表一二级节点树，由于el-tree所能显示的数据类型为{label:'',children:[]}，
 			//而从接口中返回的数据类型为data，所以需要对数据进行转换，使得能够呈现
@@ -821,6 +825,7 @@
 			addQHSEYearElement() {
 				//关闭年度检查表明细框
 				this.annCheckListDialog = false
+				this.loading=true
 				//初始化二级节点选择数组
 				this.treeNodeList = []
 				//装填数据
@@ -865,12 +870,15 @@
 							message: '保存成功',
 							type: 'success'
 						})
+						this.loading=false
 					} else {
 						this.$message.error('保存失败')
+						this.loading=false
 					}
 				}).catch(err => {
 					this.$message.error(err.message)
 				})
+				
 			},
 			//删除一列数据，通过slot获取到一行的数据，从而可以得到id删除该行数据
 			deleteTable(val) {

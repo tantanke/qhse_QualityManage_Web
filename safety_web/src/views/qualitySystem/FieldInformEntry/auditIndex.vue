@@ -14,7 +14,6 @@
 				<el-button type="success" icon="el-icon-success" style="font-size: 16px;" @click="isComplete()" v-if="isBelongToPart===true">审核提交</el-button>
 			</div>
 		</div>
-
 		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table v-if="checkType==='树形审核'" stripe="true" border :data="treeData" row-key="qualityCheckTableRecordID"
@@ -151,22 +150,22 @@
 									<el-option :label="item.name" :value="item.name" v-for="(item, index) in nonConformityTypeOptions" :key="item.value"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="不符合标准" prop="nonConformityStd" style="width: 43%;">
+							<el-form-item label="不符合标准" style="width: 43%;">
 								<el-input placeholder="请输入不符合标准" v-model="formData.nonConformityStd" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件" prop="nonConformClause" style="width: 43%;">
+							<el-form-item label="不符合文件" style="width: 43%;">
 								<el-input placeholder="请输入不符合文件" v-model="formData.nonConformClause" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款号" prop="nonConformityStdNo" style="width: 43%;">
+							<el-form-item label="标准条款号" style="width: 43%;">
 								<el-input placeholder="请输入标准条款号" v-model="formData.nonConformityStdNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款号" prop="nonConformClauseNo" style="width: 43%;">
+							<el-form-item label="文件条款号" style="width: 43%;">
 								<el-input placeholder="请输入文件条款号" v-model="formData.nonConformClauseNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款内容" prop="nonConformityStdContent" style="width: 43%;">
+							<el-form-item label="标准条款内容" style="width: 43%;">
 								<el-input placeholder="请输入标准条款内容" v-model="formData.nonConformityStdContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款内容" prop="nonConformClauseContent" style="width: 43%;">
+							<el-form-item label="文件条款内容" style="width: 43%;">
 								<el-input placeholder="请输入文件条款内容" v-model="formData.nonConformClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="整改时限" prop="reformLimit">
@@ -178,37 +177,37 @@
 								<el-input placeholder="请输入违章描述" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.description"></el-input>
 							</el-form-item>
 							<br />
-							<el-form-item label="不符合标准" prop="nonConformityStd" style="width: 43%;">
+							<el-form-item label="不符合标准" style="width: 43%;">
 								<el-input placeholder="请输入不符合标准" v-model="formData.nonConformityStd" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件" prop="nonConformClause" style="width: 43%;">
+							<el-form-item label="不符合文件" style="width: 43%;">
 								<el-input placeholder="请输入不符合文件" v-model="formData.nonConformClause" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款号" prop="nonConformityStdNo" style="width: 43%;">
+							<el-form-item label="标准条款号" style="width: 43%;">
 								<el-input placeholder="请输入标准条款号" v-model="formData.nonConformityStdNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款号" prop="nonConformClauseNo" style="width: 43%;">
+							<el-form-item label="文件条款号" style="width: 43%;">
 								<el-input placeholder="请输入文件条款号" v-model="formData.nonConformClauseNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款内容" prop="nonConformityStdContent" style="width: 43%;">
+							<el-form-item label="标准条款内容" style="width: 43%;">
 								<el-input placeholder="请输入标准条款内容" v-model="formData.nonConformityStdContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款内容" prop="nonConformClauseContent" style="width: 43%;">
+							<el-form-item label="文件条款内容" style="width: 43%;">
 								<el-input placeholder="请输入文件条款内容" v-model="formData.nonConformClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="处罚依据" prop="punishmentBasis" style="width: 43%;">
+							<el-form-item label="处罚依据" style="width: 43%;">
 								<el-input placeholder="请输入处罚依据" v-model="formData.punishmentBasis" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章扣款" prop="violationDeduction" style="width: 43%;">
 								<el-input-number v-model.number="formData.violationDeduction" min='0' step='100' style="width: 220px;"></el-input-number>
 							</el-form-item>
-							<el-form-item label="违章条款号" prop="violationClause" style="width: 43%;">
+							<el-form-item label="违章条款号" style="width: 43%;">
 								<el-input placeholder="请输入违章条款号" v-model="formData.violationClause" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章扣分" prop="violationScore" style="width: 43%;">
 								<el-input-number v-model.number="formData.violationScore" min='0' style="width: 220px;"></el-input-number>
 							</el-form-item>
-							<el-form-item label="条款内容" prop="violationClauseContent" style="width: 43%;">
+							<el-form-item label="条款内容" style="width: 43%;">
 								<el-input placeholder="请输入条款内容" v-model="formData.violationClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章人员" prop="illegalPersonID" style="width: 43%;">
@@ -269,35 +268,33 @@
 					</el-row>
 					<el-row>
 						<el-col :span='20'>
-						<el-form-item label="附件浏览">
-							<div v-for="(item, index) in attachList" :key="index">
+							<el-form-item label="附件浏览">
+								<div v-for="(item, index) in attachList" :key="index">
 									{{item.fileName}}
-								<a :href="item.url">
-									<el-button type="text" size="mini" style="margin-right: 5px;margin-left: 5px;">下载</el-button>
-								</a>
-								
-								<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>	
-								<el-button type="text" size="mini" @click="deleteAttach(item)" style="color: #000000;">
-									<i class="el-icon-close"></i>
-								</el-button>
-								
-							</div>
-						</el-form-item>
-						<el-form-item label="图片浏览">
-							<div v-for="(item, index) in picList" :key="index" style="float: left;">
-								<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="picList"></el-image>
-								<el-button type="text" @click="deletePic(item,index)" size="mini" style="color: #000000; position: relative;top: -90px;left: -20px;">
-									<i class="el-icon-close"></i>
-								</el-button>
-							</div>
-						</el-form-item>
-					</el-col>
+									<a :href="item.url">
+										<el-button type="text" size="mini" style="margin-right: 5px;margin-left: 5px;">下载</el-button>
+									</a>
+									<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
+									<el-button type="text" size="mini" @click="deleteAttach(item)" style="color: #000000;">
+										<i class="el-icon-close"></i>
+									</el-button>
+								</div>
+							</el-form-item>
+							<el-form-item label="图片浏览">
+								<div v-for="(item, index) in picList" :key="index" style="float: left;">
+									<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="picList"></el-image>
+									<el-button type="text" @click="deletePic(item,index)" size="mini" style="color: #000000; position: relative;top: -90px;left: -20px;">
+										<i class="el-icon-close"></i>
+									</el-button>
+								</div>
+							</el-form-item>
+						</el-col>
 					</el-row>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button icon="el-icon-refresh-left" @click="checkDialog=false">关 闭</el-button>
-					<el-button icon="el-icon-refresh" type="success" @click="handleClick" v-if="chosenData.checked&&isBelongToPart===true">更
-						新</el-button>
+					<el-button icon="el-icon-refresh" type="success" @click="handleClick" 
+					v-if="chosenData.checked&&isBelongToPart===true">更新</el-button>
 					<el-button icon="el-icon-folder" type="primary" @click="handleClick" v-else-if="isBelongToPart===true">保 存</el-button>
 				</span>
 			</el-dialog>
@@ -376,8 +373,8 @@
 				},
 				//获取route数据
 				qualityCheckData: {},
-				
-				
+
+
 				//问题类型选择项
 				options: [{
 						value: '建议项',
@@ -643,10 +640,10 @@
 					}],
 					//工作年限
 					workingYears: [{
-							required: 'true',
-							message: '请输入工作年限',
-							trigger: 'blur'
-						}],
+						required: 'true',
+						message: '请输入工作年限',
+						trigger: 'blur'
+					}],
 					//学历
 					education: [{
 						required: 'true',
@@ -679,7 +676,6 @@
 					this.filtedEmployee = this.employeeList.filter(item => {
 						return item.companyName == this.formData.responsiCompanyName
 					})
-					console.log('filted', this.filtedEmployee)
 				}
 			}
 		},
@@ -689,13 +685,14 @@
 			this.initData('chosenData')
 		},
 		methods: {
-			download(url){
-				return url
+			//预览文件，使用外部插件
+			preview(url) {
+				if(!url){
+					return 0
+				}
+				window.open('http://view.xdocin.com/xdoc?_xdoc=' + url)
 			},
-			preview(url){
-				console.log('url',url)
-				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
-			},
+			//违规人员事件监听事件
 			illegalPerson: function() {
 				if (this.formData.illegalPersonID) {
 					let temp = this.filtedEmployee.filter(item => {
@@ -710,9 +707,7 @@
 					if (val[j]) {
 						if (val[j].id == companyId) {
 							this.companyCode = val[j].nodeCode
-							console.log('公司nodeCode:' + this.companyCode)
 							this.companyName = val[j].label
-							console.log('公司名称:' + val[j].label)
 							break
 						} else if (val[j].children) {
 							this.changeCompanyIdToName(val[j].children, companyId)
@@ -726,9 +721,7 @@
 					if (val[j]) {
 						if (val[j].nodeCode == companyCode) {
 							this.companyId = val[j].id
-							console.log('公司Id:' + this.companyId)
 							this.companyName = val[j].label
-							console.log('公司名称:' + val[j].label)
 							break
 						} else if (val[j].children) {
 							this.changeCompanyCodeToId(val[j].children, companyCode)
@@ -736,15 +729,15 @@
 					}
 				}
 			},
+			//获取员工列表
 			GetEmployee() {
 				GetEmployee().then(res => {
 					this.filtedEmployee = this.employeeList = res.data
-					console.log('employee', this.employeeList)
 				})
 			},
+			//责任人事件监听
 			responsePerson: function() {
 				if (this.formData.responsePersonID) {
-					console.log('chosen emploee', this.formData.responsePersonID)
 					let temp = this.filtedEmployee.filter(item => {
 						return item.employeeID == this.formData.responsePersonID
 					})
@@ -753,39 +746,39 @@
 					}
 				}
 			},
+			//获取公司列表
 			getCompany() {
 				getCompany().then(res => {
 					this.companyList = res.data
 				})
 			},
+			//删除文件浏览中的文件
 			deleteAttach(item) {
-				console.log('file before delete', this.attachList)
+				//二次确认，删除后需要调用接口更新文件路径变量，保存删除
 				this.$confirm('确认删除本文件吗？删除后请点击更新保存操作', '提示', {
 					confirmButtonText: '确认',
 					cancelButtonText: '取消',
 					type: "warning"
 				}).then(() => {
+					//切割路径变量，删除对应路径
 					this.dialogLoading = true
 					this.attachList.splice(this.attachList.indexOf(item.url), 1)
 					this.dialogLoading = false
-					console.log('file after delete', this.attachList)
 				})
 			},
 			//删除当前选中图片
 			deletePic(item, index) {
+				//二次确认
 				this.$confirm('确认删除本张图片吗？删除后请点击更新保存操作', '提示', {
 					confirmButtonText: '确认',
 					cancelButtonText: '取消',
 					type: "warning"
 				}).then(() => {
+					//切割路径变量，删除对应路径
 					this.dialogLoading = true
-					console.log(item)
 					let temp = item.url.split('/')
 					var deleteName = temp[temp.length - 1]
-					console.log(temp[temp.length - 1])
 					this.picList.splice(this.picList.indexOf(deleteName), 1)
-
-					console.log('result', this.result)
 					this.dialogLoading = false
 				})
 
@@ -794,6 +787,7 @@
 			currentUser() {
 				return GetCurrentUser()
 			},
+			//表格单元格点击事件
 			handleCellClick(row, cell, column) {
 				if (row.children) {
 					let els = column.getElementsByClassName("el-icon-arrow-right");
@@ -945,8 +939,6 @@
 							return item.checkResult
 						})
 						this.progress = temp.length
-						console.log('tabledata', this.tableData)
-						console.log('treeData', this.treeData)
 						queryCheckRecordByCheckID(this.qualityCheckData.qualityCheckID).then(res => {
 							this.checkRecordList = res.data
 						})
@@ -1152,7 +1144,6 @@
 					//组装附件和图片展示用url数组
 					this.picList = this.splitPicPath(checkRecord.problemPic)
 					this.attachList = this.splitFilePath(checkRecord.problemAttach)
-					console.log('pic',this.picList)
 					//保存这一条记录的id
 					this.chosenData.qualityCheckRecordID = checkRecord.qulity_CheckRecordID
 					//去除多余属性
@@ -1212,7 +1203,7 @@
 					//整改时限
 					this.formData.reformLimit = ''
 					//是否推送
-					this.formData.isPush = '未推送'
+					this.formData.isPush = '未整改'
 					//问题附件
 					this.formData.problemAttach = ''
 					//问题图片
@@ -1246,7 +1237,6 @@
 					this.$message.error('数据为空')
 					return
 				}
-				console.log('addQualityInformAndAttach', data)
 				this.loading = true
 				addQualityInformAndAttach(data).then(res => {
 					if (res.code == '1000') {
@@ -1266,7 +1256,6 @@
 					this.$message.error('数据为空')
 					return
 				}
-				console.log('addCheckRecord', data)
 				this.loading = true
 				addCheckRecord(data).then(res => {
 					if (res.code == '1000') {
@@ -1411,40 +1400,54 @@
 					if (count[1] + count[2] == this.treeData[0].childrenCount) {
 						//不符合项数目为0
 						if (count[1] == 0) {
-							//是否推送字段装入“通过”
-							data.isPush = '通过'
-							//调用推送接口推送主表
-							issuedTable(data).then(res => {
-								if (res.code == '1000') {
-									//推送完成，显示提示信息，并返回主页面
-									this.$message.success('现场信息已录入完毕')
-									this.$router.push({
-										path: '/qualitySystem/FieldInformEntry/index'
-									})
-								} else {
-									this.$message.error(res)
-								}
-							}).catch(err => {
-								this.$message.error(err.message)
+							this.$confirm('确定要提交该审核计划吗？审核项已全部通过，计划将会归档！', '提示', {
+								confirmButtonText: '确认',
+								cancelButtonText: '取消',
+								type: "warning"
+							}).then(() => {
+								//是否推送字段装入“通过”
+								data.isPush = '通过'
+								//调用推送接口推送主表
+								issuedTable(data).then(res => {
+									if (res.code == '1000') {
+										//推送完成，显示提示信息，并返回主页面
+										this.$message.success('现场信息已录入完毕')
+										this.$router.push({
+											path: '/qualitySystem/FieldInformEntry/index'
+										})
+									} else {
+										this.$message.error(res)
+									}
+								}).catch(err => {
+									this.$message.error(err.message)
+								})
 							})
+
 						}
 						//表中存在不符合项
 						else {
-							//是否推送装入“下达”，并进行推送
-							data.isPush = '下达'
-							issuedTable(data).then(res => {
-								if (res.code == '1000') {
-									//推送完毕，显示提示信息，并返回主页面
-									this.$message.success('现场信息已录入完毕，问题已下达至基层单位')
-									this.$router.push({
-										path: '/qualitySystem/FieldInformEntry/index'
-									})
-								} else {
-									this.$message.error(res)
-								}
-							}).catch(err => {
-								this.$message.error(err.message)
+							this.$confirm('确定要提交该审核计划吗？审核项未全部通过，计划将会下达整改！', '提示', {
+								confirmButtonText: '确认',
+								cancelButtonText: '取消',
+								type: "warning"
+							}).then(() => {
+								//是否推送装入“下达”，并进行推送
+								data.isPush = '下达'
+								issuedTable(data).then(res => {
+									if (res.code == '1000') {
+										//推送完毕，显示提示信息，并返回主页面
+										this.$message.success('现场信息已录入完毕，问题已下达至基层单位')
+										this.$router.push({
+											path: '/qualitySystem/FieldInformEntry/index'
+										})
+									} else {
+										this.$message.error(res)
+									}
+								}).catch(err => {
+									this.$message.error(err.message)
+								})
 							})
+
 						}
 					}
 					//不符合项和符合项之和小于总结点数，表示未录入完毕，用于二次检查
