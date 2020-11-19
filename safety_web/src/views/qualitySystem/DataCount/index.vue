@@ -20,9 +20,9 @@
 			<el-table ref="table" stripe border :data="checkRecordList" style="width: 100%" max-height="600" fixed>
 				<el-table-column type="expand" fixed="left">
 					<template slot-scope="prop">
-						<el-form label-width="150px" :label-position="left" inline class="demo-table-expand">
+						<el-form label-width="80px" :label-position="left">
 							<el-row>
-								<el-col :span="25" v-if="prop.row.checkResult==='不符合'">
+								<el-col :span="12" v-if="prop.row.checkResult==='不符合'">
 									<el-form-item label="纠正">
 										<span>{{prop.row.nonConformCorrect}}</span>
 									</el-form-item>
@@ -32,48 +32,57 @@
 									<el-form-item label="跟踪验证">
 										<span>{{prop.row.nonConformCorrectMeasureVerify}}</span>
 									</el-form-item>
-									<el-form-item label="整改时限">
-										<span>{{prop.row.reformLimit}}</span>
-									</el-form-item>
-									<el-form-item label="整改完成时间">
-										<span>{{prop.row.reformDate}}</span>
-									</el-form-item>
 									<el-form-item label="问题附件">
 										<div v-for="(item, index) in prop.row.problemAttach" :key="index">
 											<a style="margin: 5px;" :href="item.url">
 												{{item.fileName}}
 											</a>
+											<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
 										</div>
 									</el-form-item>
+									<el-form-item label="问题图片">
+										<div v-for="(item, index) in prop.row.problemPic" :key="index" :inline="true" style="float: left;">
+											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="prop.row.problemPic"></el-image>
+										</div>
+									</el-form-item>
+									</el-col>
+									<el-col :span="12" v-if="prop.row.checkResult==='不符合'">
+										<el-form-item label="整改时限">
+										<span>{{prop.row.reformLimit}}</span>
+									</el-form-item>
+									<el-form-item label="整改完成时间">
+										<span>{{prop.row.reformDate}}</span>
+									</el-form-item>
+										
 									<el-form-item label="纠正附件">
 										<div v-for="(item, index) in prop.row.correctAttach" :key="index">
 											<a style="margin: 5px;" :href="item.url">
 												{{item.fileName}}
 											</a>
+											<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
 										</div>
 									</el-form-item>
-									<el-form-item label="问题图片">
-										<div v-for="(item, index) in prop.row.problemPic" :key="index">
-											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.problemPic"></el-image>
-										</div>
-									</el-form-item>
+									
 									<el-form-item label="纠正图片">
-										<div v-for="(item, index) in prop.row.correctPic" :key="index">
-											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.correctPic"></el-image>
+										<div v-for="(item, index) in prop.row.correctPic" :key="index" style="float: left;">
+											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item" :preview-src-list="prop.row.correctPic"></el-image>
 										</div>
 									</el-form-item>
-								</el-col>
-								<el-col :span="25" v-if="prop.row.checkResult==='符合'">
+									</el-col>
+									
+								
+								<el-col  :span="25" v-if="prop.row.checkResult==='符合'">
 									<el-form-item label="符合附件">
 										<div v-for="(item, index) in prop.row.attach" :key="index">
 											<a style="margin: 5px;" :href="item.url">
 												{{item.fileName}}
 											</a>
+											<el-button type="text" size="mini" @click="preview(item.url)">预览</el-button>
 										</div>
 									</el-form-item>
 									<el-form-item label="符合图片">
 										<div v-for="(item, index) in prop.row.pic" :key="index">
-											<el-image style="width: 100px;height: 100px;margin: 5px;" :src="item.url" :preview-src-list="prop.row.pic"></el-image>
+											<el-image style="width: 100px;height: 100px;margin: 5px;float:left" :src="item" :preview-src-list="prop.row.pic"></el-image>
 										</div>
 									</el-form-item>
 								</el-col>
@@ -98,6 +107,10 @@
 				 :filter-method="filterHandler" v-if="showFilter.checkResult" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="resultDescription" label="结果描述" align="center" width="200" v-if="showFilter.resultDescription"
 				 show-overflow-tooltip></el-table-column>
+				 <el-table-column prop="responsiCompanyName" label="责任单位" align="center" width="200" v-if="showFilter.responsiCompanyName"
+				  show-overflow-tooltip :filters="responsiCompanyNameFilter" :filter-method="filterHandler"></el-table-column>
+				  <el-table-column prop="responsePersonName" label="责任单位负责人" align="center" width="120" v-if="showFilter.responsePersonName"
+				   show-overflow-tooltip :filters="responsePersonNameFilter" :filter-method="filterHandler"></el-table-column>
 				<el-table-column prop="nature" label="问题分类" align="center" width="100" :filters="natureFilter" v-if="showFilter.nature"
 				 :filter-method="filterHandler" show-overflow-tooltip></el-table-column>
 				<el-table-column prop="problemDescription" label="问题描述" align="center" width="200" v-if="showFilter.problemDescription"
@@ -430,6 +443,8 @@
 				projectFilter: [],
 				projectLeaderFilter: [],
 				natureFilter: [],
+				responsiCompanyNameFilter:[],
+				responsePersonNameFilter:[],
 				checkCategoryFilter: [],
 				checkBasisFilter: [],
 				checkMethodFilter: [],
@@ -962,6 +977,13 @@
 			getData() {
 				this.queryAllTable()
 			},
+			//预览文件，使用外部插件
+			preview(url) {
+				if(!url){
+					return 0
+				}
+				window.open('http://view.xdocin.com/xdoc?_xdoc=' + url)
+			},
 			allCheck(event, option) {
 				switch (option) {
 					case 'planBasisInfo':
@@ -1474,7 +1496,18 @@
 				for (var i = 0; i < this.qualityCheckList.length; i++) {
 					this.combineData(this.qualityCheckList[i], this.qualityRecordList[i], this.qualityCheckTree[i])
 				}
-
+				let flag=false
+				for(var i=0;i<this.checkRecordList.length;i++){
+					if(this.checkRecordList[i].checkResult=='不符合'&&this.checkRecordList[i].nature==''){
+						flag=true
+						break
+					}
+				}
+				if(flag){
+					console.log('data reload')
+					this.$message.error('界面出错了，正重新加载')
+					location.reload()
+				}
 				this.qualityCheckNameFilter = []
 				this.checkListNameFilter = []
 				this.companyFilter = []
@@ -1485,6 +1518,8 @@
 				this.projectLeaderFilter = []
 				this.checkResultFilter = []
 				this.natureFilter = []
+				this.responsiCompanyNameFilter=[]
+				this.responsePersonNameFilter=[]
 				this.checkCategoryFilter = []
 				this.checkBasisFilter = []
 				this.checkMethodFilter = []
@@ -1514,6 +1549,8 @@
 					this.pushItem(this.checkRecordList[i].checkMethod, this.checkMethodFilter)
 					this.pushItem(this.checkRecordList[i].checkResult, this.checkResultFilter)
 					this.pushItem(this.checkRecordList[i].nature, this.natureFilter)
+					this.pushItem(this.checkRecordList[i].responsiCompanyName,this.responsiCompanyNameFilter)
+					this.pushItem(this.checkRecordList[i].responsePersonName,this.responsePersonNameFilter)
 					this.pushItem(this.checkRecordList[i].checkedCompanyName, this.companyFilter)
 					this.pushItem(this.checkRecordList[i].checkedPersonName, this.companyLeaderFilter)
 					this.pushItem(this.checkRecordList[i].group, this.groupFilter)
@@ -1755,8 +1792,8 @@
 						checkRecordItem.externalNumber = qualityCheckList.externalNumber
 						checkRecordItem.execStd = qualityCheckList.execStd
 						checkRecordItem.progress = qualityCheckList.progress
-
-						var temp = qualityRecordList.filter(item => {
+						let temp=[]
+						temp = qualityRecordList.filter(item => {
 							return item.checkListCode == qualityCheckTree[i].checkListCode
 						})[0]
 						if (temp) {
@@ -1837,12 +1874,7 @@
 					var targetArray = []
 					var temp = picPath.split(';')
 					for (var i = 0; i < temp.length; i++) {
-						let file = {
-							url: '',
-							fileName: ''
-						}
-						file.url = this.path + temp[i]
-						targetArray.push(file)
+						targetArray.push(this.path + temp[i])
 					}
 					return targetArray
 				}
