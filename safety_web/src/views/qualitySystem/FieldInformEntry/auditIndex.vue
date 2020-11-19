@@ -150,22 +150,22 @@
 									<el-option :label="item.name" :value="item.name" v-for="(item, index) in nonConformityTypeOptions" :key="item.value"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="不符合标准" prop="nonConformityStd" style="width: 43%;">
+							<el-form-item label="不符合标准" style="width: 43%;">
 								<el-input placeholder="请输入不符合标准" v-model="formData.nonConformityStd" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件" prop="nonConformClause" style="width: 43%;">
+							<el-form-item label="不符合文件" style="width: 43%;">
 								<el-input placeholder="请输入不符合文件" v-model="formData.nonConformClause" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款号" prop="nonConformityStdNo" style="width: 43%;">
+							<el-form-item label="标准条款号" style="width: 43%;">
 								<el-input placeholder="请输入标准条款号" v-model="formData.nonConformityStdNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款号" prop="nonConformClauseNo" style="width: 43%;">
+							<el-form-item label="文件条款号" style="width: 43%;">
 								<el-input placeholder="请输入文件条款号" v-model="formData.nonConformClauseNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款内容" prop="nonConformityStdContent" style="width: 43%;">
+							<el-form-item label="标准条款内容" style="width: 43%;">
 								<el-input placeholder="请输入标准条款内容" v-model="formData.nonConformityStdContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款内容" prop="nonConformClauseContent" style="width: 43%;">
+							<el-form-item label="文件条款内容" style="width: 43%;">
 								<el-input placeholder="请输入文件条款内容" v-model="formData.nonConformClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="整改时限" prop="reformLimit">
@@ -177,37 +177,37 @@
 								<el-input placeholder="请输入违章描述" type="textarea" rows="autosize" style="width: 302%;" v-model="formData.description"></el-input>
 							</el-form-item>
 							<br />
-							<el-form-item label="不符合标准" prop="nonConformityStd" style="width: 43%;">
+							<el-form-item label="不符合标准" style="width: 43%;">
 								<el-input placeholder="请输入不符合标准" v-model="formData.nonConformityStd" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="不符合文件" prop="nonConformClause" style="width: 43%;">
+							<el-form-item label="不符合文件" style="width: 43%;">
 								<el-input placeholder="请输入不符合文件" v-model="formData.nonConformClause" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款号" prop="nonConformityStdNo" style="width: 43%;">
+							<el-form-item label="标准条款号" style="width: 43%;">
 								<el-input placeholder="请输入标准条款号" v-model="formData.nonConformityStdNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款号" prop="nonConformClauseNo" style="width: 43%;">
+							<el-form-item label="文件条款号" style="width: 43%;">
 								<el-input placeholder="请输入文件条款号" v-model="formData.nonConformClauseNo" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="标准条款内容" prop="nonConformityStdContent" style="width: 43%;">
+							<el-form-item label="标准条款内容" style="width: 43%;">
 								<el-input placeholder="请输入标准条款内容" v-model="formData.nonConformityStdContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="文件条款内容" prop="nonConformClauseContent" style="width: 43%;">
+							<el-form-item label="文件条款内容" style="width: 43%;">
 								<el-input placeholder="请输入文件条款内容" v-model="formData.nonConformClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
-							<el-form-item label="处罚依据" prop="punishmentBasis" style="width: 43%;">
+							<el-form-item label="处罚依据" style="width: 43%;">
 								<el-input placeholder="请输入处罚依据" v-model="formData.punishmentBasis" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章扣款" prop="violationDeduction" style="width: 43%;">
 								<el-input-number v-model.number="formData.violationDeduction" min='0' step='100' style="width: 220px;"></el-input-number>
 							</el-form-item>
-							<el-form-item label="违章条款号" prop="violationClause" style="width: 43%;">
+							<el-form-item label="违章条款号" style="width: 43%;">
 								<el-input placeholder="请输入违章条款号" v-model="formData.violationClause" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章扣分" prop="violationScore" style="width: 43%;">
 								<el-input-number v-model.number="formData.violationScore" min='0' style="width: 220px;"></el-input-number>
 							</el-form-item>
-							<el-form-item label="条款内容" prop="violationClauseContent" style="width: 43%;">
+							<el-form-item label="条款内容" style="width: 43%;">
 								<el-input placeholder="请输入条款内容" v-model="formData.violationClauseContent" style="width: 107%;"></el-input>
 							</el-form-item>
 							<el-form-item label="违章人员" prop="illegalPersonID" style="width: 43%;">
