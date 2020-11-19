@@ -578,13 +578,16 @@
 					//保存该行数据
 					this.QhseElement.companyCode = row.companyCode
 					this.QhseElement.year = row.year
+					this.loading=true
 					//将已勾选的要素展示
 					querryQhseElement(this.QhseElement).then(res => {
 					//检查是否已经配置要素
 						if (res.data.length > 0) {
 							//打开新增任务对话框
 							this.assignTaskoDialog = true
+							this.loading=false
 						} else {
+							this.loading=false
 							//提示配置要素
 							this.$message.error('要素未配置，请配置后再配置任务')
 						}
