@@ -63,7 +63,7 @@
 					<!--<el-table-column label="处置情况(录入):" width="100" prop="disposeIn" style="margin-bottom:5px">-->
 					<!--{{resData.disposeIn}}-->
 					<!--</el-table-column>-->
-					<el-table-column label="操作" width="150" align="center" show-overflow-tooltip>
+					<el-table-column label="操作" min-width="180" align="center" show-overflow-tooltip>
 						<template slot-scope="scope">
 							<el-button v-if="$route.params.date==selectdate" type="primary" size="mini" @click="handelcelChange(scope.row)"
 							 icon="el-icon-edit">核查
