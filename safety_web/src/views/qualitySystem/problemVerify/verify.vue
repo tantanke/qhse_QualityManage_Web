@@ -880,6 +880,8 @@
 				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
 			},
 			downloadFile: function() {
+				this.selectEnglishData=[]
+				this.selectChineseData=[]
 				// 下载表格
 				for (let i in this.downloadAllData) {
 					for (let j in this.downloadSelectViolation) {
@@ -988,10 +990,13 @@
 			},
 			downloadDialog: function() {
 				// 下载对话框打开
-				if (this.acceptRow.issued != '已整改' || this.acceptRow.isPush != '已推送') {
+				// || this.acceptRow.isPush != '已推送'
+				if (this.acceptRow.issued != '已整改' ) {
 					return this.$message.error('验证未完成，不能进行此操作，请继续验证')
 				}
 				this.getCheckListName(this.problemVerifyList, this.qualityCheckList)
+				this.selectChineseData = []
+				this.selectEnglishData = []
 				this.downloadDialogVisible = true
 			},
 			downloadDialogClosed: function() {
@@ -1000,6 +1005,12 @@
 				this.downloadSelectProblem = []
 				this.downloadSelectRectify = []
 				this.downloadSelectVerify = []
+				this.selectChineseData = []
+				this.selectEnglishData = []
+				this.violationDown = []
+				this.problemDown = []
+				this.verifyDown = []
+				this.rectifyDown = []
 			},
 			getProgress: function() {
 				// 获取进度

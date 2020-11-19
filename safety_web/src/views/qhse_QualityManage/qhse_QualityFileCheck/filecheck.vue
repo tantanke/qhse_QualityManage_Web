@@ -172,7 +172,7 @@
                   <!-- <a   style="max-width:600px;height:auto" >{{item + download[index]}}</a> -->
                     <span style="text-decoration: underline;color:blue;margin-right:8px">{{download[index]}}</span>
                     <el-button @click="previewFile(item)" type="text">预览</el-button>
-                    <el-button  @click="downloadFile(item)" type="text">下载</el-button>
+                    <el-button  @click="downloadFile(item,download[index])" type="text">下载</el-button>
                 </div>
               </el-form-item>
             </el-col>
@@ -449,8 +449,15 @@ export default {
       console.log(data)
       window.open('http://view.xdocin.com/xdoc?_xdoc='+data)
     },
-    downloadFile(data){
-      window.open(data)
+    downloadFile(data,filename){
+                const elink = document.createElement("a"); // 创建的标签
+                elink.download =  filename;
+                elink.style.display = "none";
+                elink.href = data; // 创建url
+                document.body.appendChild(elink); // 把 创建的标签追加到body里
+                elink.click();
+                URL.revokeObjectURL(elink.href); // 释放URL 对象
+                document.body.removeChild(elink); // 移除标签
     },
     confirmEdit(){
        let _this = this
