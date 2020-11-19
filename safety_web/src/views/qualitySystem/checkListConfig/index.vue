@@ -84,22 +84,21 @@
 				</el-table-column>
 			</el-table>
 			</el-row> -->
-			
 			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
 			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<div style="display: block;width: 240px;">
+					<div style="display: block;width: 11%;">
 						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
 					</div>
-					<div style="display: block;width: 240px;">
+					<div style="display: block;width: 11%;">
 						
 						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
 					</div>
-					<div style="display: block;width: 240px;">
+					<div style="display: block;width: 11%;">
 						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
 					</div>
-					<span :title="data.checkListName" class="em-tree-text">{{ data.checkListName }}</span>
-					<span>
+					<div :title="data.checkListName" class="em-tree-text" style="display: block;float: left;">{{ data.checkListName }}</div>
+					<div style="display: block;width: 10%;float: right;">
 						<el-button type="text" size="mini" @click="openAddDialog(node)" v-if="node.level!==3&&data.status==='启用'">
 							<i class="el-icon-circle-plus"></i>
 						</el-button>
@@ -111,7 +110,7 @@
 						<el-button type="text" size="mini" @click="updateStatus(data)">
 							<i>{{data.status=='启用'?'停用':'启用'}}</i>
 						</el-button>
-					</span>
+					</div>
 				</span>
 			</el-tree>
 			<el-dialog :title="dialogtitle" :visible.sync="addItemDialog" width="30%">
@@ -403,6 +402,9 @@
 		watch: {
 			filterText(val) {
 				this.$refs.tree.filter(val);
+			},
+			filterStatus(){
+				this.initData('init')
 			}
 		},
 		mounted() {
@@ -454,24 +456,24 @@
 			//根据状态选择框进行查询
 			getData() {
 					this.loading = true
-					this.initData('init')
-					let temp=this.tableData
+					//this.initData('init')
+					this.selectedDate=this.tableData
 					if(this.filterText.checkCategory){
-						temp=temp.filter(item=>{
+						this.selectedDate=this.selectedDate.filter(item=>{
 							return item.checkCategory===this.filterText.checkCategory
 						})
 					}
 					if(this.filterText.checkBasis){
-						temp=temp.filter(item=>{
+						this.selectedDate=this.selectedDate.filter(item=>{
 							return item.checkBasis===this.filterText.checkBasis
 						})
 					}
 					if(this.filterText.checkMethod){
-						temp=temp.filter(item=>{
+						this.selectedDate=this.selectedDate.filter(item=>{
 							return item.checkMethod===this.filterText.checkMethod
 						})
 					}
-					this.selectedDate = temp
+					console.log('after selected',this.selectedDate)
 					this.loading = false
 			},
 			initData(data){
@@ -518,7 +520,7 @@
 						queryCheckList(this.queryStatus).then(res => {
 							for(var i=0;i<res.data.length;i++){
 								
-								if(!this.isCopy(res.data[i].checkCategory,this.checkCategoryOptions)&&res.data[i].status=='启用'){
+								if(!this.isCopy(res.data[i].checkCategory,this.checkCategoryOptions)){
 									let item={
 									value:'',
 									label:''
@@ -526,7 +528,7 @@
 									item.value=item.label=res.data[i].checkCategory
 									this.checkCategoryOptions.push(item)
 								}
-								if(!this.isCopy(res.data[i].checkBasis,this.checkBasisOptions)&&res.data[i].status=='启用'){
+								if(!this.isCopy(res.data[i].checkBasis,this.checkBasisOptions)){
 									let item={
 										value:'',
 										label:''
@@ -534,7 +536,7 @@
 									item.value=item.label=res.data[i].checkBasis
 									this.checkBasisOptions.push(item)
 								}
-								if(!this.isCopy(res.data[i].checkMethod,this.checkMethodOptions)&&res.data[i].status=='启用'){
+								if(!this.isCopy(res.data[i].checkMethod,this.checkMethodOptions)){
 									let item={
 										value:'',
 										label:''
@@ -704,7 +706,7 @@
 					//提交数据成功
 					if(res.code=='1000'){
 						//重新获取数据，刷新界面，并显示相应提示信息
-						this.getData()
+						this.initData('init')
 						this.$message.success('更新信息成功')
 					}else{
 						this.$message.error('更新信息失败')
@@ -724,7 +726,7 @@
 					//提交请求成功
 					if(res.code=='1000'){
 						//重新获取数据，刷新界面，并显示相应提示信息
-						this.getData()
+						this.initData('init')
 						this.$message.success('更新状态成功')
 					}else{
 						this.$message.error('更新状态失败')
