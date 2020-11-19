@@ -111,9 +111,9 @@
     import {GetCurrentUser} from "../../../store/CurrentUser.js"
     import {getDetails} from "../../../services/remote";//查询细节
     import {updateInputtedDetailInfo} from "../../../services/remote";//录入当天细节
-    import {deletePlanDetail} from "../../../services/remote";//录入当天细节
+    import {deletePlanDetail} from "../../../services/remote";
     import {getInputtedRecordDetailByDate, getInputDates, getNeedToCheckedDetails} from "../../../services/remote";//查看细节内容
-
+	import {deleteInputInfo} from "../../../services/remote";
     export default {
         name: '',
         data() {
@@ -154,10 +154,10 @@
                 if (this.myNovalue == null || this.myNovalue == '') {
                     this.listData = [];
                     getNeedToCheckedDetails(this.$route.params).then(res => {
+                        this.listData = []
                         for (var i = 0; i < res.data.length; i++) {
                             // 为了方便，直接将所有的数据，再赋值给linearray
                             res.data[i].linearray = [{...res.data[i]}]
-
                             this.listData.push(res.data[i]);
                         }
                     })
@@ -264,10 +264,26 @@
             },
             handelcelDelete(data) {//删除
                 this.resData = data;
-                deletePlanDetail(this.resData).then(res => {
+                deleteInputInfo(this.resData.monitorInputCheckRecordID).then(res => {
                     this.$message.success('删除成功')
-                    getDetails(this.$route.params).then(res => {
-                        this.listData = res.data;
+//                    getDetails(this.$route.params).then(res => {
+//                        this.listData = res.data;
+//                        this.filterMethods(this.listData)
+//                    })
+                    getNeedToCheckedDetails(this.$route.params).then(res => {
+                        this.listData = []
+                        this.options = []
+                        for (var i = 0; i < res.data.length; i++) {
+                            // 为了方便，直接将所有的数据，再赋值给linearray
+                            res.data[i].linearray = [{...res.data[i]}]
+
+                            this.listData.push(res.data[i]);
+                            this.options.push({value: res.data[i].myNo, label: res.data[i].myNo});
+                            console.log(this.options)
+                        }
+
+                        console.log(this.listData)
+                        this.lists = this.listData
                         this.filterMethods(this.listData)
                     })
                 }).catch(err => {
@@ -295,6 +311,7 @@
                 this.listData = [];
 
                 getNeedToCheckedDetails(this.$route.params).then(res => {
+                    this.listData = []
                     for (var i = 0; i < res.data.length; i++) {
                         res.data[i].linearray = [{...res.data[i]}]
                         this.listData.push(res.data[i]);
@@ -338,6 +355,8 @@
             this.selecttime = this.getNowFormatDate();
             console.log('核查细节页面报错')
             getNeedToCheckedDetails(this.$route.params).then(res => {
+                this.listData = []
+				this.options = []
                 for (var i = 0; i < res.data.length; i++) {
                     // 为了方便，直接将所有的数据，再赋值给linearray
                     res.data[i].linearray = [{...res.data[i]}]
