@@ -37,7 +37,8 @@
 									<el-table-column prop="disposeCheck" label="处置情况" align="center" show-overflow-tooltip></el-table-column>
 									<el-table-column prop="inputPersonName" label="监控人员" align="center" show-overflow-tooltip></el-table-column>
 									<el-table-column prop="checkDate" label="核查时间" align="center" show-overflow-tooltip></el-table-column>
-									<el-table-column prop="closeIn" label="是否关闭" align="center" show-overflow-tooltip></el-table-column>
+									<el-table-column prop="closeIn" label="是否关闭(录入)" align="center" show-overflow-tooltip></el-table-column>
+								    <el-table-column prop="closeCheck" label="是否关闭(核查)" align="center" show-overflow-tooltip></el-table-column>
 								</el-table>
 							</el-form>
 						</template>
