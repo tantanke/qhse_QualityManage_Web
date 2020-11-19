@@ -42,7 +42,8 @@
               <!--&gt;删除</el-button>-->
               <el-button v-if="ifcanwrite(scope.row)" type="primary" size="mini" @click="readfile(scope.row)" icon="el-icon-edit">核查
               </el-button>
-              <el-button type="warning" size="mini" disabled @click="inputfile(scope.row)" icon="el-icon-download">导出日报</el-button>
+              <!--暂时禁用的导出按钮-->
+              <!--<el-button type="warning" size="mini" disabled @click="inputfile(scope.row)" icon="el-icon-download">导出日报</el-button>-->
             </template>
           </el-table-column>
         </el-table>
