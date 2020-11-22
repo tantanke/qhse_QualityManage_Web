@@ -20,7 +20,7 @@
 			</el-form>
 			<el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
 				<el-table :data="selected" style="width: 100%" max-height="560px" border>
-					<el-table-column type="expand">
+					<el-table-column type="expand" label="详情" width="60px">
 						<template slot-scope="props">
 							<el-form label-width="150px" :label-position="left" :inline='true' class="demo-table-expand">
 								<el-form-item label="下达时间:">
@@ -41,33 +41,32 @@
 							</el-form>
 						</template>
 					</el-table-column>
-					<el-table-column type="index" label="序号" width="100%" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="companyName" label="单位名称" width="220%" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="year" label="年度" width="100%" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="elementTableName" label="检查表名称" width="260%" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column prop="status" label="任务状态" width="100%" align="center" show-overflow-tooltip></el-table-column>
-					<el-table-column label="操作" width="430%" align="center" show-overflow-tooltip>
+					<el-table-column type="index" label="序号" width="60px" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="companyName" label="单位名称" width="200px" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="year" label="年度" width="100px" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="elementTableName" label="检查表名称" width="280px" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column prop="status" label="任务状态" width="97px" align="center" show-overflow-tooltip></el-table-column>
+					<el-table-column label="操作" width="420px" align="center" show-overflow-tooltip>
 						<template slot-scope="scope">
 							<el-button type="primary" icon="el-icon-edit" size="mini" @click="handlChosen(scope.row)">配置要素</el-button>
 							<el-button type="primary" icon="el-icon-plus" size="mini" @click="openAssignTaskDialog(scope.row)">配置任务</el-button>
 							<el-button type="info" icon="el-icon-message" size="mini" @click="openStatisticsDialog(scope.row)">任务统计</el-button>
-							<el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteTable(scope.row)">删除</el-button>
+							<el-button type="danger" icon="el-icon-delete" size="mini" v-if="scope.row.status===''" @click="deleteTable(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
-
-				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="30%">
+				<el-dialog title="新增要素配置" :visible.sync="insertCheckListDialog" align="left" width="28%">
 					<el-form :inline="true" label-width="90px" :label-postion="left">
 						<el-form-item label="请选择公司:">
-							<treeselect :multiple="false" :required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
+							<treeselect clearable :multiple="false" :required="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 							 v-model="insertCompanyId" :disable-branch-nodes="true"></treeselect>
 						</el-form-item>
 						<el-form-item label="请选择年份:">
-							<el-date-picker type="year" required="true" placeholder="请选择年份" style="width:250px" v-model="insertYear">
+							<el-date-picker clearable type="year" required="true" placeholder="请选择年份" style="width:250px" v-model="insertYear">
 							</el-date-picker>
 						</el-form-item>
 						<el-form-item label="要素表名称:">
-							<el-input placeholder="请输入要素表名称" style="width:250px;" v-model="insertElementTableName"></el-input>
+							<el-input clearable placeholder="请输入要素表名称" style="width:250px;" v-model="insertElementTableName"></el-input>
 						</el-form-item>
 						<br />
 					</el-form>
@@ -102,26 +101,28 @@
 					</div>
 				</el-dialog>
 				<el-dialog title="下达任务" :visible.sync="assignTaskoDialog" align="left" width="35%">
-					<el-form label-width="150px" :label-postion="left">
-						<el-form-item label="单位名称:">
-							<el-input v-model="task.companyName" placeholder="请输入单位名称" style="width: 300px;" :disable-branch-nodes="true"></el-input>
+					<el-form ref="taskForm" label-width="150px" :label-postion="left" :model="task" :rules="taskRule">
+						<el-form-item label="单位名称:" prop="companyName">
+							<el-input v-model="task.companyName" readonly></el-input>
 						</el-form-item>
-						<el-form-item label="下达任务人:">
-							<el-input v-model="task.issuedName" placeholder="请输入下达任务人姓名" style="width: 300px;"></el-input>
+						<el-form-item label="下达任务人:" prop="issuedName">
+							<el-input v-model="task.issuedName" readonly></el-input>
 						</el-form-item>
-						<el-form-item label="任务名称:">
-							<el-input v-model="task.taskName" placeholder="请输入任务名称" style="width: 300px;"></el-input>
+						<el-form-item label="任务名称:" prop="taskName">
+							<el-input v-model="task.taskName" placeholder="请输入任务名称"></el-input>
 						</el-form-item>
-						<el-form-item label="接收人:">
-							<el-select placeholder="请选择接收人,可搜索姓名" v-model="task.receiveID" clearable='true' style="width: 300px;" filterable='true'>
+						<el-form-item label="接收人:" prop="receiveID">
+							<el-select placeholder="请选择接收人,可搜索姓名" v-model="task.receiveID" 
+							clearable='true' filterable='true' style="width: 100%;">
 								<el-option v-for="item in emploee" :key="item.name" :value="item.employeeID" :label="item.name">
-									<span style="float:left">{{item.name}}({{item.empGroup}})</span>
+									<span style="float:left" v-if="item.empGroup">{{item.name}}({{item.empGroup}})</span>
+									<span style="float:left" v-else>{{item.name}}</span>
 								</el-option>
 							</el-select>
 						</el-form-item>
-						<el-form-item label="文件备案截止时间:">
-							<el-date-picker type="date" format="yyyy年MM月dd日" value-format="yyyy-MM-dd" placeholder="请选择日期" style="width: 300px;"
-							 v-model="task.planDate">
+						<el-form-item label="文件备案截止时间:" prop="planDate">
+							<el-date-picker type="date" format="yyyy年MM月dd日" value-format="yyyy-MM-dd" placeholder="请选择日期"
+							 v-model="task.planDate" style="width: 100%;">
 							</el-date-picker>
 						</el-form-item>
 					</el-form>
@@ -245,6 +246,33 @@
 					receiveName: '',
 					planDate: '',
 					tableID: ''
+				},
+				taskRule:{
+					companyName:[{
+						required: 'true',
+						message: '请输入公司名称',
+						trigger: 'blur'
+					}],
+					issuedName:[{
+						required: 'true',
+						message: '请输入任务下达人姓名',
+						trigger: 'blur'
+					}],
+					taskName:[{
+						required: 'true',
+						message: '请输入任务名称',
+						trigger: 'blur'
+					}],
+					receiveID:[{
+						required: 'true',
+						message: '请选择任务接收人',
+						trigger: 'blur'
+					}],
+					planDate:[{
+						required: 'true',
+						message: '请选择文件备案截止日期',
+						trigger: 'blur'
+					}]
 				},
 				tableItem: {
 					elementTableName: '',
@@ -372,7 +400,7 @@
 						}
 						this.selected=selected
 						this.filterQuery.tableData = this.selected
-						console.log(this.selected)
+						console.log('data',this.selected)
 						this.loading=false
 					}).catch(err => {
 						this.$message.error(err.message)
@@ -600,10 +628,13 @@
 			},
 			//新增任务
 			assignTask() {
-				//获得当前日期，ISOString：yyyy-MM-dd hh:mm:ss,取前10位就可以获得yyyy-MM-dd类型数据
-				var newDate = new Date().toISOString().substr(0, 10)
 				//检查数据完整性，必须的有公司信息，发布人信息，任务名，接收人信息，备案计划截止时间
-				if (this.task.companyName && this.task.issuedName && this.task.taskName && this.task.receiveID && this.task.planDate) {
+				this.$refs.taskForm.validate((valid) => {
+					//获得当前日期，ISOString：yyyy-MM-dd hh:mm:ss,取前10位就可以获得yyyy-MM-dd类型数据
+					var newDate = new Date().toISOString().substr(0, 10)
+					if (!valid) {
+						return this.$message.error('数据不完整！')
+					}
 					//备案计划截止时间不能小于当前时间，即不能在当前日期之前截止任务
 					if (this.task.planDate < newDate) {
 						this.task.planDate = ''
@@ -630,10 +661,7 @@
 					}).catch(err => {
 						this.$message.error(err.message)
 					})
-				} else {
-					this.$message.error('数据不完整')
-					return
-				}
+				})
 			},
 			GetCurrentUser() {
 				return GetCurrentUser()
