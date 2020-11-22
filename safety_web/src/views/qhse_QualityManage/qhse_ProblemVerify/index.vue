@@ -3,7 +3,7 @@
           <div class="page-title" style="width:100%">QHSE问题验收</div>
       <el-radio  v-model="listcate" label="QHSE隐患清单" >QHSE隐患验收</el-radio>
       <el-radio  v-model="listcate" label="QHSE问题清单"  style="margin-bottom:20px">QHSE问题验收</el-radio>
-      <el-row v-show="listcate === 'QHSE隐患清单'"> 
+      <el-row v-if="listcate === 'QHSE隐患清单'"> 
           <el-row>
           <el-form :inline="true">
                   <el-form-item label='组件机构：' >
