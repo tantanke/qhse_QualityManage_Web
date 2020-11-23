@@ -104,7 +104,7 @@
 								<el-input type="text" label="处置情况 ：" class="resizeNone" v-model="resData.disposeIn" placeholder="请输入内容">
 								</el-input>
 							</el-form-item>
-							<el-form-item label="是否关闭:" prop="closeIn" style="margin-bottom:5px" v-if="resData.condition==='在用'">
+							<el-form-item label="是否关闭(录入):" prop="closeIn" style="margin-bottom:5px" v-if="resData.condition==='在用'">
 								<el-switch style="margin-right:10px" v-model="resData.closeIn" active-color="#13ce66" inactive-color="#ff4949"
 								 active-text="否" inactive-text="是" active-value="否" inactive-value="是">
 								</el-switch>

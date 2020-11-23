@@ -41,7 +41,7 @@
 					</el-table-column>
 				</el-table>
 			</el-row>
-			<el-dialog title="审核" :visible.sync="checkDialog" v-loading="dialogLoading" align="left" width="55%" @close="closeDialog"
+			<el-dialog title="审核" :visible.sync="checkDialog" v-loading="dialogLoading" align="left" width="60%" @close="closeDialog"
 			 :close-on-click-modal="false">
 				<el-form ref="addForm" :model="formData" :rules="rules" :inline='true' label-width="120px" :label-postion="left">
 					<el-form-item label="要素名:">
@@ -1307,14 +1307,14 @@
 							//新增的审核结果为“符合”，只执行更新树状表操作
 							if (this.result.checkResult == '符合') {
 								this.result.attach = this.combinePath(this.attach, this.attachList)
-								this.result.pic = this.combinePath(this.pic, this.picList)
+								this.result.pic = this.combinePicPath(this.pic, this.picList)
 								this.result.description = this.formData.description
 								this.addQualityInformAndAttach(this.result)
 							}
 							//新增审核结果为“不符合”，执行更新树状表操作，同时新增一条质量检查记录
 							else {
 								this.formData.problemAttach = this.combinePath(this.attach, this.attachList)
-								this.formData.problemPic = this.combinePath(this.pic, this.picList)
+								this.formData.problemPic = this.combinePicPath(this.pic, this.picList)
 								this.addQualityInformAndAttach(this.result)
 								this.addCheckRecord(this.formData)
 							}
@@ -1329,7 +1329,7 @@
 									if (res.code == '1000') {
 										//更新树状表
 										this.result.attach = this.combinePath(this.attach)
-										this.result.pic = this.combinePath(this.pic)
+										this.result.pic = this.combinePicPath(this.pic)
 										this.result.description = this.formData.description
 										this.addQualityInformAndAttach(this.result)
 									}
@@ -1341,7 +1341,7 @@
 							else {
 								//更新对应质量检查记录
 								this.formData.problemAttach = this.combinePath(this.attach, this.attachList)
-								this.formData.problemPic = this.combinePath(this.pic, this.picList)
+								this.formData.problemPic = this.combinePicPath(this.pic, this.picList)
 								updateCheckRecord(this.chosenData.qualityCheckRecordID, this.formData).then(res => {
 									if (res.code == '1000') {
 										this.$message.success('更新信息成功')
@@ -1360,7 +1360,7 @@
 						if (this.result.checkResult == '不符合') {
 							//同时新增一条第二张表记录
 							this.formData.problemAttach = this.combinePath(this.attach)
-							this.formData.problemPic = this.combinePath(this.pic)
+							this.formData.problemPic = this.combinePicPath(this.pic)
 							this.addQualityInformAndAttach(this.result)
 							this.addCheckRecord(this.formData)
 						}
@@ -1369,7 +1369,7 @@
 							//更新树状表
 							this.result.description = this.formData.description
 							this.result.attach = this.combinePath(this.attach)
-							this.result.pic = this.combinePath(this.pic)
+							this.result.pic = this.combinePicPath(this.pic)
 							this.addQualityInformAndAttach(this.result)
 						}
 						this.getParams()
@@ -1500,6 +1500,30 @@
 				if (pathList) {
 					for (var i = 0; i < pathList.length; i++) {
 						var temp = pathList[i].url.split('/')
+						if (!targetString) {
+							targetString = temp[temp.length - 1]
+						} else {
+							targetString = targetString + ';' + temp[temp.length - 1]
+						}
+					}
+				}
+				return targetString
+			},
+			//将图片路径数组组装成字符串
+			combinePicPath(pathArray, pathList) {
+				var targetString = ''
+				if (pathArray) {
+					for (var i = 0; i < pathArray.length; i++) {
+						if (!targetString) {
+							targetString = pathArray[i]
+						} else {
+							targetString = targetString + ';' + pathArray[i]
+						}
+					}
+				}
+				if (pathList) {
+					for (var i = 0; i < pathList.length; i++) {
+						var temp = pathList[i].split('/')
 						if (!targetString) {
 							targetString = temp[temp.length - 1]
 						} else {

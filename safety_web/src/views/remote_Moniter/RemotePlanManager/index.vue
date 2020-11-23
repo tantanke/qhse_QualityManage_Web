@@ -34,8 +34,8 @@
 						<template slot-scope="scope">
 							<el-button type="primary" size="mini" icon="el-icon-more" @click="readfile(scope.row)">详情
 							</el-button>
-							<el-button type="warning" size="mini" disabled icon="el-icon-download" @click="pushfile(scope.row)">导出
-							</el-button>
+							<!--暂时禁用的导出按钮-->
+							<!--<el-button type="warning" size="mini" disabled icon="el-icon-download" @click="pushfile(scope.row)">导出</el-button>-->
 							<!--结束整个计划的操作换成了结束计划详情的操作，因此按钮的位置也转移了-->
 							<!--<el-button type="info" size="mini" icon="el-icon-video-pause" @click="endplans(scope.row)">结束-->
 							<!--</el-button>-->
