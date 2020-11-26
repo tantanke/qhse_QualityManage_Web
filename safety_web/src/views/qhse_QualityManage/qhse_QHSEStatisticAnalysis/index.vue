@@ -24,8 +24,11 @@
                     <el-form-item>
                         <el-button type="primary" icon="el-icon-search" @click="handleClick">查询</el-button>
                     </el-form-item>
-                    <el-form-item style="float: right;">
+                    <el-form-item style="float:right;">
                         <el-button type="success" icon="el-icon-success" @click="confirmAnalysis">确认审核</el-button>
+                    </el-form-item>
+                    <el-form-item style="float:right;">
+                        <el-button type="primary" icon="el-icon-success" @click="checkalllabel">一键审核</el-button>
                     </el-form-item>
                 </el-form>
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
@@ -334,7 +337,7 @@
     import {downloadElementFile} from "../../../services/qhse_EvidenceCheck"
     import {show_approve_check,show_no_pass_element} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
     import {showAllElement} from "../../../services/qhse_EvidenceCheck";
-    import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认审核
+    import {submitInputResult,passAll} from "../../../services/qhse_QualityCheck";// 确认审核
     import{GetCurrentUser}from"../../../../src/store/CurrentUser"
 
     const DefaultQuery = {
@@ -345,6 +348,7 @@
     export default {
         data() {
             return {
+                right:'',
                 nopasslistData:[],
                 nopassData:[],
                 listData:[],
@@ -366,7 +370,7 @@
                 dialogFormVisible: false,
                 loading: true,
                 dialogVisible: false,
-                detailData: {},
+                detailData: [],
                 treeData: [],
                 hasData: [],
                 initData: [],
@@ -717,6 +721,19 @@
                     this.$message.error("未审核完成")
                 }
             },
+            checkalllabel(){
+                if (this.tableID) {
+                    passAll({ 
+                        tableID: this.tableID,
+                        sourceID: 1}).then(res=>{
+                            if(res.code==200)
+                            {
+                           this.$message.success("一键审核成功")
+                           this.reshowdata();
+                            }
+                        })
+                }
+            }
         },
         mounted() {
             console.log('审核从这里开始报错')

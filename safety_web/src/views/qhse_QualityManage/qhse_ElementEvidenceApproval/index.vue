@@ -27,6 +27,9 @@
                     <el-form-item style="float: right;">
                         <el-button type="success" icon="el-icon-success" @click="confirmApproval">确认批准</el-button>
                     </el-form-item>
+                    <el-form-item style="float: right;">
+                        <el-button type="primary" icon="el-icon-success" @click="checkalllabel">一键批准</el-button>
+                    </el-form-item>
                 </el-form>
             <el-row style="padding:10px; border-top: 2px dashed #dddddd;">
                 <div style="margin:15px 0px">
@@ -294,7 +297,7 @@
     import {downloadElementFile} from "../../../services/qhse_EvidenceCheck"
     import {show_approve_check,show_no_pass_element} from "../../../services/qhse_EvidenceCheck"//显示已经审核或者批准的信息
     import {showAllElement} from "../../../services/qhse_EvidenceCheck";
-    import {submitInputResult} from "../../../services/qhse_QualityCheck";// 确认批准
+    import {submitInputResult,passAll} from "../../../services/qhse_QualityCheck";// 确认批准
     import{GetCurrentUser}from"../../../../src/store/CurrentUser";
 
     const DefaultQuery = {
@@ -305,6 +308,7 @@
     export default {
         data() {
             return {
+                left:'',
                 nopasslistData:[],
                 nopassData:[],
                 listData:[],
@@ -668,6 +672,20 @@
                     }
                     
             },
+            checkalllabel(){
+                console.log('进入意见批准')
+                if (this.tableID) {
+                    passAll({ 
+                        tableID: this.tableID,
+                        sourceID: 2}).then(res=>{
+                            if(res.code==200){
+                                
+                           this.$message.success("一键批准成功")
+                           this.reshowdata();
+                            }
+                        })
+                }
+            }
         },
         mounted() {
             
