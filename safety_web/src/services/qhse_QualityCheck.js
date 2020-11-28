@@ -36,6 +36,11 @@ export const submitInputResult = (data) => {
         method: 'post',
     })
 }
+export const passAll = (data) => {
+    return request(`/api/passAll?tableId=${data.tableID}&sourceId=${data.sourceID}`,{
+        method: 'post',
+    })
+}
 // export const UpdateComSysEleStatus = (data) => {
 //     return request(`/api/updateComSysEleStatus`, {
 //         method: 'put',
