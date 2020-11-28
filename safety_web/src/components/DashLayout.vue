@@ -94,11 +94,7 @@
         span
         span
         span
-        <router-link :to='{name: "index"}'>
-          <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
-          //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
-          </el-badge>
-        </router-link>
+        <re-msg/>
           el-dropdown(@command='handleDropCommand')
             span.userClick
               font {{this.currentUser ? this.currentUser.userName : ''}}
@@ -131,6 +127,7 @@
 
 <script>
 // import {updateMessage,notReadMessage} from '../services/message'
+import reMsg from "./recieveMessage"
 import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
@@ -154,6 +151,9 @@ import {GetCurrentUser} from '../store/CurrentUser'  //新增
 Vue.use(VueCookies)
 
 export default {
+  components:{
+      reMsg
+  },
   data() {
     return {//记录即将去往的公司
     value:'',

@@ -19,7 +19,7 @@ export default new Router({
     {
       path: '/qhseDashboard',
       name: 'qhseBigScreen',
-      component: resolve => require(['./views/bigScreen/bigScreen.vue'], resolve)
+      component: resolve => require(['./views/bigScreen/index.vue'], resolve)
     },
     {
       path: '/',
@@ -27,6 +27,11 @@ export default new Router({
       // redirect: 'firstPage',
       component: resolve => require(['./components/DashLayout.vue'], resolve),
       children: [
+        {
+          path: '/moreMsg',
+          name: 'moreMsg',
+          component: resolve => require(['./views/qhse_QualityManage/qhse_AcceptMsg/index.vue'], resolve)
+        },
         {
           path: '/components/index',
           name: 'index',

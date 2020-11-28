@@ -39,9 +39,11 @@
             <el-button  type="primary" @click="changeScreen">确 定</el-button>
           </div>
         </el-dialog>
+        <img :src="goback.Bback" style="display:none">
        </el-container>
 </template>
 <script>
+import Bback from '../components/img/back.png'
 import CurrentUser from '../store/CurrentUser'
 import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import {logout} from '../services/navisBar'
@@ -52,6 +54,9 @@ export default {
 data() {
   return {
     dashBoardVisible:false,
+    goback:{
+      Bback
+    },
     back:{
            backgroundImage: "url(" + require("./img/back.png") + ")",
     },

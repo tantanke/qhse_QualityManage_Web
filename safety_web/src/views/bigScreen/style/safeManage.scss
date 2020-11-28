@@ -1,0 +1,624 @@
+$common-color:#6dd5ed;
+$title-color:#FCFEFD;
+$content-title-color:#FC980E;
+$finish-color:#00FE0F;
+$jihua-color:linear-gradient(#5ee7df, #b490ca);;
+$wancheng-color: linear-gradient(#fa709a, #fee140);
+$point-color: linear-gradient(#0250c5, #d43f8d);
+$pointtext-color: gray;
+html{
+    width: 100%; 
+     height: 100%; 
+     background:#00065b;
+     font-family: 微软雅黑, MicrosoftYahei, sans-serif;
+     body{
+         height: 100%;
+         width: 100%;
+        .main{ //主界面
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            background-size: 100% 100%;
+            
+            .head{//头部
+             margin-top: 8px;
+             .company{
+                 color: #BB5E00;
+                 p{
+                     text-align: center;
+                     margin-top: 6%;
+                     margin-left: 12%;
+                     font-size: 1.2vw;
+                     width: 115%;
+                 }
+             }
+                .title{
+                    margin-left: 20%;
+                    font-size: 2.4vw;
+                    color:#00FFFF ;
+                }
+                .time{
+                    color: #C4D6E9;
+                    margin-left: 8%;
+                    margin-top: 2%;
+                    font-weight: 600;
+                    font-size: 0.9vw
+                }
+                .buttons{
+                    margin-top: 1.4%;
+                    font-size: 1.1vw;
+                    color: #BDCFE3;
+                    i{
+                     font-size: 1.8vw;
+                     font-weight: 600;
+                     color:$common-color;
+                     display: inline-block;
+                     position: relative;
+                     top: 4px;
+                    }
+                    span{
+                     cursor: pointer;
+                    }
+                }
+            }
+            .main-item{
+                margin-top: 1%;
+                border: 3px solid $common-color;
+                height: 90%;
+                margin-left: 0.75%;
+                width: 98.5%;
+                .safeTitle{
+                    color: white;
+                    margin-left: 47%;
+                    font-size: 1.8vw;
+                    margin-bottom: 0.5%;
+                }
+            .main-item1{
+                margin-top: 0.2%;
+                height: 46%;
+                width: 100%;
+                .contenTitle{
+                 margin-left: 38.5%;
+                 font-size: 1.3vw;
+                 margin-top: 1.5%;
+                 color: $content-title-color;
+                 border-top: 4px solid #F8E063;
+                 width: 25%;
+                 text-align: center;
+             }    
+             .content{
+                height: 83%;
+                .zhuimg1{
+                    height: 75%;
+                    margin-top: 1.8%;
+                    .left{
+                       border-bottom: 2px solid gray;
+                       height: 95%;
+                       margin-top: 1.8%;
+                       
+                       .thingszhu1{
+                        background: $jihua-color;
+                        margin-left: 20%;
+                        height: 100%;
+                        position: relative;
+                       } 
+                       .ratepoint{
+                           height: 100%;
+                           position: relative;
+                           margin-top: 0.2%;
+                           top: 88.9%;
+                        .el-row{
+                            margin-left: 1vw;
+                            height: 2vw;
+                            position: absolute;
+                            top: -100%;
+                            p{
+                                color: gray;
+                                text-align: center;
+
+                            }
+                            div{
+                               background: $point-color;
+                               height: 15px;
+                               width: 15px;
+                               border-radius: 50%;
+                               position: relative;
+                               left: 0.7vw;
+                            }
+                        }
+                    }
+                       .regulationzhu1{
+                        background: $jihua-color;
+                        margin-left: 20%;
+                        height: 100%;
+                        position: relative;
+                       } 
+                       .regulationzhu2{
+                        background: $wancheng-color;
+                        margin-left: 15%;
+                        height: 100%;
+                        position: relative;
+                       }
+                       .thingszhu2{
+                        background: $wancheng-color;
+                        margin-left: 15%;
+                        height: 100%;
+                        position: relative;
+                       }
+                    }
+                    .right{
+                       height: 100%;
+                       ul{
+                           margin-left: 10%;
+                           margin-top: 8%;
+                           color: $title-color;
+                           li{
+                               height: 2vw;
+                           }
+                       }
+                    }
+                }
+                .numbers{
+                    margin-top: 10%;
+                    li:nth-child(1){
+                        color: $title-color;
+                        margin-left: 17% ;
+                        margin-top: 10%;
+                        margin-bottom: 5%;
+                        font-size: 1.2vw;
+                     }
+                     li:nth-child(2){
+                         margin-left: 30% ;
+                         img{
+                             width: 45%;
+                             transform:rotate(30deg);
+                         }
+                     }
+                     li:nth-child(3){
+                         margin-left: 20% ;
+                         color:$title-color;
+                         font-size: 1vw;
+                      }
+                      li:nth-child(4){
+                         color:$finish-color;
+                         font-size: 0.9vw;
+                         margin-left: 38% ;
+                         margin-bottom: 1.5%;
+                      }
+                      li:nth-child(5){
+     
+                         margin-left: 30% ;
+                         img{
+                             width: 45%;
+                             transform:rotate(30deg);
+                         }
+                      }
+                      li:nth-child(6){
+                         margin-left: 18% ;
+                         color:$title-color;
+                         font-size: 1vw;
+                      }
+                      li:nth-child(7){
+                         color:$finish-color;
+                         margin-left: 37% ;
+                         font-size: 0.9vw;
+                      }
+                }
+                .tags{
+                    font-size: 0.5vw;
+                    color: $title-color;
+                    margin-left: 35%;
+                    position: relative;
+                    top: 8%;
+                    button{
+                        width: 15px;
+                        height: 15px;
+                        margin-left: 6%;  
+                    }
+                    span{
+                        margin-left: 1%;
+                    }
+                    .want{
+                      background:$jihua-color ;
+                    }
+                    .finish{
+                        background: $wancheng-color;
+                    }
+                    .rate{
+                        background:$point-color ;
+                        border-radius: 50%;
+                    }
+                   }
+                li{
+                    list-style: none;
+                }
+                // 子类选择器
+               
+            }  
+                .leftContent{               
+                 width: 48.7%;
+                 height: 44.5%;
+                 position: fixed;
+                 margin-left: 1%;
+                 .safeManage{
+                     height:40%;
+                     width: 48.7%;                  
+                     position: fixed;
+                     background-size: 100% 100%; 
+                                             
+                 }   
+                }
+                .rightContent{
+                  margin-left: 51%;
+                  width: 48.7%;
+                 height: 97.5%;
+                
+                }
+             
+            }
+        }
+            .main-item2{
+             height: 48%;
+             margin-top: 2%;
+             width: 99%;
+             margin-left: 1%;
+             .contenTitle{
+                margin-left: 38.5%;
+                font-size: 1.3vw;
+                margin-top: 2.5%;
+                color: $content-title-color;
+                border-top: 4px solid #F8E063;
+                width: 25%;
+                text-align: center;
+            }    
+            .duo{
+                width: 35%;
+            }
+             .content1{
+                 height: 100%;
+                 margin-top: 0.5%;
+                  .content{
+                      margin-top: 5%;
+                height: 83%;
+                .zhuimg1{
+                    height: 75%;
+                    margin-top: 3%;
+                    .left{
+                       border-bottom: 2px solid gray;
+                       height: 90%;
+                       width: 95%;
+                       margin-top: 1.8%;
+                       
+                       .dangerzhu1{
+                        background: $jihua-color;
+                        margin-left: 20%;
+                        height: 100%;
+                        position: relative;
+                       } 
+                        .ratepoint{
+                           height: 100%;
+                           position: relative;
+                           margin-top: 1%;
+                           top: 88.9%;
+                        .el-row{
+                            margin-left: 1vw;
+                            height: 2vw;
+                            position: absolute;
+                            top: -2vw;
+                            p{
+                                color: gray;
+                                text-align: center;
+
+                            }
+                            div{
+                               background: $point-color;
+                               height: 15px;
+                               width: 15px;
+                               border-radius: 50%;
+                               position: relative;
+                               left: 0.7vw;
+                            }
+                        }
+                    }
+                       .dangerzhu2{
+                        background: $wancheng-color;
+                        margin-left: 15%;
+                        height: 100%;
+                        position: relative;
+                       }
+                    }
+                    .right{
+                       height: 100%;
+                       ul{
+                           margin-left: 10%;
+                           margin-top: 8%;
+                           color: $title-color;
+                           li{
+                               height: 2vw;
+                           }
+                       }
+                    }
+                }
+                .numbers{
+                    margin-top: 10%;
+                    li:nth-child(1){
+                        color: $title-color;
+                        margin-left: 14% ;
+                        margin-top: 10%;
+                        margin-bottom: 5%;
+                        font-size: 1.2vw;
+                     }
+                     li:nth-child(2){
+                         margin-left: 30% ;
+                         img{
+                             width: 45%;
+                             transform:rotate(30deg);
+                         }
+                     }
+                     li:nth-child(3){
+                         margin-left: 20% ;
+                         color:$title-color;
+                         font-size: 1vw;
+                      }
+                      li:nth-child(4){
+                         color:$finish-color;
+                         font-size: 0.9vw;
+                         margin-left: 38% ;
+                         margin-bottom: 5%;
+                      }
+                      li:nth-child(5){
+     
+                         margin-left: 30% ;
+                         img{
+                             width: 45%;
+                             transform:rotate(30deg);
+                         }
+                      }
+                      li:nth-child(6){
+                         margin-left: 15% ;
+                         color:$title-color;
+                         font-size: 1vw;
+                      }
+                      li:nth-child(7){
+                         color:$finish-color;
+                         margin-left: 37% ;
+                         font-size: 0.9vw;
+                      }
+                }
+                .tags{
+                    font-size: 0.5vw;
+                    color: $title-color;
+                    margin-left: 35%;
+                    position: relative;
+                    top: 2%;
+                    button{
+                        width: 15px;
+                        height: 15px;
+                        margin-left: 6%;  
+                    }
+                    span{
+                        margin-left: 1%;
+                    }
+                    .want{
+                      background:$jihua-color ;
+                    }
+                    .finish{
+                        background: $wancheng-color;
+                    }
+                    .rate{
+                        background:$point-color ;
+                        border-radius: 50%;
+                    }
+                   }
+                li{
+                    list-style: none;
+                }
+                // 子类选择器
+               
+            }  
+             }
+             .content2{
+                height: 100%;
+                margin-top: 0.5%;
+                .content{
+                    margin-top: 5%;
+              height: 83%;
+              .zhuimg1{
+                  height: 75%;
+                  margin-top: 4%;
+                  .left{
+                      ul{
+                          position: relative;
+                          left: -1vw;
+                          top: -0.35vw;
+                          color: $title-color;
+                          li{
+                              height: 2.55vw;
+                          }
+                      }
+                     border-bottom: 2px solid gray;
+                     height: 88%;
+                     width: 95%;
+                     margin-top: 1.8%;
+   
+                     .finishzhu1{
+                        background: $jihua-color;
+                        margin-left: 20%;
+                        height: 100%;
+                        position: relative;
+                        p{
+                            position: relative;
+                            top: 101%;
+                            left: 30%;
+                            color: $title-color;
+                        }
+                       } 
+                     .zhu2{
+                      background: $wancheng-color;
+                      margin-left: 15%;
+                      height: 100%;
+                     }
+                  }
+                  .right{
+                     height: 100%;
+                     ul{
+                         margin-left: 10%;
+                         margin-top: 8%;
+                         color: $title-color;
+                         li{
+                             height: 2vw;
+                         }
+                     }
+                  }
+              }
+              .numbers{
+                  margin-top: 30%;
+                  li:nth-child(1){
+                    margin-left: 30% ;
+                    margin-top: 10%;
+                    img{
+                        width: 45%;
+                        transform:rotate(30deg);
+                    }
+                }
+                  li:nth-child(2){
+                      color: $title-color;
+                      margin-left: 16% ;
+                      font-size: 1vw;
+                   }
+                  
+                   li:nth-child(3){
+                    color: $title-color;
+                    margin-left: 24% ;
+                    font-size: 1vw;
+                    }
+                    li:nth-child(4){
+                       color:$finish-color;
+                       font-size: 1.2vw;
+                       margin-left: 15% ;
+                       text-align: center;
+                       width: 60%;
+                       margin-bottom: 5%;
+                    }
+              }
+              .tags{
+                  font-size: 0.5vw;
+                  color: $title-color;
+                  margin-left: 60%;
+                  position: relative;
+                  top: 2%;
+                  button{
+                      width: 15px;
+                      height: 15px;
+                      margin-left: 6%;  
+                  }
+                  span{
+                      margin-left: 1%;
+                  }
+                  .rate{
+                    background:$jihua-color ;
+                  }
+                 }
+              li{
+                  list-style: none;
+              }
+              // 子类选择器
+             
+          }  
+            }
+            .content3{
+                height: 100%;
+                margin-top: 0.5%;
+                .contenTitle{
+                    margin-top: 4%;
+                }    
+                
+            }
+            
+             .title{
+                 margin-left: 44.4%;
+                 font-size: 1.6vw;
+                 margin-bottom: 0.5%;
+                 color: $title-color;
+             }
+             .item1{
+                 margin-top: 15%;
+                 background-color: rgba($color: #193678, $alpha: 0.3);
+                 height: 30%;
+                 border-bottom: 5px solid  #193678;
+                 .item2content{
+                    position: absolute;
+                    top: 35%;
+                    left: 40%;
+                   
+                    p{
+                        span:nth-child(1){
+                            font-size: 1.5vw;
+                    color: red;
+                    display: inline-block;
+                    background-color: #00FFFF;
+                        }
+                        span:nth-child(2){
+                             color: $finish-color;
+                             margin-left: 1%;
+                        }
+                    }
+                }
+                 .ctitle1{   
+                     position: absolute;
+                     top: 25%;
+                     left: 10%;
+                     font-size: 1.2vw;
+                     color: $title-color;
+                     p:nth-child(1){
+                         margin-left: 12%;
+                     }
+                    span{
+                        color:#00FFFF;
+                    }
+                 }
+             }
+             .item2{
+                border-top: 5px solid  #193678;
+                background-color: rgba($color: #193678, $alpha: 0.3);
+                height: 30%;
+                .ctitle1{   
+                    position: absolute;
+                    top: 25%;
+                    left: 10%;
+                    font-size: 1.2vw;
+                    color: $title-color;
+                    p:nth-child(1){
+                        margin-left: 12%;
+                    }
+                   span{
+                       color:#00FFFF
+                   }
+                }
+                .item2content{
+                    position: absolute;
+                    top: 35%;
+                    left: 40%;
+                   
+                    p{
+                        span:nth-child(1){
+                            font-size: 1.5vw;
+                    color: red;
+                    display: inline-block;
+                    background-color: #00FFFF;
+                        }
+                        span:nth-child(2){
+                             color: $finish-color;
+                             margin-left: 1%;
+                        }
+                    }
+                }
+            }
+            }
+        }
+     }
+ }
+ *{
+     margin: 0;
+     padding: 0;
+ }
