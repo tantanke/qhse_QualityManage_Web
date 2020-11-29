@@ -33,6 +33,11 @@ export default new Router({
           component: resolve => require(['./views/qhse_QualityManage/qhse_AcceptMsg/index.vue'], resolve)
         },
         {
+          path: '/moreMsg/detail',
+          name: 'moreMsgdetail',
+          component: resolve => require(['./views/qhse_QualityManage/qhse_AcceptMsg/detail.vue'], resolve)
+        },
+        {
           path: '/components/index',
           name: 'index',
           component: resolve => require(['./components/index.vue'], resolve)

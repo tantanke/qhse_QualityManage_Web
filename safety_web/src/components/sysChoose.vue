@@ -57,18 +57,23 @@
         <el-button type="primary" @click="changeScreen">确 定</el-button>
       </div>
     </el-dialog>
+    <img :src="dashBacks.dashBack" style="display:none" alt="" srcset="">
   </el-container>
 </template>
 <script>
 import CurrentUser from "../store/CurrentUser";
 import { GetqhseCompanytree } from "@/services/qhseDashboard/index";
 import { logout } from "../services/navisBar";
+import { dashBack } from "../views/bigScreen/img/bg.jpg";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
 Vue.use(VueCookies);
 export default {
   data() {
     return {
+      dashBacks:{
+        dashBack
+      },
       dashBoardVisible: false,
       back: {
         backgroundImage: "url(" + require("./img/back2.jpg") + ")",
@@ -192,7 +197,7 @@ body {
     position: absolute;
     top: 20px;
     font-weight: 800;
-    left: 140px;
+    left: 150px;
   }
   .logo {
     width: 70px;
