@@ -678,7 +678,7 @@
                     passAll({ 
                         tableID: this.tableID,
                         sourceID: 2}).then(res=>{
-                            if(res.code==200){
+                            if(res.code==1000){
                                 
                            this.$message.success("一键批准成功")
                            this.reshowdata();
