@@ -343,6 +343,7 @@ export default {
       //上传excel
       let fd = new FormData();
       fd.append("file", file); //传文件
+      console.log('有文件吗',fd)
       uploadMesSumDataExcel(fd)
         .then((res) => {
           getAllSumDate().then((res) => {
