@@ -50,8 +50,8 @@ export const passAll = (data) => {
 // }
 //录入审核推送选择领导
 export const sendMessage = (data) => {
-    return request(`/api/sendMessage/${data.tag}`,{
-        method: 'post',
+    return request(`/api/sendMessage/${data.tag}?receiverId=${data.receiverId}`,{
+        method: 'get',
         data
     })
 }
