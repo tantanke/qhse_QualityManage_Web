@@ -276,8 +276,8 @@ export default {
             this.routerForm.companyName = this.$refs.company.selectedLabel
         }
         const {href} = this.$router.resolve({
-        name: "qhseBigScreen",
-        query: this.routerForm
+        path: "/qhseDashboard",
+        query: this.routerForm,
         });
           window.open(href, '_blank');
       },

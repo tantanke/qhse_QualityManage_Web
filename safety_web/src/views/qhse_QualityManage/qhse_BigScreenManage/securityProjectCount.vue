@@ -1,6 +1,6 @@
 <template>
   <div>
-     <div class="page-title" style="width:100%">标准进度管理 </div>
+     <div class="page-title" style="width:100%">安全管理-安技项目管理 </div>
      <div class="page-content" v-loading='screenLoading' element-loading-text="文件上传中，请稍候"
     element-loading-spinner="el-icon-loading">
           <el-row style="margin-top:1%">
@@ -24,8 +24,8 @@
                     <el-button type='primary' icon="el-icon-search" @click="searchData">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                   <el-upload ref="upload" action='/api/uploadDashboardScheduleManagement'  :headers="headers" :show-file-list="false"
-               accept=".xls" :on-progress="handleProgress" :on-success="successHand">
+                   <el-upload ref="upload" action='/api/uploadDashboardSecurityProject'  :headers="headers" :show-file-list="false"
+               accept=".xls,.xlsx" :on-progress="handleProgress" :on-success="successHand">
 						<el-button icon="el-icon-upload" type="success" @click="importFile">数据导入</el-button>
 					</el-upload>
                 </el-form-item>
@@ -53,13 +53,15 @@
                            <span>{{scope.row.companyName?scope.row.companyName:'全部单位'}}</span>
                         </template>
                         </el-table-column>
-                        <el-table-column align='center' prop='planNum' label='初稿计划数'></el-table-column>
-                        <el-table-column align='center' prop='firstDraftFinishNum' label='初稿完成数'></el-table-column>
-                        <el-table-column align='center' prop='firstDraftFinishRate' label='初稿完成率'></el-table-column>
-                        <el-table-column align='center' prop='reviewPassNum' label='评审通过数'></el-table-column>
-                        <el-table-column align='center' prop='reviewPassRate' label='评审通过率'></el-table-column>
-                        <el-table-column align='center' prop='standardReleaseNum' label='标准发布数'></el-table-column>
-                        <el-table-column align='center' prop='standardReleaseRate' label='标准发布率'></el-table-column>
+                        <el-table-column align='center' prop='quarterDangerIndex' label='季度隐患指标'></el-table-column>
+                        <el-table-column align='center' prop='actualFinishDanger' label='实际完成查患'></el-table-column>
+                        <el-table-column align='center' prop='finishDangerRate' label='查患完成率'></el-table-column>
+                        <el-table-column align='center' prop='quarterRegulationIndex' label='季度违章指标'></el-table-column>
+                        <el-table-column align='center' prop='actualFinishRegulation' label='实际完成纠违'></el-table-column>
+                        <el-table-column align='center' prop='finishRegulationRate' label='违章完成率'></el-table-column>
+                        <el-table-column align='center' prop='quarterEventIndex' label='季度事件指标'></el-table-column>
+                        <el-table-column align='center' prop='actualFinishEvent' label='实际完成事件'></el-table-column>
+                        <el-table-column align='center' prop='eventFinishRate' label='实际完成事件'></el-table-column>
                         <el-table-column
                         label="填报时间"
                         align='center'>
@@ -75,7 +77,7 @@
 
 <script>
 import CurrentUser from '@/store/CurrentUser'
-import {queryDashboardScheduleManagement,GetqhseCompanytree,downloadDashboardScheduleManagementTemplate,downloadfile} from '@/services/qhseDashboard/index'
+import {queryDashboardSecurityProjectCount,GetqhseCompanytree,downloadDashboardSecurityProjectTemplate,downloadfile} from '@/services/qhseDashboard/index'
 export default {
     data() {
       return {
@@ -94,10 +96,11 @@ export default {
     methods: {
       searchData(){
         let date = new Date()
-        this.year = `${date.getFullYear()}年度`,
+        this.year = `${date.getFullYear()}年度`
+        this.listData = []
         this.loading = true
-        queryDashboardScheduleManagement(this.searchForm).then(res => {
-          this.listData = res.data
+        queryDashboardSecurityProjectCount(this.searchForm).then(res => {
+           this.listData.push(res.data)
            this.loading = false
          console.log(res.data)
         }).catch(() => {
@@ -128,9 +131,8 @@ export default {
 
       },
       downLoadFile(){
-        downloadDashboardScheduleManagementTemplate().then(res =>{
-          downloadfile('标准进度管理模板',res.file.data,"xls")
-
+        downloadDashboardSecurityProjectTemplate().then(res =>{
+          downloadfile('安全管理-安技项目管理模板',res.file.data,"xlsx")
         })
       },
        getCompany(){

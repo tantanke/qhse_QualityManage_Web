@@ -18,6 +18,11 @@ import './styles/index.scss'
 import axios from 'axios';
 import VueAxios from 'vue-axios'
 import plugins from './plugins';
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+
+// import style (>= Swiper 6.x)
+import 'swiper/swiper-bundle.css'
+Vue.use(VueAwesomeSwiper, /* { default options with global component } */)
 // Vue.use(AMap)
 Vue.config.productionTip = false
 Vue.use(ElementUI, {

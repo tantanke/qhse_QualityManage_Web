@@ -16,16 +16,17 @@
         <p>QHSE看板</p>
       </el-col>
       <el-col class="time" :span="3">
-        <span>时间：{{ nowTime }}</span>
+        <span>时间：{{nowdate }}</span>
       </el-col>
       <el-col class="buttons" :span="4">
+      <!--使用自定义事件把需要改变的值传给父组件 -->
         <el-col :span="10">
           <i class="el-icon-arrow-right"></i>
-          <span>安全管理</span>
+          <span @click="safeSwiper">安全管理</span>
         </el-col>
         <el-col :span="9">
           <i class="el-icon-arrow-right"></i>
-          <span>环保管理</span>
+          <span @click="envirSwiper">环保管理</span>
         </el-col>
       </el-col>
     </el-row>
@@ -367,7 +368,12 @@ import {
   queryDashboardScheduleManagement,
 } from "@/services/qhseDashboard/index";
 export default {
+   props:{
+    date: String,
+
+  },
   data() {
+    
     return {
       // 背景样式
       // Y轴计算
@@ -511,35 +517,6 @@ export default {
     };
   },
   methods: {
-    updateTime() {
-      setInterval(() => {
-        let dd = new Date();
-        //获取年月日，时分秒
-        let y = dd.getFullYear();
-        let m = dd.getMonth() + 1;
-        if (Number(m) < 10) {
-          m = "0" + m;
-        }
-        let d = dd.getDate();
-        if (Number(d) < 10) {
-          d = "0" + d;
-        }
-        let h = dd.getHours();
-        if (Number(h) < 10) {
-          h = "0" + h;
-        }
-        let i = dd.getMinutes();
-        if (Number(i) < 10) {
-          i = "0" + i;
-        }
-        let s = dd.getSeconds();
-        if (Number(s) < 10) {
-          s = "0" + s;
-        }
-        this.time = y + "-" + m + "-" + d + "   " + h + ":" + i + ":" + s;
-      }, 1000);
-    },
-
     // 采用动态生成游标的方式 避免太低
     getYnum(data, name, rate) {
       let topdata = Math.ceil((data * 1.5) / rate) * rate;
@@ -714,7 +691,6 @@ export default {
     getdata() {
       let _this = this;
       _this.confirmToken();
-      _this.updateTime();
       axios
         .all([
           queryDashboardScheduleManagement(_this.serForm),
@@ -757,12 +733,20 @@ export default {
         this.getdata();
       }, 10000);
     },
+    // 提交自定义事件
+     safeSwiper(){
+        this.$emit('changeSafe', 0);
+
+     },
+     envirSwiper(){
+        this.$emit('changeEnvir', 1);
+     }
   },
 
   computed: {
-    nowTime() {
-      return this.time;
-    },
+    nowdate(){
+    return this.date
+  }
   },
   mounted() {
     if (this.$route.query.companyName) {
@@ -773,9 +757,8 @@ export default {
     }
     let _this = this;
     _this.confirmToken();
-    _this.updateTime();
     _this.getdata();
-    _this.updateData();
+    /* _this.updateData(); */
   },
 };
 </script>
