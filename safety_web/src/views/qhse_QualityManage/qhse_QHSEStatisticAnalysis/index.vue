@@ -591,7 +591,7 @@ export default {
 
           // 如果长度大于0，从其中取出tableID属性
           if (this.treeData.length) {
-            this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID;
+            this.tableID = this.treeData[0].childNode[0].qHSE_CompanyYearManagerSysElementTable_ID;
           }
           this.deepTree4(this.treeData);
           this.total1 = 0;
@@ -611,7 +611,7 @@ export default {
           console.log("已审核列表", this.haslistData);
           // 如果长度大于0，从其中取出tableID属性
           if (this.hasData.length) {
-            this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID;
+            this.tableID = this.hasData[0].childNode[0].qHSE_CompanyYearManagerSysElementTable_ID;
           }
 
           this.total2 = 0;
@@ -920,8 +920,8 @@ export default {
     },
     receiverAndPush() {
       if (this.receiverId) {
-        //进行了选择
-        submitInputResult({
+        sendMessage({receiverId: this.receiverId, tag: 1}).then(res=>{
+          submitInputResult({
           tableID: this.tableID,
           tag: 1,
         }).then((res) => {
@@ -930,6 +930,9 @@ export default {
           this.reshowdata();
           this.curCheckStatus = 2;
         });
+        })
+        //进行了选择
+        
       } else {
         this.$message.error("请选择通知成员");
       }
@@ -954,6 +957,7 @@ export default {
     this.loadFilterParams();
     this.handleGetInitialData(); //获取到表单信息
     this.filterQuery.companyCode = GetCurrentUser().companyCode;
+    this.code=GetCurrentUser().companyCode;
     this.handleClick();
     this.loading = false;
   },

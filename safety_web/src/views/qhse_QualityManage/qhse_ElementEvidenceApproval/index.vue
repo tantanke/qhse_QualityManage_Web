@@ -363,7 +363,7 @@
                                 this.deepTree1(this.treeData);
                                 this.deepTree4(this.treeData);
                                 if (this.treeData.length) {
-                                this.tableID = this.treeData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                                this.tableID = this.treeData[0].childNode[0].qHSE_CompanyYearManagerSysElementTable_ID
                             }
                             })
                             .catch(err => {
@@ -380,7 +380,7 @@
                                 this.deepTree3(this.hasData);
                                 // 如果长度大于0，从其中取出tableID属性
                             if (this.hasData.length) {
-                                this.tableID = this.hasData[0].qHSE_CompanyYearManagerSysElementTable_ID
+                                this.tableID = this.hasData[0].childNode[0].qHSE_CompanyYearManagerSysElementTable_ID
                             }
                             })
                             .catch(err => {

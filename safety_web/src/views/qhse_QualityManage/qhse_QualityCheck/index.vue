@@ -360,7 +360,9 @@
               ></el-select>
             </el-form-item>
             <el-form-item>
-              <el-button @click="receiverAndPush" type="primary">通知推送</el-button>
+              <el-button @click="receiverAndPush" type="primary"
+                >通知推送</el-button
+              >
             </el-form-item>
           </el-row>
         </el-form>
@@ -868,7 +870,7 @@ export default {
         if (flag == 0) {
           this.chooseReceiver = true;
           console.log("初始code", this.code);
-          var mcode="00010004";
+          var mcode = "00010004";
           getReceiver({ companyCode: this.code, moduleCode: mcode }).then(
             (res) => {
               this.receiverList = res.data;
@@ -878,37 +880,39 @@ export default {
       }
     },
     receiverAndPush() {
-      if(this.receiverId)//进行了选择
-      {
-        submitInputResult({
-        tableID: this.tableID,
-        tag: 0,
-      }).then((res) => {
-        querryYearElement(this.filterQuery) //获取到叶子节点信息
-          .then((res) => {
-            this.treeData = res.data;
+      if (this.receiverId) {
+        //进行了选择
+        sendMessage({ receiverId: this.receiverId, tag: 0 }).then((res) => {
+          if (res.code == 1000) {
+            submitInputResult({
+              tableID: this.tableID,
+              tag: 0,
+            }).then((res) => {
+              querryYearElement(this.filterQuery) //获取到叶子节点信息
+                .then((res) => {
+                  this.treeData = res.data;
 
-            // 将查询时获取到的tableID保存下来
-            this.tableID = this.treeData[0].tableID;
-            this.listData = [];
-            this.deepTree(this.treeData);
-            this.checkstatus = 1;
-            console.log("?明明改了", this.checkstatus);
-          })
-          .catch((err) => {
-            console.log(err);
-            this.message.error(err.message);
-          });
-        this.listData = [];
-        this.deepTree(this.treeData);
-        this.$message.success("推送成功");
-        this.chooseReceiver=false;
-      });
-      }
-      else{
+                  // 将查询时获取到的tableID保存下来
+                  this.tableID = this.treeData[0].tableID;
+                  this.listData = [];
+                  this.deepTree(this.treeData);
+                  this.checkstatus = 1;
+                  console.log("?明明改了", this.checkstatus);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  this.message.error(err.message);
+                });
+              this.listData = [];
+              this.deepTree(this.treeData);
+              this.$message.success("推送成功");
+              this.chooseReceiver = false;
+            });
+          }
+        });
+      } else {
         this.$message.error("请选择通知成员");
       }
-      
     },
     //转换年份
     handleGetDate(date) {
