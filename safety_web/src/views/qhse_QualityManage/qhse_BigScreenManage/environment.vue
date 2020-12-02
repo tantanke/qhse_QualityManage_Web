@@ -24,8 +24,8 @@
                     <el-button type='primary' icon="el-icon-search" @click="searchData">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                   <el-upload ref="upload" action='/api/uploadDashboardScheduleManagement'  :headers="headers" :show-file-list="false"
-               accept=".xls" :on-progress="handleProgress" :on-success="successHand">
+                   <el-upload ref="upload" action='/api/uploadDashboardEnvironmentManagement'  :headers="headers" :show-file-list="false"
+               accept=".xls,.xlsx" :on-progress="handleProgress" :on-success="successHand">
 						<el-button icon="el-icon-upload" type="success" @click="importFile">数据导入</el-button>
 					</el-upload>
                 </el-form-item>
@@ -53,22 +53,23 @@
                            <span>{{scope.row.companyName?scope.row.companyName:'全部单位'}}</span>
                         </template>
                         </el-table-column>
-                        <el-table-column align='center' prop='quarterDangerIndex' label='季度隐患指标'></el-table-column>
-                        <el-table-column align='center' prop='actualFinishDanger' label='实际完成查患'></el-table-column>
-                        <el-table-column align='center' prop='finishDangerRate' label='查患完成率'></el-table-column>
-                        <el-table-column align='center' prop='quarterRegulationIndex' label='季度违章指标'></el-table-column>
-                        <el-table-column align='center' prop='actualFinishRegulation' label='实际完成纠违'></el-table-column>
-                        <el-table-column align='center' prop='finishRegulationRate' label='违章完成率'></el-table-column>
-                        <el-table-column align='center' prop='quarterEventIndex' label='季度事件指标'></el-table-column>
-                        <el-table-column align='center' prop='actualFinishEvent' label='实际完成事件'></el-table-column>
-                        <el-table-column align='center' prop='eventFinishRate' label='实际完成事件'></el-table-column>
-                        <el-table-column
-                        label="填报时间"
-                        align='center'>
-                        <template slot-scope="scope">                
-                           <span>{{scope.row.updateTime?scope.row.updateTime:year}}</span>
-                        </template>
-                        </el-table-column>
+                        <el-table-column align='center' prop='sewageVolumeMonth' label='月度累计污水量'></el-table-column>
+                        <el-table-column align='center' prop='sewageVolumeQuarter' label='季度累计污水量'></el-table-column>
+                        <el-table-column align='center' prop='sewageVolumeYear' label='年度累计污水量'></el-table-column>
+                        <el-table-column align='center' prop='sewageTransferMonth' label='月度累计污水处理量'></el-table-column>
+                        <el-table-column align='center' prop='sewageTransferQuarter' label='季度累计污水处理量'></el-table-column>
+                        <el-table-column align='center' prop='sewageTransferYear' label='年度累计污水处理量'></el-table-column>
+                        <el-table-column align='center' prop='waterMonth' label='月度水消耗量'></el-table-column>
+                        <el-table-column align='center' prop='waterYear' label='年度水消耗量'></el-table-column>
+                        <el-table-column align='center' prop='electricityMonth' label='电月度消耗量'></el-table-column>
+                        <el-table-column align='center' prop='electricityYear' label='电年度消耗量'></el-table-column>
+                        <el-table-column align='center' prop='gasMonth' label='气月度消耗量'></el-table-column>
+                        <el-table-column align='center' prop='gasYear' label='气年度消耗量'></el-table-column>
+                        <el-table-column align='center' prop='gasolineMonth' label='汽油月累计消耗量'></el-table-column>
+                        <el-table-column align='center' prop='gasolineYear' label='汽油年累计消耗量'></el-table-column>
+                        <el-table-column align='center' prop='dieselMonth' label='柴油月累计消耗量'></el-table-column>
+                        <el-table-column align='center' prop='dieselYear' label='柴油年累计消耗量'></el-table-column>
+                        <el-table-column align='center' prop='year' label='年度'></el-table-column>
                       </el-table>
             </el-row> 
       </div>
@@ -77,7 +78,7 @@
 
 <script>
 import CurrentUser from '@/store/CurrentUser'
-import {queryDashboardSecurity,GetqhseCompanytree,downloadDashboardSecurityTemplate,downloadfile} from '@/services/qhseDashboard/index'
+import {queryDashboardEnvironmentManagement,GetqhseCompanytree,downloadDashboardEnvironmentManagementTemplate,downloadfile} from '@/services/qhseDashboard/index'
 export default {
     data() {
       return {
@@ -99,7 +100,7 @@ export default {
         this.year = `${date.getFullYear()}年度`
         this.listData = []
         this.loading = true
-        queryDashboardSecurity(this.searchForm).then(res => {
+        queryDashboardEnvironmentManagement(this.searchForm).then(res => {
            this.listData.push(res.data)
            this.loading = false
          console.log(res.data)
@@ -131,8 +132,8 @@ export default {
 
       },
       downLoadFile(){
-        downloadDashboardSecurityTemplate().then(res =>{
-          downloadfile('安全管理模板',res.file.data,"xlsx")
+        downloadDashboardEnvironmentManagementTemplate().then(res =>{
+          downloadfile('环保管理模板',res.file.data,"xlsx")
         })
       },
        getCompany(){

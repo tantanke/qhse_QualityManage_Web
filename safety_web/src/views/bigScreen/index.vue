@@ -114,7 +114,7 @@ export default {
       console.log('Current Swiper instance object', this.swiper)
       this.nowCompany = this.$route.params
       this.updateTime()
-      /* this.beginChange() */
+      this.beginChange()
     }
 };
 </script>
