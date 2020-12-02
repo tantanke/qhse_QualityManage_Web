@@ -82,7 +82,10 @@ export default {
         this.listData = []
         this.loading = true
         queryDashboardSecurityMillion(this.searchForm).then(res => {
-           this.listData.push(res.data)
+          let resTable = res.data
+           resTable.monthSubtotal = resTable.monthSubtotal?resTable.monthSubtotal:0
+          resTable.yearSubtotal = resTable.yearSubtotal?resTable.yearSubtotal:0
+           this.listData.push(resTable)
            this.loading = false
          console.log(res.data)
         }).catch(() => {

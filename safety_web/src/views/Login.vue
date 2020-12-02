@@ -3,7 +3,7 @@
     .login-base
       .title
         //- img.logo(:src='imgs.Logo')
-        font QHSE管理系统
+        font QHSE隐患排查与监管平台
         
       br
       el-form(:model='formData', @submit.native.prevent="handleSignIn")

@@ -177,12 +177,13 @@ html{
                     .right{
                        height: 100%;
                        ul{
+                           height: 14.3%;
                            margin-left: 10%;
                            margin-top: 8%;
                            color: $title-color;
-                           li{
+                           /* li{
                                height: 2vw;
-                           }
+                           } */
                        }
                     }
                 }
@@ -460,18 +461,22 @@ html{
             }  
              }
              .content2{
+                 
                 height: 100%;
                 margin-top: 0.5%;
                 .content{
+                    cursor: pointer;
                     margin-top: 5%;
               height: 83%;
-              cursor: pointer;  
+              
               ;
               .zhuimg1{
                 
                   height: 75%;
                   margin-top: 4%;
+
                   .left{
+                      height: 100%;
                       ul{
                           position: relative;
                           left: -1vw;
@@ -485,12 +490,12 @@ html{
                      height: 88%;
                      width: 95%;
                      margin-top: 1.8%;
-   
                      .finishzhu1{
                         background: $jihua-color;
-                        margin-left: 20%;
+                        margin-left: 7%;
                         height: 100%;
                         position: relative;
+                        
                         p:nth-child(1){
                             width: 100%;
                             position: relative;
@@ -506,6 +511,7 @@ html{
                             color: $title-color;
                         }
                        } 
+                       
                      .zhu2{
                       background: $wancheng-color;
                       margin-left: 15%;

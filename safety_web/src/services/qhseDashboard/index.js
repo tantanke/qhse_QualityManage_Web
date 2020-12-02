@@ -12,39 +12,86 @@ export const queryDashboardQualityManagement = (data) => {
 
 // 查询安全管理
 export const queryDashboardSecurity = (data) => {
-  return request('/api/queryDashboardSecurity?companyCode='+data.companyCode, {
-    method:'get',
-    data
-  })
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurity?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurity', {
+      method:'get',
+      data
+    })
+  }
 }
 // 查询环保管理
 export const queryDashboardEnvironmentManagement = (data) => {
-  return request('/api/queryDashboardEnvironmentManagement?companyCode='+data.companyCode, {
-    method:'get',
-    data
-  })
+  if(data.companyCode){
+    return request('/api/queryDashboardEnvironmentManagement?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardEnvironmentManagement', {
+      method:'get',
+      data
+    })
+  }
 }
 // 查询百万工时
 export const queryDashboardSecurityMillion = (data) => {
-  return request('/api/queryDashboardSecurityMillion?companyCode='+data.companyCode, {
-    method:'get',
-    data
-  })
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityMillion?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityMillion', {
+      method:'get',
+      data
+    }) 
+  }
 }
 // 查询安技项目管理（总）
 export const queryDashboardSecurityProjectCount = (data) => {
-  return request('/api/queryDashboardSecurityProjectCount?companyCode='+data.companyCode, {
-    method:'get',
-    data
-  })
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityProjectCount?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityProjectCount', {
+      method:'get',
+      data
+    })
+  }
+}
+// 某个单位
+export const queryDashboardSecurityProjectByLevel = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityProjectByLevel?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityProjectByLevel', {
+      method:'get',
+      data
+    })
+  }
 }
 // 按项目
 // 查询记录仪数据
 export const queryDashboardRecorderManagement = (data) => {
-    return request('/api/queryDashboardRecorderManagement', {
-      method:'post',
-      data
-    })
+      return request('/api/queryDashboardRecorderManagement', {
+        method:'post',
+        data
+      })
   }
 
 

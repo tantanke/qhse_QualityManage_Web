@@ -163,7 +163,7 @@ export default {
       companyList:[],
       listdata:[],
       dashBoardVisible: false,
-      qhse:'QHSE管理系统',
+      qhse:'',
       close1:false,
       changeS:false,
       close2:false,
