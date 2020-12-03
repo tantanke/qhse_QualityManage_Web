@@ -114,6 +114,7 @@ export default {
   methods: {
     // 获取第一页的消息
     getMessage() {
+      this.messageList = []
       getReceiveMessageList(1)
         .then((res) => {
           res.data.list.forEach((item) => {

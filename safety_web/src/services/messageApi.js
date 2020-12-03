@@ -8,8 +8,8 @@ export const getReceiveMessageList = (pageNum) => {
   }
 //阅读消息
   export const readMessage = (data) => {
-    return request(`/api/readMessage/${data.messageId}`, {
-      method: 'put',
+    return request(`/api/readMessage?messageId=${data.messageId}`, {
+      method: 'get',
       data
     })
   }
