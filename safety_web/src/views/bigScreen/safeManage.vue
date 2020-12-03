@@ -369,12 +369,12 @@ export default {
         top: "99.9%",
       },
       manageChart2: {
-        height: "10%",
-        top: "90%",
+        height: "0.1%",
+        top: "99.9%",
       },
       manageChart3: {
-        height: "10%",
-        top: "90%",
+        height: "0.1%",
+        top: "99.9%",
       },
       //百万工时
       millionData: {
