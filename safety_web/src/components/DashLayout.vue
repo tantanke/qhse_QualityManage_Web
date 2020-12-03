@@ -195,16 +195,10 @@ export default {
     this.checkUser()
   },
   mounted () {
-   this.chooseSys()
-    this.checkSys()
-    //定时刷新消息数量
-    if(this.timer){
-      clearInterval(this.timer)
-    }else{
-      this.timer=setInterval(()=>{
-       /*  this.getMessageCount() */
-      },3600000)
-    }
+   this.navs = []
+   //只能进入一次一个选项
+   this.$route.params.sysId ? this.chooseSys() : this.checkSys()
+    //定时刷新消息数
     /* this.getMessageCount() */
     window.onload = function(){
       if(!window.sessionStorage["tempFlag"]){
@@ -223,7 +217,7 @@ export default {
   },
   methods: {
     chooseSys(){
-       if(this.$route.params.sysId === 0){
+       if(this.$route.params.sysId === 2){
           this.goSafe()
        }
        if(this.$route.params.sysId === 1){
@@ -328,7 +322,7 @@ export default {
         _this.qhse = 'QHSE安全板块'
          this.$router.push({name: 'mainPath'})
         _this.checkTaskList(_this.navs)
-        console.log(_this.navs)
+
 	if(_this.taskFlag){
 		getTaskList().then(res=>{
 			let notReceive=res.data.filter(item=>{
@@ -470,6 +464,11 @@ export default {
         })
     }
   },
+  /* beforeRouteLeave(to, from, next) {
+      this.$vnode.parent.componentInstance.cache = {}
+      this.$vnode.parent.componentInstance.keys = []
+      next()
+  }, */
   computed: {
     activeNav () {
       let navs = this.navs

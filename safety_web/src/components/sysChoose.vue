@@ -137,7 +137,7 @@ export default {
       this.$router.push({
         name: "mainPath",
         params: {
-          sysId: 0,
+          sysId: 2,
         },
       });
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="messageBox">
-  <el-dropdown>
+  <el-dropdown >
    <el-badge :value="0" :max="99" class="item">
   <i class="el-icon-chat-dot-round"></i>
 </el-badge>
@@ -27,82 +27,7 @@
     </el-row>
     </div>
     </el-dropdown-item>
-     <el-dropdown-item class="content"  >
-    <div class="content-item" @click="seeDetail">
-    <el-row >
-    <el-col :span='17' class="ctitile">
-     <i class="el-icon-info"></i> 我是标题
-     </el-col>
-      <el-col style="text-align:center" :span='3'>
-       <span :style="readColor">未读</span>
-     </el-col>
-    </el-row>
-    <el-row>
-       <el-col :span='15' class="reason"> <i class="el-icon-question"></i>审核录入被打回</el-col>    
-    <el-col :offset="1" :span='7' class="ttime">{{"2020/12/21"}}</el-col>
-    </el-row>
-    <el-row class="ccontent">
-    &nbsp;&nbsp;&nbsp;&nbsp;222
-    </el-row>
-    </div>
-    </el-dropdown-item>
-     <el-dropdown-item class="content"  >
-    <div class="content-item" @click="seeDetail">
-    <el-row >
-    <el-col :span='17' class="ctitile">
-     <i class="el-icon-info"></i> 我是标题
-     </el-col>
-      <el-col style="text-align:center" :span='3'>
-       <span :style="readColor">未读</span>
-     </el-col>
-    </el-row>
-    <el-row>
-       <el-col :span='15' class="reason"> <i class="el-icon-question"></i>审核录入被打回</el-col>    
-    <el-col :offset="1" :span='7' class="ttime">{{"2020/12/21"}}</el-col>
-    </el-row>
-    <el-row class="ccontent">
-    &nbsp;&nbsp;&nbsp;&nbsp;222
-    </el-row>
-    </div>
-    </el-dropdown-item>
-     <el-dropdown-item class="content"  >
-    <div class="content-item" @click="seeDetail">
-    <el-row >
-    <el-col :span='17' class="ctitile">
-     <i class="el-icon-info"></i> 我是标题
-     </el-col>
-      <el-col style="text-align:center" :span='3'>
-       <span :style="readColor">未读</span>
-     </el-col>
-    </el-row>
-    <el-row>
-       <el-col :span='15' class="reason"> <i class="el-icon-question"></i>审核录入被打回</el-col>    
-    <el-col :offset="1" :span='7' class="ttime">{{"2020/12/21"}}</el-col>
-    </el-row>
-    <el-row class="ccontent">
-    &nbsp;&nbsp;&nbsp;&nbsp;222
-    </el-row>
-    </div>
-    </el-dropdown-item>
-     <el-dropdown-item class="content"  >
-    <div class="content-item" @click="seeDetail">
-    <el-row >
-    <el-col :span='17' class="ctitile">
-     <i class="el-icon-info"></i> 我是标题
-     </el-col>
-      <el-col style="text-align:center" :span='3'>
-       <span :style="readColor">未读</span>
-     </el-col>
-    </el-row>
-    <el-row>
-       <el-col :span='15' class="reason"> <i class="el-icon-question"></i>审核录入被打回</el-col>    
-    <el-col :offset="1" :span='7' class="ttime">{{"2020/12/21"}}</el-col>
-    </el-row>
-    <el-row class="ccontent">
-    &nbsp;&nbsp;&nbsp;&nbsp;222
-    </el-row>
-    </div>
-    </el-dropdown-item>
+     
     <el-dropdown-item class="morebtn">
     <el-button type='primary' @click="gomore" plain icon='el-icon-circle-plus-outline' class="more">更多消息</el-button>
     </el-dropdown-item>
@@ -135,6 +60,7 @@
 </template>
 
 <script>
+import {getReceiveMessageList,readMessage} from "../services/messageApi"
 export default {
 data() {
   return {
@@ -150,6 +76,12 @@ data() {
   }
 },
 methods: {
+  // 获取第一页的消息
+  getMessage(){
+     getReceiveMessageList(1).then(res => {
+       console.log(res)
+     })
+  },
   gomore(){
     this.$router.push({name: 'moreMsg'})
   },
@@ -158,7 +90,7 @@ methods: {
   }
 },
 mounted() {
-  console.log(this.$refs.msgList.$el.style.width)
+  this.getMessage()
   //默认为12 每增加一个+6 最多为24
   this.$refs.msgList.$el.style.height ="24vw";
   //超过三个设置为 scroll 最多显示六条
@@ -207,7 +139,6 @@ mounted() {
    }
    .more{      
        width: 100%;
-
      }
     .content-item{
       width: 100%;

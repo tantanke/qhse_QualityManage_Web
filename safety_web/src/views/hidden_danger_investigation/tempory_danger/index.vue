@@ -3,10 +3,10 @@
     <div class="page-title">临时-隐患基本信息</div>
     <div class="page-content" v-loading='adding' style="height:660px">
       <el-row>
-        <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
+        <el-form ref="form" :model="form" :rules="dangerRule" label-width="150px" label-suffix="：">
           <el-row>
             <el-col :xl="8" :lg="10" :sm="12">
-              <el-form-item label="施工队伍">
+              <el-form-item label="施工队伍" prop="companyId" >
                 <el-cascader
                   ref="companyChoose"
                   v-model="form.companyId"
@@ -17,15 +17,15 @@
                   
                 />
               </el-form-item>
-              <el-form-item label="位置区域">
-                <el-input v-model="form.location" placeholder="请填写" />
+              <el-form-item label="位置区域" prop="location">
+                <el-input v-model="form.location"  placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="所属专业">
+              <el-form-item label="所属专业" prop='profession'>
                 <el-input v-model="form.profession" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="隐患类别">
+              <el-form-item label="隐患类别" prop='types'>
                <el-cascader
-                v-model="type"
+                v-model="form.types"
                 :options="checkTypes"
                 :props="{ expandTrigger: 'hover',value: 'factorCode',children: 'childNode',label:'name'}"
                 :disable-branch-nodes='true'
@@ -49,7 +49,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="限期整改时间">
+              <el-form-item label="限期整改时间" prop='limitDate'>
                 <el-date-picker
                   v-model="form.limitDate"
                   type="date"
@@ -57,7 +57,7 @@
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <el-form-item label="隐患级别">
+              <el-form-item label="隐患级别" prop='rank'>
                 <el-select
                   v-model="form.rank"
                   placeholder="请选择"
@@ -72,12 +72,12 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="隐患描述">
+              <el-form-item label="隐患描述" prop='description'>
                 <el-input type="textarea" v-model="form.description" :rows="5" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="整改负责人">
+              <el-form-item label="整改负责人" prop='person'>
                 <el-select
-                  v-model="person"
+                  v-model="form.person"
                   placeholder="请选择"
                   filterable
                   loading-text="查询中..."
@@ -105,10 +105,10 @@
               </el-form-item>
             </el-col>
             <el-col :xl="8" :lg="10" :sm="12">
-              <el-form-item label="作业项目">
+              <el-form-item label="作业项目" prop='workItem'>
                 <el-input v-model="form.workItem" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="检查时间">
+              <el-form-item label="检查时间" prop='supervisionDate'>
                 <el-date-picker
                   v-model="form.supervisionDate"
                   type="date"
@@ -116,7 +116,7 @@
                   value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-form-item>
-              <el-form-item label="可能后果">
+              <el-form-item label="可能后果" prop='consequenceID'>
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
@@ -131,7 +131,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="产生的后果">
+              <el-form-item label="产生的后果" prop='consequence'>
                 <el-input v-model="form.consequence" placeholder="请填写" />
               </el-form-item>
               <el-form-item label="对应体系要素">
@@ -167,13 +167,12 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="是否立即验收" style="margin-top:114px">
-                   <el-radio v-model="form.ok" label="是">是</el-radio> 
-                   <el-radio v-model="form.ok" label="否">否</el-radio>    
+                   <el-radio v-model="ok" label="1">是</el-radio> 
+                   <el-radio v-model="ok" label="0">否</el-radio>    
               </el-form-item>
                <br />
           <el-form-item label="操作" >
             <el-button type="primary" style="width:100px" @click="onSubmit" icon="el-icon-check">确认</el-button>
-            <el-button type="danger" style="width:100px" @click="$router.go(-1)" icon="el-icon-refresh-left">取消</el-button>
           </el-form-item>
             </el-col>
           </el-row> 
@@ -199,6 +198,7 @@ import { GetDictionary } from '../../../services/dictionary'
 export default {
   data() {
     return {
+      ok:'1',
       form: {
         checkID: null,
         workItem: '', //作业项目
@@ -223,7 +223,8 @@ export default {
         dangerSource: '临时录入',
         affix1:  null,
         affix2:  null,
-        
+        types:'',
+        person:''
       },
       moreForm:{},
       person: '',
@@ -242,7 +243,69 @@ export default {
       select2:true,
       select3:true,
       adding:false,
-      fileNum:0
+      fileNum:0,
+      dangerRule:{
+					companyId:[{
+						required: 'true',
+						message: '请选择公司',
+						trigger: 'change'
+					}],
+          location:[{
+						required: 'true',
+						message: '请选择位置区域',
+						trigger: 'change'
+					}],
+          types:[{
+						required: 'true',
+						message: '请选择隐患类别',
+						trigger: 'change'
+					}],
+          profession:[{
+						required: 'true',
+						message: '请选择所属专业',
+						trigger: 'change'
+					}],
+          limitDate:[{
+						required: 'true',
+						message: '请选择限期整改时间',
+						trigger: 'change'
+					}],
+          rank:[{
+						required: 'true',
+						message: '请选择隐患级别',
+						trigger: 'change'
+					}],
+          description:[{
+						required: 'true',
+						message: '请输入隐患描述',
+						trigger: 'change'
+					}],
+          person:[{
+						required: 'true',
+						message: '请选择整改负责人',
+						trigger: 'change'
+					}],
+          workItem:[{
+						required: 'true',
+						message: '请选择作业项目',
+						trigger: 'change'
+					}],
+          supervisionDate:[{
+						required: 'true',
+						message: '请选择检查时间',
+						trigger: 'change'
+					}],
+          consequenceID:[{
+						required: 'true',
+						message: '请填写可能后果',
+						trigger: 'change'
+					}],
+          consequence:[{
+						required: 'true',
+						message: '请填写产生的后果',
+						trigger: 'change'
+					}],
+				},
     }
   },
   created() {
@@ -281,6 +344,7 @@ export default {
         _this.factorDepartments = res.data
         _this.form.factorDepartment = res.data[0].factorDepartmentName
         _this.select2 = false
+        console.log(_this.form.type)
         _this.form.type = _this.$refs['dangerType'].inputValue
       }).catch(() => {
           this.$message.error('获取数据失败！')
@@ -371,46 +435,40 @@ export default {
       this.form.recordDate = `${nowDate.getFullYear()}-${month}-${date}`
     },
     formatForm() {    
-      let arrs = this.person.split(' ')    
+      let arrs = this.form.person.split(' ')    
       this.form.reformPerson = arrs[1]
       this.form.reformPersonID = arrs[0]
+      this.form.ok = Number(this.ok)
     },
     // 确认提交方法
     onSubmit() {
-      this.form.companyName = this.$refs.companyChoose.inputValue
-      let noFill = false
       let _this = this
-      Object.keys(_this.form).forEach((value) => {
-        if(_this.form[value] === '' ){
-           noFill = true
-        }
-      })
-      if(noFill || _this.person === '') {
-        console.log(this.form)
-        _this.$message.warning('请把表单填写完整！')
-        return
-      }
-      _this.formatForm()  
-      console.log(this.form)
-      _this.adding = true
+      this.$refs.form.validate((valid) => {
+				if(valid){
+          _this.adding = true
+          _this.formatForm()
       addDangerRecord(_this.form)
         .then(res => {
-          console.log(res)
-          _this.$message.success(res.message)
           _this.adding = false
-          _this.resetForm()
+          _this.$refs.form.resetFields();
+          _this.$message.success(res.message)
         })
         .catch(err => {
-          console.log(err)
+
           _this.adding = false
+          
           _this.$message.error(err.message)
         })
+        } else{
+          _this.$message.warning('请把表单填写完整！')
+        }
+				})
     },
     // 重置表单
     resetForm(){
         this.form = {...this.moreForm}
-        this.type = ''
-        this.person = ''
+        this.form.type = ''
+        this.form.person = ''
     },
     // 一些事件
     changeCompany(value) {

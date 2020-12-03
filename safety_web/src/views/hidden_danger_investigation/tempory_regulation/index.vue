@@ -3,10 +3,10 @@
     <div class="page-title">临时-违章录入</div>
     <div class="page-content" v-loading='adding' >
       <el-row>
-        <el-form ref="form" :model="form" label-width="150px" label-suffix="：">
+        <el-form ref="form" :rules='regulationRule' :model="form" label-width="150px" label-suffix="：">
           <el-row>
             <el-col :xl="8" :lg="10" :sm="12">
-              <el-form-item label="施工队伍">
+              <el-form-item label="施工队伍" prop='companyId'>
                 <el-cascader
                   v-model="form.companyId"
                   :options="companys"
@@ -16,7 +16,7 @@
                   :show-all-levels="false"
                 />
               </el-form-item>
-              <el-form-item label="检查时间">
+              <el-form-item label="检查时间" prop='supervisionDate'>
                 <el-date-picker
                   v-model="form.supervisionDate"
                   type="date"
@@ -24,12 +24,12 @@
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <el-form-item label="作业项目">
+              <el-form-item label="作业项目" prop='workItem'>
                 <el-input v-model="form.workItem" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="违章人员">
+              <el-form-item label="违章人员" prop='person'>
                 <el-select
-                  v-model="person"
+                  v-model="form.person"
                   placeholder="请选择"
                   filterable
                   loading-text="查询中..."
@@ -42,9 +42,9 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="违章类别">
+              <el-form-item label="违章类别" prop='types'>
                 <el-cascader
-                v-model="type"
+                v-model="form.types"
                 :options="checkTypes"
                 :show-all-levels="false"
                 ref="dangerType"
@@ -116,7 +116,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="可能后果">
+              <el-form-item label="可能后果" prop='consequenceID'>
                 <el-select
                   v-model="form.consequenceID"
                   placeholder="请选择"
@@ -149,7 +149,7 @@
               
             </el-col>
             <el-col :xl="8" :lg="10" :sm="12">
-              <el-form-item label="用工性质">
+              <el-form-item label="用工性质" prop='employeeCharacter'>
                 <el-select
                   v-model="form.employeeCharacter"
                   placeholder="请选择"
@@ -164,7 +164,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="工种年龄">
+              <el-form-item label="工种年龄" prop='workSeniority'>
                 <el-select
                   v-model="form.workSeniority"
                   placeholder="请选择"
@@ -179,10 +179,10 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="所属专业" style="margin-top:1px">
+              <el-form-item label="所属专业" style="margin-top:1px" prop='profession'>
                 <el-input v-model="form.profession" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="岗位分类">
+              <el-form-item label="岗位分类" prop='position'>
                 <el-select
                   v-model="form.position"
                   placeholder="请选择"
@@ -197,7 +197,7 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="违章性质">
+              <el-form-item label="违章性质" prop='regulationCharacter'>
                 <el-select
                   v-model="form.regulationCharacter"
                   placeholder="请选择"
@@ -212,18 +212,17 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="违章描述">
+              <el-form-item label="违章描述" prop='description'>
                 <el-input type="textarea" v-model="form.description" :rows="6" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="扣分">
+              <el-form-item label="扣分" prop='score'>
                 <el-input v-model="form.score" placeholder="请填写" />
               </el-form-item>
-              <el-form-item label="罚款（元）" style="margin-top:1px">
+              <el-form-item label="扣除绩效" style="margin-top:1px"  prop='punish'>
                 <el-input v-model="form.punish" placeholder="请填写" />
               </el-form-item>
               <el-form-item  label="操作">
                 <el-button type="primary" style="width:100px" @click="onSubmit" icon="el-icon-check">确认</el-button>
-                <el-button type="danger" style="width:100px" @click="$router.go(-1)" icon="el-icon-refresh-left">取消</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -303,7 +302,89 @@ export default {
       isSelect2:true,
       isSelect3:true,
       isSelect4:true,
-      fileNum:0
+      fileNum:0,
+      regulationRule:{
+					companyId:[{
+						required: 'true',
+						message: '请选择公司',
+						trigger: 'change'
+					}],
+          supervisionDate:[{
+						required: 'true',
+						message: '请选择检查时间',
+						trigger: 'change'
+					}],
+          workItem:[{
+						required: 'true',
+						message: '请选择作业项目',
+						trigger: 'change'
+					}],
+          location:[{
+						required: 'true',
+						message: '请选择位置区域',
+						trigger: 'change'
+					}],
+          types:[{
+						required: 'true',
+						message: '请选择违章类别',
+						trigger: 'change'
+					}],
+          person:[{
+						required: 'true',
+						message: '请选择违章人员',
+						trigger: 'change'
+					}],
+          consequenceID:[{
+						required: 'true',
+						message: '请填写可能后果',
+						trigger: 'change'
+					}],
+          profession:[{
+						required: 'true',
+						message: '请选择所属专业',
+						trigger: 'change'
+					}],
+          employeeCharacter:[{
+						required: 'true',
+						message: '请选择用工性质',
+						trigger: 'change'
+					}],
+          rank:[{
+						required: 'true',
+						message: '请选择隐患级别',
+						trigger: 'change'
+					}],
+          workSeniority:[{
+						required: 'true',
+						message: '请选择隐患描述',
+						trigger: 'change'
+					}],     
+          position:[{
+						required: 'true',
+						message: '请选择岗位分类',
+						trigger: 'change'
+					}],
+          regulationCharacter:[{
+						required: 'true',
+						message: '请选择违章性质',
+						trigger: 'change'
+					}],
+          description:[{
+						required: 'true',
+						message: '请填写违章描述',
+						trigger: 'change'
+					}],
+          score:[{
+						required: 'true',
+						message: '请填写违章描述',
+						trigger: 'change'
+					}],
+          punish:[{
+						required: 'true',
+						message: '请填写违章描述',
+						trigger: 'change'
+					}],
+				},
     }
   },
   created() {
@@ -464,10 +545,11 @@ export default {
         })
     },
     formatForm() {
-      let info = this.person.split(' ')
+      let info = this.form.person.split(' ')
       this.form.regulationName  = info[0]
       this.form.regulationID  = info[1]
       this.form.consequence = this.$refs.consequence.query
+      this.form.safeStaff_ID = GetCurrentUser().employeeId  
     },
     deleteLocal() {
       // 去除本地数据
@@ -477,38 +559,33 @@ export default {
     },
     // 确认提交
     onSubmit() {
-      let noFill = false
       let _this = this
-      _this.form.safeStaff_ID = GetCurrentUser().employeeId   
-      Object.keys(this.form).forEach((value) => {
-        if( _this.form[value] === '' ){
-           noFill = true
-        }
-      })
-      if(noFill || this.person === '') {
-        console.log(this.form)
-         _this.$message.warning('请把表单填写完整！')
-        return
-      }
-       _this.formatForm()
-       _this.adding = true
-      addRegulationRecord( _this.form)
+      this.$refs.form.validate((valid) => {
+        
+				if(valid){
+          _this.adding = true
+          _this.formatForm()
+          delete _this.form.person
+          delete _this.form.types
+      addRegulationRecord(_this.form)
         .then(res => {
-          console.log(res)
-           _this.$message.success(res.message)
-           _this.adding = false
-           _this.resetForm()
+         _this.adding = false
+         _this.$refs.form.resetFields();
+          _this.$message.success(res.message)
         })
         .catch(err => {
-          console.log(err)
-           _this.$message.error(err.message)
-            _this.adding = false
+          _this.adding = false
+          _this.$message.error(err.message)
         })
+        } else{
+          _this.$message.warning('请把表单填写完整！')
+        }
+				})
     },
     resetForm(){
         this.form = {...this.moreForm}
-        this.type = ''
-        this.person = ''
+        this.form.types = ''
+        this.form.person = ''
     },
     // 一些事件
     changeCompany(value) {

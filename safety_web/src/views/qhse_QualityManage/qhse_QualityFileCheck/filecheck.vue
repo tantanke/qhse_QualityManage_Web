@@ -447,7 +447,7 @@ export default {
   methods: {
     previewFile(data){
       console.log(data)
-      window.open('http://view.xdocin.com/xdoc?_xdoc='+data)
+      window.open('http://39.98.173.131:8012/onlinePreview?url='+data)
     },
     downloadFile(data,filename){
                 const elink = document.createElement("a"); // 创建的标签
@@ -603,6 +603,7 @@ export default {
         // 获取证据
         show_elementReviewer({qHSE_CompanyYearManagerSysElement_ID:data.id}).then(res => {
         this.nodeData=res.data;
+        console.log(res.data)
         let attach = this.nodeData.attach;//获取地址字符串
          if(attach!=null){
           let arr=attach.split(";");
@@ -616,15 +617,19 @@ export default {
                   j++;
                   }
                   else{
+                    let len = arr[i].length
+                    if(arr[i][len-1]!=="无"){
                     this.files[k]=arr[i];
                     downloadElementFile(this.files[k].substring(49,this.files[k].length))
                     .then(res=>{
+                      if(res.data)
                       this.download.push(res.data)
                     })
                     .catch(err=>{
                       console.log('报错',err)
                     })
                     k++;
+                    }
                   }
                 }
         }
