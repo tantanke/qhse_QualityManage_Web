@@ -400,6 +400,7 @@ export default {
           this.dateH = [...this.date30]
        },
         goEdit(data){
+            console.log(data)
            let _this = this
           _this.editId = data.id
           _this.editShow = true
@@ -453,8 +454,11 @@ export default {
            this.editProShow = true
            this.passInfo.refuseReason = data.refuseReason
             this.proForm.situation = ''
+            this.proForm.file1 = null
+            this.proForm.file2 = null
             _this.$refs['uploadPro'].clearFiles()
-            _this.fileNumPro === 0
+            _this.fileNumPro = 0
+            
        }, 
        // 问题验证
        // 整改

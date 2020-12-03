@@ -271,7 +271,7 @@
             width="35%">
             <div v-loading='addLoading'>
             <el-form >
-            <el-form-item label='整改情况:' label-width='120px'>
+            <el-form-item label='整改情况:' label-width='80px'>
                <span>{{detailPro.situation}}</span>
             </el-form-item>
              <el-form-item label='整改文件:' label-width='80px' v-show="detailPro.img.length > 0">
@@ -290,14 +290,14 @@
                     </el-card>
                 </div>
             </el-form-item>
-            <el-form-item label='操作:' label-width='120px'>
+            <el-form-item label='操作:' label-width='80px'>
                 <el-radio @click="reset"  v-model="doWhat" label="refuse" ><el-button type="danger" plain>打 回</el-button></el-radio>
                 <el-radio  @click="reset"  v-model="doWhat" label="pass"><el-button type="primary" plain >通 过</el-button></el-radio>
             </el-form-item>
-            <el-form-item label='通过描述:' label-width='120px' v-show='doWhat === "pass"'>
+            <el-form-item label='通过描述:' label-width='80px' v-show='doWhat === "pass"'>
                <el-input v-model="proForm.passReason" style="width:70%"></el-input>
             </el-form-item>
-             <el-form-item label='打回原因:' label-width='120px' v-show='doWhat === "refuse"'>
+             <el-form-item label='打回原因:' label-width='80px' v-show='doWhat === "refuse"'>
                <el-input v-model="proForm.refuseReason" style="width:70%"></el-input>
             </el-form-item>
             </el-form>
@@ -389,10 +389,14 @@ export default {
         if(data.file2){
              this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file1)
              this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file2)
-          }else{
+          }
+          else if(data.file1){
               this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file1)
           }
-          console.log(this.detailPro.img)
+          else{
+              return
+          }
+        
        },
        reset(){
            this.proForm.passReason = ''
@@ -512,7 +516,7 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(()=> {
-           updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'未整改',refuseReason:this.proForm.refuseReason,passReason:''}).then(res => {
+           updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'未整改',file1:null,file2:null,refuseReason:this.proForm.refuseReason,passReason:''}).then(res => {
                console.log(res)
                this.$message.success('打回成功')
                this.getProblemDescription()

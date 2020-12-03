@@ -9,14 +9,14 @@
     <div class="info">
     <el-card class="box-card">
   <div slot="header">
-  <div class="dtitle"><span>我是标题</span></div>
+  <div class="dtitle"><span>{{detail.tittle}}</span></div>
   </div>
   <div >
-  <p>发件人：xxxx</p>
-  <p>发送时间：2020/10/28</p>
-  <p>收件人：xxxx</p>
-  <div class="source" >来源：审核录入</div>
-    <div  class="content">&nbsp;&nbsp;&nbsp;&nbsp;我是内容</div>
+  <p>状态：{{detail.status}}</p>
+  <p>发送时间：{{detail.time}}</p>
+  <p v-show="detail.readTime">阅读时间：{{detail.readTime}}</p>
+  <div class="source" >来源：{{detail.source}}</div>
+    <div  class="content">&nbsp;&nbsp;&nbsp;&nbsp;{{detail.body}}</div>
   </div>
 </el-card>
     </div>
@@ -28,7 +28,17 @@
 
 <script>
 export default {
-
+data() {
+  return {
+    detail:''
+  }
+},
+mounted() {
+  this.detail = this.$route.params
+},
+methods: {
+  
+},
 }
 </script>
 
@@ -54,6 +64,7 @@ export default {
   }
     .content{
       margin-top: 2%;
+      height: 15vw;
       width: 100%;
       font: 16px "lucida Grande",Verdana,"Microsoft YaHei";
   }

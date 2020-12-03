@@ -2,22 +2,23 @@
   <div>
   <div class="page-title" style="width:100%">我的消息</div>
  <el-table
- 
+     v-loading='tableloading'
     :data="tableData"
     @row-click="getdetail"
-    max-height='580'
+    max-height='625'
    style="padding:10px; border-top: 2px dashed #dddddd;width:100%">
     <el-table-column
       label="状态">
       <template slot-scope="scope">
-      <el-button type="success" plain>{{ scope.row.status }}</el-button>
+      <el-button v-if = 'scope.row.status ==="已读"' type="success" plain>{{ scope.row.status }}</el-button>
+      <el-button v-else type="danger" plain>{{ scope.row.status }}</el-button>
       </template>
     </el-table-column>
     <el-table-column
       label="标题">
       <template slot-scope="scope">
         <i class="el-icon-info"></i>
-        <span style="margin-left: 10px">{{ scope.row.title }}</span>
+        <span style="margin-left: 10px">{{ scope.row.tittle }}</span>
       </template>
     </el-table-column>
      <el-table-column
@@ -31,14 +32,15 @@
       label="发送时间">
       <template slot-scope="scope">
         <i class="el-icon-s-promotion"></i>
-        <span style="margin-left: 10px">{{ scope.row.time }}</span>
+        <span  style="margin-left: 10px">{{ scope.row.time }}</span>
       </template>
     </el-table-column>
     <el-table-column
       label="接收时间">
       <template slot-scope="scope">
         <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ scope.row.readTime }}</span>
+        <span style="margin-left: 10px" v-if="scope.row.readTime" >{{ scope.row.readTime }}</span>
+        <span v-else style="margin-left: 10px">未读</span>
       </template>
     </el-table-column>
   </el-table>
@@ -46,39 +48,60 @@
   background
   layout="prev, pager, next"
   @current-change="handleCurrentChange"
-  :page-size="10"
-  :total="100">
+  :page-size="pageSize"
+  :total="total">
 </el-pagination>
   </div>
 </template>
 
 <script>
+	import {
+      getReceiveMessageList,
+      readMessage,
+	} from "../../../services/messageApi"
 export default {
   data() {
       return {
-        tableData: [{
-          status: '已读',
-          title: '我是标题',
-          source: '我是来源',
-          time:'2020/10/28',
-          readTime:'暂未阅读'
-        }]
+         pageNum:1,//默认第一页
+         pageSize:1,
+         total:1,
+        tableData: [],
+        tableloading: false
       }
     },
   methods: {
     // 获取之后跳转
     getdetail(data){
+      if (data.status === "未读") {
+        readMessage({messageId:data.id})
+          .then((res) => {
+            console.log(res);
+          })
+          .catch(() => {
+            this.$message.error("更新消息失败，请稍后再试！");
+          });
+      }
       this.$router.push(
         {
           name:'moreMsgdetail',params: data
         })
     },
     handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      }
+        this.getMsg(val)
+      },
+    getMsg(data){
+      let _this = this
+      _this.tableloading = true
+      getReceiveMessageList(data).then(res =>{
+        _this.pageSize = res.data.pageSize
+        _this.total = res.data.total
+        _this.tableloading = false
+        _this.tableData = res.data.list
+      })
+    } 
   },
   mounted() {
-    
+     this.getMsg(1)
   },
 }
 </script>

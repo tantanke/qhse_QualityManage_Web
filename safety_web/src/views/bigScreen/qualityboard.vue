@@ -731,7 +731,7 @@ export default {
     updateData() {
       setInterval(() => {
         this.getdata();
-      }, 10000);
+      }, 360000);
     },
     // 提交自定义事件
      safeSwiper(){
@@ -758,7 +758,7 @@ export default {
     let _this = this;
     _this.confirmToken();
     _this.getdata();
-    /* _this.updateData(); */
+    _this.updateData();
   },
 };
 </script>

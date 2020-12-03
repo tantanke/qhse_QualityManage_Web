@@ -7,8 +7,15 @@ export const getReceiveMessageList = (pageNum) => {
     })
   }
 //阅读消息
-  export const readMessage = (id) => {
-    return request(`/api/readMessage/${id}`, {
+  export const readMessage = (data) => {
+    return request(`/api/readMessage/${data.messageId}`, {
+      method: 'put',
+      data
+    })
+  }
+
+  export const getReceiveMessageCnt = () => {
+    return request(`/api/getReceiveMessageCnt`, {
       method: 'get',
     })
   }

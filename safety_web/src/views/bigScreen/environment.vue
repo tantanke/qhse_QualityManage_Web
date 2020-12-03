@@ -397,6 +397,12 @@ export default {
           this.$message.error(err.message);
         });
     },
+    upDateData(){
+      let _this = this
+      setInterval(()=>{
+        _this.getData()
+      },360000)
+    },
     getcode() {
       this.serForm.companyCode = this.$route.query.companyCode;
      if (this.$route.query.companyName) {
@@ -418,6 +424,7 @@ export default {
   mounted() {
     this.getcode()
     this.getData()
+    this.upDateData()
   },
 };
 </script>

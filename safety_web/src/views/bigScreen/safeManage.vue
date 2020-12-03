@@ -545,6 +545,12 @@ export default {
         ];
       }
     },
+     upDateData(){
+      let _this = this
+      setInterval(()=>{
+        _this.getData()
+      },360000)
+    },
     getData() {
       let _this = this;
       axios
@@ -568,6 +574,7 @@ export default {
   mounted() {
     this.getcode();
     this.getData();
+    this.upDateData();
   },
 };
 </script>
