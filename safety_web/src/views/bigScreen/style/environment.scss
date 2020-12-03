@@ -125,7 +125,7 @@ html{
                                 .rate{
                                     height: 100%;
                                     ul{
-                                        height: 15.3%;
+                                        height: 13%;
                                         position: relative;
                                         left: -2.5vw;
                                         li{
@@ -200,14 +200,16 @@ html{
                             .zhuimgs{
                                 margin-left: 15%;
                                 border-bottom: 2px solid gray;
-                                height: 60%;
+                                height: 62%;
+                                position: relative;
+                                top: 1%;
                                 .rate{
                                     height: 100%;
                                     ul{
                                         position: relative;
                                         left: -3vw;
-                                        top: 0.2vw;
-                                        height: 15%;
+                                        /* top: 0.2vw; */
+                                        height: 13%;
                                         li{
                                             list-style: none;
                                             color: $title-color;
@@ -280,11 +282,11 @@ html{
                             .zhuimgs{
                                 margin-left: 15%;
                                 border-bottom: 2px solid gray;
-                                height: 60%;
+                                height: 63%;
                                 .rate{
                                     height: 100%;
                                     ul{
-                                        height: 15.2%;
+                                        height: 13%;
                                         position: relative;
                                         left: -2.8vw;
                                         li{
@@ -302,9 +304,9 @@ html{
                                     left: -1vw;
                                 }
                                 .point{
-                                    height: 75%;
+                                    height: 81%;
                                     position: relative;
-                                    top: 8%;
+                                    top: 4.5%;
                                     div{
                                         position: absolute;
                                         // 1 - top代表几率
@@ -463,7 +465,7 @@ html{
                                         li{
                                             list-style: none;
                                             color: $title-color;
-                                            height: 2.69vw;
+                                            height: 2.33vw;
                                         }
                                     }
                                    

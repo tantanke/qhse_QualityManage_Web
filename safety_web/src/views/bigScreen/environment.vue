@@ -300,7 +300,7 @@ export default {
       },
       //电消耗量
       elcPoint: {
-        top: "20%",
+        top: "0%",
       },
       // 油料
       oilPoint1: {
@@ -349,7 +349,7 @@ export default {
       _this.allValues.waterYear = waterYear
       _this.waterPoint.top =(100 -  Math.ceil((waterYear / _this.ratedataWater[1]) * 100)) + "%";
       //电消耗量
-      if(electricityYear > 2000) _this.getYnum("单位：度",electricityYear,"ratedataElectricity",3000)
+      if(electricityYear > 2000) _this.getYnum("单位：度",electricityYear,"ratedataElectricity",300)
       _this.allValues.electricity = electricityMonth
       _this.allValues.electricityYear = electricityYear
       _this.elcPoint.top =(100 -  Math.ceil((electricityYear / _this.ratedataElectricity[1]) * 100)) + "%";
@@ -387,6 +387,7 @@ export default {
         topdata * 3/6,
         topdata * 2/6,
         topdata * 1/6,
+        0
       ];
       this[name] = listdata;
     },
