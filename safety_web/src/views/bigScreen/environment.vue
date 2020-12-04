@@ -158,7 +158,7 @@
                 <p>污水转运量</p>
               </el-col>
               <el-col :span="8" class="right">
-                <span class="num">{{pollutionWater.month}}</span><span class="danwei">m3</span>
+                <span class="num">{{passPollutionWater.month}}</span><span class="danwei">m3</span>
               </el-col>
             </el-row>
 
@@ -168,7 +168,7 @@
                 <p>污水转运量</p>
               </el-col>
               <el-col :span="8" class="right">
-                <span class="num">{{pollutionWater.quarter}}</span><span class="danwei">m3</span>
+                <span class="num">{{passPollutionWater.quarter}}</span><span class="danwei">m3</span>
               </el-col>
             </el-row>
             <el-row class="content1">
@@ -177,7 +177,7 @@
                 <p>污水转运量</p>
               </el-col>
               <el-col :span="8" class="right">
-                <span class="num">{{pollutionWater.year}}</span><span class="danwei">m3</span>
+                <span class="num">{{passPollutionWater.year}}</span><span class="danwei">m3</span>
               </el-col>
             </el-row>
           </el-row>

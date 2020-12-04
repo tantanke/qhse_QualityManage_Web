@@ -183,7 +183,7 @@
                 <li><img src="./img/jiankong.png" alt="" /></li>
                 <li>项目总体经费</li>
                 <li>使用进度</li>
-                <li>{{ 11.21 }}%</li>
+                <li>{{ projectRate }}%</li>
               </ul>
             </el-col>
             <el-col :span="17" class="zhuimg1"  >
@@ -288,6 +288,7 @@ export default {
   data() {
     return {
       level:'',
+      projectRate:"0",
       showName: "安全环保质量监督检测研究院",
       finishrate: [10, 8, 6, 4, 2, 0],
       ratedata: [100, 80, 60, 40, 20, 0],
@@ -495,7 +496,9 @@ export default {
       this.millionData.monthValue = data.monthSubtotal ? data.monthSubtotal : 0;
       this.millionData.yearValue = data.yearSubtotal ? data.yearSubtotal : 0;
     },
-    initprojectCountData(data) {
+    initprojectCountData(data,rate) {
+      console.log(data,rate)
+      this.projectRate = rate ? (rate*100).toFixed(2):"0.00"
       data.forEach((v) => {
         if (v.projectLevel === "公司") {
           this.project.company = v;
@@ -563,7 +566,7 @@ export default {
           axios.spread(function(securityData, millionData, projectCountData) {
             _this.initsecurityData(securityData.data);
             _this.initmillionData(millionData.data);
-            _this.initprojectCountData(projectCountData.data);
+            _this.initprojectCountData(projectCountData.data,projectCountData.totalUsage);
           })
         )
         .catch((err) => {

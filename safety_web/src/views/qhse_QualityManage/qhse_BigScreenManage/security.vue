@@ -61,7 +61,7 @@
                         <el-table-column align='center' prop='finishRegulationRate' label='违章完成率'></el-table-column>
                         <el-table-column align='center' prop='quarterEventIndex' label='季度事件指标'></el-table-column>
                         <el-table-column align='center' prop='actualFinishEvent' label='实际完成事件'></el-table-column>
-                        <el-table-column align='center' prop='eventFinishRate' label='实际完成事件'></el-table-column>
+                        <el-table-column align='center' prop='eventFinishRate' label='实际完成事件率'></el-table-column>
                         <el-table-column
                         label="填报时间"
                         align='center'>
