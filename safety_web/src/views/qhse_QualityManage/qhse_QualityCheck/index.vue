@@ -372,7 +372,7 @@
 </template>
 <script>
 import { qhse_company_tree } from "../../../services/qhse_EvidenceCheck"; //获取公司tree
-import { querryYearElement } from "../../../services/qhse_QualityCheck"; //显示公司所有的证据项节点
+import { querryYearElement, notInvolve} from "../../../services/qhse_QualityCheck"; //显示公司所有的证据项节点
 import { query_evidence_attach } from "../../../services/qhse_QualityCheck"; //显示证据项内容
 import { employees } from "../../../services/qhse_QualityCheck"; //显示成员
 import { addAll_evidence_attach } from "../../../services/qhse_QualityCheck"; //添加所有的信息
@@ -626,7 +626,7 @@ export default {
         (this.form.attachDescrption = ""), //附件描述
         (this.form.attach = ""), //最终上传的列表
         //上传空数据
-        await addAll_evidence_attach(this.form)
+        await notInvolve(this.form)
           .then((res) => {
             console.log(res);
             console.log(1);

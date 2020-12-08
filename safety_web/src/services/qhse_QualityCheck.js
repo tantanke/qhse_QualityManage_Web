@@ -55,9 +55,23 @@ export const sendMessage = (data) => {
         data
     })
 }
+//打回
+export const callBack = (data) => {
+    return request(`/api/callBack?tableId=${data.tableId}?sourceId=${data.sourceId}`,{
+        method: 'get',
+        data
+    })
+}
 //选择领导
 export const getReceiver = (data) => {
     return request(`/api/getReceiver?companyCode=${data.companyCode}&moduleCode=${data.moduleCode} `,{
+        method: 'get',
+        data
+    })
+}
+//不涉及录入
+export const notInvolve = (data) => {
+    return request(`/api/notInvolve?elementId=${data.id}`,{
         method: 'get',
         data
     })

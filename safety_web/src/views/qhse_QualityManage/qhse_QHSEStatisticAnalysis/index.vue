@@ -39,6 +39,14 @@
           <el-button
             type="primary"
             icon="el-icon-success"
+            @click="messagenotpass"
+            >通知打回</el-button
+          >
+        </el-form-item>
+        <el-form-item style="float: right">
+          <el-button
+            type="primary"
+            icon="el-icon-success"
             @click="checkalllabel"
             >一键审核</el-button
           >
@@ -497,6 +505,7 @@
           </el-row>
         </el-form>
       </el-dialog>
+      
     </div>
   </div>
 </template>
@@ -510,6 +519,7 @@ import { downloadElementFile } from "../../../services/qhse_EvidenceCheck";
 import {
   getReceiver,
   sendMessage,
+  callBack,
 } from "../../../services/qhse_QualityCheck"; // 确认提交
 import {
   show_approve_check,
@@ -534,6 +544,7 @@ export default {
       receiverId: "", //选择的id
       receiverList: [],
       chooseReceiver: false, //推送框
+      chooseReceiver2: false, //推送框
       right: "",
       nopasslistData: [],
       nopassData: [],
@@ -926,7 +937,8 @@ export default {
           tag: 1,
         }).then((res) => {
           this.$message.success("提交成功");
-        this.chooseReceiver=false;
+          this.receiverId='';
+          this.chooseReceiver=false;
           this.reshowdata();
           this.curCheckStatus = 2;
         });
@@ -950,6 +962,28 @@ export default {
         });
       }
     },
+    messagenotpass(){
+      if (this.tableID) {
+        if (this.total == this.total2) {
+          if(this.nopasslistData.length!=0){
+          console.log("初始code", this.code);
+          var mcode="00010005";
+          callBack({ tableId: this.tableID, sourceId:0}).then(
+            (res) => {
+              if(res.code==1000)
+            {
+            this.$message.success("通知打回成功");
+            }
+            else{
+            this.$message.error("通知打回失败");}
+            }
+          );}
+          else{
+            this.$message.error("不存在未通过项");
+          }
+        } else this.$message.error("未审核完成");
+      }
+    }
   },
   mounted() {
     console.log("审核从这里开始报错");
