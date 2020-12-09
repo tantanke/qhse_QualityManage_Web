@@ -57,7 +57,7 @@ export const sendMessage = (data) => {
 }
 //打回
 export const callBack = (data) => {
-    return request(`/api/callBack?tableId=${data.tableId}?sourceId=${data.sourceId}`,{
+    return request(`/api/callBack?tableId=${data.tableId}&sourceId=${data.sourceId}`,{
         method: 'get',
         data
     })

@@ -336,6 +336,12 @@
               <el-form-item label="要素名称：" style="margin-bottom: 1px">{{
                 detailData.name
               }}</el-form-item>
+              <el-form-item
+                v-if="detailData.isInvolve==0"
+                label="是否不涉及："
+                style="margin-bottom: 1px;color:red"
+                >该项要素不涉及审核环节！
+              </el-form-item>
               <el-form-item label="证据描述：" style="margin-bottom: 1px"
                 >{{ detailData.evidenceDescription }}
               </el-form-item>
@@ -695,6 +701,7 @@ export default {
       this.detailData.initialScore = data.initialScore;
       this.detailData.formula = data.formula;
       this.detailData.problemDescription = data.problemDescription;
+      this.detailData.isInvolve = '';
 
       this.curStatus = data.status;
       var this_;
@@ -723,6 +730,7 @@ export default {
           this_.detailData.approverStaffName = this_.nodeData.approverStaffName;
           this_.detailData.attachDescrption = this_.nodeData.attachDescrption;
           this_.detailData.uploadTime = this_.nodeData.uploadTime;
+          this_.detailData.isInvolve = this_.nodeData.isInvolve;
           var attach = this_.nodeData.attach; //获取地址字符串
           var arr = attach.split(";");
           for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
@@ -812,7 +820,7 @@ export default {
     },
     messagenotpass() {
       if (this.tableID) {
-        if (this.total == this.total2) {
+        if (this.total1==0) {
           if (this.nopasslistData.length != 0) {
             console.log("初始code", this.code);
             callBack({ tableId: this.tableID, sourceId: 1 }).then((res) => {

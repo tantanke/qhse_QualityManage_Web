@@ -138,6 +138,12 @@
                 >{{ form.negativeOpinion }}
               </el-form-item>
               <el-form-item
+                v-if="form.isInvolve==0"
+                label="是否不涉及："
+                style="margin-bottom: 1px;color:red"
+                >该项要素不涉及审核环节！
+              </el-form-item>
+              <el-form-item
                 label="证据描述："
                 prop="desc"
                 style="margin-bottom: 1px"
