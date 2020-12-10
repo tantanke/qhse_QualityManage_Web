@@ -109,6 +109,7 @@ export default {
         tittle: "",
       },
       noreadCount: 0,
+      listLen:''
     };
   },
   methods: {
@@ -118,14 +119,17 @@ export default {
       getReceiveMessageList(1)
         .then((res) => {
           res.data.list.forEach((item) => {
-            if (item.status === "未读") {
+            if (item.status) {
               this.messageList.push(item);
             }
-            let height =  this.messageList.length * 6 > 12 ? 12 : this.messageList.length * 6 
+            
+          });
+          this.listLen = this.messageList.length
+          let height =  this.listLen * 5 > 12 ? 12 : this.listLen * 6 
             console.log(height)
             this.$refs.msgList.$el.style.height =
-              12 + height + "vw"
-          });
+              10 + height + "vw"
+          
         })
         .catch(() => {
           this.$message.error("获取消息失败，请稍后再试！");
