@@ -94,7 +94,7 @@
         span
         span
         span
-        <re-msg/>
+        <re-msg  @taskChange='changeTask' :taskNum='msgNum'/>
           el-dropdown(@command='handleDropCommand')
             span.userClick
               font {{this.currentUser ? this.currentUser.userName : ''}}
@@ -107,7 +107,7 @@
               el-dropdown-item(command='goScreen')
                 font 看板查看
       el-main
-        <router-view/>
+        <router-view @taskChange='changeTask' :taskNum='msgNum'/>
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="34%">
         <el-form :inline="true" >
         <el-select v-model="value" placeholder="请选择" style='width:80%' ref="company" filterable>
@@ -133,6 +133,9 @@ import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
 import Vue from 'vue'
+import {
+  getReceiveMessageCnt,
+} from "../services/messageApi";
 import VueCookies from 'vue-cookies'
 import {getTaskList} from "../services/taskList"
 import {GetNaviByUserRole,logout,getModule} from '../services/navisBar'
@@ -156,6 +159,7 @@ export default {
   },
   data() {
     return {//记录即将去往的公司
+    msgNum:0,
     value:'',
       companyId:'',
       chooseItem:'',
@@ -195,6 +199,7 @@ export default {
     this.checkUser()
   },
   mounted () {
+    /* this.changeTask() */
    this.navs = []
    //只能进入一次一个选项
    this.$route.params.sysId ? this.chooseSys() : this.checkSys()
@@ -216,6 +221,13 @@ export default {
     }
   },
   methods: {
+    changeTask(){
+       getReceiveMessageCnt().then(res => {
+         this.msgNum = res.data
+       }) .catch(() => {
+          this.$message.error("获取消息数量失败，请稍后再试！");
+        });
+    },
     chooseSys(){
        if(this.$route.params.sysId === 2){
           this.goSafe()

@@ -60,33 +60,48 @@
       readMessage,
 	} from "../../../services/messageApi"
 export default {
+  props:{
+      taskNum: Number
+  },
   data() {
       return {
          pageNum:1,//默认第一页
          pageSize:1,
          total:1,
         tableData: [],
-        tableloading: false
+        tableloading: false,
+        nowPage:1
       }
     },
+  watch:{
+     taskNum(){
+        this.getMsg(this.nowPage)
+     }
+  },
   methods: {
     // 获取之后跳转
     getdetail(data){
-      if (data.status === "未读") {
+      
+      let _this = this
+      if (data.status ) {
         readMessage({messageId:data.id})
-          .then((res) => {
-            console.log(res);
+          .then(() => {
+            
           })
           .catch(() => {
-            this.$message.error("更新消息失败，请稍后再试！");
+            _this.$message.error("更新消息失败，请稍后再试！");
           });
       }
+      //提示消息数量有变
+
       this.$router.push(
         {
           name:'moreMsgdetail',params: data
         })
+        
     },
     handleCurrentChange(val) {
+        this.nowPage = val
         this.getMsg(val)
       },
     getMsg(data){
@@ -101,7 +116,8 @@ export default {
     } 
   },
   mounted() {
-     this.getMsg(1)
+     this.getMsg(this.nowPage)
+     
   },
 }
 </script>

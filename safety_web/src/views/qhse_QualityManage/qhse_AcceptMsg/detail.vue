@@ -35,6 +35,7 @@ data() {
 },
 mounted() {
   this.detail = this.$route.params
+  this.$emit('taskChange')
 },
 methods: {
   

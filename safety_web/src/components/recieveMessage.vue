@@ -1,7 +1,7 @@
 <template>
   <div class="messageBox">
     <el-dropdown>
-      <el-badge :value="noreadCount" :max="10" class="item">
+      <el-badge :value="msgNums" :max="10" class="item">
         <i class="el-icon-chat-dot-round"></i>
       </el-badge>
       <el-dropdown-menu ref="msgList" slot="dropdown">
@@ -92,8 +92,12 @@ import {
   getReceiveMessageCnt,
 } from "../services/messageApi";
 export default {
+  props:{
+      taskNum: Number
+  },
   data() {
     return {
+
       dialogVisible: false,
       //已读未读处理
       readColor: {
@@ -111,6 +115,27 @@ export default {
       noreadCount: 0,
       listLen:''
     };
+  },
+  computed:{
+      msgNums(){
+        return this.taskNum
+      }
+  },
+  watch:{
+    msgNums(){
+       this.messageList = []
+      getReceiveMessageList(1)
+        .then((res) => {
+          res.data.list.forEach((item) => {
+            if (item.status) {
+              this.messageList.push(item);
+            }
+          });   
+        })
+        .catch(() => {
+          this.$message.error("获取消息失败，请稍后再试！");
+        });
+    }
   },
   methods: {
     // 获取第一页的消息
@@ -134,14 +159,7 @@ export default {
         .catch(() => {
           this.$message.error("获取消息失败，请稍后再试！");
         });
-      getReceiveMessageCnt()
-        .then((res) => {
-          this.noreadCount = res.data;
-          console.log(res);
-        })
-        .catch(() => {
-          this.$message.error("获取消息失败，请稍后再试！");
-        });
+      this.$emit('taskChange')
     },
     gomore() {
       this.$router.push({ name: "moreMsg" });
@@ -171,7 +189,7 @@ export default {
     this.getMessage();
     //默认为12 每增加一个+6 最多为24
     
-      
+      this.$emit('taskChange',2)
     //超过三个设置为 scroll 最多显示六条
     // this.$refs.msgList.$el.style.overflowY ="scroll";
   },
