@@ -71,9 +71,19 @@
                 type="primary"
                 size="mini"
                 @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0"
+                v-if="(scope.row.childNode.length === 0)&
+                  (scope.row.checkStatus == 0)"
               >
                 录入
+              </el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="updateScore(scope.row)"
+                v-if="scope.row.childNode.length === 0&
+                  (scope.row.checkStatus != 0)"
+              >
+                查看
               </el-button>
             </template>
           </el-table-column>
@@ -108,11 +118,20 @@
               <el-button
                 type="primary"
                 size="mini"
-                icon="el-icon-plus"
                 @click="updateScore(scope.row)"
-                v-if="scope.row.childNode.length === 0"
+                v-if="(scope.row.childNode.length === 0)&
+                  (scope.row.checkStatus == 0)"
               >
                 录入
+              </el-button>
+              <el-button
+                type="primary"
+                size="mini"
+                @click="updateScore(scope.row)"
+                v-if="scope.row.childNode.length === 0&
+                  (scope.row.checkStatus != 0)"
+              >
+                查看
               </el-button>
             </template>
           </el-table-column>
@@ -686,6 +705,7 @@ export default {
       this.form.id = data.id; //附件id
       this.form.attach = "";
       this.form.filelength = ""; //文件长度
+      this.form.isInvolve=data.isInvolve
       //获取证据项内容
       await query_evidence_attach(data)
         .then((res) => {

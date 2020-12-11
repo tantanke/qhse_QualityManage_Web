@@ -701,7 +701,7 @@ export default {
       this.detailData.initialScore = data.initialScore;
       this.detailData.formula = data.formula;
       this.detailData.problemDescription = data.problemDescription;
-      this.detailData.isInvolve = '';
+      this.detailData.isInvolve = data.isInvolve;
 
       this.curStatus = data.status;
       var this_;
@@ -730,7 +730,6 @@ export default {
           this_.detailData.approverStaffName = this_.nodeData.approverStaffName;
           this_.detailData.attachDescrption = this_.nodeData.attachDescrption;
           this_.detailData.uploadTime = this_.nodeData.uploadTime;
-          this_.detailData.isInvolve = this_.nodeData.isInvolve;
           var attach = this_.nodeData.attach; //获取地址字符串
           var arr = attach.split(";");
           for (var i = 0, j = 0, k = 0; i < arr.length - 1; i++) {
@@ -805,8 +804,12 @@ export default {
       }
     },
     checkalllabel() {
-      console.log("进入意见批准");
+      console.log("进入一键批准");
       if (this.tableID) {
+        if((this.total - this.total1 - this.total2)!=0)
+        this.$message.error('存在已打回项，无法一键审核!')
+        else
+        {
         passAll({
           tableID: this.tableID,
           sourceID: 0,
@@ -816,6 +819,7 @@ export default {
             this.reshowdata();
           }
         });
+        }
       }
     },
     messagenotpass() {
