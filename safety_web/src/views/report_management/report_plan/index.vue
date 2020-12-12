@@ -7,8 +7,8 @@
 				<el-form :rules="rules" ref="filterQuery" label-width="150px" :model="filterQuery">
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label="基层单位：" prop="companyCode">
-								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="selectedCompanyId" style="width:100%" />
+							<el-form-item label="基层单位：">
+								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="filterQuery.companyCode" style="width:100%" />
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -100,8 +100,8 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label="基层单位:" prop="companyCode">
-								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="changeCompanyId" style="width:100%" />
+							<el-form-item label="基层单位:">
+								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="changeReport.companyCode" style="width:100%" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -235,22 +235,6 @@
 			this.getreportlist()
 			this.setNow()
 		},
-		watch: {
-			seleccompanyId() {
-				if (this.seleccompanyId) {
-					this.companyCode=''
-					this.changeCompanyIdToName(this.options, this.seleccompanyId)
-					this.filterQuery.companyCode = this.companyCode
-				}
-			},
-			changeCompanyId() {
-				if (this.changeCompanyId) {
-					this.companyCode=''
-					this.changeCompanyIdToName(this.options, this.changeCompanyId)
-					this.changeReport.companyCode = this.companyCode
-				}
-			}
-		},
 		methods: {
 			// 将公司Id转化为公司名称，并且保存nodeCode
 			changeCompanyIdToName: function(val, companyId) {
@@ -268,6 +252,8 @@
 			},
 			//生成计划
 			handleSubmit(formName) {
+				this.changeCompanyIdToName(this.options,this.filterQuery.companyCode)
+				this.filterQuery.companyCode=this.companyCode
 				console.log(JSON.stringify(this.filterQuery))
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
@@ -380,6 +366,8 @@
 			},
 			//处理报告计划修改
 			handleUpdate() {
+				this.changeCompanyIdToName(this.options,this.changeReport.companyCode)
+				this.changeReport.companyCode=this.companyCode
 				UpdateReport(this.changeReport).then(() => {
 					//alert(JSON.stringify(this.changeReport))
 					this.$message.success('操作成功')
