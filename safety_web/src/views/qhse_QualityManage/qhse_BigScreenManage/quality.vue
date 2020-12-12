@@ -127,7 +127,7 @@ export default {
       },
       downLoadFile(){
         downloadDashboardQualityManagementTemplate().then(res =>{
-          downloadfile('质量管理模板',res.file.data)
+          downloadfile('质量管理模板',res.file.data,"xls")
         })
       },
       getCompany(){

@@ -268,6 +268,20 @@
             <el-form-item label='整改情况:'>
                <el-input v-model="proForm.situation" style="width:70%"></el-input>
             </el-form-item>
+            <el-form-item label='整改图片:'>
+               <el-upload
+                 ref="uploadPro"
+                 accept=".bmp,.png,.jpg"
+                  action="/api/uploadScreenShot"
+                  :on-success="handleAvatarSuccessPro"
+                  :limit="2"    
+                  :headers="header"        
+                  :on-exceed="handleExceedPro"
+                >
+                <el-button size="small" type="primary">浏览文件</el-button>
+                <span>&nbsp;&nbsp;&nbsp;最多两张，格式为jpg,png,bmp</span>
+                </el-upload>
+            </el-form-item>
             <el-form-item label='整改情况:' v-show="passInfo.refuseReason">
                <span>被打回</span>
             </el-form-item>
@@ -354,7 +368,7 @@ export default {
    methods: {
       handleAvatarSuccessPro(res) {
       this.fileNumPro++
-      let key = 'affix' + this.fileNumPro
+      let key = 'file' + this.fileNumPro
       this.proForm[key] = res.data
     },
     // 限制文件数量
@@ -386,6 +400,7 @@ export default {
           this.dateH = [...this.date30]
        },
         goEdit(data){
+            console.log(data)
            let _this = this
           _this.editId = data.id
           _this.editShow = true
@@ -434,19 +449,30 @@ export default {
        },
        goEditPage(data){
            console.log(data)
+           let _this = this
            this.qHSE_AuditProblemRecord_ID = data.qHSE_AuditProblemRecord_ID
            this.editProShow = true
            this.passInfo.refuseReason = data.refuseReason
             this.proForm.situation = ''
+            this.proForm.file1 = null
+            this.proForm.file2 = null
+            _this.$refs['uploadPro'].clearFiles()
+            _this.fileNumPro = 0
+            
        }, 
        // 问题验证
        // 整改
        goEditPro(){
            let _this = this
+           
            if(_this.proForm.situation === ''){
                _this.$message.warning('请输入整改情况')
                return
            }
+           if(_this.fileNumPro === 0){
+               _this.$message.warning('请至少提交一个证明附件！')
+               return
+           }  
            _this.$confirm('确认提交整改情况吗？','提示',{
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -457,6 +483,7 @@ export default {
                console.log(res)
                _this.addLoading2 = false
                this.editProShow = false
+               _this.fileNumPro = 0
                 this.proForm.situation = ''
                _this.$message.success('上传成功')
                _this.getProblemDescription()

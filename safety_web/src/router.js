@@ -19,7 +19,7 @@ export default new Router({
     {
       path: '/qhseDashboard',
       name: 'qhseBigScreen',
-      component: resolve => require(['./views/bigScreen/bigScreen.vue'], resolve)
+      component: resolve => require(['./views/bigScreen/index.vue'], resolve)
     },
     {
       path: '/',
@@ -27,6 +27,16 @@ export default new Router({
       // redirect: 'firstPage',
       component: resolve => require(['./components/DashLayout.vue'], resolve),
       children: [
+        {
+          path: '/moreMsg',
+          name: 'moreMsg',
+          component: resolve => require(['./views/qhse_QualityManage/qhse_AcceptMsg/index.vue'], resolve)
+        },
+        {
+          path: '/moreMsg/detail',
+          name: 'moreMsgdetail',
+          component: resolve => require(['./views/qhse_QualityManage/qhse_AcceptMsg/detail.vue'], resolve)
+        },
         {
           path: '/components/index',
           name: 'index',
@@ -275,9 +285,13 @@ export default new Router({
         { path: '/qhse_QualityManage/StasticApprove', name:'ElementEvidenceApproval', component: resolve => require(['./views/qhse_QualityManage/qhse_ElementEvidenceApproval/index.vue'],resolve)},
         { path: '/qhse_QualityManage/taskList', name:'TaskList', component: resolve => require(['./views/qhse_QualityManage/taskList/index.vue'],resolve)},
         //看板数据管理
-        { path: '/qhse_QualityManage/qhse_BigScreenManage/progressManage', name:'ProgressManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/progress.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_BigScreenManage/qualityManage', name:'QualityProgressManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/quality.vue'],resolve)},
-        { path: '/qhse_QualityManage/qhse_BigScreenManage/recordingManage', name:'DeviceManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/recording.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/progressManage', name:'ProgressManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/progress.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/qualityManage', name:'QualityProgressManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/quality.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/recordingManage', name:'DeviceManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/recording.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/securityManage', name:'SafeManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/security.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/securityMillionManage', name:'WorkTimeManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/securityMillion.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/environmentManage', name:'huanbaoguanli', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/environment.vue'],resolve)},
+        { path: '/qhse_QualityManage/qhse_DashBoardManage/securityProjectCountManage', name:'SafeItemManager', component: resolve => require(['./views/qhse_QualityManage/qhse_BigScreenManage/securityProjectCount.vue'],resolve)},
         //报告管理  report_management
         {
           path: '/report_management/report_plan/index',

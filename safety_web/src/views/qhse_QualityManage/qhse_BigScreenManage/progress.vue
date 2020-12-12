@@ -129,7 +129,7 @@ export default {
       },
       downLoadFile(){
         downloadDashboardScheduleManagementTemplate().then(res =>{
-          downloadfile('标准进度管理模板',res.file.data)
+          downloadfile('标准进度管理模板',res.file.data,"xls")
 
         })
       },

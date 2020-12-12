@@ -94,11 +94,7 @@
         span
         span
         span
-        <router-link :to='{name: "index"}'>
-          <el-badge :value="value1" class="item" style="float:right;" @click.native="chang()">
-          //- <i class="el-icon-bell" style="font-size:25px;color:#3399CC"></i>
-          </el-badge>
-        </router-link>
+        <re-msg  @taskChange='changeTask' :taskNum='msgNum'/>
           el-dropdown(@command='handleDropCommand')
             span.userClick
               font {{this.currentUser ? this.currentUser.userName : ''}}
@@ -111,7 +107,7 @@
               el-dropdown-item(command='goScreen')
                 font 看板查看
       el-main
-        <router-view/>
+        <router-view @taskChange='changeTask' :taskNum='msgNum'/>
         <el-dialog title="请选择需要查看的单位" :visible.sync="dashBoardVisible" width="34%">
         <el-form :inline="true" >
         <el-select v-model="value" placeholder="请选择" style='width:80%' ref="company" filterable>
@@ -131,11 +127,15 @@
 
 <script>
 // import {updateMessage,notReadMessage} from '../services/message'
+import reMsg from "./recieveMessage"
 import {GetqhseCompanytree} from '@/services/qhseDashboard/index'
 import CurrentUser from '../store/CurrentUser'
 import Logo from '../assets/resources/logo.jpg'
 // import NAV_ITEMS from '../navis'
 import Vue from 'vue'
+import {
+  getReceiveMessageCnt,
+} from "../services/messageApi";
 import VueCookies from 'vue-cookies'
 import {getTaskList} from "../services/taskList"
 import {GetNaviByUserRole,logout,getModule} from '../services/navisBar'
@@ -154,8 +154,12 @@ import {GetCurrentUser} from '../store/CurrentUser'  //新增
 Vue.use(VueCookies)
 
 export default {
+  components:{
+      reMsg
+  },
   data() {
     return {//记录即将去往的公司
+    msgNum:0,
     value:'',
       companyId:'',
       chooseItem:'',
@@ -163,7 +167,7 @@ export default {
       companyList:[],
       listdata:[],
       dashBoardVisible: false,
-      qhse:'QHSE管理系统',
+      qhse:'',
       close1:false,
       changeS:false,
       close2:false,
@@ -195,16 +199,11 @@ export default {
     this.checkUser()
   },
   mounted () {
-   this.chooseSys()
-    this.checkSys()
-    //定时刷新消息数量
-    if(this.timer){
-      clearInterval(this.timer)
-    }else{
-      this.timer=setInterval(()=>{
-       /*  this.getMessageCount() */
-      },3600000)
-    }
+    /* this.changeTask() */
+   this.navs = []
+   //只能进入一次一个选项
+   this.$route.params.sysId ? this.chooseSys() : this.checkSys()
+    //定时刷新消息数
     /* this.getMessageCount() */
     window.onload = function(){
       if(!window.sessionStorage["tempFlag"]){
@@ -222,8 +221,15 @@ export default {
     }
   },
   methods: {
+    changeTask(){
+       getReceiveMessageCnt().then(res => {
+         this.msgNum = res.data
+       }) .catch(() => {
+          this.$message.error("获取消息数量失败，请稍后再试！");
+        });
+    },
     chooseSys(){
-       if(this.$route.params.sysId === 0){
+       if(this.$route.params.sysId === 2){
           this.goSafe()
        }
        if(this.$route.params.sysId === 1){
@@ -276,8 +282,8 @@ export default {
             this.routerForm.companyName = this.$refs.company.selectedLabel
         }
         const {href} = this.$router.resolve({
-        name: "qhseBigScreen",
-        query: this.routerForm
+        path: "/qhseDashboard",
+        query: this.routerForm,
         });
           window.open(href, '_blank');
       },
@@ -328,7 +334,7 @@ export default {
         _this.qhse = 'QHSE安全板块'
          this.$router.push({name: 'mainPath'})
         _this.checkTaskList(_this.navs)
-        console.log(_this.navs)
+
 	if(_this.taskFlag){
 		getTaskList().then(res=>{
 			let notReceive=res.data.filter(item=>{
@@ -470,6 +476,11 @@ export default {
         })
     }
   },
+  /* beforeRouteLeave(to, from, next) {
+      this.$vnode.parent.componentInstance.cache = {}
+      this.$vnode.parent.componentInstance.keys = []
+      next()
+  }, */
   computed: {
     activeNav () {
       let navs = this.navs

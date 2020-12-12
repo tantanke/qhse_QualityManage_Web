@@ -125,7 +125,7 @@ export default {
       },
       downLoadFile(){
          downloadDashboardRecorderManagementTemplate().then(res =>{
-                downloadfile('记录仪管理模板',res.file.data)
+                downloadfile('记录仪管理模板',res.file.data,"xls")
         })
       },
       getCompany(){

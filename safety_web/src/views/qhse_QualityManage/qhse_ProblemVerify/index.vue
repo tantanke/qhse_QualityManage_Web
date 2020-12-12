@@ -271,17 +271,33 @@
             width="35%">
             <div v-loading='addLoading'>
             <el-form >
-            <el-form-item label='整改情况:' label-width='120px'>
+            <el-form-item label='整改情况:' label-width='80px'>
                <span>{{detailPro.situation}}</span>
             </el-form-item>
-            <el-form-item label='操作:' label-width='120px'>
+             <el-form-item label='整改文件:' label-width='80px' v-show="detailPro.img.length > 0">
+              <div v-for="(item,index) in detailPro.img" :key="index">
+                    <el-card :body-style="{ padding: '10px' }"
+                                style="width:200px;height:120px;text-align:center;float:left;margin:05px">
+                        <span v-if="!item">无图片文件记录！</span>
+                        <el-popover placement="right" title trigger="click" v-else>
+                            <div style="box-shadow: 0 0 2px 4px rgba(0,0,0,0.3);"
+                                    class="picPosition">
+                                <img :src="item" class="picSize"/>
+                            </div>
+                            <img slot="reference" :src="item" :alt="detail.img"
+                                    style="width: 100%; height: 100%;"/>
+                        </el-popover>
+                    </el-card>
+                </div>
+            </el-form-item>
+            <el-form-item label='操作:' label-width='80px'>
                 <el-radio @click="reset"  v-model="doWhat" label="refuse" ><el-button type="danger" plain>打 回</el-button></el-radio>
                 <el-radio  @click="reset"  v-model="doWhat" label="pass"><el-button type="primary" plain >通 过</el-button></el-radio>
             </el-form-item>
-            <el-form-item label='通过描述:' label-width='120px' v-show='doWhat === "pass"'>
+            <el-form-item label='通过描述:' label-width='80px' v-show='doWhat === "pass"'>
                <el-input v-model="proForm.passReason" style="width:70%"></el-input>
             </el-form-item>
-             <el-form-item label='打回原因:' label-width='120px' v-show='doWhat === "refuse"'>
+             <el-form-item label='打回原因:' label-width='80px' v-show='doWhat === "refuse"'>
                <el-input v-model="proForm.refuseReason" style="width:70%"></el-input>
             </el-form-item>
             </el-form>
@@ -356,7 +372,8 @@ export default {
                img:[]
            },
            detailPro:{
-               situation:''
+               situation:'',
+               img:[]
            },
            recieveProShow: false,
            qHSE_AuditProblemRecord_ID:''
@@ -364,10 +381,22 @@ export default {
    },
    methods: {
        goProRecieve(data){
-        console.log(data)
+           console.log(data)
         this.qHSE_AuditProblemRecord_ID = data.qHSE_AuditProblemRecord_ID
         this.detailPro.situation = data.situation
+        this.detailPro.img = [];
         this.recieveProShow = true
+        if(data.file2){
+             this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file1)
+             this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file2)
+          }
+          else if(data.file1){
+              this.detailPro.img.push('http://39.98.173.131:9000/api'+ data.file1)
+          }
+          else{
+              return
+          }
+        
        },
        reset(){
            this.proForm.passReason = ''
@@ -487,7 +516,7 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(()=> {
-           updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'未整改',refuseReason:this.proForm.refuseReason,passReason:''}).then(res => {
+           updateProblemDescription(this.qHSE_AuditProblemRecord_ID,{status:'未整改',file1:null,file2:null,refuseReason:this.proForm.refuseReason,passReason:''}).then(res => {
                console.log(res)
                this.$message.success('打回成功')
                this.getProblemDescription()

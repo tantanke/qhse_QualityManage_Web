@@ -10,13 +10,88 @@ export const queryDashboardQualityManagement = (data) => {
   })
   }
 
-
-// 查询记录仪数据
-export const queryDashboardRecorderManagement = (data) => {
-    return request('/api/queryDashboardRecorderManagement', {
-      method:'post',
+// 查询安全管理
+export const queryDashboardSecurity = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurity?companyCode='+data.companyCode, {
+      method:'get',
       data
     })
+  }
+  else{
+    return request('/api/queryDashboardSecurity', {
+      method:'get',
+      data
+    })
+  }
+}
+// 查询环保管理
+export const queryDashboardEnvironmentManagement = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardEnvironmentManagement?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardEnvironmentManagement', {
+      method:'get',
+      data
+    })
+  }
+}
+// 查询百万工时
+export const queryDashboardSecurityMillion = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityMillion?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityMillion', {
+      method:'get',
+      data
+    }) 
+  }
+}
+// 查询安技项目管理（总）
+export const queryDashboardSecurityProjectCount = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityProjectCount?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityProjectCount', {
+      method:'get',
+      data
+    })
+  }
+}
+// 某个单位
+export const queryDashboardSecurityProjectByLevel = (data) => {
+  if(data.companyCode){
+    return request('/api/queryDashboardSecurityProjectByLevel?companyCode='+data.companyCode, {
+      method:'get',
+      data
+    })
+  }
+  else{
+    return request('/api/queryDashboardSecurityProjectByLevel', {
+      method:'get',
+      data
+    })
+  }
+}
+// 按项目
+// 查询记录仪数据
+export const queryDashboardRecorderManagement = (data) => {
+      return request('/api/queryDashboardRecorderManagement', {
+        method:'post',
+        data
+      })
   }
 
 
@@ -34,6 +109,31 @@ export const queryDashboardScheduleManagement = (data) => {
     })
   }
 // 下载相关接口
+
+// 下载环保管理
+export const downloadDashboardEnvironmentManagementTemplate = () => {
+  return doloadFile('/api/downloadDashboardEnvironmentManagementTemplate', {
+      method: 'get'
+  })
+}
+// 下载百万工时
+export const downloadDashboardSecurityMillionTemplate = () => {
+  return doloadFile('/api/downloadDashboardSecurityMillionTemplate', {
+      method: 'get'
+  })
+}
+// 下载安技项目管理
+export const downloadDashboardSecurityProjectTemplate = () => {
+  return doloadFile('/api/downloadDashboardSecurityProjectTemplate', {
+      method: 'get'
+  })
+}
+// 下载安全管理
+export const downloadDashboardSecurityTemplate = () => {
+  return doloadFile('/api/downloadDashboardSecurityTemplate', {
+      method: 'get'
+  })
+}
 // 下载标准进度管理
 export const downloadDashboardScheduleManagementTemplate = () => {
   return doloadFile('/api/downloadDashboardScheduleManagementTemplate', {
@@ -52,9 +152,9 @@ export const downloadDashboardRecorderManagementTemplate = () => {
       method: 'get'
   })
 }
-// 下载相关函数 
-export const downloadfile = (filename,blob) => {
-                const fileName = filename + ".xls";
+// 下载相关函数1 
+export const downloadfile = (filename,blob,houzui) => {
+                const fileName = filename + "." + houzui;
                 const elink = document.createElement("a"); // 创建的标签
                 elink.download = fileName;
                 elink.style.display = "none";

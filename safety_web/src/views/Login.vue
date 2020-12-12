@@ -3,7 +3,7 @@
     .login-base
       .title
         //- img.logo(:src='imgs.Logo')
-        font QHSE管理系统
+        font QHSE隐患排查与监管平台
         
       br
       el-form(:model='formData', @submit.native.prevent="handleSignIn")
@@ -33,7 +33,7 @@ import {SignIn} from '../services/session'
 import IconUser from '../assets/icons/user.svg'
 import IconPassword from '../assets/icons/password.svg'
 import Logo from '../assets/resources/logo.jpg'
-import back from '../components/img/back.png'
+import back from '../components/img/back2.jpg'
 import safebtn from '../components/img/3.png'
 import qualitybtn from '../components/img/4.png'
 import dashboard from '../components/img/1aa.png'

@@ -36,6 +36,7 @@ export const submitInputResult = (data) => {
         method: 'post',
     })
 }
+//一件批准
 export const passAll = (data) => {
     return request(`/api/passAll?tableId=${data.tableID}&sourceId=${data.sourceID}`,{
         method: 'post',
@@ -47,4 +48,31 @@ export const passAll = (data) => {
 //         data
 //     })
 // }
-
+//录入审核推送选择领导
+export const sendMessage = (data) => {
+    return request(`/api/sendMessage/${data.tag}?receiverId=${data.receiverId}`,{
+        method: 'get',
+        data
+    })
+}
+//打回
+export const callBack = (data) => {
+    return request(`/api/callBack?tableId=${data.tableId}&sourceId=${data.sourceId}`,{
+        method: 'get',
+        data
+    })
+}
+//选择领导
+export const getReceiver = (data) => {
+    return request(`/api/getReceiver?companyCode=${data.companyCode}&moduleCode=${data.moduleCode} `,{
+        method: 'get',
+        data
+    })
+}
+//不涉及录入
+export const notInvolve = (data) => {
+    return request(`/api/notInvolve?elementId=${data.id}`,{
+        method: 'get',
+        data
+    })
+}
