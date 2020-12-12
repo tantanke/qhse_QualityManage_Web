@@ -432,11 +432,11 @@ export default new Router({
           name: 'StudyCaseEdit',
           component: resolve => require(['./views/nav7/studyCase/Edit.vue'], resolve)
         }, //学习案例修改页面
-        {
-          path: '/nav7/Rules/index',
-          name: 'RulesIndex',
-          component: resolve => require(['./views/nav7/Rules/Index.vue'], resolve)
-        }, //规章制度
+        // {
+        //   path: '/nav7/Rules/index',
+        //   name: 'RulesIndex',
+        //   component: resolve => require(['./views/nav7/Rules/Index.vue'], resolve)
+        // }, //规章制度
         {
           path: '/nav7/Information/index',
           name: 'InformationIndex',
@@ -492,11 +492,16 @@ export default new Router({
           name: 'Event_Edit',
           component: resolve => require(['./views/nav7/updateEvent/Edit.vue'], resolve)
         }, //事件修改页面
-        {
+	 {
           path: '/nav7/updateRules/index',
-          name: 'updateRulesIndex',
+          name: 'RulesIndex',
           component: resolve => require(['./views/nav7/updateRules/Index.vue'], resolve)
         }, //上传规章制度首页
+//         {
+//           path: '/nav7/updateRules/index',
+//           name: 'updateRulesIndex',
+//           component: resolve => require(['./views/nav7/updateRules/Index.vue'], resolve)
+//         }, //上传规章制度首页
         {
           path: '/nav7/updateRules/edit',
           name: 'updateRulesEdit',
