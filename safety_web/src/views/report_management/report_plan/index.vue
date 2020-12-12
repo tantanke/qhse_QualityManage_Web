@@ -12,7 +12,7 @@
                      :multiple="false"
                      :options="options"
                      placeholder="请选择单位名称"
-                     v-model="filterQuery.companyCode"
+                     v-model="companyId"
                      style="width:100%"
                      /> 
                    </el-form-item>
@@ -227,6 +227,9 @@ export default {
         reportType:'',
         reportPlanDate:''
       },
+	  companyId:null,
+	  companyCode:'',
+	  companyName:'',
       listcondition:{state:'2',pageIdx: 1,pageSize: 10},
       loading:false,
       tableData:[],
@@ -252,7 +255,29 @@ export default {
    this.getreportlist()
    this.setNow()
   },
+  watch:{
+	  companyId(){
+		  if(this.companyId){
+			  this.changeCompanyIdToName(this.options,this.companyId)
+			  this.filterQuery.companyCode=this.companyCode
+		  }
+	  }
+  },
   methods: {
+	  // 将公司Id转化为公司名称，并且保存nodeCode
+	  changeCompanyIdToName: function(val, companyId) {
+	  	for (var j = 0; j < val.length; j++) {
+	  		if (val[j]) {
+	  			if (val[j].id == companyId) {
+	  				this.companyCode = val[j].nodeCode
+	  				this.companyName = val[j].label
+	  				break
+	  			} else if (val[j].children) {
+	  				this.changeCompanyIdToName(val[j].children, companyId)
+	  			}
+	  		}
+	  	}
+	  },
     //生成计划
     handleSubmit (formName) {
       console.log(JSON.stringify(this.filterQuery))
