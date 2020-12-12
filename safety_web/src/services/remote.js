@@ -185,7 +185,7 @@ export const endPlanDetail = (detailId ) => {
 }
 // 导出填写数据
 export const downloadMonitorData = (data ) => {
-    return request(`/api/downloadMonitorData?date=${data.date}&planID=${data.monitorPlanID}`, {
+    return request(`/api/downloadMonitorData?date=${data.date}&planID=${data.planId}`, {
         method:'get',
     })
 }

@@ -255,6 +255,7 @@ export default {
   },
   methods: {
     timeupload2(){//下载模板
+    console.log(this.comname)
       this.downloadList=[];
         if(this.timetype=='选择某天')
         {
