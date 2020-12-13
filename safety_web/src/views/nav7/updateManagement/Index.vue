@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-title">管理亮点</div>
-    <div class="page-content">
+    <div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
       <el-form
         :inline="true"
         v-model="filterQuery"
@@ -70,7 +70,7 @@
         </div>
       </el-dialog>
 
-      <el-table :data="tableData" v-loading="loading" border style="width: 100%" >
+      <el-table :data="tableData" border style="width: 100%" >
         <el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" align="center"></el-table-column>
         <el-table-column label="文件名称" prop="fileName" header-align="center"> </el-table-column>
         <el-table-column label="适用单位" prop="appliCom" header-align="center"> </el-table-column>
@@ -87,7 +87,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination-base">
+      <div class="pagination-base" style="margin-bottom: 15px">
         <el-pagination
           @current-change="handlePageChange"
           :current-page="filterQuery.pageIdx"
@@ -223,9 +223,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+		  this.loading=true
         DeleteFile(item.fileID).then(() => {
           this.handleGetFileList()
-          this.$router.go(0)
+          this.loading=false
           }, (err) => {
           this.$message.error(err.message)
           })
@@ -309,9 +310,11 @@ export default {
     //确认创建
     handleSubmit () {
       this.formData.fileType = '管理亮点'
+	  this.loading=true
       CreateFile(this.formData).then(() => {
         this.$message.success('创建成功')
-        this.$router.go(0) //返回上一url
+        this.handleGetFileList()
+		this.loading=false
       }).catch((err) => {
         this.$message.error(err.message)
       })
@@ -319,14 +322,8 @@ export default {
     //文件预览
     handleGetWord(item) {
       let url = item.fileNameCode
-      let index1=url.lastIndexOf(".")
-      let index2=url.length
-      let type=url.substring(index1+1,index2)
-      if(type ==='pdf' || type ==='PDF'){
-        window.location.href = item.fileNameCode
-      }else{
-        this.fileAttach = 'http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=1&_xdoc=' + item.fileNameCode
-        window.open(this.fileAttach)
+      if(url){
+      	window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
       }
     },
 
