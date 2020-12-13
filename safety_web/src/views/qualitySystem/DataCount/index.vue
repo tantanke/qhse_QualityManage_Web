@@ -614,10 +614,9 @@
 		methods: {
 			//预览文件，使用外部插件
 			preview(url) {
-				if (!url) {
-					return 0
+				if(url){
+					window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
 				}
-				window.open('http://view.xdocin.com/xdoc?_xdoc=' + url)
 			},
 			//下载选项框中全选按钮的点击事件，全选或撤销全选时对对应的组进行操作
 			allCheck(event, option) {

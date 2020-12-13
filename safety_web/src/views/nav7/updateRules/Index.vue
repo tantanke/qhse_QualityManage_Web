@@ -96,7 +96,7 @@
 					</template>
 				</el-table-column>
 			</el-table>
-			<div class="pagination-base">
+			<div class="pagination-base" style="margin-bottom: 15px;">
 				<el-pagination @current-change="handlePageChange" :current-page="filterQuery.pageIdx" :page-size="filterQuery.pageSize"
 				 :total="total" background layout="total, prev, pager, next, jumper" style="float:right;">
 				</el-pagination>
@@ -408,14 +408,8 @@
 			//文件预览
 			handleGetWord(item) {
 				let url = item.regNameCode
-				let index1 = url.lastIndexOf(".")
-				let index2 = url.length
-				let type = url.substring(index1 + 1, index2)
-				if (type === 'pdf' || type === 'PDF') {
-					window.location.href = item.regNameCode
-				} else {
-					this.fileAttach = 'http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=1&_xdoc=' + item.regNameCode
-					window.open(this.fileAttach)
+				if(url){
+					window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
 				}
 			},
 

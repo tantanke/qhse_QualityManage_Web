@@ -876,8 +876,9 @@
 			},
 			preview(url){
 				// 文件预览
-				console.log('url',url)
-				window.open('http://view.xdocin.com/xdoc?_xdoc='+url)
+				if(url){
+				window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
+				}
 			},
 			downloadFile: function() {
 				this.selectEnglishData=[]

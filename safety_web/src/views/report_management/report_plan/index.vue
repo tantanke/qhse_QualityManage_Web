@@ -1,14 +1,14 @@
 <template>
 	<div>
 		<div class="page-title">报告计划</div>
-		<div class="page-content">
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<div class="form-content">
 				<br />
 				<el-form :rules="rules" ref="filterQuery" label-width="150px" :model="filterQuery">
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label="基层单位：">
-								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="filterQuery.companyCode" style="width:100%" />
+							<el-form-item label="基层单位："  prop="companyCode">
+								<treeselect :multiple="false" :disable-branch-nodes="true" :options="options" placeholder="请选择单位名称" v-model="filterQuery.companyCode" style="width:100%" />
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -57,7 +57,7 @@
 				</el-form>
 				<!-- 报告计划列表table -->
 			</div>
-			<el-table :data="tableData" v-loading="loading" border ref="refTable" style="width: 100%">
+			<el-table :data="tableData" border ref="refTable" style="width: 100%">
 				<el-table-column label="序号" width="100px" header-align="center" align="center">
 					<template slot-scope="scope">
 						<font>{{scope.$index + 1}}</font>
@@ -203,27 +203,27 @@
 					reportCheckPersonID: [{
 						required: true,
 						message: '请选择检查负责人',
-						trigger: ['blur', 'change']
+						trigger: ['blur']
 					}],
 					companyCode: [{
 						required: true,
 						message: '请选择单位名称',
-						trigger: ['blur', 'change']
+						trigger: ['blur']
 					}],
 					count: [{
 						required: true,
 						message: '请填写报告份数',
-						trigger: ['blur', 'change']
+						trigger: ['blur']
 					}],
 					reportType: [{
 						required: true,
 						message: '请选择报告类别',
-						trigger: ['blur', 'change']
+						trigger: ['blur']
 					}],
 					reportPlanDate: [{
 						required: true,
 						message: '请选择报告计划时间',
-						trigger: ['blur', 'change']
+						trigger: ['blur']
 					}]
 				}
 			}
@@ -250,6 +250,20 @@
 					}
 				}
 			},
+			// 将公司code转化为公司id
+			changeCompanyCodeToId: function(val, companyCode) {
+				for (var j = 0; j < val.length; j++) {
+					if (val[j]) {
+						if (val[j].nodeCode == companyCode) {
+							this.companyId = val[j].id
+							this.companyName = val[j].label
+							break
+						} else if (val[j].children) {
+							this.changeCompanyCodeToId(val[j].children, companyCode)
+						}
+					}
+				}
+			},
 			//生成计划
 			handleSubmit(formName) {
 				this.changeCompanyIdToName(this.options,this.filterQuery.companyCode)
@@ -257,13 +271,21 @@
 				console.log(JSON.stringify(this.filterQuery))
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
+						this.loading=true
 						CreateReport(this.filterQuery).then(() => {
 							//alert(res)
 							this.$message.success('操作成功')
 							this.getreportlist()
+							this.filterQuery.companyCode=null
+							this.filterQuery.reportCheckPersonID= ''
+							this.filterQuery.count= '1'
+							this.filterQuery.reportType=''
+							this.filterQuery.reportPlanDate=''
+							this.loading=false
 							// this.$router.go(-1) //返回上一url
 						}, (err) => {
 							this.$message.error(err.message)
+							this.loading=false
 						})
 					} else {
 						console.log('error submit!!');
@@ -350,6 +372,8 @@
 				//this.$route.params.id && localStorage.setItem('data',JSON.stringify(this.$route.params.id));
 				GetReportDetail(id).then((res) => {
 					this.changeReport = res.data
+					this.changeCompanyCodeToId(this.options,this.changeReport.companyCode)
+					this.changeReport.companyCode=this.companyId
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
@@ -368,13 +392,16 @@
 			handleUpdate() {
 				this.changeCompanyIdToName(this.options,this.changeReport.companyCode)
 				this.changeReport.companyCode=this.companyCode
+				this.loading=true
 				UpdateReport(this.changeReport).then(() => {
 					//alert(JSON.stringify(this.changeReport))
 					this.$message.success('操作成功')
 					this.dialogEditVisible = false;
 					this.getreportlist()
+					this.loading=false
 				}, (err) => {
 					this.$message.error(err.message)
+					this.loading=false
 				})
 			}
 
