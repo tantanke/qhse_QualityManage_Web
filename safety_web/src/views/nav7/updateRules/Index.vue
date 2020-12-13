@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="page-title">规章制度</div>
-		<div class="page-content">
+		<div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<el-form :inline="true" v-model="filterQuery" @submit.native.prevent="handleSearch">
 				<el-form-item label="文件名称：">
 					<el-autocomplete v-model="inputRegName" clearable :fetch-suggestions="querySearch" placeholder="请输入文件名称查询"
@@ -30,7 +30,7 @@
 					<el-upload :action="`/api/file_upload`" :on-remove="handleRemove" :before-upload="handleBeforeUpload" :auto-upload='true'
 					 :headers="{Authorization:currentUser.token}" :file-list="fileList" :on-success="handleSuccess" :limit="1"
 					 list-type="text" accept=".pdf,.PDF,.docx,.DOCX">
-						<el-button type="primary" icon='el-icon-upload'>上传文件</el-button>
+						<el-button type="success" icon='el-icon-upload'>上传文件</el-button>
 					</el-upload>
 				</el-form-item>
 			</el-form>
@@ -66,26 +66,26 @@
           </el-form-item> -->
 				</el-form>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogFormVisible = false">取 消</el-button>
-					<el-button type="primary" @click="handleSubmit()">确 定</el-button>
+					<el-button icon="el-icon-refresh-left" @click="dialogFormVisible = false">取 消</el-button>
+					<el-button type="primary" icon="el-icon-check" @click="handleSubmit()">确 定</el-button>
 				</div>
 			</el-dialog>
 
-			<el-table :data="tableData" v-loading="loading" border style="width: 100%">
-				<el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" align="center"></el-table-column>
-				<el-table-column label="文号" prop="documentSymbol" header-align="center"> </el-table-column>
-				<el-table-column label="名称" prop="regName" header-align="center"> </el-table-column>
-				<el-table-column label="发布机构" prop="publishComName" header-align="center"> </el-table-column>
-				<el-table-column label="文件类型" prop="typeName" header-align="center" width="120"> </el-table-column>
-				<el-table-column label="开始执行时间" prop="beginDate" header-align="center" width="160" sortable> </el-table-column>
-				<el-table-column label="上传时间" prop="uploadDate" header-align="center" width="160"> </el-table-column>
+			<el-table :data="tableData" border style="width: 100%">
+				<el-table-column type="index" width="50" header-align="center" label="序号" show-overflow-tooltip :index="this.indexStartNum" align="center"></el-table-column>
+				<el-table-column label="文号" prop="documentSymbol" show-overflow-tooltip header-align="center"> </el-table-column>
+				<el-table-column label="名称" prop="regName" show-overflow-tooltip header-align="center"> </el-table-column>
+				<el-table-column label="发布机构" prop="publishComName" show-overflow-tooltip header-align="center"> </el-table-column>
+				<el-table-column label="文件类型" prop="typeName" show-overflow-tooltip header-align="center" width="120"> </el-table-column>
+				<el-table-column label="开始执行时间" prop="beginDate" show-overflow-tooltip header-align="center" width="160" sortable> </el-table-column>
+				<el-table-column label="上传时间" prop="uploadDate" show-overflow-tooltip header-align="center" width="160"> </el-table-column>
 				<!-- <el-table-column label="上传人" prop="uploadPerson" header-align="center"> </el-table-column>
         <el-table-column label="文件简介" prop="summary" header-align="center"> </el-table-column> -->
 				<el-table-column label="操作" align="center" header-align="center" width="350%">
 					<template slot-scope="scope">
 						<div class="inline-td">
 							<el-button size="mini" type="primary" icon='el-icon-search' @click="handleGetWord(scope.row)">预览</el-button>
-							<el-button size="mini" type="primary" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
+							<el-button size="mini" type="warning" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
 							&nbsp;&nbsp;
 							<router-link :to='{name: "updateRulesEdit", params: {id: scope.row.id}}'>
 								<el-button size="mini" type="primary" icon="el-icon-edit-outline">修改</el-button>
@@ -129,7 +129,8 @@
 		beginDate1: '',
 		beginDate2: '',
 		pageIdx: 1,
-		pageSize: 10
+		pageSize: 10,
+		
 	}
 	export default {
 		computed: {
@@ -155,7 +156,10 @@
 				regNameAyy: [],
 				regNameListAyy: [],
 				fileList: [],
-				dialogFormVisible: false
+				dialogFormVisible: false,
+				companyId:'',
+				companyName:'',
+				companyCode:''
 			};
 		},
 
@@ -256,12 +260,40 @@
 					this.filterQuery.typeCode = ''
 				}
 			},
+			// 将公司Id转化为公司名称，并且保存nodeCode
+			changeCompanyCodeToId: function(val, companyCode) {
+				for (var j = 0; j < val.length; j++) {
+					if (val[j]) {
+						if (val[j].nodeCode == companyCode) {
+							this.companyId = val[j].id
+							this.companyName=val[j].label
+							break
+						} else if (val[j].children) {
+							this.changeCompanyCodeToId(val[j].children, companyCode)
+						}
+					}
+				}
+			},
 			handleSelectFile() {
 				this.loading = true
+				this.companyCode=''
+				this.companyId=''
+				this.companyName=''
+				this.changeCompanyIdToName(this.options,this.filterQuery.publishComCode)
+				this.filterQuery.publishComCode=this.companyCode
 				GetFileList(this.filterQuery).then((res) => {
 					this.tableData = res.data.list
 					this.total = res.data.total
 					this.filterQuery.pageIdx = res.data.page
+					if(this.filterQuery.publishComCode){
+						this.companyCode=''
+						this.companyId=''
+						this.companyName=''
+						this.changeCompanyCodeToId(this.options,this.filterQuery.publishComCode)
+						this.filterQuery.publishComCode=this.companyId
+					}else{
+						this.filterQuery.publishComCode=null
+					}
 					this.loading = false
 				}).catch((err) => {
 					this.$message.error(err.message)
@@ -384,7 +416,8 @@
 				for (var j = 0; j < val.length; j++) {
 					if (val[j]) {
 						if (val[j].id == companyId) {
-							this.formData.publishComCode = val[j].nodeCode
+							this.companyCode = val[j].nodeCode
+							this.companyName=val[j].label
 							break
 						} else if (val[j].children) {
 							this.changeCompanyIdToName(val[j].children, companyId)
@@ -394,13 +427,16 @@
 			},
 			//确认创建
 			handleSubmit() {
+				this.companyCode=''
+				this.companyId=''
+				this.companyName=''
 				this.changeCompanyIdToName(this.options,this.formData.publishComCode)
+				this.formData.publishComCode=this.companyCode
 				CreateFile(this.formData).then(() => {
 					this.$message.success('创建成功')
-					this.dialogFormVisible = false
 					this.fileList=[]
 					this.handleGetFileList()
-					//this.$router.go(0) //刷新页面
+					this.dialogFormVisible = false
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
