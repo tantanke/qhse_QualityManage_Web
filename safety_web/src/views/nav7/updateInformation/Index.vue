@@ -32,7 +32,7 @@
             :limit="1"
             list-type="text"
             accept=".pdf,.PDF,.docx,.DOCX">
-            <el-button type="primary" icon='el-icon-upload'>上传文件</el-button>
+            <el-button type="success" icon='el-icon-upload'>上传文件</el-button>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -75,7 +75,7 @@
           <template slot-scope="scope">
             <div class="inline-td">
               <el-button size="mini" type="primary" icon='el-icon-search' @click="handleGetWord(scope.row)">预览</el-button>
-              <el-button size="mini" type="primary" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
+              <el-button size="mini" type="warning" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
               <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDeleteFile(scope.row)">删除</el-button>
             </div>
           </template>
@@ -131,7 +131,10 @@ export default {
       fileNameAyy:[],
       fileNameListAyy:[],
       fileList:[],
-      dialogFormVisible:false
+      dialogFormVisible:false,
+	  companyCode:'',
+	  companyId:'',
+	  companyName:''
     };
   },
 
@@ -158,6 +161,7 @@ export default {
       this.loading = true
       GetFileList(this.filterQuery).then((res) => {
         this.tableData = res.data.list
+		console.log(this.tableData)
         this.total = res.data.total
         this.filterQuery.pageIdx = res.data.page
         this.indexStartNum = ((this.filterQuery.pageIdx - 1) * this.filterQuery.pageSize) + 1;
@@ -302,14 +306,35 @@ export default {
       this.formData.fileName = arr.substring(0,n)
       this.dialogFormVisible = true
     },
+	// 将公司Id转化为公司名称，并且保存nodeCode
+	changeCompanyIdToName: function(val, companyId) {
+		for (var j = 0; j < val.length; j++) {
+			if (val[j]) {
+				if (val[j].id == companyId) {
+					this.companyCode = val[j].nodeCode
+					this.companyName=val[j].label
+					break
+				} else if (val[j].children) {
+					this.changeCompanyIdToName(val[j].children, companyId)
+				}
+			}
+		}
+	},
     //确认创建
     handleSubmit () {
       this.formData.fileType = '文件通知'
 	  this.loading=true
+	  this.companyCode=''
+	  this.companyId=''
+	  this.companyName=''
+	  this.changeCompanyIdToName(this.options,this.formData.appliComCode)
+	  this.formData.appliComCode=this.companyCode
       CreateFile(this.formData).then(() => {
         this.$message.success('创建成功')
 		this.handleGetFileList()
 		this.loading=false
+		this.fileList=[]
+		this.dialogFormVisible=false
       }).catch((err) => {
         this.$message.error(err.message)
 		this.loading=false
