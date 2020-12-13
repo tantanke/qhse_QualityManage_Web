@@ -690,7 +690,7 @@
 				if(!url){
 					return 0
 				}
-				window.open('http://view.xdocin.com/xdoc?_xdoc=' + url)
+				window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
 			},
 			//违规人员事件监听事件
 			illegalPerson: function() {
