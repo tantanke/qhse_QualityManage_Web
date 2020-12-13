@@ -112,6 +112,7 @@ export default {
             if(res.code === 1000){
                 this.$message.success('上传成功')
                 this.screenLoading = false
+                this.searchData()
             }
             
             else{
