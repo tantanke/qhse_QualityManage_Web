@@ -43,14 +43,14 @@
             >通知打回</el-button
           >
         </el-form-item>
-        <el-form-item style="float: right">
+        <!-- <el-form-item style="float: right">
           <el-button
             type="primary"
             icon="el-icon-success"
             @click="checkalllabel"
             >一键审核</el-button
           >
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <el-row style="padding: 10px; border-top: 2px dashed #dddddd">
         <div style="margin: 15px 0px">
