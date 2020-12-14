@@ -5,15 +5,15 @@
 			<!--控制级联菜单 -->
 			<el-form :model='checkForm' style="width:90%" :disabled='formControl'>
 				<el-form-item label='检查类别：'>
-					<el-select v-model="checkForm.checkContent" placeholder="请选择">
+					<el-select v-model="checkForm.checkContent" placeholder="请选择" @focus="editCheckType">
 						<el-option v-for="item in checkType1" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
-					<el-select v-model="checkForm.checkType" style="margin-left:15px" v-if="checkForm.checkContent !== ''" @focus="editCheckType">
+					<el-select v-model="checkForm.checkType" style="margin-left:15px" v-show="checkForm.checkContent" @focus="editCheckType">
 						<el-option v-for="item in checkType2" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
-					<el-select v-model="checkForm.checkListCode" style="margin-left:15px" v-if="checkForm.checkType !== '' " ref="selestCheck"
+					<el-select v-model="checkForm.checkListCode" style="margin-left:15px" v-show="checkForm.checkType " ref="selestCheck"
 					 filterable>
 						<el-option v-for="item in CheckList" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
@@ -202,11 +202,8 @@ export default {
                 label: '质量专项检查'
                 }],
             checkTypeContent2: [{
-                value: '日常检查1',
-                label: '日常检查1'
-                }, {
-                value: '日常检查2',
-                label: '日常检查2'
+                value: '日常检查',
+                label: '日常检查'
                 }],
             checkType2: [],
             CheckList: [], 
@@ -335,8 +332,10 @@ export default {
         editCheckType() {
            if (this.checkForm.checkContent === '专项检查') {
               this.checkType2 = this.checkTypeContent1
+              this.checkForm.checkType = ""
            } else {
                this.checkType2 = this.checkTypeContent2
+               this.checkForm.checkType = ""
            }
         },
         // 添加检查记录
@@ -402,11 +401,9 @@ export default {
         getCheckTree () {
           let _this = this
           getChecklistTree().then(res => {
-              let data = JSON.parse(localStorage.getItem('checkdata'))
               _this.checkTreeData = res.data            
               _this.getSelectList(res.data)
               _this.checkLoading = false
-              if(data) _this.$refs['addNewCheck'].$listeners.click()
           }).catch(err => {
               _this.$message.error(err)
           })

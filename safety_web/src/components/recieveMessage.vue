@@ -89,7 +89,6 @@
 import {
   getReceiveMessageList,
   readMessage,
-  getReceiveMessageCnt,
 } from "../services/messageApi";
 export default {
   props:{
