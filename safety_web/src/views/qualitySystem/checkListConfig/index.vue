@@ -5,38 +5,20 @@
 			<el-form :inline='true'>
 				<el-form-item label="审核类别:">
 					<el-select v-model="filterText.checkCategory" clearable>
-					<el-option
-					    v-for="item in checkCategoryOptions"
-					    :key="item.value"
-					    :label="item.label"
-					    :value="item.value">
-					</el-option>
+						<el-option v-for="item in checkCategoryOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="审核依据:">
-					<el-select
-					v-model="filterText.checkBasis"
-					clearable
-					>
-					<el-option
-					      v-for="item in checkBasisOptions"
-					      :key="item.value"
-					      :label="item.label"
-					      :value="item.value">
-					    </el-option>
+					<el-select v-model="filterText.checkBasis" clearable>
+						<el-option v-for="item in checkBasisOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="审核方式">
-					<el-select
-					v-model="filterText.checkMethod"
-					clearable
-					>
-					<el-option
-					      v-for="item in checkMethodOptions"
-					      :key="item.value"
-					      :label="item.label"
-					      :value="item.value">
-					    </el-option>
+					<el-select v-model="filterText.checkMethod" clearable>
+						<el-option v-for="item in checkMethodOptions" :key="item.value" :label="item.label" :value="item.value">
+						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="启用状态:">
@@ -61,43 +43,20 @@
 					<el-button icon="el-icon-download" type="warning" @click="downloadChoiceDialog=true">下载文件</el-button>
 				</el-form-item>
 			</el-form>
-			<!-- <el-row style="padding:10px; border-top: 2px dashed #dddddd;text-align:center">
-				<el-table :data="selectedDate" border 
-			:tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-			:indent="30"
-			@cell-click="handleCellClick"
-			row-key="checkListID">
-				<el-table-column  width="80px"></el-table-column>
-				<el-table-column prop="checkCategory" label="审核类别" width="140px" align="center"></el-table-column>
-				<el-table-column prop="checkBasis" label="审核依据" width="140px" align="center"></el-table-column>
-				<el-table-column prop="checkMethod" label="审核方式" width="140px" align="center"></el-table-column>
-				<el-table-column prop="checkListName"></el-table-column>
-				<el-table-column label="操作" width="140px" align="center">
-					<template slot-scope="scope">
-						<el-button type="text" size="mini" v-if="scope.row.status==='启用'&&scope.row.checkListCode.length!==12">
-							<i class="el-icon-circle-plus"></i></el-button>
-						<el-button type="text" size="mini" v-if="scope.row.status==='启用'">编辑</el-button>
-						<el-button type="text" size="mini">
-							<i>{{scope.row.status=='启用'?'停用':'启用'}}</i>
-						</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-			</el-row> -->
 			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
 			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<div style="display: block;width: 11%;">
-						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
+					<div style="display: block;width: 11%;padding: 3px;">
+						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
 					</div>
-					<div style="display: block;width: 11%;">
-						
-						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
+					<div style="display: block;width: 11%;padding: 3px;">
+
+						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
 					</div>
-					<div style="display: block;width: 11%;">
-						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 130px;margin: 3px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
+					<div style="display: block;width: 11%;padding: 3px;">
+						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
 					</div>
-					<div :title="data.checkListName" class="em-tree-text" style="display: block;float: left;">{{ data.checkListName }}</div>
+					<div :title="data.checkListName" class="em-tree-text" style="display: block;float: left;margin-left: 5px;">{{ data.checkListName }}</div>
 					<div style="display: block;width: 10%;float: right;">
 						<el-button type="text" size="mini" @click="openAddDialog(node)" v-if="node.level!==3&&data.status==='启用'">
 							<i class="el-icon-circle-plus"></i>
@@ -114,61 +73,29 @@
 				</span>
 			</el-tree>
 			<el-dialog :title="dialogtitle" :visible.sync="addItemDialog" width="30%">
-				<el-form ref="addEventForm" :model="chosenData"  label-width="100px" label-position="right">
+				<el-form ref="addEventForm" :model="chosenData" label-width="100px" label-position="right">
 					<el-form-item label="节点属性">
 						<el-input v-model="chosenData.attribute" readonly='true'></el-input>
 					</el-form-item>
 					<el-form-item label="审核类别" v-if="chosenData.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="chosenData.checkCategory"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核类别">
-							<el-option
-							    v-for="item in checkCategoryOptions"
-							    :key="item.value"
-							    :label="item.label"
-							    :value="item.value">
+						<el-select style="width: 100%;" v-model="chosenData.checkCategory" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核类别">
+							<el-option v-for="item in checkCategoryOptions" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="审核依据" v-if="chosenData.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="chosenData.checkBasis"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核依据"
-						>
-							<el-option
-							      v-for="item in checkBasisOptions"
-							      :key="item.value"
-							      :label="item.label"
-							      :value="item.value">
-							    </el-option>
+						<el-select style="width: 100%;" v-model="chosenData.checkBasis" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核依据">
+							<el-option v-for="item in checkBasisOptions" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="审核方式" v-if="chosenData.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="chosenData.checkMethod"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核方式"
-						>
-							<el-option
-							      v-for="item in checkMethodOptions"
-							      :key="item.value"
-							      :label="item.label"
-							      :value="item.value">
-							    </el-option>
+						<el-select style="width: 100%;" v-model="chosenData.checkMethod" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核方式">
+							<el-option v-for="item in checkMethodOptions" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="检查项">
@@ -185,56 +112,24 @@
 			<el-dialog title="编辑检查项" :visible.sync="configItemDialog" width="30%">
 				<el-form :model="configData">
 					<el-form-item label="审核类别" v-if="row.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="configData.checkCategory"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核类别">
-							<el-option
-							    v-for="item in checkCategoryOptions"
-							    :key="item.value"
-							    :label="item.label"
-							    :value="item.value">
+						<el-select style="width: 100%;" v-model="configData.checkCategory" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核类别">
+							<el-option v-for="item in checkCategoryOptions" :key="item.value" :label="item.label" :value="item.value">
 							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="审核依据" v-if="row.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="configData.checkBasis"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核依据"
-						>
-							<el-option
-							      v-for="item in checkBasisOptions"
-							      :key="item.value"
-							      :label="item.label"
-							      :value="item.value">
-							    </el-option>
+						<el-select style="width: 100%;" v-model="configData.checkBasis" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核依据">
+							<el-option v-for="item in checkBasisOptions" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="审核方式" v-if="row.attribute==='表'">
-						<el-select
-						style="width: 100%;"
-						v-model="configData.checkMethod"
-						clearable
-						filterable
-						allow-create
-						default-first-option
-						placeholder="请选择或输入审核方式"
-						>
-							<el-option
-							      v-for="item in checkMethodOptions"
-							      :key="item.value"
-							      :label="item.label"
-							      :value="item.value">
-							    </el-option>
+						<el-select style="width: 100%;" v-model="configData.checkMethod" clearable filterable allow-create
+						 default-first-option placeholder="请选择或输入审核方式">
+							<el-option v-for="item in checkMethodOptions" :key="item.value" :label="item.label" :value="item.value">
+							</el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="检查项">
@@ -278,14 +173,14 @@
 			return {
 				//加载变量初始值
 				loading: false,
-				dialogtitle:'',
-				row:{},
+				dialogtitle: '',
+				row: {},
 				//关键字搜索框初始值
 				//filterText: '',
-				filterText:{
-					checkCategory:[],
-					checkBasis:[],
-					checkMethod:[]
+				filterText: {
+					checkCategory: [],
+					checkBasis: [],
+					checkMethod: []
 				},
 				//状态选择框初始值
 				filterStatus: '启用',
@@ -299,70 +194,67 @@
 						label: '全部'
 					}
 				],
-				checkCategoryOptions:[
-					{
-						value:'内审',
-						label:'内审'
+				checkCategoryOptions: [{
+						value: '内审',
+						label: '内审'
 					},
 					{
-						value:'外审',
-						label:'外审'
+						value: '外审',
+						label: '外审'
 					},
 					{
-						value:'管理评审',
-						label:'管理评审'
+						value: '管理评审',
+						label: '管理评审'
 					}
 				],
-				checkBasisOptions:[
-					{
-						value:'CNAS',
-						label:'CNAS'
+				checkBasisOptions: [{
+						value: 'CNAS',
+						label: 'CNAS'
 					},
 					{
-						value:'ISO-9000',
-						label:'ISO-9000'
+						value: 'ISO-9000',
+						label: 'ISO-9000'
 					},
 					{
-						value:'API-Q2',
-						label:'API-Q2'
+						value: 'API-Q2',
+						label: 'API-Q2'
 					},
 					{
-						value:'CMA',
-						label:'CMA'
+						value: 'CMA',
+						label: 'CMA'
 					},
 					{
-						value:'检验机构',
-						label:'检验机构'
+						value: '检验机构',
+						label: '检验机构'
 					},
 					{
-						value:'特种设备',
-						label:'特种设备'
+						value: '特种设备',
+						label: '特种设备'
 					}
 				],
-				checkMethodOptions:[
-					{
-						value:'现场审核',
-						label:'现场审核'
+				checkMethodOptions: [{
+						value: '现场审核',
+						label: '现场审核'
 					},
 					{
-						value:'远程监控',
-						label:'远程监控'
+						value: '远程监控',
+						label: '远程监控'
 					},
 					{
-						value:'专项审核',
-						label:'专项审核'
+						value: '专项审核',
+						label: '专项审核'
 					},
 					{
-						value:'自改自查',
-						label:'自改自查'
+						value: '自改自查',
+						label: '自改自查'
 					},
 					{
-						value:'其他',
-						label:'其他'
+						value: '其他',
+						label: '其他'
 					}
 				],
 				//检查表树数组
-				tableData:[],
+				tableData: [],
 				selectedDate: [],
 				//对话框显示变量
 				addItemDialog: false,
@@ -370,40 +262,40 @@
 				downloadChoiceDialog: false,
 				//选中某一行时保存数据用对象
 				chosenData: {
-					checkCategory:'',
-					checkBasis:'',
-					checkMethod:'',
+					checkCategory: '',
+					checkBasis: '',
+					checkMethod: '',
 					checkListName: '',
 					attribute: '',
-					parentName:'',
-					status:'',
-					checkListCode:'',
-					
+					parentName: '',
+					status: '',
+					checkListCode: '',
+
 				},
-				configData:{
-					checkCategory:'',
-					checkBasis:'',
-					checkMethod:'',
-					checkListName:'',
-					checkListCode:''
+				configData: {
+					checkCategory: '',
+					checkBasis: '',
+					checkMethod: '',
+					checkListName: '',
+					checkListCode: ''
 				},
 				//检查表树展开与折叠数组
 				expandedList: [],
 				//查询用状态变量
 				queryStatus: 0,
 				//模板下载数据数组
-				downloadModleData:[],
+				downloadModleData: [],
 				//模板下载数据项
-				downloadModleItem:[],
+				downloadModleItem: [],
 				//全部下载数据数组
-				downloadData:[]
+				downloadData: []
 			}
 		},
 		watch: {
 			filterText(val) {
 				this.$refs.tree.filter(val);
 			},
-			filterStatus(){
+			filterStatus() {
 				this.initData('init')
 			}
 		},
@@ -430,7 +322,7 @@
 			},
 			//上传过程中
 			handleProgress() {
-				this.$alert('文件上传中，请稍候', '文件上传')
+				//this.$alert('文件上传中，请稍候', '文件上传')
 			},
 			//移除上传文件
 			handleRemove(file, fileList) {
@@ -455,57 +347,57 @@
 			},
 			//根据状态选择框进行查询
 			getData() {
-					this.loading = true
-					//this.initData('init')
-					this.selectedDate=this.tableData
-					if(this.filterText.checkCategory){
-						this.selectedDate=this.selectedDate.filter(item=>{
-							return item.checkCategory===this.filterText.checkCategory
-						})
-					}
-					if(this.filterText.checkBasis){
-						this.selectedDate=this.selectedDate.filter(item=>{
-							return item.checkBasis===this.filterText.checkBasis
-						})
-					}
-					if(this.filterText.checkMethod){
-						this.selectedDate=this.selectedDate.filter(item=>{
-							return item.checkMethod===this.filterText.checkMethod
-						})
-					}
-					console.log('after selected',this.selectedDate)
-					this.loading = false
+				this.loading = true
+				//this.initData('init')
+				this.selectedDate = this.tableData
+				if (this.filterText.checkCategory) {
+					this.selectedDate = this.selectedDate.filter(item => {
+						return item.checkCategory === this.filterText.checkCategory
+					})
+				}
+				if (this.filterText.checkBasis) {
+					this.selectedDate = this.selectedDate.filter(item => {
+						return item.checkBasis === this.filterText.checkBasis
+					})
+				}
+				if (this.filterText.checkMethod) {
+					this.selectedDate = this.selectedDate.filter(item => {
+						return item.checkMethod === this.filterText.checkMethod
+					})
+				}
+				console.log('after selected', this.selectedDate)
+				this.loading = false
 			},
-			initData(data){
-				switch(data){
+			initData(data) {
+				switch (data) {
 					//清空chosenData对象中保存的值，用于在打开和关闭对应对话框和时使用
 					case 'chosen':
-						this.chosenData.checkCategory=''
-						this.chosenData.checkBasis=''
-						this.chosenData.checkMethod=''
-						this.chosenData.checkListCode=''
-						this.chosenData.checkListName=''
-						this.chosenData.parentName=''
-						this.chosenData.attribute=''
-						this.chosenData.status=''
+						this.chosenData.checkCategory = ''
+						this.chosenData.checkBasis = ''
+						this.chosenData.checkMethod = ''
+						this.chosenData.checkListCode = ''
+						this.chosenData.checkListName = ''
+						this.chosenData.parentName = ''
+						this.chosenData.attribute = ''
+						this.chosenData.status = ''
 						console.log('chosen clear')
 						break
-					//清空configData对象中保存的值,用于在打开和关闭编辑对话框时使用	
+						//清空configData对象中保存的值,用于在打开和关闭编辑对话框时使用	
 					case 'config':
-						this.configData.checkCategory=''
-						this.configData.checkBasis=''
-						this.configData.checkMethod=''
-						this.configData.checkListCode=''
-						this.configData.checkListName=''
+						this.configData.checkCategory = ''
+						this.configData.checkBasis = ''
+						this.configData.checkMethod = ''
+						this.configData.checkListCode = ''
+						this.configData.checkListName = ''
 						console.log('config clear')
 						break
-					//清空模板下载数据数组
+						//清空模板下载数据数组
 					case 'modle':
-						this.downloadModleData=[]
+						this.downloadModleData = []
 						break
-					//清空全部下载数据数组
+						//清空全部下载数据数组
 					case 'downloadall':
-						this.downloadData=[]
+						this.downloadData = []
 						break
 					case 'init':
 						// this.filterText.checkCategory=''
@@ -518,35 +410,35 @@
 							this.queryStatus = 1
 						}
 						queryCheckList(this.queryStatus).then(res => {
-							for(var i=0;i<res.data.length;i++){
-								
-								if(!this.isCopy(res.data[i].checkCategory,this.checkCategoryOptions)){
-									let item={
-									value:'',
-									label:''
-								}
-									item.value=item.label=res.data[i].checkCategory
+							for (var i = 0; i < res.data.length; i++) {
+
+								if (!this.isCopy(res.data[i].checkCategory, this.checkCategoryOptions)) {
+									let item = {
+										value: '',
+										label: ''
+									}
+									item.value = item.label = res.data[i].checkCategory
 									this.checkCategoryOptions.push(item)
 								}
-								if(!this.isCopy(res.data[i].checkBasis,this.checkBasisOptions)){
-									let item={
-										value:'',
-										label:''
+								if (!this.isCopy(res.data[i].checkBasis, this.checkBasisOptions)) {
+									let item = {
+										value: '',
+										label: ''
 									}
-									item.value=item.label=res.data[i].checkBasis
+									item.value = item.label = res.data[i].checkBasis
 									this.checkBasisOptions.push(item)
 								}
-								if(!this.isCopy(res.data[i].checkMethod,this.checkMethodOptions)){
-									let item={
-										value:'',
-										label:''
+								if (!this.isCopy(res.data[i].checkMethod, this.checkMethodOptions)) {
+									let item = {
+										value: '',
+										label: ''
 									}
-									item.value=item.label=res.data[i].checkMethod
+									item.value = item.label = res.data[i].checkMethod
 									this.checkMethodOptions.push(item)
 								}
 							}
-							this.tableData=this.selectedDate=res.data
-							console.log('select',this.selectedDate)
+							this.tableData = this.selectedDate = res.data
+							console.log('select', this.selectedDate)
 							this.loading = false
 						}).catch((err) => {
 							this.$message.error(err.message)
@@ -554,13 +446,13 @@
 					default:
 						break
 				}
-				
+
 			},
-			isCopy(original,targetArray){
-				let copy=false
-				for(let i=0;i<targetArray.length;i++){
-					if(original===targetArray[i].value){
-						copy=true
+			isCopy(original, targetArray) {
+				let copy = false
+				for (let i = 0; i < targetArray.length; i++) {
+					if (original === targetArray[i].value) {
+						copy = true
 						break
 					}
 				}
@@ -571,167 +463,174 @@
 				//初始化chosenData对象
 				this.initData('chosen')
 				//当该对话框是从树中打开而不是从上面单独打开时
-				if(row){
-					this.row=row
+				if (row) {
+					this.row = row
 					//保存被选中的行的数据
-					this.chosenData.parentName=row.data.checkListName
-					this.chosenData.checkListCode=row.data.checkListCode
+					this.chosenData.parentName = row.data.checkListName
+					this.chosenData.checkListCode = row.data.checkListCode
 					//当被选中的行是第一层，新增的节点是第二层，属性为“项目”
-					if(row.level==1){
-						this.chosenData.attribute='项目'
+					if (row.level == 1) {
+						this.chosenData.attribute = '项目'
 					}
 					//当被选中的是第二层，新增的节点是第三层，属性为“内容”
-					else if(row.level==2){
-						this.chosenData.attribute='内容'
+					else if (row.level == 2) {
+						this.chosenData.attribute = '内容'
 					}
 				}
 				//当对话框是从上面打开时，表示新增表，所以父节点名字和code为空
-				else{
-					this.chosenData.attribute='表'
-					this.chosenData.parentName=null
-					this.chosenData.checkListCode=null
-					
+				else {
+					this.chosenData.attribute = '表'
+					this.chosenData.parentName = null
+					this.chosenData.checkListCode = null
+
 				}
 				//新增节点状态默认为启用状态，节点名为空
-				this.chosenData.status='启用'
-				this.chosenData.checkListName=''
-				this.dialogtitle="新增"+this.chosenData.attribute
+				this.chosenData.status = '启用'
+				this.chosenData.checkListName = ''
+				this.dialogtitle = "新增" + this.chosenData.attribute
 				this.addItemDialog = true
-				console.log('chosendata',this.chosenData)
+				console.log('chosendata', this.chosenData)
 			},
 			//新增一个节点
-			insertNode(){
-				if(this.chosenData.attribute=='表'){
+			insertNode() {
+				if (this.chosenData.attribute == '表') {
 					//判断数据完整性
-					if(!this.chosenData.checkListName||!this.chosenData.checkCategory||!this.chosenData.checkBasis||!this.chosenData.checkMethod){
+					if (!this.chosenData.checkListName || !this.chosenData.checkCategory || !this.chosenData.checkBasis || !this.chosenData
+						.checkMethod) {
 						this.$message.error('数据不完整')
 						return
 					}
-					if(this.chosenData.checkCategory.length>9||this.chosenData.checkBasis.length>9||this.chosenData.checkMethod>9){
+					if (this.chosenData.checkCategory.length > 9 || this.chosenData.checkBasis.length > 9 || this.chosenData.checkMethod >
+						9) {
 						this.$message.error('审核类型，审核依据，审核方式长度最大为9！')
 						return
 					}
-					let isCopy=this.tableData.filter(item=>{
-						return item.checkCategory==this.chosenData.checkCategory&&item.checkBasis==this.chosenData.checkBasis&&item.checkMethod==this.chosenData.checkMethod
+					let isCopy = this.tableData.filter(item => {
+						return item.checkCategory == this.chosenData.checkCategory && item.checkBasis == this.chosenData.checkBasis &&
+							item.checkMethod == this.chosenData.checkMethod
 					})
 					console.log(isCopy)
-					if(isCopy.length>0){
+					if (isCopy.length > 0) {
 						this.$message.error('审核类型，审核依据，审核方式重复，请重新选择！')
-						this.chosenData.checkCategory=''
-						this.chosenData.checkBasis=''
-						this.chosenData.checkMethod=''
+						this.chosenData.checkCategory = ''
+						this.chosenData.checkBasis = ''
+						this.chosenData.checkMethod = ''
 						return
 					}
-				}else{
-					if(!this.chosenData.checkListName){
+				} else {
+					if (!this.chosenData.checkListName) {
 						this.$message.error('数据不完整')
 						return
 					}
 				}
 				//调用接口新增节点
-				this.loading=true
-				addCheckListItem(this.chosenData).then(res=>{
+				this.loading = true
+				addCheckListItem(this.chosenData).then(res => {
 					//新增成功
-					if(res.code=='1000'){
+					if (res.code == '1000') {
 						//重新获取数据，并显示相应的提示信息
 						this.getData()
+						this.initData('init')
 						this.$message.success('新增节点成功')
-						this.loading=false
-					}else{
+						this.loading = false
+					} else {
 						this.$message.error('新增节点失败')
 					}
 					//清空临时数据对象
 					this.initData('chosen')
-					this.loading=false
+					this.loading = false
 				}).catch((err) => {
 					this.$message.error(err.message)
-					this.loading=false
+					this.loading = false
 				})
 				//关闭新增节点对话框
-				this.loading=false
-				this.addItemDialog=false
+				this.loading = false
+				this.addItemDialog = false
 			},
 			//打开编辑数据对话框
 			openConfigDialog(row) {
 				//清空临时数据对象
 				this.initData('config')
 				//将需要保存的数据保存到临时数据对象中
-				this.row=row
-				this.configData.checkCategory=row.checkCategory
-				this.configData.checkBasis=row.checkBasis
-				this.configData.checkMethod=row.checkMethod
-				this.configData.checkListName=row.checkListName
-				this.configData.checkListCode=row.checkListCode
+				this.row = row
+				this.configData.checkCategory = row.checkCategory
+				this.configData.checkBasis = row.checkBasis
+				this.configData.checkMethod = row.checkMethod
+				this.configData.checkListName = row.checkListName
+				this.configData.checkListCode = row.checkListCode
 				//显示编辑数据对话框
 				this.configItemDialog = true
 			},
 			//提交编辑数据
-			configNode(){
-				if(this.row.checkListCode.length==4){
+			configNode() {
+				if (this.row.checkListCode.length == 4) {
 					//检查数据完整性
-					if(!this.configData.checkListName||!this.configData.checkCategory||!this.configData.checkBasis||!this.configData.checkMethod){
+					if (!this.configData.checkListName || !this.configData.checkCategory || !this.configData.checkBasis || !this.configData
+						.checkMethod) {
 						this.$message.error('数据不完整')
 						return
 					}
-					if(this.configData.checkListName.length>9||this.configData.checkCategory.length>9||this.configData.checkBasis.length>9){
+					if (this.configData.checkListName.length > 9 || this.configData.checkCategory.length > 9 || this.configData.checkBasis
+						.length > 9) {
 						console.log(this.configData.checkCategory.length)
 						this.$message.error('审核类型，审核依据，审核方式长度最大为9！')
-						this.configData.checkCategory=this.row.checkCategory
-						this.configData.checkBasis=this.row.checkBasis
-						this.configData.checkMethod=this.row.checkMethod
+						this.configData.checkCategory = this.row.checkCategory
+						this.configData.checkBasis = this.row.checkBasis
+						this.configData.checkMethod = this.row.checkMethod
 						return
 					}
-					let isCopy=this.tableData.filter(item=>{
-						return item.checkCategory==this.configData.checkCategory&&item.checkBasis==this.configData.checkBasis&&item.checkMethod==this.configData.checkMethod
+					let isCopy = this.tableData.filter(item => {
+						return item.checkCategory == this.configData.checkCategory && item.checkBasis == this.configData.checkBasis &&
+							item.checkMethod == this.configData.checkMethod
 					})
-					if(isCopy.length>0){
-						for(var i=0;i<isCopy.length;i++){
-							if(this.row.checkListID!=isCopy.checkListID){
+					if (isCopy.length > 0) {
+						for (var i = 0; i < isCopy.length; i++) {
+							if (this.row.checkListID != isCopy.checkListID) {
 								this.$message.error('审核类型，审核依据，审核方式重复，请重新选择！')
-								this.configData.checkCategory=this.row.checkCategory
-								this.configData.checkBasis=this.row.checkBasis
-								this.configData.checkMethod=this.row.checkMethod
+								this.configData.checkCategory = this.row.checkCategory
+								this.configData.checkBasis = this.row.checkBasis
+								this.configData.checkMethod = this.row.checkMethod
 								return
 							}
 						}
 					}
-				}else{
-					if(!this.configData.checkListName){
+				} else {
+					if (!this.configData.checkListName) {
 						this.$message.error('数据不完整')
 						return
 					}
 				}
 				//调用接口提交编辑数据
-				updateNodeContent(this.configData).then(res=>{
+				updateNodeContent(this.configData).then(res => {
 					//提交数据成功
-					if(res.code=='1000'){
+					if (res.code == '1000') {
 						//重新获取数据，刷新界面，并显示相应提示信息
 						this.initData('init')
 						this.$message.success('更新信息成功')
-					}else{
+					} else {
 						this.$message.error('更新信息失败')
 					}
 					//清空临时数据对象
 					this.initData('config')
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
 				//关闭编辑数据对话框
-				this.configItemDialog=false
+				this.configItemDialog = false
 			},
 			//更新节点启用状态
-			updateStatus(row){
+			updateStatus(row) {
 				//调用接口提交请求
-				updateNodeStatus(row.checkListID).then(res=>{
+				updateNodeStatus(row.checkListID).then(res => {
 					//提交请求成功
-					if(res.code=='1000'){
+					if (res.code == '1000') {
 						//重新获取数据，刷新界面，并显示相应提示信息
 						this.initData('init')
 						this.$message.success('更新状态成功')
-					}else{
+					} else {
 						this.$message.error('更新状态失败')
 					}
-				}).catch(err=>{
+				}).catch(err => {
 					this.$message.error(err.message)
 				})
 			},
@@ -748,12 +647,12 @@
 				this.expandedList.splice(this.expandedList.indexOf(data.checkListID), 1)
 			},
 			//下载全部检查项
-			downloadAll(){
+			downloadAll() {
 				//清空保存数据的数组
 				this.initData('downloadall')
 				//调用接口查询所有检查项
 				queryCheckList(1).then(res => {
-					this.loading=true
+					this.loading = true
 					if (res.code == '1000') {
 						//将树形数据转换为table型数据
 						this.parseTreeToTable(res.data)
@@ -768,7 +667,7 @@
 						var toExcel = new ExportJsonExcel(option);
 						toExcel.saveExcel();
 						this.loading = false
-						this.downloadChoiceDialog=false
+						this.downloadChoiceDialog = false
 					}
 				}).catch((err) => {
 					this.$message.error(err.message)
@@ -793,14 +692,15 @@
 				}
 			},
 			//下载模板文件
-			downloadModle(){
+			downloadModle() {
 				//清空模板文件数据数组
 				this.initData('modle')
-				this.loading=true
+				this.loading = true
 				queryCheckList(1).then(res => {
 					//将树形数据转换为table数据
 					this.parseTreeToModle(res.data)
 					if (this.downloadModleData.length > 0) {
+						console.log('merge flag array', this.mergeData())
 						this.downloadModleData.splice(0, 1, ['表名', '项目', '内容'])
 						//将table型数据转换为sheet
 						var sheet = xlsx.utils.aoa_to_sheet(this.downloadModleData)
@@ -816,12 +716,12 @@
 						xlsx.utils.book_append_sheet(wb, sheet, sheetName)
 						//生成文件
 						xlsx.writeFile(wb, fileName)
-					 	this.loading = false
+						this.loading = false
 					}
 				}).catch((err) => {
 					this.$message.error(err.message)
 				})
-				this.downloadChoiceDialog=false
+				this.downloadChoiceDialog = false
 			},
 			parseTreeToModle(node) {
 				for (var i = 0; i < node.length; i++) {
@@ -878,12 +778,12 @@
 							start.r = j
 							start.c = i
 						} else if (j == this.downloadModleData.length - 1) {
-							var end = {
+							var e = {
 								r: null,
 								c: null
 							}
-							end.r = j
-							end.c = i
+							e.r = j
+							e.c = i
 							var s = {
 								r: null,
 								c: null
@@ -893,7 +793,7 @@
 							//保存合并信息
 							mergeTable.push({
 								s,
-								end
+								e
 							})
 						}
 					}
