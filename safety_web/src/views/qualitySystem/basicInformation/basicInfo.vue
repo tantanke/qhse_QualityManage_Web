@@ -20,7 +20,7 @@
 				</el-form-item>
 			</el-form>
 			<!-- 基本信息登记列表区域 -->
-			<el-table :data="basicInfoList" border stripe max-height="560px">
+			<el-table :data="basicInfoList" border stripe max-height="540px">
 				<el-table-column type="expand" label="详情" width="50px">
 					<template slot-scope="scope">
 						<el-row>
@@ -59,7 +59,7 @@
 				<el-table-column label="受审单位负责人" prop="checkedPersonName" width="120" align="center" show-overflow-tooltip></el-table-column>
 				<el-table-column label="审核进度" prop="progress" width="100" align="center" show-overflow-tooltip></el-table-column>
 				<el-table-column label="(整改/验证)完成时间" prop="finishDate" align="center" width="150"></el-table-column>
-				<el-table-column label="操作" width="260" align="center" fixed="right">
+				<el-table-column label="操作" width="300" align="center" fixed="right">
 					<template slot-scope="scope">
 						<el-button type="warning" icon="el-icon-success" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush!=='未推送'">查看</el-button>
 						<el-button type="primary" icon="el-icon-edit" size="mini" @click="editBasicInfo(scope.row)" v-if="scope.row.isPush==='未推送'">修改</el-button>
@@ -70,22 +70,17 @@
 				</el-table-column>
 			</el-table>
 			<!-- 新增基本信息生成登记表对话框 -->
-			<el-dialog title="新增审核计划" :close-on-click-modal="false" :visible.sync="addInfoDialogVisible" @closed="addInfoDialogClosed">
-				<el-form :model="addInfoForm" :rules="addInfoFormRules" ref="addInfoFormRef" label-width="110px" :label-position="right"
-				 :inline="true">
-					<el-form-item label="审核任务名称" prop="qualityCheckName">
-						<el-input v-model="addInfoForm.qualityCheckName" style="width: 272%" placeholder="请输入审核任务名称"></el-input>
+			<el-dialog title="新增审核计划" :close-on-click-modal="false" :visible.sync="addInfoDialogVisible" width="50%">
+				<el-form :model="addInfoForm" :rules="addInfoFormRules" ref="addInfoFormRef" label-width="120px" :label-position="right"
+				 :inline="true" >
+				 <el-form-item label="审核任务名称" prop="qualityCheckName">
+						<el-input v-model="addInfoForm.qualityCheckName" style="width: 280%;" placeholder="请输入审核任务名称"></el-input>
 					</el-form-item>
 					<br />
-					<el-form-item label="审核类别" prop="checkCategory">
+				 <el-col :span="12">
+					 <el-form-item label="审核类别" prop="checkCategory">
 						<el-select v-model="addInfoForm.checkCategory" style="width: 100%">
 							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkCategoryOptions" :key="item.value">
-							</el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="审核依据" prop="checkBasis">
-						<el-select v-model="addInfoForm.checkBasis" style="width: 100%">
-							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkBasisOptions" :key="item.value">
 							</el-option>
 						</el-select>
 					</el-form-item>
@@ -95,22 +90,33 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
+					<el-form-item label="审核日期" prop="checkDate" style="margin-right: 0px;">
+						<el-date-picker clearable v-model="addInfoForm.checkDate" type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日"
+						 value-format="yyyy-MM-dd" style="width: 218px;">
+						</el-date-picker>
+					</el-form-item>
+				 </el-col>
+				<el-col :span="12">
+					<el-form-item label="审核依据" prop="checkBasis">
+						<el-select v-model="addInfoForm.checkBasis" style="width: 100%">
+							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkBasisOptions" :key="item.value">
+							</el-option>
+						</el-select>
+					</el-form-item>
+					
 					<el-form-item label="检查表名称" prop="checkListCode">
 						<el-input clearable v-model="addInfoForm.checkListName" readonly placeholder="请输入"></el-input>
 					</el-form-item>
-					<el-form-item label="审核日期" prop="checkDate" style="width: 46%">
-						<el-date-picker clearable v-model="addInfoForm.checkDate" type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日"
-						 value-format="yyyy-MM-dd">
-						</el-date-picker>
-					</el-form-item>
+					
 					<el-form-item label="审核人员" prop="checkPerson">
 						<el-select v-model="addInfoForm.checkPersonID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name+'('+item.companyName+')'" :value="item.employeeID" v-for="(item,index) in employee"
 							 :key="index"></el-option>
 						</el-select>
 					</el-form-item>
+				</el-col>
 					<el-form-item label="受审核单位" prop="checkedCompanyCode">
-						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择受审单位" style="min-width: 230px;max-width:560px ; width:fit-content "
+						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择受审单位" style="min-width: 235px;max-width:560px ; width:fit-content "
 						 :options="companyList" v-model="checkedCompanyId"></treeselect>
 					</el-form-item>
 					<el-form-item label="单位负责人">
@@ -120,22 +126,20 @@
 						</el-select>
 					</el-form-item>
 					<br />
-					<el-form-item label="受审核室组" prop="group">
-						<!-- <el-select v-model="addInfoForm.group" placeholder="请选择" style="width: 100%">
-							<el-option :label="item.empGroup" :value="item.empGroup" v-for="(item, index) in employeeList" :key="index">
-								<span>{{item.empGroup}}({{item.companyName}})</span>
-							</el-option>
-						</el-select> -->
+					<el-col :span="12">
+						<el-form-item label="受审核室组" prop="group">
 						<el-input clearable v-model="addInfoForm.group" placeholder="请输入" style="width: 100%"></el-input>
 					</el-form-item>
-					<el-form-item label="室组长">
+					<el-form-item label="作业项目名称" prop="projectName">
+						<el-input clearable v-model="addInfoForm.projectName" style="width: 100%" placeholder="请输入"></el-input>
+					</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="室组长">
 						<el-select v-model="addInfoForm.groupLeaderID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
 						</el-select>
-					</el-form-item>
-					<el-form-item label="作业项目名称" prop="projectName">
-						<el-input clearable v-model="addInfoForm.projectName" style="width: 100%" placeholder="请输入"></el-input>
 					</el-form-item>
 					<el-form-item label="项目组长">
 						<el-select v-model="addInfoForm.projectLeaderID" style="width: 100%" placeholder="请选择" clearable filterable>
@@ -143,6 +147,7 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
+					</el-col>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button icon="el-icon-refresh-left" @click="addInfoDialogVisible = false">取 消</el-button>
@@ -152,19 +157,15 @@
 			<!-- 编辑修改基本信息登记表对话框 -->
 			<el-dialog title="修改审核计划" :visible.sync="editInfoDialogVisible" width="50%">
 				<!-- 基本信息表单 -->
-				<el-form :model="eidtInfoForm" label-width="120px" :label-position="right" :inline="true">
+				<el-form :model="eidtInfoForm" label-width="110px" :label-position="right" :inline="true">
 					<el-form-item label="审核任务名称">
-						<el-input v-model="eidtInfoForm.qualityCheckName" style="width: 575px" placeholder="请输入"></el-input>
+						<el-input v-model="eidtInfoForm.qualityCheckName" style="width: fit-content;max-width: 575px;min-width: 280%;" placeholder="请输入"></el-input>
 					</el-form-item>
-					<el-form-item label="审核类别">
+					<br/>
+					<el-col :span="12">
+						<el-form-item label="审核类别">
 						<el-select v-model="eidtInfoForm.checkCategory" style="width: 100%">
 							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkCategoryOptions" :key="item.value">
-							</el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item label="审核依据">
-						<el-select v-model="eidtInfoForm.checkBasis" style="width: 100%">
-							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkBasisOptions" :key="item.value">
 							</el-option>
 						</el-select>
 					</el-form-item>
@@ -174,19 +175,31 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="检查表名称" prop="checkListCode">
-						<el-input v-model="eidtInfoForm.checkListName" readonly style="width: 107%" placeholder="请输入"></el-input>
-					</el-form-item>
 					<el-form-item label="审核日期">
 						<el-date-picker style="100%" v-model="eidtInfoForm.checkDate" type="date" placeholder="请选择日期" format="yyyy 年 MM 月 dd 日"
 						 value-format="yyyy-MM-dd">
 						</el-date-picker>
 					</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="审核依据">
+						<el-select v-model="eidtInfoForm.checkBasis" style="width: 100%">
+							<el-option :label="item.label" :value="item.value" v-for="(item, index) in checkBasisOptions" :key="item.value">
+							</el-option>
+						</el-select>
+					</el-form-item>
+					
+					<el-form-item label="检查表名称" prop="checkListCode">
+						<el-input v-model="eidtInfoForm.checkListName" readonly style="width: 107%" placeholder="请输入"></el-input>
+					</el-form-item>
+					
 					<el-form-item label="审核人员">
 						<el-input v-model="eidtInfoForm.checkPerson" readonly style="width: 107%"></el-input>
 					</el-form-item>
+					</el-col>
+					
 					<el-form-item label="受审核单位">
-						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="min-width: 230px;max-width:575px ; width:fit-content "
+						<treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="min-width: 230px;max-width:563px ; width:fit-content "
 						 :options="companyList" v-model="checkedCompanyId"></treeselect>
 						<!-- <el-input type="textarea" :autosize="true" v-model="eidtInfoForm.checkedCompanyName" readonly style="width: 115%;"></el-input> -->
 					</el-form-item>
@@ -196,22 +209,21 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="受审核室组">
-						<!-- <el-select v-model="eidtInfoForm.group" placeholder="请选择">
-                     <el-option :label="item.empGroup" :value="item.empGroup" v-for="(item, index) in editEmployeeList" :key="index">
-                         <span>{{item.empGroup}}({{item.companyName}})</span>
-                     </el-option>
-                    </el-select> -->
+					<br />
+					<el-col :span="12">
+						<el-form-item label="受审核室组">
 						<el-input placeholder="请输入" style="width: 107%" v-model="eidtInfoForm.group"></el-input>
 					</el-form-item>
-					<el-form-item label="室组长">
+					<el-form-item label="作业项目名称" prop="projectName">
+						<el-input v-model="eidtInfoForm.projectName" style="width: 107%" placeholder="请输入"></el-input>
+					</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="室组长">
 						<el-select v-model="eidtInfoForm.groupLeaderID" style="width: 100%" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
 						</el-select>
-					</el-form-item>
-					<el-form-item label="作业项目名称" prop="projectName">
-						<el-input v-model="eidtInfoForm.projectName" style="width: 107%" placeholder="请输入"></el-input>
 					</el-form-item>
 					<el-form-item label="  项目组长">
 						<el-select v-model="eidtInfoForm.projectLeaderID" style="width: 100%" placeholder="请选择" clearable filterable>
@@ -219,6 +231,7 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
+					</el-col>
 				</el-form>
 				<span slot="footer" class="dialog-footer">
 					<el-button icon="el-icon-refresh-left" @click="editInfoDialogVisible = false">关 闭</el-button>
