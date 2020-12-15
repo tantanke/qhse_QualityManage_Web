@@ -54,7 +54,7 @@
                         </template>
                         </el-table-column>
                         <el-table-column align='center' prop='weeklyCollectNum' label='周领用数'></el-table-column>
-                        <el-table-column align='center' prop='weeklyNormalNum' label='周领用数'></el-table-column>
+                        <el-table-column align='center' prop='weeklyNormalNum' label='正常开机数'></el-table-column>
                         <el-table-column align='center' prop='weeklyUsageRate' label='使用比'></el-table-column>
                         <el-table-column align='center' prop='weeklySupervisionNum' label='监督监看数'></el-table-column>
                         <el-table-column

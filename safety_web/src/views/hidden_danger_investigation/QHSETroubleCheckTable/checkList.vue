@@ -211,6 +211,7 @@ export default {
             detailForm: {},
             questionEditfalse: false,
             type: 'primary',
+            enterTwice:false,
             editQuestionForm:{}
               }
             
@@ -404,6 +405,7 @@ export default {
               _this.checkTreeData = res.data            
               _this.getSelectList(res.data)
               _this.checkLoading = false
+              if(_this.enterTwice) _this.$refs['addNewCheck'].$listeners.click()
           }).catch(err => {
               _this.$message.error(err)
           })
@@ -490,8 +492,18 @@ export default {
             GetqhseCompanytree().then(res => {
                 this.companyList = res.data
             })
-        }
+        },
+        
     },
+    beforeRouteEnter (to, from, next) {
+        let path = from.fullPath
+        next(vm => {
+            // 通过 `vm` 访问组件实例
+            if(path === '/hidden_danger/input' || path ==='/hidden_danger/illegal_entry'){
+                vm.enterTwice = true
+            }
+        })
+        },
     mounted() {
         this.initChecklist()
         this.getCheckType()

@@ -122,29 +122,31 @@ export default {
   },
   watch:{
     msgNums(){
-       this.messageList = []
+      let _this = this
       getReceiveMessageList(1)
         .then((res) => {
+          _this.messageList = []
           res.data.list.forEach((item) => {
             if (item.status) {
-              this.messageList.push(item);
+              _this.messageList.push(item);
             }
           });   
         })
         .catch(() => {
-          this.$message.error("获取消息失败，请稍后再试！");
+         _this.$message.error("获取消息失败，请稍后再试！");
         });
     }
   },
   methods: {
     // 获取第一页的消息
     getMessage() {
-      this.messageList = []
+      let _this = this
       getReceiveMessageList(1)
         .then((res) => {
+          _this.messageList = []
           res.data.list.forEach((item) => {
             if (item.status) {
-              this.messageList.push(item);
+              _this.messageList.push(item);
             }
             
           });
@@ -170,13 +172,14 @@ export default {
       _this.detail.status = data.status;
       _this.detail.time = data.time;
       _this.detail.tittle = data.tittle;
-      this.dialogVisible = true;
+      _this.dialogVisible = true;
       //发送已读通知
       if (data.status === "未读") {
         readMessage({messageId:data.id})
           .then((res) => {
             console.log(res);
-            this.getMessage();
+            _this.messageList = []
+            _this.getMessage();
           })
           .catch(() => {
             this.$message.error("更新消息失败，请稍后再试！");
