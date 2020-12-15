@@ -190,8 +190,6 @@ export default {
   mounted() {
     this.getMessage();
     //默认为12 每增加一个+6 最多为24
-    
-      this.$emit('taskChange',2)
     //超过三个设置为 scroll 最多显示六条
     // this.$refs.msgList.$el.style.overflowY ="scroll";
   },
