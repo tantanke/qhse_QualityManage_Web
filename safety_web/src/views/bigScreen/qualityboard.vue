@@ -575,8 +575,9 @@ export default {
         weeklySupervisionNum,
         weeklyUsageRate,
       } = data[0];
-      // 数值
-      _this.getYnum(weeklyCollectNum, "recordinglistdata", 10);
+      // 确定下标
+      let max = Math.max(weeklyCollectNum,weeklyNormalNum,weeklySupervisionNum)
+      _this.getYnum(max, "recordinglistdata", 10);
       weeklyUsageRate = weeklyUsageRate * 100 > 100 ? 1 : weeklyUsageRate;
       _this.rates.recordingzhu = (weeklyUsageRate * 100).toFixed(2) + "%";
       _this.values.recordingzhu1 = weeklyCollectNum;

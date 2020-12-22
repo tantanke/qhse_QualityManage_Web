@@ -252,9 +252,9 @@ export default {
   data() {
     return {
        showName: "安全环保质量监督检测研究院",
-      ratedataWater: ["单位：m³", 120,100, 80, 60, 40, 20],
-      ratedataGas: ["单位：m³", 12000, 10000, 8000, 6000, 4000, 2000],
-      ratedataElectricity: ["单位：度", 210000, 180000, 150000, 120000, 90000,60000],
+      ratedataWater: ["单位：m³", 120,100, 80, 60, 40, 20,0],
+      ratedataGas: ["单位：m³", 12000, 10000, 8000, 6000, 4000, 2000,0],
+      ratedataElectricity: ["单位：度", 210000, 180000, 150000, 120000, 90000,60000,0],
       ratedataGasoli: ["单位：L", 120, 100, 80, 60, 40, 20, 0],
       ratedataDiesel: ["单位：L", 120, 100, 80, 60, 40, 20, 0],
       bg: {
@@ -372,9 +372,10 @@ export default {
       _this.allValues.gasoliYear = gasolineYear ? gasolineYear : 0
       _this.oilPoint1.top =(100 -  Math.ceil((gasolineYear / _this.ratedataGasoli[1]) * 100)) + "%";
       // 柴油消耗量
-      if(dieselYear> 2000) _this.getYnum("单位：m³",dieselYear,"ratedataDiesel",120)
+      if(dieselYear> 0) _this.getYnum("单位：m³",dieselYear,"ratedataDiesel",120)
       _this.allValues.diesel = dieselMonth ? dieselMonth : 0
       _this.allValues.dieselYear = dieselYear ? dieselYear : 0
+
       _this.oilPoint2.top =(100 -  Math.ceil((dieselYear / _this.ratedataDiesel[1]) * 100)) + "%";
     },
     getYnum(index,data, name, rate) {
