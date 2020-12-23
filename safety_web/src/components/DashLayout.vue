@@ -333,9 +333,9 @@ export default {
         localStorage.setItem('sysCate','安全')
         _this.qhse = 'QHSE安全板块'
          this.$router.push({name: 'mainPath'})
-        _this.checkTaskList(_this.navs)
+        //_this.checkTaskList(_this.navs)
 
-	if(_this.taskFlag){
+	//if(_this.taskFlag){
 		getTaskList().then(res=>{
 			let notReceive=res.data.filter(item=>{
 				return !item.receiveDate
@@ -352,7 +352,7 @@ export default {
 				})
 			}
 		})
-	}
+	//}
         _this.dialogTableVisible = false
         _this.changeS = false
       }).catch(err=>{
