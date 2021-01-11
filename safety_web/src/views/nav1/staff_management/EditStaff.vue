@@ -6,7 +6,7 @@
 				<el-breadcrumb-item>员工编辑</el-breadcrumb-item>
 			</el-breadcrumb>
 		</div>
-		<div class="page-content">
+		<div class="page-content"  v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
 			<div class="form-content">
 				<br />
 				<el-form :rules="rules" ref="filterQuery" label-width="150px" :model="filterQuery">
@@ -34,7 +34,7 @@
 					<el-row>
 						<el-col :span="12">
 							<el-form-item label="底层单位:" prop="companyCode">
-								<treeselect :multiple="false" :options="options" placeholder="请选择单位名称" v-model="filterQuery.companyCode" style="width:100%" />
+								<treeselect :disable-branch-nodes="true" :multiple="false" :options="options" placeholder="请选择单位名称" v-model="filterQuery.companyCode" style="width:100%" />
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -149,6 +149,7 @@
 					station: '',
 					tel: ''
 				},
+				loading:false,
 				companyCode: '',
 				companyId: '',
 				companyName: '',
@@ -235,6 +236,7 @@
 			handleSubmit(formName) {
 				this.$refs[formName].validate((valid) => {
 					if (valid) {
+						console.log(this.filterQuery)
 						this.filterQuery.empGroup = this.inputEmpGroup
 						this.changeCompanyIdToName(this.options, this.filterQuery.companyCode)
 						this.filterQuery.companyCode = this.companyCode
@@ -253,23 +255,29 @@
 			},
 			//获取数据
 			getStaffDetails() {
-				this.$route.params.id && localStorage.setItem('data', JSON.stringify(this.$route.params.id));
-				const id = JSON.parse(localStorage.getItem('data'));
-				GetStaffDetail(id).then((res) => {
-					this.ID = id
-					this.filterQuery = res.data
-					console.log('function call')
-					this.changeCompanyCodeToId(this.options, this.filterQuery.companyCode)
-					this.filterQuery.companyCode = this.companyId
-					if (!this.filterQuery.companyCode) {
-						console.log('load data function recall')
-						this.getStaffDetails()
-					}
-					this.inputEmpGroup = res.data.empGroup
-					console.log('data', this.filterQuery)
-				}).catch((err) => {
-					this.$message.error(err.message)
-				})
+				//this.filterQuery=this.$route.params.data
+				//console.log('get route data',this.filterQuery)
+				// else{
+				// 	this.handleGetCompany()
+				// 	this.getStaffDetails()
+				// }
+				// this.$route.params.id && localStorage.setItem('data', JSON.stringify(this.$route.params.id));
+				// const id = JSON.parse(localStorage.getItem('data'));
+				// GetStaffDetail(id).then((res) => {
+				// 	this.ID = id
+				// 	this.filterQuery = res.data
+				// 	console.log('function call',this.filterQuery)
+				// 	this.changeCompanyCodeToId(this.options, this.filterQuery.companyCode)
+				// 	this.filterQuery.companyCode = this.companyId
+				// 	// if (!this.filterQuery.companyCode) {
+				// 	// 	console.log('load data function recall')
+				// 	// 	this.getStaffDetails()
+				// 	// }
+				// 	this.inputEmpGroup = res.data.empGroup
+				// 	console.log('data', this.filterQuery)
+				// }).catch((err) => {
+				// 	this.$message.error(err.message)
+				// })
 			},
 			// 将公司Id转化为公司名称，并且保存nodeCode
 			changeCompanyIdToName: function(val, companyId) {
@@ -289,7 +297,7 @@
 			changeCompanyCodeToId: function(val, companyCode) {
 				for (var j = 0; j < val.length; j++) {
 					if (val[j]) {
-						if (val[j].nodeCode === companyCode) {
+						if (val[j].nodeCode == companyCode) {
 							this.companyId = val[j].id
 							this.companyName = val[j].label
 							console.log('find id', this.companyId)
@@ -302,10 +310,17 @@
 			},
 			//获取单位
 			handleGetCompany() {
+				this.loading=true
 				GetCompany().then((res) => {
 					this.options = res.data
+					console.log('company data',this.options)
+					this.filterQuery=this.$route.params.data
+					this.changeCompanyCodeToId(this.options, this.filterQuery.companyCode)
+					this.filterQuery.companyCode = this.companyId
+					this.loading=false
 				}).catch((err) => {
 					this.$message.error(err.message)
+					this.loading=false
 				})
 			},
 			getempGroups() {
