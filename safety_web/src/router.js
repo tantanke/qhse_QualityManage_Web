@@ -727,11 +727,11 @@ export default new Router({
             name: 'planDataDetail',
             component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/planDataDetail.vue'], resolve)
         },
-		{
-			path:'/remote_Moniter/getPlan/index',
-			name:'getplan',
-			component:resolve => require(['./views/remote_Moniter/getPlan/index.vue'],resolve)
-		},
+        {
+          path:'/remote_Moniter/getPlan/index',
+          name:'getplan',
+          component:resolve => require(['./views/remote_Moniter/getPlan/index.vue'],resolve)
+        },
         {//远程监控应用
           path: '/remote_Moniter/DataApply/index',
           name: 'DataApply',

@@ -27,7 +27,7 @@ beforeCreate(){
 </script>
 
 <style>
-	/* 解决表格使用过程中body与header不对齐的问题 */
+/* 解决表格使用过程中body与header不对齐的问题 */
 	body .el-table th.gutter{
 		display:table-cell !important;
 	}

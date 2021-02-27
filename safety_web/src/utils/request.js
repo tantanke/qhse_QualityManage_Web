@@ -37,11 +37,7 @@ export default (url, options={}) => {
   const newOptions = {...defaultOptions, ...options, url}
   let user = GetCurrentUser()
   if (user) {
-	  if(newOptions.url.indexOf('https://www.ketetest.com:9099/')>-1){
-		  newOptions.headers={...newOptions.headers,'TOKEN':'WMPINFOTOKEN_EA766DAF133A'}
-	  }else{
-		  newOptions.headers = {...newOptions.headers, Authorization: user.token}
-	  }
+    newOptions.headers = {...newOptions.headers, Authorization: user.token}
   }
   return new Promise((resolve, reject) => {
     axios(newOptions).then((response) => {
