@@ -185,7 +185,14 @@ export const endPlanDetail = (detailId ) => {
 }
 // 导出填写数据
 export const downloadMonitorData = (data ) => {
-    return request(`/api/downloadMonitorData?date=${data.date}&planID=${data.monitorPlanID}`, {
+    return request(`/api/downloadMonitorData?date=${data.date}&planID=${data.planId}`, {
         method:'get',
     })
+}
+//根据填报日期查询远程监控计划
+export const getPlan=(data)=>{
+	return request(`https://www.ketetest.com:9099/detection/workMonit/getTeamWorkInfo.do?WRITE_DATE=${data}`,{
+		method:'get',
+		data
+	})
 }

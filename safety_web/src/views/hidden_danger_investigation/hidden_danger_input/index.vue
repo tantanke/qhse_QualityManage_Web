@@ -173,6 +173,7 @@
                <br />
           <el-form-item label="操作" >
             <el-button type="primary" style="width:100px" @click="onSubmit" icon="el-icon-check">确认</el-button>
+            <el-button type="danger" style="width:100px" @click="backAdd" icon="el-icon-refresh-right">返回</el-button>
           </el-form-item>
             </el-col>
           </el-row> 
@@ -434,6 +435,9 @@ export default {
         .catch(err => {
           this.$message.error(err.message)
         })
+    },
+    backAdd(){
+      this.$router.go(-1)
     },
     getrecordDate(){
       let nowDate = new Date()

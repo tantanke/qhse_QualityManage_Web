@@ -102,7 +102,7 @@
                 <el-form-item label="违章描述:">
                     <span>{{ props.row.description }}</span>
                 </el-form-item>
-                <el-form-item label="罚款:">
+                <el-form-item label="绩效:">
                     <span>{{ props.row.punish }}</span>
                 </el-form-item>
                <el-form-item v-if="props.row.affix1" label="证据图片1:" >
@@ -123,7 +123,7 @@
               </el-table-column>        
           <el-table-column align='center' prop='regulationName' label='违章人员'></el-table-column>
           <el-table-column align='center' prop='regulationSource' label='隐患来源'></el-table-column>
-          <el-table-column align='center' prop='punish' label='罚款'></el-table-column>
+          <el-table-column align='center' prop='punish' label='绩效'></el-table-column>
         </el-table>
           </el-row>
       </el-row>

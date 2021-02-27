@@ -432,21 +432,21 @@ export default new Router({
           name: 'StudyCaseEdit',
           component: resolve => require(['./views/nav7/studyCase/Edit.vue'], resolve)
         }, //学习案例修改页面
-        {
-          path: '/nav7/Rules/index',
-          name: 'RulesIndex',
-          component: resolve => require(['./views/nav7/Rules/Index.vue'], resolve)
-        }, //规章制度
-        {
-          path: '/nav7/Information/index',
-          name: 'InformationIndex',
-          component: resolve => require(['./views/nav7/Information/Index.vue'], resolve)
-        }, //文件通知
-        {
-          path: '/nav7/Management/index',
-          name: 'ManagementIndex',
-          component: resolve => require(['./views/nav7/Management/Index.vue'], resolve)
-        }, //管理亮点
+        // {
+        //   path: '/nav7/Rules/index',
+        //   name: 'RulesIndex',
+        //   component: resolve => require(['./views/nav7/Rules/Index.vue'], resolve)
+        // }, //规章制度
+//         {
+//           path: '/nav7/Information/index',
+//           name: 'InformationIndex',
+//           component: resolve => require(['./views/nav7/Information/Index.vue'], resolve)
+//         }, //文件通知
+//         {
+//           path: '/nav7/Management/index',
+//           name: 'ManagementIndex',
+//           component: resolve => require(['./views/nav7/Management/Index.vue'], resolve)
+//         }, //管理亮点
         {
           path: '/nav7/Hidden_danger/index',
           name: 'Hidden_dangerIndex',
@@ -492,11 +492,16 @@ export default new Router({
           name: 'Event_Edit',
           component: resolve => require(['./views/nav7/updateEvent/Edit.vue'], resolve)
         }, //事件修改页面
-        {
+	 {
           path: '/nav7/updateRules/index',
-          name: 'updateRulesIndex',
+          name: 'RulesIndex',
           component: resolve => require(['./views/nav7/updateRules/Index.vue'], resolve)
         }, //上传规章制度首页
+//         {
+//           path: '/nav7/updateRules/index',
+//           name: 'updateRulesIndex',
+//           component: resolve => require(['./views/nav7/updateRules/Index.vue'], resolve)
+//         }, //上传规章制度首页
         {
           path: '/nav7/updateRules/edit',
           name: 'updateRulesEdit',
@@ -504,12 +509,12 @@ export default new Router({
         }, //规章制度修改页面
         {
           path: '/nav7/updateInformation/index',
-          name: 'updateInformationIndex',
+          name: 'InformationIndex',
           component: resolve => require(['./views/nav7/updateInformation/Index.vue'], resolve)
         }, //上传文件通知
         {
           path: '/nav7/updateManagement/index',
-          name: 'updateManagementIndex',
+          name: 'ManagementIndex',
           component: resolve => require(['./views/nav7/updateManagement/Index.vue'], resolve)
         }, //上传管理亮点主页
         //nave8
@@ -722,6 +727,11 @@ export default new Router({
             name: 'planDataDetail',
             component: resolve => require(['./views/remote_Moniter/RemotePlanStatistics/planDataDetail.vue'], resolve)
         },
+		{
+			path:'/remote_Moniter/getPlan/index',
+			name:'getplan',
+			component:resolve => require(['./views/remote_Moniter/getPlan/index.vue'],resolve)
+		},
         {//远程监控应用
           path: '/remote_Moniter/DataApply/index',
           name: 'DataApply',

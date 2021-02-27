@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-title">文件通知</div>
-    <div class="page-content">
+    <div class="page-content" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading">
       <el-form
         :inline="true"
         v-model="filterQuery"
@@ -32,7 +32,7 @@
             :limit="1"
             list-type="text"
             accept=".pdf,.PDF,.docx,.DOCX">
-            <el-button type="primary" icon='el-icon-upload'>上传文件</el-button>
+            <el-button type="success" icon='el-icon-upload'>上传文件</el-button>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -64,7 +64,7 @@
         </div>
       </el-dialog>
 
-      <el-table :data="tableData" v-loading="loading" border style="width: 100%" >
+      <el-table :data="tableData" border style="width: 100%" >
         <el-table-column type="index" width="50" header-align="center" label="序号" :index="this.indexStartNum" align="center"></el-table-column>
         <el-table-column label="文件名称" prop="fileName" header-align="center"> </el-table-column>
         <el-table-column label="适用单位" prop="appliCom" header-align="center"> </el-table-column>
@@ -75,13 +75,13 @@
           <template slot-scope="scope">
             <div class="inline-td">
               <el-button size="mini" type="primary" icon='el-icon-search' @click="handleGetWord(scope.row)">预览</el-button>
-              <el-button size="mini" type="primary" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
+              <el-button size="mini" type="warning" icon='el-icon-download' @click="handleDownloadWord(scope.row)">下载</el-button>
               <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDeleteFile(scope.row)">删除</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
-      <div class="pagination-base">
+      <div class="pagination-base" style="margin-bottom: 15px;">
         <el-pagination
           @current-change="handlePageChange"
           :current-page="filterQuery.pageIdx"
@@ -131,7 +131,10 @@ export default {
       fileNameAyy:[],
       fileNameListAyy:[],
       fileList:[],
-      dialogFormVisible:false
+      dialogFormVisible:false,
+	  companyCode:'',
+	  companyId:'',
+	  companyName:''
     };
   },
 
@@ -158,6 +161,7 @@ export default {
       this.loading = true
       GetFileList(this.filterQuery).then((res) => {
         this.tableData = res.data.list
+		console.log(this.tableData)
         this.total = res.data.total
         this.filterQuery.pageIdx = res.data.page
         this.indexStartNum = ((this.filterQuery.pageIdx - 1) * this.filterQuery.pageSize) + 1;
@@ -217,11 +221,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+		  this.loading=true
         DeleteFile(item.fileID).then(() => {
           this.handleGetFileList()
-          this.$router.go(0)
+          this.loading=false
           }, (err) => {
           this.$message.error(err.message)
+		  this.loading=false
           })
         }).catch(() => {
       })
@@ -300,27 +306,45 @@ export default {
       this.formData.fileName = arr.substring(0,n)
       this.dialogFormVisible = true
     },
+	// 将公司Id转化为公司名称，并且保存nodeCode
+	changeCompanyIdToName: function(val, companyId) {
+		for (var j = 0; j < val.length; j++) {
+			if (val[j]) {
+				if (val[j].id == companyId) {
+					this.companyCode = val[j].nodeCode
+					this.companyName=val[j].label
+					break
+				} else if (val[j].children) {
+					this.changeCompanyIdToName(val[j].children, companyId)
+				}
+			}
+		}
+	},
     //确认创建
     handleSubmit () {
       this.formData.fileType = '文件通知'
+	  this.loading=true
+	  this.companyCode=''
+	  this.companyId=''
+	  this.companyName=''
+	  this.changeCompanyIdToName(this.options,this.formData.appliComCode)
+	  this.formData.appliComCode=this.companyCode
       CreateFile(this.formData).then(() => {
         this.$message.success('创建成功')
-        this.$router.go(0) //返回上一url
+		this.handleGetFileList()
+		this.loading=false
+		this.fileList=[]
+		this.dialogFormVisible=false
       }).catch((err) => {
         this.$message.error(err.message)
+		this.loading=false
       })
     },
     //文件预览
     handleGetWord(item) {
       let url = item.fileNameCode
-      let index1=url.lastIndexOf(".")
-      let index2=url.length
-      let type=url.substring(index1+1,index2)
-      if(type ==='pdf' || type ==='PDF'){
-        window.location.href = item.fileNameCode
-      }else{
-        this.fileAttach = 'http://www.xdocin.com/xdoc?_func=to&_format=html&_cache=1&_xdoc=' + item.fileNameCode
-        window.open(this.fileAttach)
+      if(url){
+      	window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
       }
     },
 

@@ -614,10 +614,21 @@
 		methods: {
 			//预览文件，使用外部插件
 			preview(url) {
-				if (!url) {
-					return 0
+				if(url){
+					window.open('http://39.98.173.131:8012/onlinePreview?url='+encodeURIComponent(url))
 				}
-				window.open('http://view.xdocin.com/xdoc?_xdoc=' + url)
+			},
+			getOption(flag,element){
+				if(flag){
+					let temp=this.downloadList.filter(item=>{
+						return element.englishName===item.englishName
+					})
+					if(temp.length==0){
+						this.downloadList.push(element)
+					}
+				}else{
+					this.downloadList.splice(this.downloadList.indexOf(element)>-1,1)
+				}
 			},
 			//下载选项框中全选按钮的点击事件，全选或撤销全选时对对应的组进行操作
 			allCheck(event, option) {

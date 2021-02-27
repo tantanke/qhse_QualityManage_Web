@@ -427,7 +427,7 @@ export default {
         ? data.quarterEventIndex
         : 0;
       this.eventValues.eventFinishRate = data.eventFinishRate
-        ? (data.quarterEventIndex * 100).toFixed(2)
+        ? (data.quarterEventIndex).toFixed(2)
         : "0.00";
       // 违章
       this.regulationValues.actualFinishRegulation = data.actualFinishRegulation
@@ -520,15 +520,15 @@ export default {
         let kete = Math.ceil(
           (this.project.company.projectLevelCount / this.finishrate[0]) * 100
         );
-        this.manageChart1.height = kete + "%";
-        this.manageChart1.top = 100 - kete + "%";
+        this.manageChart2.height = kete + "%";
+        this.manageChart2.top = 100 - kete + "%";
       }
       if (this.project.safe.projectLevelCount) {
         let safe = Math.ceil(
           (this.project.company.projectLevelCount / this.finishrate[0]) * 100
         );
-        this.manageChart1.height = safe + "%";
-        this.manageChart1.top = 100 - safe + "%";
+        this.manageChart3.height = safe + "%";
+        this.manageChart3.top = 100 - safe + "%";
       }
     },
     changeRate() {
