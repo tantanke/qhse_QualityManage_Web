@@ -40,8 +40,18 @@
 					</el-upload>
 				</el-form-item> -->
 				<el-form-item>
+					<el-upload ref="upload" :action="'/api/addQualityExcel'" :auto-upload="true" :headers="headers" :file-list="uploadFile"
+							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
+							 accept=".xlsx,.XLSX,.xls,.XLS">
+						<el-button icon="el-icon-upload" type="success">上传文件</el-button>
+					</el-upload>
+					</el-form-item>
+					<el-form-item>
+						<el-button icon="el-icon-download" type="warning" @click="downloadModelFile">下载模板文件</el-button>
 					<el-button icon="el-icon-download" type="warning" @click="downloadChoiceDialog=true">下载文件</el-button>
-				</el-form-item>
+					</el-form-item>
+					
+				
 			</el-form>
 			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
 			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
@@ -154,6 +164,18 @@
 </template>
 
 <script>
+	const headers1 = {
+		Accept: 'application/json',
+		'Content-Type': 'aplication/json;charset=utf-8'
+	}
+	const newOptions = { ...headers1
+	}
+	let user = GetCurrentUser()
+	if (user) {
+		newOptions.headers = { ...newOptions.headers1,
+			Authorization: user.token
+		}
+	}
 	//引入接口
 	import {
 		//当前登录用户
@@ -164,13 +186,16 @@
 		updateNodeStatus,
 		updateNodeContent,
 		addCheckListItem,
-		uploadFile
+		addQualityExcel,
+		downloadModelFile
 	} from '../../../services/qualitySystem/checkListConfig'
 	import xlsx from 'xlsx'
 	import ExportJsonExcel from "js-export-excel";
 	export default {
 		data() {
 			return {
+				headers:newOptions.headers,
+				uploadFile:[],
 				//加载变量初始值
 				loading: false,
 				dialogtitle: '',
@@ -303,6 +328,7 @@
 			this.initData('init')
 		},
 		methods: {
+			
 			handleCellClick(row, cell, column) {
 				if (row.children) {
 					let els = column.getElementsByClassName("el-icon-arrow-right");
@@ -310,6 +336,13 @@
 						els[0].click();
 					}
 				}
+			},
+			downloadModelFile(){
+				var url='http://39.98.173.131:7000/QualityManagerSysElement/model.xlsx'
+				var iframe =document.createElement("iframe")
+				iframe.style.display ="none";
+				iframe.src = url;
+				document.body.appendChild(iframe);
 			},
 			//树的关键字搜索
 			filterNode(value, data) {
@@ -338,11 +371,14 @@
 			},
 			//上传成功
 			handleSuccess(res) {
+				this.loading=true
 				if (res.code == '1000') {
-					this.getDate()
+					this.initData('init')
 					this.$message.success('上传成功');
+					this.loading=false
 				} else {
 					this.$message.error('上传失败')
+					this.loading=false
 				}
 			},
 			//根据状态选择框进行查询
