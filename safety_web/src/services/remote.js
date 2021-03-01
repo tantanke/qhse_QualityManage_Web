@@ -191,7 +191,7 @@ export const downloadMonitorData = (data ) => {
 }
 //根据填报日期查询远程监控计划
 export const getPlan=(data)=>{
-	return request(`https://www.ketetest.com:9099/detection/workMonit/getTeamWorkInfo.do?WRITE_DATE=${data}`,{
+	return request(`/api/getTeamInfo?date=${data}`,{
 		method:'get',
 		data
 	})
