@@ -621,11 +621,11 @@
 			getOption(flag,element){
 				if(flag){
 					let temp=this.downloadList.filter(item=>{
-						return element.englishName===item.englishName
-					})
-					if(temp.length==0){
-						this.downloadList.push(element)
-					}
+					return element.englishName===item.englishName
+				})
+				if(temp.length==0){
+					this.downloadList.push(element)
+				}
 				}else{
 					this.downloadList.splice(this.downloadList.indexOf(element)>-1,1)
 				}

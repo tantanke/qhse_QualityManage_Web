@@ -41,17 +41,14 @@
 				</el-form-item> -->
 				<el-form-item>
 					<el-upload ref="upload" :action="'/api/addQualityExcel'" :auto-upload="true" :headers="headers" :file-list="uploadFile"
-							 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
-							 accept=".xlsx,.XLSX,.xls,.XLS">
-						<el-button icon="el-icon-upload" type="success">上传文件</el-button>
-					</el-upload>
-					</el-form-item>
-					<el-form-item>
-						<el-button icon="el-icon-download" type="warning" @click="downloadModelFile">下载模板文件</el-button>
+						 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
+						 accept=".xlsx,.XLSX,.xls,.XLS">
+					<el-button icon="el-icon-upload" type="success">上传文件</el-button></el-upload>
+				</el-form-item>
+				<el-form-item>
+					<el-button icon="el-icon-download" type="warning" @click="downloadModelFile">下载模板文件</el-button>
 					<el-button icon="el-icon-download" type="warning" @click="downloadChoiceDialog=true">下载文件</el-button>
-					</el-form-item>
-					
-				
+				</el-form-item>
 			</el-form>
 			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
 			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
@@ -164,18 +161,18 @@
 </template>
 
 <script>
-	const headers1 = {
-		Accept: 'application/json',
-		'Content-Type': 'aplication/json;charset=utf-8'
-	}
-	const newOptions = { ...headers1
-	}
-	let user = GetCurrentUser()
-	if (user) {
-		newOptions.headers = { ...newOptions.headers1,
-			Authorization: user.token
+		const headers1 = {
+			Accept: 'application/json',
+			'Content-Type': 'aplication/json;charset=utf-8'
 		}
-	}
+		const newOptions = { ...headers1
+		}
+		let user = GetCurrentUser()
+		if (user) {
+			newOptions.headers = { ...newOptions.headers1,
+				Authorization: user.token
+			}
+		}
 	//引入接口
 	import {
 		//当前登录用户
@@ -328,7 +325,6 @@
 			this.initData('init')
 		},
 		methods: {
-			
 			handleCellClick(row, cell, column) {
 				if (row.children) {
 					let els = column.getElementsByClassName("el-icon-arrow-right");
@@ -373,7 +369,7 @@
 			handleSuccess(res) {
 				this.loading=true
 				if (res.code == '1000') {
-					this.initData('init')
+					this.getDate('init')
 					this.$message.success('上传成功');
 					this.loading=false
 				} else {
