@@ -20,7 +20,7 @@
     "jspdf": "^1.5.3",
     "moment": "^2.22.2",
     "node-sass": "^4.10.0",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.1.0",
     "swiper": "^6.3.5",
