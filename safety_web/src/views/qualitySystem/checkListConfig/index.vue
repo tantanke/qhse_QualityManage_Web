@@ -30,7 +30,7 @@
 					<el-button type="primary" icon="el-icon-search" @click="getData()" style="margin-right: 15px;">查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" icon="el-icon-plus" @click="openAddDialog()">新增检查表</el-button>
+					<el-button type="primary" icon="el-icon-plus" @click="openAddDialog()">新增检查表头</el-button>
 				</el-form-item>
 				<!--2021-3-11 16:46，zhb， 对上传和下载进行统一，使得更加符合使用习惯 -->
 				<el-form-item>

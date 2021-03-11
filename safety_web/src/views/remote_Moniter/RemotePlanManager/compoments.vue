@@ -53,7 +53,8 @@
 					<el-table-column label="操作" width="300" align="center">
 						<template slot-scope="scope">
 							<el-button type="primary" size="mini" @click="handelcelChange(scope.row)" icon="el-icon-edit">编辑</el-button>
-							<el-button type="info" size="mini" icon="el-icon-video-pause" @click="endPlanDetails(scope.row)">结束</el-button>
+							<!-- 2021-3-11 21:25，zhb,注释结束按钮 -->
+							<!-- <el-button type="info" size="mini" icon="el-icon-video-pause" @click="endPlanDetails(scope.row)">结束</el-button> -->
 							<el-button type="danger" size="mini" @click="handelcelDelete(scope.row)" icon="el-icon-delete">删除</el-button>
 						</template>
 					</el-table-column>
