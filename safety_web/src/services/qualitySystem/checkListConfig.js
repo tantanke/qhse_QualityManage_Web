@@ -32,3 +32,7 @@ export const uploadFile = (data) => {
 		data
 	})
 }
+//2021-3-11 15:20，zhb,递归删除节点
+export const deleteNode=(data)=>{
+	return request('/api/deleteQuality_CheckNode/'+data,{method:'delete'})
+}

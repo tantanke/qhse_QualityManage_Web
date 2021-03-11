@@ -32,47 +32,54 @@
 				<el-form-item>
 					<el-button type="primary" icon="el-icon-plus" @click="openAddDialog()">新增检查表</el-button>
 				</el-form-item>
-				<!-- <el-form-item>
-					<el-upload ref="upload" :action="'/api/QualityCheck_excel_upload'" :on-preview="handlePreview" :on-remove="handleRemove"
-					 :on-success="handleSuccess" :file-list="fileList" :headers="{Authorization:currentUser().token}" :show-file-list="false"
-					 accept=".excel, .xls, .xlsx" :on-progress="handleProgress">
-						<el-button icon="el-icon-upload" type="success" @click="submitUpload">上传文件</el-button>
-					</el-upload>
-				</el-form-item> -->
+				<!--2021-3-11 16:46，zhb， 对上传和下载进行统一，使得更加符合使用习惯 -->
 				<el-form-item>
-					<el-upload ref="upload" :action="'/api/addQualityExcel'" :auto-upload="true" :headers="headers" :file-list="uploadFile"
-						 :on-preview="handlePreview" :on-remove="handleRemove" :on-success="handleSuccess" :before-remove="beforeRemove"
-						 accept=".xlsx,.XLSX,.xls,.XLS">
-					<el-button icon="el-icon-upload" type="success">上传文件</el-button></el-upload>
+					<el-upload ref="upload" :action="'/api/addQualityExcel'" :auto-upload="true" :headers="headers"
+						:file-list="uploadFile" :on-preview="handlePreview" :on-remove="handleRemove"
+						:on-success="handleSuccess" :before-remove="beforeRemove" accept=".xlsx,.XLSX,.xls,.XLS"
+						style="margin-right: 5px;float: left;">
+						<el-button icon="el-icon-upload" type="success">上传检查表</el-button>
+					</el-upload>
 				</el-form-item>
 				<el-form-item>
-					<el-button icon="el-icon-download" type="warning" @click="downloadModelFile">下载模板文件</el-button>
-					<el-button icon="el-icon-download" type="warning" @click="downloadChoiceDialog=true">下载文件</el-button>
+					<el-button icon="el-icon-download" type="warning" @click="downloadChoiceDialog=true">下载文件
+					</el-button>
 				</el-form-item>
 			</el-form>
-			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode" ref="tree"
-			 :expand-on-click-node="false" :default-expanded-keys="expandedList" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
+			<!-- 2021-3-11 15:17，zhb，快捷展开节点，无限制新增层数，修复折叠bug，新增删除按钮 -->
+			<el-tree :data="selectedDate" node-key="checkListID" :props="defaultProps" :filter-node-method="filterNode"
+				ref="tree" :expand-on-click-node="true" :default-expanded-keys="expandedList" @node-expand="nodeExpand"
+				@node-collapse="nodeCollapse">
 				<span class="custom-tree-node" slot-scope="{ node, data }">
-					<div style="display: block;width: 11%;padding: 3px;">
-						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkCategory}}</el-button>
+					<div>
+						<el-button align="center" v-if="node.level===1&&data.checkCategory" round type="primary"
+							size="mini" style="width: 130px;padding: 5px;margin-right:5px;">{{data.checkCategory}}
+						</el-button>
+						<div style="width: 0px;" v-else></div>
 					</div>
-					<div style="display: block;width: 11%;padding: 3px;">
-
-						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkBasis}}</el-button>
+					<div>
+						<el-button align="center" v-if="node.level===1&&data.checkBasis" round type="success"
+							size="mini" style="width: 130px;padding: 5px;margin-right:5px;">{{data.checkBasis}}
+						</el-button>
+						<div style="width: 0px;" v-else></div>
 					</div>
-					<div style="display: block;width: 11%;padding: 3px;">
-						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning" size="mini" style="width: 130px;padding-top: 5px;padding-bottom: 5px;">{{data.checkMethod}}</el-button>
+					<div>
+						<el-button align="center" v-if="node.level===1&&data.checkMethod" round type="warning"
+							size="mini" style="width: 130px;padding: 5px;margin-right:5px;">{{data.checkMethod}}
+						</el-button>
+						<div style="width: 0px;" v-else></div>
 					</div>
-					<div :title="data.checkListName" class="em-tree-text" style="display: block;float: left;margin-left: 5px;">{{ data.checkListName }}</div>
-					<div style="display: block;width: 10%;float: right;">
-						<el-button type="text" size="mini" @click="openAddDialog(node)" v-if="node.level!==3&&data.status==='启用'">
+					<div :title="data.checkListName" class="em-tree-text">{{ data.checkListName }}</div>
+					<div>
+						<el-button type="text" size="mini" @click="openAddDialog(node)" v-if="data.status==='启用'">
 							<i class="el-icon-circle-plus"></i>
 						</el-button>
-						&nbsp;&nbsp;
 						<el-button type="text" size="mini" @click="openConfigDialog(data)" v-if="data.status==='启用'">
 							编辑
 						</el-button>
-						&nbsp;&nbsp;
+						<el-button type="text" size="mini" @click="deleteNode(data)" v-if="data.status==='停用'">
+							删除
+						</el-button>
 						<el-button type="text" size="mini" @click="updateStatus(data)">
 							<i>{{data.status=='启用'?'停用':'启用'}}</i>
 						</el-button>
@@ -148,11 +155,16 @@
 					<el-button icon='el-icon-check' type="primary" @click="configNode()">确 定</el-button>
 				</span>
 			</el-dialog>
-			<el-dialog title="导出选择" :visible.sync="downloadChoiceDialog" width="30%" align="center">
-				<el-form :inline='true'>
-					<el-form-item>
-						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部文件</el-button>&nbsp;&nbsp;
+			<el-dialog title="导出选择" :visible.sync="downloadChoiceDialog" width="20%" align="left">
+				<el-form label-width="100px" label-position="right">
+					<!-- <el-form-item label="">
+						<el-button icon="el-icon-download" type="warning" @click="downloadAll()">导出全部文件</el-button>
+					</el-form-item> -->
+					<el-form-item label="查看用模板表:">
 						<el-button icon="el-icon-download" type="warning" @click="downloadModle()">导出模板文件</el-button>
+					</el-form-item>
+					<el-form-item label="上传用模板表:">
+						<el-button icon="el-icon-download" type="warning" @click="downloadModelFile">下载模板表</el-button>
 					</el-form-item>
 				</el-form>
 			</el-dialog>
@@ -184,7 +196,8 @@
 		updateNodeContent,
 		addCheckListItem,
 		addQualityExcel,
-		downloadModelFile
+		downloadModelFile,
+		deleteNode
 	} from '../../../services/qualitySystem/checkListConfig'
 	import xlsx from 'xlsx'
 	import ExportJsonExcel from "js-export-excel";
@@ -325,6 +338,22 @@
 			this.initData('init')
 		},
 		methods: {
+			// 2021-3-11 15:24，zhb，递归删除节点，二次确认
+			deleteNode(data) {
+				this.$confirm('确认要删除该节点吗？该操作会删除该节点的所有下级节点!', '提示', {
+					confirmButtonText: '确认',
+					cancelButtonText: '取消',
+					type: "warning"
+				}).then(() => {
+					delete(data.checkListCode).then(res => {
+						if (res.code == '1000') {
+							this.$message.success('删除节点成功')
+						}
+					}).catch(err => {
+						this.$message.error(err.message)
+					})
+				})
+			},
 			handleCellClick(row, cell, column) {
 				if (row.children) {
 					let els = column.getElementsByClassName("el-icon-arrow-right");
@@ -339,6 +368,7 @@
 				iframe.style.display ="none";
 				iframe.src = url;
 				document.body.appendChild(iframe);
+				this.downloadChoiceDialog = false
 			},
 			//树的关键字搜索
 			filterNode(value, data) {
@@ -674,9 +704,16 @@
 			nodeExpand(data) {
 				this.expandedList.splice(this.expandedList.length, 1, data.checkListID)
 			},
-			//折叠检查表树
+			//折叠检查表树,（2021-3-11 16:52，折叠更新）
 			nodeCollapse(data) {
-				this.expandedList.splice(this.expandedList.indexOf(data.checkListID), 1)
+				for (var i = this.expandedList.length - 1; i >= 0; i--) {
+					if (this.expandedList[i] != data.checkListID) {
+						this.expandedList.pop()
+					} else {
+						this.expandedList.pop()
+						break
+					}
+				}
 			},
 			//下载全部检查项
 			downloadAll() {
