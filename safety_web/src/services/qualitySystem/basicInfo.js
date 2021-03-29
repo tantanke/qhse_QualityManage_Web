@@ -29,5 +29,5 @@ export const pushBasicInfomation =(param)=>{
 }
 // 时间范围内查询部分基本信息登记表
 export const inquireBasicInfomation =(data)=>{
-	return request(`/api/queryTableByYearAndCom?checkedCompanyCode=${data.checkedCompanyCode}&checkDate=${data.checkDate}`,{method:'get',data})
+	return request(`/api/queryTableByYearAndCom?checkedCompanyCode=${data.checkedCompanyCode}&checkDate=${data.checkDate}&checkEndDate=${data.checkEndDate}`,{method:'get',data})
 }
