@@ -534,10 +534,10 @@ export default {
     initQualityBarchart(data) {
       let _this = this;
       let {
-        monthFinishRate,
-        updateTime,
-        monthFinishNum,
-        monthPlanNum,
+        monthFinishRate = 0,
+        updateTime = '暂无',
+        monthFinishNum = 0,
+        monthPlanNum = 0,
       } = data[0];
       // 数值
       _this.getYnum(monthPlanNum, "qualitylistdata", 10);
@@ -570,10 +570,10 @@ export default {
     initRecordingBarchart(data) {
       let _this = this;
       let {
-        weeklyCollectNum,
-        weeklyNormalNum,
-        weeklySupervisionNum,
-        weeklyUsageRate,
+        weeklyCollectNum = 0,
+        weeklyNormalNum = 0,
+        weeklySupervisionNum = 0,
+        weeklyUsageRate = 0,
       } = data[0];
       // 确定下标
       let max = Math.max(weeklyCollectNum,weeklyNormalNum,weeklySupervisionNum)
@@ -614,14 +614,14 @@ export default {
     initProgresstBarchart(data) {
       let _this = this;
       let {
-        planNum,
-        firstDraftFinishNum,
-        firstDraftFinishRate,
-        reviewPassNum,
-        reviewPassRate,
-        standardReleaseNum,
-        standardReleaseRate,
-        updateTime,
+        planNum = 0,
+        firstDraftFinishNum = 0,
+        firstDraftFinishRate = 0,
+        reviewPassNum = 0,
+        reviewPassRate = 0,
+        standardReleaseNum = 0,
+        standardReleaseRate = 0,
+        updateTime = '暂无',
       } = data[0];
       _this.getYnum(planNum, "firstlistdata", 10);
       //百分比

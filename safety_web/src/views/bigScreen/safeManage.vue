@@ -417,9 +417,9 @@ export default {
     envirSwiper() {
       this.$emit("changeEnvir", 1);
     },
-    initsecurityData(data) {
+    initsecurityData(data1) {
       //事件
-      console.log(data);
+      let data = {...data1}
       this.eventValues.actualFinishEvent = data.actualFinishEvent
         ? data.actualFinishEvent
         : 0;
@@ -427,8 +427,9 @@ export default {
         ? data.quarterEventIndex
         : 0;
       this.eventValues.eventFinishRate = data.eventFinishRate
-        ? (data.quarterEventIndex).toFixed(2)
+        ? (data.eventFinishRate*100).toFixed(2)
         : "0.00";
+        this.eventValues.eventFinishRate = data.eventFinishRate>1?'100.00':(data.eventFinishRate*100).toFixed(2)
       // 违章
       this.regulationValues.actualFinishRegulation = data.actualFinishRegulation
         ? data.actualFinishRegulation
@@ -439,6 +440,7 @@ export default {
       this.regulationValues.finishRegulationRate = data.finishRegulationRate
         ? (data.finishRegulationRate * 100).toFixed(2)
         : "0.00";
+        this.regulationValues.finishRegulationRate = data.finishRegulationRate>1?'100.00':(data.finishRegulationRate*100).toFixed(2)
       // 隐患
       this.dangerValues.actualFinishDanger = data.actualFinishDanger
         ? data.actualFinishDanger
@@ -449,6 +451,7 @@ export default {
       this.dangerValues.finishDangerRate = data.finishDangerRate
         ? (data.finishDangerRate * 100).toFixed(2)
         : "0.00";
+        this.dangerValues.finishDangerRate = data.finishDangerRate>1?'100.00':(data.finishDangerRate*100).toFixed(2)
       // 初始化柱状图
       // 违章
       let regulation1 = Math.ceil(
@@ -461,6 +464,7 @@ export default {
         (data.actualFinishRegulation / (data.quarterRegulationIndex * 1.5)) *
           100
       );
+      
       this.regulationChart2.top = 100 - regulation2 + "%";
       this.regulationChart2.height = regulation2 + "%";
       //事件
@@ -490,7 +494,7 @@ export default {
       this.regulationpoint.top =
         -this.regulationValues.finishRegulationRate + "%";
       this.eventpoint.top = -this.eventValues.eventFinishRate + "%";
-      this.dangerpoint.top = this.regulationValues.finishRegulationRate + "%";
+      this.dangerpoint.top = (100 - this.dangerValues.finishDangerRate) + "%";
     },
     initmillionData(data) {
       this.millionData.monthValue = data.monthSubtotal ? data.monthSubtotal : 0;
@@ -537,7 +541,7 @@ export default {
         this.project.kete.projectLevelCount > this.finishrate[0] ||
         this.project.safe.projectLevelCount > this.finishrate[0]
       ) {
-        let rate = this.finishrate[0] * 2;
+        let rate = this.finishrate[0] * 3;
         this.finishrate = [
           rate,
           rate * 0.8,

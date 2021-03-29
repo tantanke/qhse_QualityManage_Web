@@ -340,23 +340,23 @@ export default {
         gasolineYear,  //汽油年累计消耗量
         dieselMonth,  //柴油月累计消耗量
         dieselYear,  //柴油年累计消耗量
-        year  //年度
+        year = '当前'//年度
       } = data
       _this.allValues.year = year
       // 水消耗量
       if(waterYear>100) _this.getYnum("单位：m³",waterYear,"ratedataWater",6)
-      _this.allValues.water = waterMonth 
-      _this.allValues.waterYear = waterYear
+      _this.allValues.water = waterMonth ? waterMonth:0
+      _this.allValues.waterYear = waterYear? waterYear:0
       _this.waterPoint.top =(100 -  Math.ceil((waterYear / _this.ratedataWater[1]) * 100)) + "%";
       //电消耗量
       if(electricityYear > 2000) _this.getYnum("单位：度",electricityYear,"ratedataElectricity",300)
-      _this.allValues.electricity = electricityMonth
-      _this.allValues.electricityYear = electricityYear
+      _this.allValues.electricity = electricityMonth?electricityMonth:0
+      _this.allValues.electricityYear = electricityYear?electricityYear:0
       _this.elcPoint.top =(100 -  Math.ceil((electricityYear / _this.ratedataElectricity[1]) * 100)) + "%";
       //气消耗量
       if(gasYear> 2000) _this.getYnum("单位：m³",gasYear,"ratedataGas",120)
-      _this.allValues.gas = gasMonth
-      _this.allValues.gasYear = gasYear
+      _this.allValues.gas = gasMonth? gasMonth:0
+      _this.allValues.gasYear = gasYear? gasYear:0
       _this.o2Point.top =(100 -  Math.ceil((gasYear / _this.ratedataGas[1]) * 100)) + "%";
       //污水量
       _this.pollutionWater.month = sewageVolumeMonth ? sewageVolumeMonth : 0
