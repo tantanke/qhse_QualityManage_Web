@@ -710,7 +710,7 @@
 					console.log('after filter', temp)
 					this.checkListData = temp
 					this.checkListData = this.checkListData.filter(item => {
-						return item.checkPersonID === this.GetCurrentUser().employeeId
+						return item.checkPersonID === this.GetCurrentUser().employeeId.toString()
 					})
 				})
 			},
