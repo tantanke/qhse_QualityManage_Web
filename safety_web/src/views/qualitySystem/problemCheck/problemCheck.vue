@@ -8,13 +8,16 @@
                 <treeselect :multiple="false" :disable-branch-nodes="true" placeholder="请选择公司单位" style="width: 250px" :options="companyList"
 					v-model="inquireCompanyId"></treeselect>
             </el-form-item>
-			<el-form-item label="审核日期">
-			<el-date-picker
-                v-model="inquireCheckDate"
+		<el-form-item label="审核日期">
+		<!-- 2021-3-29 10:27新增时间数据格式 -->
+		<el-date-picker
+                v-model="selectCheckDate"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期">
+                end-placeholder="结束日期"
+				format="yyyy年MM月dd日"
+				value-format="yyyy-MM-dd">
             </el-date-picker>
 				</el-form-item>
 			<el-form-item>
@@ -80,11 +83,12 @@ export default {
             // 查询公司id
             inquireCompanyId: null,
             // 查询审核日期范围
-            inquireCheckDate: [],
-             // 查询表格部分数据
+             // 查询表格部分数据，2021-3-29 10:22，新增查询存储数组
+            selectCheckDate:[],
             inquireForm: {
+                checkedCompanyCode: null,
                 checkDate: '',
-                checkedCompanyCode: null
+            	checkEndDate:''
             },
             // 问题审核对话框表单
             problemCheckForm: {},
@@ -101,17 +105,13 @@ export default {
     methods: {
         // 查询表格部分数据
         handleInquire: function () {
-            const x = []
-            for(let i in this.inquireCheckDate) {
-                x.push(this.formatDate(this.inquireCheckDate[i]))
-            }
-            console.log(x)
-            this.inquireForm.checkDate = x.join(';')
-            console.log(this.inquireForm.checkDate)
-            console.log(this.inquireForm)
-            if(this.inquireForm.checkedCompanyCode == null || this.inquireForm.checkDate == '') {
+             // 2021-3-29 10:20修改查询
+            // 查询表格部分数据
+            if(this.inquireForm.checkedCompanyCode == null || this.selectCheckDate.length==0) {
                 return this.$message.error('请同时选择公司以及审核日期')
             }
+            this.inquireForm.checkDate=this.selectCheckDate[0]
+            this.inquireForm.checkEndDate=this.selectCheckDate[1]
             inquireProblemReviewForm(this.inquireForm).then((res) => {
                 console.log('查询问题审核主表表单的信息')
                 console.log(res.data)
