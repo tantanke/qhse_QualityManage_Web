@@ -8,7 +8,7 @@
 					 v-model="selectCheckedCompanyId"></treeselect>
 				</el-form-item>
 				<el-form-item label="审核日期：">
-					<el-date-picker v-model="selectCheckDate" type="daterange" range-separator="至" start-placeholder="开始日期"
+					<el-date-picker v-model="selectCheckDate" format="yyyy年MM月dd日" value-format="yyyy-MM-dd" type="daterange" range-separator="至" start-placeholder="开始日期"
 					 end-placeholder="结束日期">
 					</el-date-picker>
 				</el-form-item>
@@ -214,7 +214,7 @@
 						<el-form-item label="受审核室组">
 						<el-input placeholder="请输入" style="width: 107%" v-model="eidtInfoForm.group"></el-input>
 					</el-form-item>
-					<el-form-item label="作业项目名称" prop="projectName">
+					<el-form-item label="作业项目名称">
 						<el-input v-model="eidtInfoForm.projectName" style="width: 107%" placeholder="请输入"></el-input>
 					</el-form-item>
 					</el-col>
@@ -225,7 +225,7 @@
 							</el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="  项目组长">
+					<el-form-item label="项目组长">
 						<el-select v-model="eidtInfoForm.projectLeaderID" style="width: 100%" placeholder="请选择" clearable filterable>
 							<el-option :label="item.name" :value="item.employeeID" v-for="(item, index) in employeeList" :key="index">
 							</el-option>
@@ -277,7 +277,8 @@
 				// 查询部分表格信息表单对象
 				selectInfoForm: {
 					checkedCompanyCode: null,
-					checkDate: ''
+					checkDate: '',
+					checkEndDate:''
 				},
 				// 查询部分数据时间数组
 				selectCheckDate: [],
@@ -520,34 +521,41 @@
 				//   this.changeCheckListCodeToName()
 				//   console.log(this.addInfoForm)
 				this.$refs.addInfoFormRef.validate((valid) => {
+					// 2021-3-18 10:10，修改必填项未填提交不会强制清空内容并关闭对话框
 					if (!valid) {
-						return this.$message.error('基本信息表必填项未填')
+						this.$message.error('基本信息表必填项未填')
+					}else{
+						this.changeCheckListCodeToName()
+						submitBasicInfo(this.addInfoForm).then((res) => {
+							this.getBasicInfo()
+							this.$message.success('基本信息登记成功')
+							this.addInfoDialogVisible = false
+						}).catch((err) => {
+							this.$message.error(err.message)
+							this.addInfoDialogVisible = false
+						})
 					}
-					this.changeCheckListCodeToName()
-					submitBasicInfo(this.addInfoForm).then((res) => {
-						this.getBasicInfo()
-
-						return this.$message.success('基本信息登记成功')
-					}).catch((err) => {
-						return this.$message.error(err.message)
-					})
 				})
-				this.addInfoDialogVisible = false
 			},
 			getBasicInfo: function() {
-				const x = []
-				for (let i in this.selectCheckDate) {
-					x.push(this.formatDate(this.selectCheckDate[i]))
+				if(!this.selectCheckDate||this.selectCheckDate.length==0){
+					this.selectInfoForm.checkEndDate=new Date().toISOString().substr(0,10)
+				}else{
+					this.selectInfoForm.checkDate = this.selectCheckDate[0]
+					this.selectInfoForm.checkEndDate = this.selectCheckDate[1]
 				}
-				this.selectInfoForm.checkDate = x.join(';')
+				let user=this.getCurrentUser()
+				this.selectInfoForm.checkedCompanyCode=user.companyCode
 				// if(this.selectInfoForm.checkedCompanyCode == null || this.selectInfoForm.checkDate == '') {
 				//     return this.$message.error('请同时选择公司以及审核日期')
 				// }
+				this.loading = true
 				inquireBasicInfomation(this.selectInfoForm).then((res) => {
 					this.basicInfoList = this.sortByDate(res.data)
 					this.loading = false
 				}).catch((err) => {
 					return this.$message.error(err.message)
+					this.loading = false
 				})
 			},
 			editBasicInfo: function(information) {
