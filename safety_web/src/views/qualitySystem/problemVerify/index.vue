@@ -12,12 +12,13 @@
 					v-model="inquireCompanyId"></treeselect>
             </el-form-item>
 				<el-form-item label="审核日期">
+					<!-- 2021-3-29 10:24 新增时间格式-->
 					<el-date-picker
-					 	v-model="inquireCheckDate"
+					 	v-model="selectCheckDate"
 						type="daterange"
 						range-separator="至"
 						start-placeholder="开始日期"
-						end-placeholder="结束日期">
+						end-placeholder="结束日期" format="yyyy年MM月dd日" value-format="yyyy-MM-dd" >
 					</el-date-picker>
 				</el-form-item>
 				<el-form-item>
@@ -90,10 +91,12 @@
 				// 公司列表数据
 				companyList: [],
 				inquireCheckDate: [],
-				// 查询表格部分数据
+				// 查询表格部分数据，2021-3-29 10:22，新增查询存储数组
+				selectCheckDate:[],
 				inquireForm: {
-					checkedCompanyCode: null,
-					checkDate: ''
+				    checkedCompanyCode: null,
+				    checkDate: '',
+				    checkEndDate:''
 				},
 			}
 		},
@@ -111,18 +114,13 @@
 				return GetCurrentUser()
 			},
 			handleInquire: function () {
+				// 2021-3-29 10:20修改查询
 				// 查询表格部分数据
-				const x = []
-				for(let i in this.inquireCheckDate) {
-					x.push(this.formatDate(this.inquireCheckDate[i]))
+				if(this.inquireForm.checkedCompanyCode == null || this.selectCheckDate.length==0) {
+				    return this.$message.error('请同时选择公司以及审核日期')
 				}
-				console.log(x)
-				this.inquireForm.checkDate = x.join(';')
-				console.log(this.inquireForm.checkDate)
-				console.log(this.inquireForm)
-				if(this.inquireForm.checkedCompanyCode == null || this.inquireForm.checkDate == '') {
-					return this.$message.error('请同时选择公司以及审核日期')
-				}
+				this.inquireForm.checkDate=this.selectCheckDate[0]
+				this.inquireForm.checkEndDate=this.selectCheckDate[1]
 				inquireProblemForm(this.inquireForm).then((res) => {
 					console.log('查询问题接收主表表单的信息')
 					console.log(res.data)
