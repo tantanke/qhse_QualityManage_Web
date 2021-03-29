@@ -5,7 +5,7 @@ export const getCompany = (data) => {
 }
 
 export const queryTableByYearAndComAndPush = (data) => {
-	return request(`/api/queryTableByYearAndComAndPush?checkedCompanyCode=${data.checkedCompanyCode}&checkDate=${data.checkDate}`, {method: 'GET'})
+	return request(`/api/queryTableByYearAndComAndPush?checkedCompanyCode=${data.checkedCompanyCode}&checkDate=${data.checkDate}&checkEndDate=${data.checkEndDate}`, {method: 'GET'})
 }
 export const queryCheckTreeByID =(param)=>{
 	return request('/api/queryCheckTreeByID/'+param,{method:'GET'})
