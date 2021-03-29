@@ -9,12 +9,15 @@
 					v-model="inquireCompanyId"></treeselect>
             </el-form-item>
             <el-form-item label="审核日期">
-			<el-date-picker
-                v-model="inquireCheckDate"
+		<!-- 2021-3-29 10:21新增时间数据格式 -->
+		<el-date-picker
+                v-model="selectCheckDate"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
-                end-placeholder="结束日期">
+                end-placeholder="结束日期"
+				format="yyyy年MM月dd日" 
+				value-format="yyyy-MM-dd" >
             </el-date-picker>
 				</el-form-item>
 			<el-form-item>
@@ -92,9 +95,11 @@ export default {
             // 问题接收表格数据
             problemList: [],
             // 查询表格部分数据
+            selectCheckDate:[],
             inquireForm: {
                 checkedCompanyCode: null,
-                checkDate: ''
+                checkDate: '',
+				checkEndDate:''
             },
             // 显示隐藏对话框
             problemRectifyDialogVisible: false,
@@ -109,21 +114,14 @@ export default {
 			return GetCurrentUser()
 		},
         handleInquire: function () {
+           // 2021-3-29 10:20修改查询
             // 查询表格部分数据
-            const x = []
-            for(let i in this.inquireCheckDate) {
-                x.push(this.formatDate(this.inquireCheckDate[i]))
-            }
-            console.log(x)
-            this.inquireForm.checkDate = x.join(';')
-            console.log(this.inquireForm.checkDate)
-            console.log(this.inquireForm)
-            if(this.inquireForm.checkedCompanyCode == null || this.inquireForm.checkDate == '') {
+            if(this.inquireForm.checkedCompanyCode == null || this.selectCheckDate.length==0) {
                 return this.$message.error('请同时选择公司以及审核日期')
             }
+			this.inquireForm.checkDate=this.selectCheckDate[0]
+			this.inquireForm.checkEndDate=this.selectCheckDate[1]
             inquireProblemForm(this.inquireForm).then((res) => {
-                console.log('查询问题接收主表表单的信息')
-                console.log(res.data)
                 this.problemList = this.sortByDate(res.data)
             }).catch((err) => {
                 this.$message.error(err.message)
